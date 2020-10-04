@@ -34,9 +34,9 @@ import {
 
 const FONT_SIZE = 12;
 const SVG_DEFAULT_DIMENSIONS = 200;
-const SVG_VIEW_BOX = 200;
-const SVG_VIEW_BOX_HEIGHT = 200;
-const SVG_VIEW_BOX_WIDTH = 400;
+const SVG_VIEW_BOX = SVG_DEFAULT_DIMENSIONS;//200;
+const SVG_VIEW_BOX_HEIGHT = 1 * SVG_DEFAULT_DIMENSIONS; //200
+const SVG_VIEW_BOX_WIDTH = 2 * SVG_DEFAULT_DIMENSIONS;//400;
 
 // Donut starts at -220 degrees and is 260 degrees in size.
 // zero degrees is at 3 o'clock.
@@ -95,6 +95,11 @@ class Utils {
     return (Math.min(Math.max(val, start), end) - start) / (end - start);
   }
 	
+	// Calculate own (widget/tool) coordinates relative to centered group position.
+	// Widget coordinates are %
+	//
+	// Group is 50,40. Say SVG is 200x200. Group is 100,80 within 200x200.
+	// Widget is 10,50. 0.1 * 200 = 20 + (100 - 200/2) = 20 + 0.
 	static calculateCoordinate(own, group) {
 		return (own / 100) * (SVG_DEFAULT_DIMENSIONS)
 						+ (group - SVG_DEFAULT_DIMENSIONS/2);
@@ -168,13 +173,17 @@ class BaseWidget {
 		this.id = Math.random().toString(36).substr(2, 9);
 		this._parent = argParent;
 
-		this.position = argPos;
+		// The position is the absolute position of the GROUP within the svg viewport.
+		// The widget is positioned relative to this origin. A widget is always relative
+		// to a 200x200 default svg viewport. A (50,50) position of the widget
+		// centers the widget on the absolute position of the GROUP!
+		this.groupPos = argPos;
 
 		// Calculate real positions depending on aspectRatio and position...
 		// Positions are ALWAYS centered!
 		this.coords = {};
-		this.coords.xpos = Utils.calculateCoordinate(argOpts.xpos, this.position.xpos);
-		this.coords.ypos = Utils.calculateCoordinate(argOpts.ypos, this.position.ypos);
+		this.coords.xpos = Utils.calculateCoordinate(argOpts.xpos, this.groupPos.xpos);
+		this.coords.ypos = Utils.calculateCoordinate(argOpts.ypos, this.groupPos.ypos);
 
 		this.dimensions = {};
 		this.dimensions.height = argOpts.height ? Utils.calculateDimension(argOpts.height) : 0;
@@ -778,7 +787,9 @@ class EntityIconWidget extends BaseWidget {
 		const DEFAULT_ICON_OPTS = {
 				styles: {
 					"--mdc-icon-size": '100%;',
-					"align-self": 'center;'
+					"align-self": 'center;',
+					"height": '100%;',
+					"width": '100%;',
 				}
 		}
 		super(argParent, argOpts, argPos);
@@ -817,8 +828,12 @@ class EntityIconWidget extends BaseWidget {
 		const clientWidth = this._parent.clientWidth; // hard coded adjust for padding...
 		const correction = clientWidth / this._parent.viewBox.width;
 
-		this.coords.xpx = (x * this._parent.viewBox.width);
-		this.coords.ypx = (y * this._parent.viewBox.height);
+		// icon is not calculated against viewbox, but against group pos 
+		//this.coords.xpx = (x * this._parent.viewBox.width);
+		//this.coords.ypx = (y * this._parent.viewBox.height);
+
+		this.coords.xpx = this.coords.xpos;//(x * this._parent.viewBox.width);
+		this.coords.ypx = this.coords.ypos;//(y * this._parent.viewBox.height);
 
 		
 		if ((this._parent.isSafari) || (this._parent.iOS)) {
@@ -833,8 +848,8 @@ class EntityIconWidget extends BaseWidget {
 			this.coords.xpx = this.coords.xpx - (this.dimensions.iconPixels * adjust);
 			this.coords.ypx = this.coords.ypx - (this.dimensions.iconPixels * 0.5) - (this.dimensions.iconPixels * 0.25);
 		}
-		
-		console.log('EntityIconWidget constructor coords, dimensions', this.coords, this.dimensions, this.opts);
+
+		console.log('EntityIconWidget constructor coords, dimensions, opts', this.coords, this.dimensions, this.opts);
 	}
 
  /*******************************************************************************
@@ -864,16 +879,70 @@ class EntityIconWidget extends BaseWidget {
 
 		const icon = this._parent._buildIcon(
 			this._parent.entities[this.opts.entity_index], this._parent.config.entities[this.opts.entity_index]);
-	
-		return svg`
-			<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}">
-				<body>
-					<div class="icon">
-						<ha-icon .icon=${icon} style="${configStyleStr}";></ha-icon>
+
+		if (true || (this.coords.xpx == 0)) {
+			
+			this.dimensions.iconSize = this.opts.icon_size ? this.opts.icon_size : 2;
+			this.dimensions.iconPixels = this.dimensions.iconSize * FONT_SIZE;
+			const x = this.opts.xpos ? this.opts.xpos / 100 : 0.5;
+			const y = this.opts.ypos ? this.opts.ypos / 100 : 0.5;
+			
+			const align = this.opts.align ? this.opts.align : 'center';
+			const adjust = (align == 'center' ? 0.5 : (align == 'start' ? -1 : +1));
+
+		//	const parentClientWidth = this.parentElement.clientWidth;
+			const clientWidth = this._parent.clientWidth; // hard coded adjust for padding...
+			const correction = clientWidth / this._parent.viewBox.width;
+
+			// icon is not calculated against viewbox, but against group pos 
+			//this.coords.xpx = (x * this._parent.viewBox.width);
+			//this.coords.ypx = (y * this._parent.viewBox.height);
+
+			this.coords.xpx = this.coords.xpos;//(x * this._parent.viewBox.width);
+			this.coords.ypx = this.coords.ypos;//(y * this._parent.viewBox.height);
+			
+			if ((this._parent.isSafari) || (this._parent.iOS)) {
+				this.dimensions.iconSize = this.dimensions.iconSize * correction;
+
+				this.coords.xpx = (this.coords.xpx * correction) - (this.dimensions.iconPixels * adjust * correction);
+				this.coords.ypx = (this.coords.ypx * correction) - (this.dimensions.iconPixels * 0.5 * correction)
+												- (this.dimensions.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
+			} else {
+				// Get x,y in viewbox dimensions and center with half of size of icon.
+				// Adjust horizontal for aligning. Can be 1, 0.5 and -1
+				// Adjust vertical for half of height... and correct for 0.25em textfont to align.
+				this.coords.xpx = this.coords.xpx - (this.dimensions.iconPixels * adjust);
+				this.coords.ypx = this.coords.ypx - (this.dimensions.iconPixels * 0.5)
+																					- (this.dimensions.iconPixels * 0.25);
+			}
+		}
+
+//				<foreignObject width="${this.dimensions.iconPixels}" height="${this.dimensions.iconPixels}" x="${this.coords.xpx}" y="${this.coords.ypx}">
+
+//						<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml" width="100%" height="100% !important">
+//								<ha-icon .icon=${icon} style="${configStyleStr}";></ha-icon>
+//						</div>
+
+		if ((this._parent.isSafari) || (this._parent.iOS)) {	
+			return svg`
+				<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}">
+					<body>
+						<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml" width="100%" height="100% !important">
+								<ha-icon .icon=${icon} style="${configStyleStr}";></ha-icon>
+						</div>
+					</body>
+				</foreignObject>
+				`;
+		} else {				
+			return svg`
+				<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}">
+				<g>
+					<div>
+						<ha-icon .icon=${icon} style="${configStyleStr}"></ha-icon>
 					</div>
-				</body>
-			</foreignObject>
-			`;		
+				</g></foreignObject>
+				`;		
+		}
 /*
 		return svg`
 		<g @click=${e => this.handlePopup(e, this._parent.entities[this.opts.entity_index])}>
@@ -895,12 +964,19 @@ class EntityIconWidget extends BaseWidget {
 	* Summary.
 	*	The render() function for this object.
 	*
+	* NTS:
+	* Adding 				<style> div { overflow: hidden;}</style>
+	* to the <g group, clips the icon against the ha-card, ie the div.
+	* however, on Safari, all icons are clipped, as if they don't fit the room given to be displayed.
+	* a bug in rendering the Icon?? Only first time icon is clipped, then displayed normally if a data update
+	* from hass is coming in.
 	*/
 	render() {
 
     return svg`
-			<g filter="url(#ds)" id="icon-${this.id}" class="icon"
+			<g filter="url(#ds)" id="icon-${this.id}" class="svgicon"
 				@click=${e => this._parent.handlePopup(e, this._parent.entities[this.opts.entity_index])} >
+
 				${this._renderIcon()}
 			</g>
 		`;
@@ -1201,13 +1277,13 @@ class EntityNameWidget {
 
 		this._name = {};
 		
-		this.position = argPos;
+		this.groupPos = argPos;
 		
 		// Calculate real positions depending on aspectRatio and position...
 		// Positions are ALWAYS centered!
 		this.coords = {};
-		this.coords.xpos = Utils.calculateCoordinate(this.opts.xpos, this.position.xpos);
-		this.coords.ypos = Utils.calculateCoordinate(this.opts.ypos, this.position.ypos);
+		this.coords.xpos = Utils.calculateCoordinate(this.opts.xpos, this.groupPos.xpos);
+		this.coords.ypos = Utils.calculateCoordinate(this.opts.ypos, this.groupPos.ypos);
 
 		// Text is rendered in its own context. No need for SVG coordinates.
 
@@ -1305,13 +1381,13 @@ class EntityAreaWidget {
 
 		//this._name = {};
 		
-		this.position = argPos;
+		this.groupPos = argPos;
 		
 		// Calculate real positions depending on aspectRatio and position...
 		// Positions are ALWAYS centered!
 		this.coords = {};
-		this.coords.xpos = Utils.calculateCoordinate(this.opts.xpos, this.position.xpos);
-		this.coords.ypos = Utils.calculateCoordinate(this.opts.ypos, this.position.ypos);
+		this.coords.xpos = Utils.calculateCoordinate(this.opts.xpos, this.groupPos.xpos);
+		this.coords.ypos = Utils.calculateCoordinate(this.opts.ypos, this.groupPos.ypos);
 
 		// Text is rendered in its own context. No need for SVG coordinates.
 
@@ -1611,13 +1687,13 @@ class SparkleVerticalBarChart {
 		if (argOpts.show) this.opts.show = Object.assign(...argOpts.show);
 		this.opts.show = {...DEFAULT_VBARCHART_OPTS.show, ...this.opts.show};
 		
-		this.position = argPos;
+		this.groupPos = argPos;
 		
 		// Calculate real positions depending on aspectRatio and position...
 		// Positions are ALWAYS centered!
 		this.coords = {};
-		this.coords.xpos = Utils.calculateCoordinate(this.opts.xpos, this.position.xpos);
-		this.coords.ypos = Utils.calculateCoordinate(this.opts.ypos, this.position.ypos);
+		this.coords.xpos = Utils.calculateCoordinate(this.opts.xpos, this.groupPos.xpos);
+		this.coords.ypos = Utils.calculateCoordinate(this.opts.ypos, this.groupPos.ypos);
 
 		this.dimensions = {};
 		this.dimensions.height = Utils.calculateDimension(this.opts.height);
@@ -1745,7 +1821,7 @@ class SparkleHorizontalBarChart {
 		this.opts = {...DEFAULT_HBARCHART_OPTS};
 		this.opts = {...this.opts, ...argOpts};
 
-		this.position = argPos;
+		this.groupPos = argPos;
 		
 		if (argOpts.styles) this.opts.styles = {...argOpts.styles};
 		this.opts.styles = {...DEFAULT_HBARCHART_OPTS.styles, ...this.opts.styles};
@@ -1756,8 +1832,8 @@ class SparkleHorizontalBarChart {
 		// Calculate real positions depending on aspectRatio and position...
 		// Positions are ALWAYS centered!
 		this.coords = {};
-		this.coords.xpos = Utils.calculateCoordinate(this.opts.xpos, this.position.xpos);
-		this.coords.ypos = Utils.calculateCoordinate(this.opts.ypos, this.position.ypos);
+		this.coords.xpos = Utils.calculateCoordinate(this.opts.xpos, this.groupPos.xpos);
+		this.coords.ypos = Utils.calculateCoordinate(this.opts.ypos, this.groupPos.ypos);
 
 		this.dimensions = {};
 		this.dimensions.height = Utils.calculateDimension(this.opts.height);
@@ -1900,7 +1976,7 @@ class SegmentedArc {
 
     // Our parent, the real card
 		this._parent = argParent;
-		this.position = argPos;
+		this.groupPos = argPos;
 		
 		// Get cardId for unique SVG gradient Id
 		this.id = Math.random().toString(36).substr(2, 9);
@@ -2366,6 +2442,8 @@ class devSwissArmyKnifeCard extends LitElement {
   constructor() {
     super();
 
+		this.connected = false;
+
     // Get cardId for unique SVG gradient Id
 		this.cardId = Math.random().toString(36).substr(2, 9);
 		this.entities = [];
@@ -2415,8 +2493,7 @@ class devSwissArmyKnifeCard extends LitElement {
 		this.isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
 		this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 		
-		this.connected = false;
-		console.log('card - constructor', this.cardId, new Date().getTime());
+		console.log('*****Event - card - constructor', this.cardId, new Date().getTime());
   }
 
  /*******************************************************************************
@@ -3007,11 +3084,16 @@ class devSwissArmyKnifeCard extends LitElement {
 
   set hass(hass) {
 		// Set ref to hass, use "_"for the name ;-)
+		console.log('*****Event - set hass', this.cardId, new Date().getTime());
 		this._hass = hass;
 		
 		if (!this.connected) {
 			console.log('set hass but NOT connected', this.cardId);
-//			return;
+
+		// 2020.02.10 Troubels with connectcallback late, so windows are not yet calculated. ie 
+		// things around icons go wrong...
+		// what if return is here..
+			//return;
 		}
 	
 		var entityHasChanged = false;
@@ -3212,7 +3294,7 @@ class devSwissArmyKnifeCard extends LitElement {
 		}
 
 		// For now, always force update to render the card if any of the states or attributes have changed...
-    if (entityHasChanged) { this.requestUpdate();}
+    if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
   }
 
  /*******************************************************************************
@@ -3224,33 +3306,34 @@ class devSwissArmyKnifeCard extends LitElement {
 	*/
 
   setConfig(config) {
+		console.log('*****Event - setConfig', this.cardId, new Date().getTime());
 		config = JSON.parse(JSON.stringify(config))
 
 		console.log('setConfig', this.cardId);
 
 		const aspectRatios = new Map([
-			["1/1", {"width": 200, "height": 200}],
-			["2/2", {"width": 400, "height": 400}],
-			["3/3", {"width": 600, "height": 600}],
-			["4/4", {"width": 800, "height": 800}],
+			["1/1", {"width": 1 * SVG_DEFAULT_DIMENSIONS, "height": 1 * SVG_DEFAULT_DIMENSIONS}],
+			["2/2", {"width": 2 * SVG_DEFAULT_DIMENSIONS, "height": 2 * SVG_DEFAULT_DIMENSIONS}],
+			["3/3", {"width": 3 * SVG_DEFAULT_DIMENSIONS, "height": 3 * SVG_DEFAULT_DIMENSIONS}],
+			["4/4", {"width": 4 * SVG_DEFAULT_DIMENSIONS, "height": 4 * SVG_DEFAULT_DIMENSIONS}],
 
-			["2/1", {"width": 400, "height": 200}],
+			["2/1", {"width": 2 * SVG_DEFAULT_DIMENSIONS, "height": 1 * SVG_DEFAULT_DIMENSIONS}],
 
-			["3/1", {"width": 600, "height": 200}],
-			["3/2", {"width": 600, "height": 400}],
+			["3/1", {"width": 3 * SVG_DEFAULT_DIMENSIONS, "height": 1 * SVG_DEFAULT_DIMENSIONS}],
+			["3/2", {"width": 3 * SVG_DEFAULT_DIMENSIONS, "height": 2 * SVG_DEFAULT_DIMENSIONS}],
 
-			["4/1", {"width": 800, "height": 200}],
-			["4/2", {"width": 800, "height": 400}],
-			["4/3", {"width": 800, "height": 600}],
+			["4/1", {"width": 4 * SVG_DEFAULT_DIMENSIONS, "height": 1 * SVG_DEFAULT_DIMENSIONS}],
+			["4/2", {"width": 4 * SVG_DEFAULT_DIMENSIONS, "height": 2 * SVG_DEFAULT_DIMENSIONS}],
+			["4/3", {"width": 4 * SVG_DEFAULT_DIMENSIONS, "height": 3 * SVG_DEFAULT_DIMENSIONS}],
 
-			["1/2", {"width": 200, "height": 400}],
+			["1/2", {"width": 1 * SVG_DEFAULT_DIMENSIONS, "height": 2 * SVG_DEFAULT_DIMENSIONS}],
 
-			["1/3", {"width": 200, "height": 600}],
-			["2/3", {"width": 400, "height": 600}],
+			["1/3", {"width": 1 * SVG_DEFAULT_DIMENSIONS, "height": 3 * SVG_DEFAULT_DIMENSIONS}],
+			["2/3", {"width": 2 * SVG_DEFAULT_DIMENSIONS, "height": 3 * SVG_DEFAULT_DIMENSIONS}],
 
-			["1/4", {"width": 200, "height": 800}],
-			["2/4", {"width": 400, "height": 800}],
-			["3/4", {"width": 600, "height": 800}]
+			["1/4", {"width": 1 * SVG_DEFAULT_DIMENSIONS, "height": 4 * SVG_DEFAULT_DIMENSIONS}],
+			["2/4", {"width": 2 * SVG_DEFAULT_DIMENSIONS, "height": 4 * SVG_DEFAULT_DIMENSIONS}],
+			["3/4", {"width": 3 * SVG_DEFAULT_DIMENSIONS, "height": 4 * SVG_DEFAULT_DIMENSIONS}]
 
 		]);
 		
@@ -3600,6 +3683,8 @@ console.log('config layout groups', this.config.layout.groups);
 	*
 	*/
   connectedCallback() {
+		console.log('*****Event - connectedCallback', this.cardId, new Date().getTime());
+		this.connected = true;
     super.connectedCallback();
 		
 		if (this.update_interval) {
@@ -3609,7 +3694,6 @@ console.log('config layout groups', this.config.layout.groups);
         this.update_interval * 1000,
       );
 		}
-		this.connected = true;
 		console.log('ConnectedCallback', this.cardId);
 		this.requestUpdate();
   }
@@ -3621,6 +3705,7 @@ console.log('config layout groups', this.config.layout.groups);
 	*
 	*/
   disconnectedCallback() {
+		console.log('*****Event - disconnectedCallback', this.cardId, new Date().getTime());
     if (this.interval) {
       clearInterval(this.interval);
 		}			
@@ -3637,7 +3722,7 @@ console.log('config layout groups', this.config.layout.groups);
 	*/
   firstUpdated(changedProperties) {
 
-		console.log('firstUpdated', this.cardId);
+		console.log('*****Event - firstUpdated', this.cardId, new Date().getTime());
 
 		if (this.segmentedArcs)
 		{
@@ -3664,7 +3749,7 @@ console.log('config layout groups', this.config.layout.groups);
 	*/
   updated(changedProperties) {
 
-		console.log('Updated', this.cardId);
+		console.log('*****Event - Updated', this.cardId, new Date().getTime());
 
 		if (this.segmentedArcs)
 		{
@@ -3688,9 +3773,11 @@ console.log('config layout groups', this.config.layout.groups);
 
   render({ config } = this) {
 
+		console.log('*****Event - render', this.cardId, new Date().getTime());
+
 		if (!this.connected) {
-			console.log('render but NOT connected', this.cardId);
-//			return;
+			console.log('render but NOT connected', this.cardId, new Date().getTime());
+			return;
 		}
 
     return html`
@@ -4172,7 +4259,7 @@ console.log('_rendersegmentedarcs IN');
 
 		return svg`${svgItems}`;
   }
-
+/*
   _renderVerticalBars() {
     const {
       bars,
@@ -4186,7 +4273,8 @@ console.log('_rendersegmentedarcs IN');
 
 		return svg`${svgItems}`;
   }
-
+*/
+/*
   _renderHorizontalBars() {
     const {
       bars,
@@ -4200,7 +4288,7 @@ console.log('_rendersegmentedarcs IN');
 
 		return svg`${svgItems}`;
   }
-
+*/
 
 /*******************************************************************************
 	* _renderEntityNames()
