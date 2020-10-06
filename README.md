@@ -3,4 +3,6 @@
 
 Early screenshots:
 
-![](https://github.com/AmoebeLabs/swiss-army-knife-card/edit/develop/screenshots/39a07b8c-6140-47e2-9460-d5e98806a542.webm)
+![](https://github.com/AmoebeLabs/swiss-army-knife-card/blob/develop/screenshots/689847fe-bfa3-4dcf-9b79-b05640798762.png)
+
+![](https://github.com/AmoebeLabs/swiss-army-knife-card/blob/develop/screenshots/Aantekening-2019-09-30-120615.png)
