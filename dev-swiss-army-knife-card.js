@@ -926,21 +926,20 @@ class EntityIconWidget extends BaseWidget {
 		if ((this._parent.isSafari) || (this._parent.iOS)) {	
 			return svg`
 				<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}">
-					<body>
-						<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml" width="100%" height="100% !important">
+					<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
+								style="line-height:${this.dimensions.iconSize}em;">
 								<ha-icon .icon=${icon} style="${configStyleStr}";></ha-icon>
-						</div>
-					</body>
+					</div>
 				</foreignObject>
 				`;
 		} else {				
 			return svg`
 				<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}">
-				<g>
-					<div>
+					<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
+								style="line-height:${this.dimensions.iconSize}em;">
 						<ha-icon .icon=${icon} style="${configStyleStr}"></ha-icon>
 					</div>
-				</g></foreignObject>
+				</foreignObject>
 				`;		
 		}
 /*
