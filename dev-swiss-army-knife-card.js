@@ -38,6 +38,7 @@ const SVG_VIEW_BOX = SVG_DEFAULT_DIMENSIONS;//200;
 const SVG_VIEW_BOX_HEIGHT = 1 * SVG_DEFAULT_DIMENSIONS; //200
 const SVG_VIEW_BOX_WIDTH = 2 * SVG_DEFAULT_DIMENSIONS;//400;
 
+/*
 // Donut starts at -220 degrees and is 260 degrees in size.
 // zero degrees is at 3 o'clock.
 const HORSESHOE_RADIUS_SIZE = 0.45 * SVG_VIEW_BOX;
@@ -61,7 +62,7 @@ const DEFAULT_HORSESHOE_STATE = {
   width: 12,
   color: 'var(--primary-color)',
 }
-
+*/
 //--
 
 //++ Class ++++++++++
@@ -101,6 +102,7 @@ class Utils {
 	// Group is 50,40. Say SVG is 200x200. Group is 100,80 within 200x200.
 	// Widget is 10,50. 0.1 * 200 = 20 + (100 - 200/2) = 20 + 0.
 	static calculateCoordinate(own, group) {
+
 		return (own / 100) * (SVG_DEFAULT_DIMENSIONS)
 						+ (group - SVG_DEFAULT_DIMENSIONS/2);
 	}
@@ -193,6 +195,14 @@ class BaseWidget {
 		this.svg = {};
 		this.svg.xpos = (this.coords.xpos) - (this.dimensions.width / 2);
 		this.svg.ypos = (this.coords.ypos) - (this.dimensions.height / 2);
+		
+		// Group scaling experiment. Calc translate values for SVG using the group scale value
+		let scalex = this.coords.xpos * this.groupPos.scale;
+		let scaley = this.coords.ypos * this.groupPos.scale;
+		let diffx = this.coords.xpos - scalex;
+		let diffy = this.coords.ypos - scaley;
+		this.dimensions.xlateX = diffx / this.groupPos.scale;
+		this.dimensions.xlateY = diffy / this.groupPos.scale;		
 	}
 }
 
@@ -251,7 +261,7 @@ class RangeSliderWidget extends BaseWidget {
 		this.svgH = 40;
     this.deformation = this.svgH/2;
     this.target = this.svgH/4;
-    this.value = 0;
+    this._value = 0;
     this.dragging = false;
 
 		this.SVG_NS = "http://www.w3.org/2000/svg";
@@ -266,9 +276,9 @@ class RangeSliderWidget extends BaseWidget {
 	}
 
   updateValue() {
-    let dist = this.target - this.value;
+    let dist = this.target - this._value;
     let vel = dist / 10;
-    this.value += vel;
+    this._value += vel;
     //improvement
     if (Math.abs(dist) < 0.01) {
       if (this.rid) {
@@ -279,10 +289,10 @@ class RangeSliderWidget extends BaseWidget {
   }
 
   updatePath(m) {
-    this.d = this.curvedPath(m.x, this.svg.ypos + this.svgH / 2, this.deformation, this.value);
+    this.d = this.curvedPath(m.x, this.svg.ypos + this.svgH / 2, this.deformation, this._value);
     this.elements.path.setAttributeNS(null, "d", this.d);
 
-    this.elements.thumb.setAttributeNS(null, "r", 1 + this.value / 3);
+    this.elements.thumb.setAttributeNS(null, "r", 1 + this._value / 3);
     this.elements.thumb.setAttributeNS(null, "cx", m.x);
 
     this.updateLabel(m);
@@ -293,7 +303,7 @@ class RangeSliderWidget extends BaseWidget {
     this.elements.label.setAttributeNS(
       null,
       "transform",
-      `translate(${m.x}, ${this.svg.ypos + this.svgH / 1 - this.value}) scale(2)`
+      `translate(${m.x}, ${this.svg.ypos + this.svgH / 1 - this._value}) scale(2)`
     );
 
     this.elements.text.textContent = Math.round(m.x);
@@ -303,7 +313,7 @@ class RangeSliderWidget extends BaseWidget {
     this.elements.label.setAttributeNS(
       null,
       "transform",
-      `translate(${m.x - 30},${this.svg.ypos - this.svgH / 100 - this.value}) scale(2)`
+      `translate(${m.x - 30},${this.svg.ypos - this.svgH / 100 - this._value}) scale(2)`
     );
 
     this.elements.text.textContent = Math.round(m.x);
@@ -565,20 +575,35 @@ class LineWidget extends BaseWidget {
 
 		this.opts.entity_index = this.opts.entity_index ? this.opts.entity_index : 0;
 		
-		this.dimensions.length = Utils.calculateDimension(argOpts.length)
+		if ((this.opts.type == 'vertical') || (this.opts.type == 'horizontal'))
+				this.dimensions.length = Utils.calculateDimension(argOpts.length);
 
+		if (this.opts.type == 'fromto') {
+			this.coords.x1 = Utils.calculateCoordinate(argOpts.x1, this.groupPos.xpos);
+			this.coords.y1 = Utils.calculateCoordinate(argOpts.y1, this.groupPos.ypos);
+			this.coords.x2 = Utils.calculateCoordinate(argOpts.x2, this.groupPos.xpos);
+			this.coords.y2 = Utils.calculateCoordinate(argOpts.y2, this.groupPos.ypos);
+		}
+
+		//TODO: replace coords.xpos by coords.cx to denote the CENTER position, as opposed to the x1,y1 etc. positions.
+		// Makes it also clear that the given pos is centered. Should also be in the yaml files. Makes it much more clear
+		// Then text & icon are bx,by, ie baseline sort of positions.
 		if (this.opts.type == 'vertical') {
 			this.svg.x1 = this.coords.xpos;
 			this.svg.y1 = this.coords.ypos - this.dimensions.length/2;
 			this.svg.x2 = this.coords.xpos;
 			this.svg.y2 = this.coords.ypos + this.dimensions.length/2;
-		} else {
+		} else if (this.opts.type == 'horizontal') {
 			this.svg.x1 = this.coords.xpos - this.dimensions.length/2;
 			this.svg.y1 = this.coords.ypos;
 			this.svg.x2 = this.coords.xpos + this.dimensions.length/2;
 			this.svg.y2 = this.coords.ypos;
+		} else if (this.opts.type == 'fromto') {
+			this.svg.x1 = this.coords.x1;
+			this.svg.y1 = this.coords.y1;
+			this.svg.x2 = this.coords.x2;
+			this.svg.y2 = this.coords.y2;
 		}
-
 		console.log('LineWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
 	}
 
@@ -607,6 +632,7 @@ class LineWidget extends BaseWidget {
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 		
+		console.log('_renderLine POEP', this.opts.type, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
 		return svg`
 			<line
 				x1="${this.svg.x1}"
@@ -697,7 +723,7 @@ class CircleWidget extends BaseWidget {
 		
 		return svg`
 			<circle filter="url(#ds)"
-				cx="${this.coords.xpos}" cy="${this.coords.ypos}" r="${this.dimensions.radius}"
+				cx="${this.coords.xpos}"% cy="${this.coords.ypos}"% r="${this.dimensions.radius}"
 				style="${configStyleStr}"/>					
 			`;
 	}	
@@ -720,6 +746,96 @@ class CircleWidget extends BaseWidget {
 
 	}	
 } // END of class
+
+ /*******************************************************************************
+	* EllipseTool class
+	*
+	* Summary.
+	*
+	*/
+
+class EllipseTool extends BaseWidget {
+	constructor(argParent, argOpts, argPos) {
+		
+		const DEFAULT_ELLIPSE_OPTS = {
+				xpos: 50,
+				ypos: 50,
+				radiusx: 50,
+				radiusy: 25,
+		}
+
+		super(argParent, argOpts, argPos);
+		
+		this.opts = {...DEFAULT_ELLIPSE_OPTS};
+		this.opts = {...this.opts, ...argOpts};
+
+		if (argOpts.styles) this.opts.styles = {...argOpts.styles};
+		this.opts.styles = {...DEFAULT_ELLIPSE_OPTS.styles, ...this.opts.styles};
+
+		if (argOpts.show) this.opts.show = Object.assign(...argOpts.show);
+		this.opts.show = {...DEFAULT_ELLIPSE_OPTS.show, ...this.opts.show};
+
+		this.opts.entity_index = this.opts.entity_index ? this.opts.entity_index : 0;
+		
+		this.dimensions.radiusx = Utils.calculateDimension(argOpts.radiusx)
+		this.dimensions.radiusy = Utils.calculateDimension(argOpts.radiusy)
+
+		console.log('EllipseTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+	}
+
+ /*******************************************************************************
+	* _renderEllipse()
+	*
+	* Summary.
+	*	Renders the ellipse using precalculated coordinates and dimensions.
+	* Only the runtime style is calculated before rendering the ellipse
+	*
+	*/
+
+  _renderEllipse() {
+
+		// Get configuration styles as the default styles
+		let configStyle = {...this.opts.styles};
+		
+		// Get the runtime styles, caused by states & animation settings
+		let stateStyle = {};
+		if (this._parent.animations.circles[this.opts.animation_id])
+			stateStyle = Object.assign(stateStyle, this._parent.animations.circles[this.opts.animation_id]);
+
+		// Merge the two, where the runtime styles may overwrite the statically configured styles
+		configStyle = { ...configStyle, ...stateStyle};
+		
+		// Convert javascript records to plain text, without "{}" and "," between the styles.
+		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+		console.log('EllipseTool - renderEllipse', this.coords.xpos, this.coords.ypos, this.dimensions.radiusx, this.dimensions.radiusy);
+
+		return svg`
+			<ellipse filter="url(#ds)"
+				cx="${this.coords.xpos}"% cy="${this.coords.ypos}"%
+				rx="${this.dimensions.radiusx}" ry="${this.dimensions.radiusy}"
+				style="${configStyleStr}"/>					
+			`;
+	}	
+
+ /*******************************************************************************
+	* render()
+	*
+	* Summary.
+	*	The render() function for this object.
+	*
+	*/
+	render() {
+
+    return svg`
+			<g filter="url(#ds)" id="ellipse-${this.id}" class="ellipse"
+				@click=${e => this._parent.handlePopup(e, this._parent.entities[this.opts.entity_index])} >
+				${this._renderEllipse()}
+			</g>
+		`;
+
+	}	
+} // END of class
+
 
 /*******************************************************************************
 	* EntityIconWidget class
@@ -860,15 +976,15 @@ class EntityIconWidget extends BaseWidget {
 				this.dimensions.iconSize = this.dimensions.iconSize * correction;
 
 				this.coords.xpx = (this.coords.xpx * correction) - (this.dimensions.iconPixels * adjust * correction);
-				this.coords.ypx = (this.coords.ypx * correction) - (this.dimensions.iconPixels * 0.5 * correction)
-												- (this.dimensions.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
+				this.coords.ypx = (this.coords.ypx * correction) - (this.dimensions.iconPixels * 0.9 * correction);
+												//- (this.dimensions.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
 			} else {
 				// Get x,y in viewbox dimensions and center with half of size of icon.
 				// Adjust horizontal for aligning. Can be 1, 0.5 and -1
 				// Adjust vertical for half of height... and correct for 0.25em textfont to align.
 				this.coords.xpx = this.coords.xpx - (this.dimensions.iconPixels * adjust);
-				this.coords.ypx = this.coords.ypx - (this.dimensions.iconPixels * 0.5)
-																					- (this.dimensions.iconPixels * 0.25);
+				this.coords.ypx = this.coords.ypx - (this.dimensions.iconPixels * 0.9);
+																					//+ (this.dimensions.iconPixels * 0.5);
 			}
 		}
 
@@ -927,8 +1043,39 @@ class EntityIconWidget extends BaseWidget {
 	*/
 	render() {
 
+		// this.viewbox contains the size of the viewbox.
+		// svg translate uses hard values relative to the viewbox, not percentages
+		// We have to recalculate x and y given viewbox dimensions and scale percentage
+		// .5 scale is 50x and 100y on 2/1 grid for example
+		// .5 * 200 = 100. and then 200/400 = 0.5. Thus 0.5 * 100 = 50
+		// .5 * 200 = 100. and then 200/200 = 1. Thus 1 * 100 = 100
+		//
+		// Working calculation:
+		// coords = 50, 90
+		// scalex = 50 * scale
+		// diffx = 50 - scalex
+		// xlatex = diffx / scale 
+		//
+		// same for xlatey!
+		//
+		// #TODO:
+		// Rendering icon for Safari should take scale in account. Currently size is in pixels, so the
+		// original is shown.
+		// And for chrome: the shift in pixels should also be scaled. Not done yet. Icon is displayd lower
+		// then should be, ie not centered...
+		
+/*
+		let scalex = this.coords.xpos * this.groupPos.scale;
+		let scaley = this.coords.ypos * this.groupPos.scale;
+		let diffx = this.coords.xpos - scalex;
+		let diffy = this.coords.ypos - scaley;
+		let xlatex = diffx / this.groupPos.scale;
+		let xlatey = diffy / this.groupPos.scale;
+		let scale = this.groupPos.scale;
+		console.log('renderIcon - xlatex/y values', scale, this.groupPos.scale, xlatex, xlatey, this.coords, this.dimensions);
+*/		
     return svg`
-			<g filter="url(#ds)" id="icon-${this.id}" class="svgicon"
+			<g filter="url(#ds)" id="icon-${this.id}" class="svgicon" transform="scale(${this.groupPos.scale}) translate(${this.dimensions.xlateX} ${this.dimensions.xlateY})"
 				@click=${e => this._parent.handlePopup(e, this._parent.entities[this.opts.entity_index])} >
 
 				${this._renderIcon()}
@@ -1411,6 +1558,385 @@ class EntityAreaWidget {
 	}	
 } // END of class
 
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+ /*******************************************************************************
+	* HorseshoeTool class
+	*
+	* Summary.
+	*
+	*/
+
+class HorseshoeTool extends BaseWidget {
+		// Donut starts at -220 degrees and is 260 degrees in size.
+		// zero degrees is at 3 o'clock.
+
+
+	constructor(argParent, argOpts, argPos) {
+		
+		const DEFAULT_HORSESHOE_OPTS = {
+			xpos: 50,
+			ypos: 50,
+			radius: 45,
+			card_filter: 'card--filter-none',
+			horseshoe_scale: {	min: 0,
+									max: 100,
+									width: 3,
+									color: 'var(--primary-background-color)'},
+			horseshoe_state: {	width: 6,
+									color: 'var(--primary-color)'},
+			show: {horseshoe: true,
+						 scale_tickmarks: false,
+						 horseshoe_style: 'fixed'}
+		}
+
+
+		super(argParent, argOpts, argPos);
+
+		// Next consts are now variable. Should be calculated!!!!!!
+		this.HORSESHOE_RADIUS_SIZE = 0.45 * SVG_VIEW_BOX;
+		this.TICKMARKS_RADIUS_SIZE = 0.43 * SVG_VIEW_BOX;
+		this.HORSESHOE_PATH_LENGTH = 2 * 260/360 * Math.PI * this.HORSESHOE_RADIUS_SIZE;
+		
+		this.opts = {...DEFAULT_HORSESHOE_OPTS};
+		this.opts = {...this.opts, ...argOpts};
+
+		if (argOpts.styles) this.opts.styles = {...argOpts.styles};
+		this.opts.styles = {...DEFAULT_HORSESHOE_OPTS.styles, ...this.opts.styles};
+
+		//if (argOpts.show) this.opts.show = Object.assign(...argOpts.show);
+		this.opts.show = {...DEFAULT_HORSESHOE_OPTS.show, ...this.opts.show};
+
+		//if (argOpts.horseshoe_scale) this.opts.horseshoe_scale = Object.assign(...argOpts.horseshoe_scale);
+		this.opts.horseshoe_scale = {...DEFAULT_HORSESHOE_OPTS.horseshoe_scale, ...this.opts.horseshoe_scale};
+
+		if (argOpts.horseshoe_state) this.opts.horseshoe_state = Object.assign(...argOpts.horseshoe_state);
+		this.opts.horseshoe_state = {...DEFAULT_HORSESHOE_OPTS.horseshoe_state, ...this.opts.horseshoe_state};
+
+		this.opts.entity_index = this.opts.entity_index ? this.opts.entity_index : 0;
+		
+		this.dimensions.radius = Utils.calculateDimension(this.opts.radius)
+		this.dimensions.radius_ticks = Utils.calculateDimension(0.95 * this.opts.radius)
+
+		this.dimensions.horseshoe_scale = {};
+		this.dimensions.horseshoe_scale.width = Utils.calculateDimension(this.opts.horseshoe_scale.width);
+		this.dimensions.horseshoe_state = {};
+		this.dimensions.horseshoe_state.width = Utils.calculateDimension(this.opts.horseshoe_state.width);
+		this.dimensions.horseshoe_scale.dasharray = 2 * 26/36 * Math.PI * this.dimensions.radius;
+		
+		// The horseshoe is rotated around its svg base point. This is NOT the center of the circle!
+		// Adjust x and y positions within the svg viewport to re-center the circle after rotating
+		this.svg.rotate = {};
+		this.svg.rotate.degrees = -220;
+		this.svg.rotate.shiftX = this.coords.xpos;
+		this.svg.rotate.shiftY = this.coords.ypos;
+		
+		// From setConfig part
+		// ===================
+/*		const newConfig = {
+      texts: [],
+			card_filter: 'card--filter-none',
+			...config,
+			show: { ...DEFAULT_SHOW, ...config.show },
+			horseshoe_scale: { ...DEFAULT_HORSESHOE_SCALE, ...config.horseshoe_scale },
+			horseshoe_state: { ...DEFAULT_HORSESHOE_STATE, ...config.horseshoe_state },
+		}
+*/
+    // Get colorstops and make a key/value store...
+		this.colorStops = {};
+    if (this.opts.color_stops) {
+      Object.keys(this.opts.color_stops).forEach((key) => {
+        this.colorStops[key] = this.opts.color_stops[key];
+      });
+    }
+
+		this.sortedStops = Object.keys(this.colorStops).map(n => Number(n)).sort((a, b) => a - b);
+
+		// Create a colorStopsMinMax list for autominmax color determination
+		this.colorStopsMinMax = {};
+		this.colorStopsMinMax[this.opts.horseshoe_scale.min] = this.colorStops[this.sortedStops[0]];
+		this.colorStopsMinMax[this.opts.horseshoe_scale.max] = this.colorStops[this.sortedStops[(this.sortedStops.length)-1]];
+
+		// Now set the color0 and color1 for the gradient used in the horseshoe to the colors
+		// Use default for now!!
+		this.color0 = this.colorStops[this.sortedStops[0]];
+		this.color1 = this.colorStops[this.sortedStops[(this.sortedStops.length)-1]];
+		
+		this.angleCoords = {'x1' : '0%', 'y1' : '0%', 'x2': '100%', 'y2' : '0%'};
+		//this.angleCoords = angleCoords;
+		this.color1_offset = '0%';
+
+		//====================
+		// End setConfig part.
+
+		console.log('HorseshoeTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+	}
+
+ /*******************************************************************************
+	* HorseshoeTool.
+	*	- set value()
+	*
+	* Summary.
+	*	Sets the value of the horseshoe. Value updated via set hass().
+	*	Calculate horseshoe settings & colors depening on config and new value.
+	*
+	*/
+
+	set value(state) {
+		if (this._value == state) return false;
+		
+		this._valuePrev = this._value || state;
+		this._value = state;
+		this._valueIsDirty = true;
+
+		// Calculate the size of the arc to fill the dasharray with this 
+		// value. It will fill the horseshoe relative to the state and min/max
+		// values given in the configuration.
+		
+    const min = this.opts.horseshoe_scale.min || 0;
+    const max = this.opts.horseshoe_scale.max || 100;
+    const val = Math.min(this._parent._calculateValueBetween(min, max, state), 1);
+    const score = val * this.HORSESHOE_PATH_LENGTH;
+    const total = 10 * this.HORSESHOE_RADIUS_SIZE;
+    this.dashArray = `${score} ${total}`;
+
+		// We must draw the horseshoe. Depending on the stroke settings, we draw a fixed color, gradient, autominmax or colorstop 
+		// #TODO: only if state or attribute has changed.
+
+		const strokeStyle = this.opts.show.horseshoe_style;
+	
+		if (strokeStyle == 'fixed') {
+			this.stroke_color = this.opts.horseshoe_state.color;
+			this.color0 = this.opts.horseshoe_state.color;
+			this.color1 = this.opts.horseshoe_state.color;
+			this.color1_offset = '0%';
+			//	We could set the circle attributes, but we do it with a variable as we are using a gradient
+			//	to display the horseshoe circle	.. <horseshoe circle>.setAttribute('stroke', stroke);
+		}
+		else if (strokeStyle == 'autominmax') {
+			// Use color0 and color1 for autoranging the color of the horseshoe
+			const stroke = this._parent._calculateColor(state, this.colorStopsMinMax, true);
+
+			// We now use a gradient for the horseshoe, using two colors
+			// Set these colors to the colorstop color...
+			this.color0 = stroke;
+			this.color1 = stroke;
+			this.color1_offset = '0%';
+		}
+		else if (strokeStyle == 'colorstop' || strokeStyle == 'colorstopgradient') {
+			const stroke = this._parent._calculateColor(state, this.colorStops, strokeStyle === 'colorstopgradient');
+
+			// We now use a gradient for the horseshoe, using two colors
+			// Set these colors to the colorstop color...
+			this.color0 = stroke;
+			this.color1 = stroke;
+			this.color1_offset = '0%';
+		}
+		else if (strokeStyle == 'lineargradient') {
+			// This has taken a lot of time to get a satisfying result, and it appeared much simpler than anticipated.
+			// I don't understand it, but for a circle, a gradient from left/right with adjusted stop is enough ?!?!?!
+			// No calculations to adjust the angle of the gradient, or rotating the gradient itself.
+			// Weird, but it works. Not a 100% match, but it is good enough for now...
+
+			// According to stackoverflow, these calculations / adjustments would be needed, but it isn't ;-)
+			// Added from https://stackoverflow.com/questions/9025678/how-to-get-a-rotated-linear-gradient-svg-for-use-as-a-background-image
+			const angleCoords = {'x1' : '0%', 'y1' : '0%', 'x2': '100%', 'y2' : '0%'};
+			this.color1_offset = `${Math.round((1-val)*100)}%`;
+
+			this.angleCoords = angleCoords;
+		}
+		console.log('HorseshoeTool set value', this.cardId, state);
+
+		return true;
+	}
+
+ /*******************************************************************************
+	* _renderHorseshoe()
+	*
+	* Summary.
+	*	Renders the circle using precalculated coordinates and dimensions.
+	* Only the runtime style is calculated before rendering the circle
+	*
+	*/
+/*
+  _renderHorseshoe() {
+
+		// Get configuration styles as the default styles
+		let configStyle = {...this.opts.styles};
+		
+		// Get the runtime styles, caused by states & animation settings
+		let stateStyle = {};
+		if (this._parent.animations.circles[this.opts.animation_id])
+			stateStyle = Object.assign(stateStyle, this._parent.animations.circles[this.opts.animation_id]);
+
+		// Merge the two, where the runtime styles may overwrite the statically configured styles
+		configStyle = { ...configStyle, ...stateStyle};
+		
+		// Convert javascript records to plain text, without "{}" and "," between the styles.
+		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+		
+		return svg`
+			<circle filter="url(#ds)"
+				cx="${this.coords.xpos}" cy="${this.coords.ypos}" r="${this.dimensions.radius}"
+				style="${configStyleStr}"/>					
+			`;
+	}	
+*/
+/*******************************************************************************
+	* renderTickMarks()
+	*
+	* Summary.
+	* Renders the tick marks on the scale.
+	*
+	*/
+
+  _renderTickMarks() {
+		const { opts, } = this;
+		//if (!config) return;
+		//if (!config.show) return;
+		if (!opts.show.scale_tickmarks) return;
+		
+		const stroke = opts.horseshoe_scale.color ? opts.horseshoe_scale.color : 'var(--primary-background-color)';
+		const tickSize = opts.horseshoe_scale.ticksize ? opts.horseshoe_scale.ticksize
+										: (opts.horseshoe_scale.max - opts.horseshoe_scale.min) / 10;
+		
+		// fullScale is 260 degrees. Hard coded for now...
+		const fullScale = 260;
+		const remainder = opts.horseshoe_scale.min % tickSize;
+		const startTickValue = opts.horseshoe_scale.min + (remainder == 0 ? 0 : (tickSize - remainder));
+		const startAngle = ((startTickValue - opts.horseshoe_scale.min) /
+												(opts.horseshoe_scale.max - opts.horseshoe_scale.min)) * fullScale;
+		var tickSteps = ((opts.horseshoe_scale.max - startTickValue) / tickSize);
+		
+		// new
+		var steps = Math.floor(tickSteps);
+		const angleStepSize = (fullScale - startAngle) / tickSteps;
+		
+		// If steps exactly match the max. value/range, add extra step for that max value.
+		if ((Math.floor(((steps) * tickSize) + startTickValue)) <= (opts.horseshoe_scale.max)) {steps++;}
+		
+		const radius = this.dimensions.horseshoe_scale.width ? this.dimensions.horseshoe_scale.width / 2 : 6/2;
+		var angle;
+		var scaleItems = [];
+
+    // NTS:
+    // Value of -230 is weird. Should be -220. Can't find why...
+		var i;
+		for (i = 0; i < steps; i++) {
+			angle = startAngle + ((-230 + (360 - i*angleStepSize)) * Math.PI / 180);
+			scaleItems[i] = svg`
+				<circle cx="${this.coords.xpos - Math.sin(angle)*this.dimensions.radius_ticks}"
+								cy="${this.coords.ypos - Math.cos(angle)*this.dimensions.radius_ticks}" r="${radius}"
+								fill="${stroke}">
+			`;
+/*
+				<circle cx="${50 + 50 - Math.sin(angle)*this.TICKMARKS_RADIUS_SIZE}"
+								cy="${50 + 50 - Math.cos(angle)*this.TICKMARKS_RADIUS_SIZE}" r="${radius}"
+								fill="${stroke}">
+			`;
+*/
+		}
+		return svg`${scaleItems}`;
+	}
+
+/*******************************************************************************
+	* _renderHorseShoe()
+	*
+	* Summary.
+	* Renders the horseshoe group.
+	*
+	* Description.
+	* The horseshoes are rendered in a viewbox of 200x200 (SVG_VIEW_BOX).
+	* Both are centered with a radius of 45%, ie 200*0.45 = 90.
+	*
+	* The foreground horseshoe is always rendered as a gradient with two colors.
+	*
+	* The horseshoes are rotated 220 degrees and are 2 * 26/36 * Math.PI * r in size 
+	* There you get your value of 408.4070449,180 ;-)
+	*/
+
+// Does the rotate give problems with poisitinig??
+// 					transform="rotate(-220 100 100)"/>
+// Yup, rotate to 60 60 with horseshoe at 30 30 works. 30% * 200 / 100 ?? = percentage?? Or in svg dimensions? 30% of 200 = 60...
+
+  _renderHorseShoe() {
+
+	if (!this.opts.show.horseshoe) return;
+
+	return svg`
+			<g id="horseshoe__svg__group" class="horseshoe__svg__group">
+				<circle id="horseshoe__scale" class="horseshoe__scale" cx="${this.coords.xpos}" cy="${this.coords.ypos}" r="${this.dimensions.radius}"
+					fill="${this.fill || 'rgba(0, 0, 0, 0)'}"
+					stroke="${this.opts.horseshoe_scale.color || '#000000'}"
+					stroke-dasharray="${this.dimensions.horseshoe_scale.dasharray}"
+					stroke-width="${this.dimensions.horseshoe_scale.width}" 
+					stroke-linecap="square"
+					transform="rotate(-220 ${this.svg.rotate.shiftX} ${this.svg.rotate.shiftY})"/>
+
+				<circle id="horseshoe__state__value" class="horseshoe__state__value" cx="${this.coords.xpos}" cy="${this.coords.ypos}" r="${this.dimensions.radius}"
+					fill="${this.opts.fill || 'rgba(0, 0, 0, 0)'}"
+					stroke="url('#horseshoe__gradient-${this.cardId}')"
+					stroke-dasharray="${this.dashArray}"
+					stroke-width="${this.dimensions.horseshoe_state.width}" 
+					stroke-linecap="square"
+					transform="rotate(-220 ${this.svg.rotate.shiftX} ${this.svg.rotate.shiftY})"/>
+				
+				${this._renderTickMarks()}
+			</g>
+		`;
+
+/*
+	
+	return svg`
+			<g id="horseshoe__svg__group" class="horseshoe__svg__group">
+				<circle id="horseshoe__scale" class="horseshoe__scale" cx="50%" cy="50%" r="45%"
+					fill="${this.fill || 'rgba(0, 0, 0, 0)'}"
+					stroke="${this.opts.horseshoe_scale.color || '#000000'}"
+					stroke-dasharray="408.4070449,180"
+					stroke-width="${this.opts.horseshoe_scale.width || 6}" 
+					stroke-linecap="square"
+					transform="rotate(-220 100 100)"/>
+
+				<circle id="horseshoe__state__value" class="horseshoe__state__value" cx="50%" cy="50%" r="45%"
+					fill="${this.opts.fill || 'rgba(0, 0, 0, 0)'}"
+					stroke="url('#horseshoe__gradient-${this.cardId}')"
+					stroke-dasharray="${this.dashArray}"
+					stroke-width="${this.opts.horseshoe_state.width || 12}" 
+					stroke-linecap="square"
+					transform="rotate(-220 100 100)"/>
+				
+				${this._renderTickMarks()}
+			</g>
+		`;
+*/
+  }
+ /*******************************************************************************
+	* render()
+	*
+	* Summary.
+	*	The render() function for this object.
+	*
+	*/
+	render() {
+
+    return svg`
+			<g filter="url(#ds)" id="circle-${this.id}" class="circle"
+				@click=${e => this._parent.handlePopup(e, this._parent.entities[this.opts.entity_index])} >
+				${this._renderHorseShoe()}
+			</g>
+
+			<svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+				<linearGradient gradientTransform="rotate(0)" id="horseshoe__gradient-${this.cardId}" x1="${this.angleCoords.x1}", y1="${this.angleCoords.y1}", x2="${this.angleCoords.x2}" y2="${this.angleCoords.y2}">
+					<stop offset="${this.color1_offset}" stop-color="${this.color1}" />
+					<stop offset="100%" stop-color="${this.color0}" />
+				</linearGradient>
+			</svg>
+			
+		`;
+
+	}	
+} // END of class
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1603,6 +2129,542 @@ class SparkleBarChartWidget extends BaseWidget {
 
 	}
 }
+// #WIP
+ /*******************************************************************************
+	* SegmentedArcTool class
+	*
+	* Summary.
+	*
+	*/
+
+class SegmentedArcTool extends BaseWidget {
+	constructor(argParent, argOpts, argPos) {
+		
+		const DEFAULT_SEGARC_OPTS = {
+			xpos: 50,
+			ypos: 50,
+			radius: 45,
+			width: 6,
+			margin: 1.5,
+			color: 'var(--primary-color)',
+			styles: { "stroke-linecap": 'round;',
+								"fill": 'var(--primary-color);',
+								"stroke": 'none;',
+								"stroke-width": '10;',
+								"fill-rule": 'evenodd;',
+								"stroke-linejoin": 'round;'
+			},
+			styles_bg: { 
+								"stroke-linecap": 'round;',
+								"fill": 'var(--primary-background-color);',
+								"stroke-width": '0;',
+								"fill-rule": 'evenodd;',
+								"stroke-linejoin": 'round;'
+			},
+			segments: {"dash": 10, "gap":1 },
+			colorstops: [],
+			scale: {"min": 0, "max": 100 },
+			show: {	"style": 'fixedcolor',
+							"scale_offset": 0,
+							"scale": false,
+						},
+			scale_offset: -6,
+			isScale: false,
+			animation: {"duration": 1.5 },
+		}	
+
+		super(argParent, argOpts, argPos);
+		
+		this.opts = {...DEFAULT_SEGARC_OPTS};
+		this.opts = {...this.opts, ...argOpts};
+
+		// Check for gap. Big enough?
+		const minGap = this.opts.radius * Math.PI / SVG_VIEW_BOX / 2;
+		this.opts.segments.gap = Math.max(minGap, this.opts.segments.gap);
+
+		if (argOpts.styles) this.opts.styles = {...argOpts.styles};
+		this.opts.styles = {...DEFAULT_SEGARC_OPTS.styles, ...this.opts.styles};
+		this.opts.styles_bg = {...DEFAULT_SEGARC_OPTS.styles_bg, ...this.opts.styles_bg};
+
+		// #TODO
+		// Next line generates an error: Found non-callable @@interator
+		//if (argOpts.show) this.opts.show = Object.assign(...argOpts.show);
+		this.opts.show = {...DEFAULT_SEGARC_OPTS.show, ...this.opts.show};
+
+		this.opts.entity_index = this.opts.entity_index ? this.opts.entity_index : 0;
+		
+		this.dimensions.radius = Utils.calculateDimension(argOpts.radius);
+		this.dimensions.segments = {};
+		this.dimensions.segments.gap = Utils.calculateDimension(this.opts.segments.gap);
+		//this.dimensions.segments.dash = Utils.calculateDimension(this.opts.segments.dash);
+		this.dimensions.scale_offset = Utils.calculateDimension(this.opts.scale_offset);
+		
+
+		// Remember the values to be able to render from/to
+		this._value = null;
+		this._valuePrev = null;
+		this._valueIsDirty = false;
+		this._renderFrom = null;
+		this._renderTo = null;
+
+		this.rAFid = null;
+		this.cancelAnimation = false;
+		
+		this.arcId = null;
+
+		// Cache path (d= value) of segments drawn in map by segment index (counter). Simple array.
+		this._cache = [];
+		
+		// Check for gap. Big enough?
+		//const minGap = this.opts.radius * Math.PI / SVG_VIEW_BOX / 2;
+		//this.opts.segments.gap = Math.max(minGap, this.opts.segments.gap);
+
+		//this.opts.styles = {...DEFAULT_SEGARC_OPTS.styles, ...this.opts.styles};
+		//this.opts.styles_bg = {...DEFAULT_SEGARC_OPTS.styles_bg, ...this.opts.styles_bg};
+		
+		// This arc is the scale belonging to another arc??
+		if (this.opts.isScale) {
+			this._value = this.opts.scale.max;
+			//this.opts.show.scale = false;
+		} else {
+		
+			// Nope. I'm the main arc. Check if a scale is defined and clone myself with some options...
+			if (this.opts.show.scale) {
+				var scaleOpts = {...this.opts};
+				scaleOpts.styles = {...this.opts.styles};
+				scaleOpts.styles_bg = {...this.opts.styles_bg};
+				scaleOpts.segments = {...this.opts.segments};
+				scaleOpts.scale = {...this.opts.scale};
+				scaleOpts.show = {...this.opts.show};
+
+				// Cloning done. Now set specific scale options.
+				scaleOpts.show.scale = false;
+				scaleOpts.isScale = true;
+				scaleOpts.width = Utils.calculateDimension(1.5);
+				scaleOpts.radius = this.opts.radius - (this.opts.width/2) + (scaleOpts.width/2) + (this.opts.scale_offset);
+				this._segmentedArcScale = new SegmentedArc(this._parent, scaleOpts);
+				const scaleId = this._segmentedArcScale.objectId;
+			} else {
+				this._segmentedArcScale = null;
+			}
+		}
+
+		this._segmentAngles = [];
+		
+		// Precalculate segments with start and end angle!
+		this._arc = {};
+		this._arc.size = Math.abs(this.opts.end_angle - this.opts.start_angle);
+		this._arc.clockwise = this.opts.end_angle > this.opts.start_angle;
+		this._arc.direction = this._arc.clockwise ? 1 : -1;
+		
+		this._arc.parts = Math.floor(this._arc.size / Math.abs(this.opts.segments.dash));
+		this._arc.partsPartialSize = this._arc.size - (this._arc.parts * this.opts.segments.dash);
+		
+		for (var i=0; i< this._arc.parts; i++) {
+			this._segmentAngles[i] = {"boundsStart": this.opts.start_angle + (i * this.opts.segments.dash * this._arc.direction),
+																"boundsEnd": this.opts.start_angle + ((i + 1) * this.opts.segments.dash * this._arc.direction),
+																"drawStart": this.opts.start_angle + (i * this.opts.segments.dash * this._arc.direction) + (this.opts.segments.gap * this._arc.direction),
+																"drawEnd": this.opts.start_angle + ((i + 1) * this.opts.segments.dash * this._arc.direction) - (this.opts.segments.gap * this._arc.direction)};
+		}
+		if (this._arc.partsPartialSize > 0) {
+			this._segmentAngles[i] = {"boundsStart": this.opts.start_angle + (i * this.opts.segments.dash * this._arc.direction),
+																"boundsEnd": this.opts.start_angle + ((i + 0) * this.opts.segments.dash * this._arc.direction) +
+																				(this._arc.partsPartialSize * this._arc.direction),
+
+																"drawStart": this.opts.start_angle + (i * this.opts.segments.dash * this._arc.direction) + (this.opts.segments.gap * this._arc.direction),
+																"drawEnd": this.opts.start_angle + ((i + 0) * this.opts.segments.dash * this._arc.direction) +
+																				(this._arc.partsPartialSize * this._arc.direction) - (this.opts.segments.gap * this._arc.direction)};
+		}
+		this.starttime = null;
+
+		console.log('SegmentedArcTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+		console.log('SegmentedArcTool - init', this.id, this.opts.isScale, this._segmentAngles);
+	}
+
+	get objectId() {
+		return this.id;
+	}
+	
+	set value(state) {
+		console.log('SegmentedArcTool - set value IN');
+
+		if (this.opts.isScale) return false;
+		if (this._value == state) return false;
+		
+		this._valuePrev = this._value || state;
+		this._value = state;
+		this._valueIsDirty = true;
+		return true;
+	}
+	
+	// Me is updated. Get arc id for animations...
+	firstUpdated(changedProperties)
+	{
+		console.log('SegmentedArcTool - firstUpdated IN');
+		this._arcId = this._parent.shadowRoot.getElementById("arc-".concat(this.id));
+		//const na = '';//this._arcId.querySelector();
+		//const na = this._arcId.querySelector("arc-segment-".concat(this.Id).concat("-").concat(1));
+		//const na2 = this._parent.shadowRoot.getElementById("arc-segment-".concat(this.Id).concat("-").concat(0));
+	}
+	
+	updated(changedProperties) {
+		console.log('SegmentedArcTool - updated IN');
+		// Element has updated. Now do the animation ???
+		// let dateTime = new Date().getTime();
+	}
+
+	render() {
+
+		console.log('SegmentedArcTool - Render IN');
+    return svg`
+			<g filter="url(#ds)" id="arc-${this.id}" class="arc">
+				<g >
+					${this._renderSegments()}
+					</g>
+				${this._renderScale()}
+			</g>
+		`;
+	}
+
+	_renderScale() {
+		if (this._segmentedArcScale) return this._segmentedArcScale.render();
+		
+		//if (this.opts.show.scale) this._segmentedArcScale.render();
+	}
+	
+  _renderSegments() {
+		var arcStart = this.opts.start_angle;
+		var arcEnd = this.opts.end_angle;
+		var arcEndPrev = this.opts.end_angle;
+		var arcWidth = this.opts.width;
+		
+		var arcEndFull = this.opts.end_angle;
+		var arcClockwise = arcEnd > arcStart;
+		var arcPart = this.opts.segments.dash;
+		var arcDivider = this.opts.segments.gap;
+
+		// #TODO: must use this.dimensions
+		var arcRadius = this.opts.radius;
+		
+		// calculate real end angle depending on value set in object and min/max scale
+		var val = Utils.calculateValueBetween(this.opts.scale.min, this.opts.scale.max, this._value);
+		var valPrev = Utils.calculateValueBetween(this.opts.scale.min, this.opts.scale.max, this._valuePrev);
+		if (val != valPrev) console.log('_renderSegments diff value old new', this.id, valPrev, val);
+
+		var arcSizeFull = Math.abs(arcEndFull - arcStart);
+
+		arcEnd = (val * arcSizeFull * this._arc.direction) + arcStart;
+		arcEndPrev = (valPrev * arcSizeFull* this._arc.direction) + arcStart;
+
+		// Styles are already converted to an Object {}...
+		let configStyle = {...this.opts.styles};
+		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+
+		let configStyleBg = {...this.opts.styles_bg};
+		const configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+		
+		var arcSize = Math.abs(arcEnd - arcStart);
+		var arcSizePrev = Math.abs(arcEndPrev - arcStart);
+		
+		// Calc diff in arc size. Can be positive and negative.
+		// Then get stepsize. We draw in 20 steps.
+		var arcSizeDiff = arcSizePrev - arcSize;
+		var arcStepSize = arcSizeDiff / 50;
+		var arcChangeClockwise = (arcSize > arcSizePrev) ? true : false;
+		
+		var svgItems = [];
+		
+		var fullParts = Math.floor(arcSize/Math.abs(arcPart));
+		var fullPartsAll = Math.floor(arcSizeFull/Math.abs(arcPart));
+
+		var d;
+		
+		// Count what's left of the arc. Start with the full size...
+		
+		var arcRest = arcSize;
+
+		// Draw background of segmented arc...
+		for (var k = 0; k < this._segmentAngles.length; k++) {
+			d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
+														this._arc.clockwise, arcRadius, arcWidth);
+
+			svgItems.push(svg`<path id="arc-segment-bg-${this.id}-${k}" class="arc__segment"
+													style="${configStyleBgStr}"
+													d="${d}"
+													/>`);
+
+		}
+
+		// Now draw the arc itself...
+		var arcPartStart;
+		var arcPartEnd;
+
+		
+		// Check if arcId does exist
+		if (this._arcId != null) {
+			console.log('_arcId does exist');
+
+			// Render current from cache
+			this._cache.forEach((item, index) => {
+				d = item;
+				//console.log('_renderSegments - from cache', this.id, index, d);
+				svgItems.push(svg`<path id="arc-segment-${this.id}-${index}" class="arc__segment"
+													style="${configStyleStr};"
+													d="${d}"
+													/>`);
+			});
+			
+			var tween = {};
+			
+			function animateSegments(timestamp, thisWidget){
+
+					const easeOut = progress =>
+						Math.pow(--progress, 5) + 1;
+
+					var frameSegment;
+					var runningSegment;
+
+					var timestamp = timestamp || new Date().getTime()
+					if (!tween.startTime) {
+						tween.startTime = timestamp;
+						tween.runningAngle = tween.fromAngle;
+					}
+
+					var runtime = timestamp - tween.startTime
+					tween.progress = Math.min(runtime / tween.duration, 1);
+					tween.progress = easeOut(tween.progress);
+					
+					const increase = ((thisWidget._arc.clockwise) 
+														? (tween.toAngle > tween.fromAngle) : (tween.fromAngle > tween.toAngle));
+
+					// Calculate where the animation angle should be now in this animation frame: angle and segment.
+					tween.frameAngle = tween.fromAngle + ((tween.toAngle - tween.fromAngle) * tween.progress);
+					frameSegment = thisWidget._segmentAngles.findIndex((currentValue, index) =>
+							thisWidget._arc.clockwise
+							? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
+							: ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
+					
+					if (frameSegment == -1) {
+						console.log('animateSegments frameAngle not found', tween, thisWidget._segmentAngles);
+					}
+					
+					// Check where we actually are now. This might be in a different segment...
+					runningSegment = thisWidget._segmentAngles.findIndex((currentValue, index) => 
+							thisWidget._arc.clockwise
+							? ((tween.runningAngle <= currentValue.boundsEnd) && (tween.runningAngle >= currentValue.boundsStart))
+							: ((tween.runningAngle <= currentValue.boundsStart) && (tween.runningAngle >= currentValue.boundsEnd)));
+
+					// Do render segments until the animation angle is at the requested animation frame angle.
+					do {
+						
+						var aniStartAngle = thisWidget._segmentAngles[runningSegment].drawStart;
+						var runningSegmentAngle = thisWidget._arc.clockwise
+																			? Math.min(thisWidget._segmentAngles[runningSegment].boundsEnd, tween.frameAngle)
+																			: Math.max(thisWidget._segmentAngles[runningSegment].boundsEnd, tween.frameAngle);
+						var aniEndAngle = thisWidget._arc.clockwise
+																? Math.min(thisWidget._segmentAngles[runningSegment].drawEnd, tween.frameAngle)
+																: Math.max(thisWidget._segmentAngles[runningSegment].drawEnd, tween.frameAngle);
+						// First phase. Just draw and ignore segments...
+						d = thisWidget.buildArcPath(aniStartAngle, aniEndAngle, thisWidget._arc.clockwise, arcRadius, arcWidth);
+
+						let as;
+						const myarc = "arc-segment-".concat(thisWidget.id).concat("-").concat(runningSegment);
+						as = thisWidget._parent.shadowRoot.getElementById(myarc);
+						if (as) {
+							var e = as.getAttribute("d");
+							as.setAttribute("d", d);
+							
+							// We also have to set the style fill if the color stops and gradients are implemented
+							// As we're using styles, attributes won't work. Must use as.style.fill = 'calculated color'
+						}
+						thisWidget._cache[runningSegment] = d;
+						
+						// If at end of animation, don't do the add to force going to next segment 
+						if (tween.frameAngle != runningSegmentAngle) {
+							runningSegmentAngle = runningSegmentAngle + (0.000001 * thisWidget._arc.direction);
+						}
+
+						var runningSegmentPrev = runningSegment;
+						runningSegment = thisWidget._segmentAngles.findIndex((currentValue, index) => 
+							thisWidget._arc.clockwise
+							? ((runningSegmentAngle <= currentValue.boundsEnd) && (runningSegmentAngle >= currentValue.boundsStart))
+							: ((runningSegmentAngle <= currentValue.boundsStart) && (runningSegmentAngle >= currentValue.boundsEnd)));		
+						
+						frameSegment = thisWidget._segmentAngles.findIndex((currentValue, index) => 
+							thisWidget._arc.clockwise
+							? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
+							: ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));		
+
+						if (!increase) {
+							if (runningSegmentPrev != runningSegment) {
+								console.log('movit - remove path', thisWidget.id, runningSegmentPrev);
+								if (thisWidget._arc.clockwise) {
+									as.removeAttribute("d");
+									thisWidget._cache[runningSegmentPrev] = null;
+								} else {
+									as.removeAttribute("d");
+									thisWidget._cache[runningSegmentPrev] = null;
+								}
+							}
+						}
+						tween.runningAngle = runningSegmentAngle;
+					} while ((tween.runningAngle != tween.frameAngle) && (runningSegment == runningSegmentPrev));
+
+					if (tween.progress != 1) {
+							thisWidget.rAFid = requestAnimationFrame(function(timestamp){
+									animateSegments(timestamp, thisWidget)
+							})
+					} else {
+						tween.startTime = null;
+					}
+			}
+
+			var mySelf = this; 
+			var arcCur = arcEndPrev;
+			
+			// Check if values changed and we should animate to another target then previously rendered
+			if ((val != valPrev) && (this._parent.connected == true) && (this._renderTo != this._value)) {
+				this._renderTo = this._value;
+				console.log('val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
+				
+				// If previous animation active, cancel this one before starting a new one...
+				if (this.rAFid) {
+					console.log('cancelling rAFid', this._parent.cardId, this.id, 'rAFid', this.rAFid);
+					cancelAnimationFrame(this.rAFid);
+				}
+				
+				// Start new animation with calculated settings...
+				// counter var not defined???
+				//console.log('starting animationframe timer...', this._parent.cardId, this.id, counter);
+				tween.fromAngle = arcEndPrev;
+				tween.toAngle = arcEnd;
+				tween.runningAngle = arcEndPrev;
+				tween.duration = Math.min(Math.max(500, this.opts.animation.duration * 1000), 5000);
+				tween.startTime = null;
+				this.rAFid = requestAnimationFrame(function(timestamp){
+																						animateSegments(timestamp, mySelf)
+				})
+			};
+			return svg`${svgItems}`;
+
+		} else {
+			// FIRST draw! Do IT!
+			console.log('_arcId does NOT exist');
+
+			for(var i = 0; i < fullParts; i++) {
+				arcPartStart = this._segmentAngles[i].drawStart;
+				arcPartEnd = this._segmentAngles[i].drawEnd;
+				arcRest = arcRest - arcPart;
+				
+				d = this.buildArcPath(arcPartStart, arcPartEnd, arcClockwise, arcRadius, arcWidth);
+				this._cache[i] = d;
+				
+				svgItems.push(svg`<path id="arc-segment-${this.id}-${i}" class="arc__segment"
+														style="${configStyleStr}"
+														d="${d}"
+														/>`);
+			}
+
+			this.arcEnd = arcPartEnd;
+			this.arcEndSegment = i;
+
+			// Did we draw a single segment or not? If not, reset start & end to start...
+			if (fullParts < 1) {
+				arcPartStart = arcStart + (arcDivider * this._arc.direction);
+				arcPartEnd = arcPartStart - (2 * arcDivider * this._arc.direction);
+			}
+
+			// If we have to draw the last partial arc, calculate size and draw it!
+
+			if (arcRest > 0) {
+				var lastPartStart = this._segmentAngles[i].drawStart;
+				var lastPartEnd = this._segmentAngles[i].drawStart + (arcRest * this._arc.direction) - (arcDivider * this._arc.direction);
+				d = this.buildArcPath(lastPartStart,
+											lastPartEnd,
+											arcClockwise,
+											arcRadius, 
+											arcWidth);
+
+				this._cache[i] = d;
+				svgItems.push(svg`<path id="arc-segment-${this.id}-${i}" class="arc__segment"
+													style="${configStyleStr}"
+													d="${d}"
+													/>`);
+				this.arcEnd = lastPartEnd;
+				this.arcEndSegment = i;
+				i += 1;
+			}
+			
+			// create empty elements, so no problem in animation function. All path's exist...
+			for (var j=i; j < fullPartsAll; j++) {
+				arcPartStart = this._segmentAngles[j].drawStart;
+				arcPartEnd = this._segmentAngles[j].drawStart;
+
+				d = this.buildArcPath(arcPartStart,
+											arcPartStart,
+											arcClockwise,
+											arcRadius, 
+											0);
+				this._cache[j] = d;
+				svgItems.push(svg`<path id="arc-segment-${this.id}-${j}" class="arc__segment"
+													style="${configStyleStr}"
+													d="${d}"
+													/>`);
+			}
+			
+
+			return svg`${svgItems}`;
+		}
+	}
+	
+	
+	polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+		var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+
+		return {
+			x: centerX + (radius * Math.cos(angleInRadians)),
+			y: centerY + (radius * Math.sin(angleInRadians))
+		};
+	}
+
+	/*
+	 *
+	 * start = 10, end = 30, clockwise -> size is 20
+	 * start = 10, end = 30, anticlockwise -> size is (360 - 20) = 340
+	 *
+	 * NTS:
+	 * using in*** for arguments? Much clearer while reading the code 
+	 * and the opts thing should go to. Leftover from example...
+	 *
+	 */
+	buildArcPath(argStartAngle, argEndAngle, argClockwise, argRadius, argWidth) {
+
+		// #TODO: must use this.coords values for xpos and ypos.
+		var start = this.polarToCartesian(this.coords.xpos, this.coords.ypos, argRadius, argEndAngle);
+		var end = this.polarToCartesian(this.coords.xpos, this.coords.ypos, argRadius, argStartAngle);
+//		var start = this.polarToCartesian(this.opts.xpos, this.opts.ypos, argRadius, argEndAngle);
+//		var end = this.polarToCartesian(this.opts.xpos, this.opts.ypos, argRadius, argStartAngle);
+		var largeArcFlag = Math.abs(argEndAngle - argStartAngle) <= 180 ? "0" : "1";
+		
+		const sweepFlag = argClockwise ? "0": "1";
+	
+		// #TODO: must use this.coords values for xpos and ypos.
+		var cutoutRadius = argRadius - argWidth,
+			start2 = this.polarToCartesian(this.coords.xpos, this.coords.ypos, cutoutRadius, argEndAngle),
+			end2 = this.polarToCartesian(this.coords.xpos, this.coords.ypos, cutoutRadius, argStartAngle),
+//			start2 = this.polarToCartesian(this.opts.xpos, this.opts.ypos, cutoutRadius, argEndAngle),
+//			end2 = this.polarToCartesian(this.opts.xpos, this.opts.ypos, cutoutRadius, argStartAngle),
+
+		d = [
+			"M", start.x, start.y,
+			"A", argRadius, argRadius, 0, largeArcFlag, sweepFlag, end.x, end.y,
+			"L", end2.x, end2.y,
+			"A", cutoutRadius, cutoutRadius, 0, largeArcFlag, sweepFlag == "0" ? "1": "0", start2.x, start2.y,
+			"Z",
+		].join(" ");
+		return d;
+	}
+} // END of class
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -2128,7 +3190,7 @@ class devSwissArmyKnifeCard extends LitElement {
 		this.attributesStr = [];
 		this.viewBoxSize = SVG_VIEW_BOX;
 		this.viewBox = {"width": SVG_VIEW_BOX, "height": SVG_VIEW_BOX};
-		this.colorStops = {};
+		//this.colorStops = {};
     this.animations = {};
     this.animations.lines = {};
     this.animations.vlines = {};
@@ -2140,9 +3202,9 @@ class devSwissArmyKnifeCard extends LitElement {
     this.animations.areas = {};
     this.animations.states = {};
 		
-		this.colorCache = {};
+		//this.colorCache = {};
 		
-		this.segmentedArcs = [];
+		//this.segmentedArcs = [];
 		
 		// Setup per kind of object/widget
 		//this.bars = [];
@@ -2809,7 +3871,7 @@ class devSwissArmyKnifeCard extends LitElement {
 		if (!entityHasChanged) {
 			return;
 		}
-
+/* 2020.09.10 Removed. moved to horseshoetool, set value part!
 		// Use first state or attribute for displaying the horseshoe
 		
 		// #TODO: only if state or attribute has changed.
@@ -2879,7 +3941,7 @@ class devSwissArmyKnifeCard extends LitElement {
 
 			this.angleCoords = angleCoords;
 		}
-
+*/
     // Check for animations linked to an entity or attribute.
 		// Set the dynamic animation depending on the state.
 		// If the card is rendered, the render() functions will take this dynamic animation into account.
@@ -2959,6 +4021,7 @@ class devSwissArmyKnifeCard extends LitElement {
 		// if widget.needsSeries() then entityid = widget.entityId; -> fetch history from hass
 		// if history received --> widget.setSeries(history);
 		//
+/*
 		if (this.config.layout.segmented_arcs) {
 			this.config.layout.segmented_arcs.map((item, index) => {
 				if (item.hasOwnProperty('entity_index')) {
@@ -2969,7 +4032,24 @@ class devSwissArmyKnifeCard extends LitElement {
 				}
 			});
 		}
+*/
+		if (this.widgets) {
+			this.widgets.map((item, index) => {
+				if (true || item.type == "segarct") {
+					console.log('set hass - SegmentedArcTool found', item, index);
+					if ((item.widget.opts.hasOwnProperty('entity_index')))
+					{
+						console.log('set hass - SegmentedArcTool set value', typeof item.widget.value);
 
+						item.widget.value = this.attributesStr[item.widget.opts.entity_index]
+																								? this.attributesStr[item.widget.opts.entity_index]
+																								: this.entitiesStr[item.widget.opts.entity_index];
+					}
+					
+				}
+			});
+		}
+		
 		// For now, always force update to render the card if any of the states or attributes have changed...
     if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
   }
@@ -3026,6 +4106,7 @@ class devSwissArmyKnifeCard extends LitElement {
     if (!config.layout) {
       throw Error('No layout defined');
     }
+/*
     if (!config.horseshoe_scale) {
       throw Error('No horseshoe scale defined');
     } else {
@@ -3036,7 +4117,7 @@ class devSwissArmyKnifeCard extends LitElement {
     if ((!config.color_stops) || (config.color_stops.length < 2)) {
       throw Error('No color_stops defined or not at least two colorstops');
     }
-
+*/
     // testing
     if (config.entities) {
       const newdomain = this._computeDomain(config.entities[0].entity);
@@ -3048,13 +4129,22 @@ class devSwissArmyKnifeCard extends LitElement {
       }        
     }
 
-		const newConfig = {
+/* 2020.09.10 commented-out and moved to horseshoetool
+		Not yet, stilkl some parts used by segmented arc stuff...
+*/
+/*		const newConfig = {
       texts: [],
 			card_filter: 'card--filter-none',
 			...config,
 			show: { ...DEFAULT_SHOW, ...config.show },
 			horseshoe_scale: { ...DEFAULT_HORSESHOE_SCALE, ...config.horseshoe_scale },
 			horseshoe_state: { ...DEFAULT_HORSESHOE_STATE, ...config.horseshoe_state },
+		}
+*/
+		const newConfig = {
+      texts: [],
+			card_filter: 'card--filter-none',
+			...config,
 		}
 		
 		// Set default tap_action, if none given for an entity
@@ -3064,7 +4154,7 @@ class devSwissArmyKnifeCard extends LitElement {
 			}
 		}
 		);
-
+/*
     let colorStops = {};
 //    colorStops[newConfig.horseshoe_scale.min] = newConfig.horseshoe_state.color || '#03a9f4';
     if (newConfig.color_stops) {
@@ -3092,10 +4182,12 @@ class devSwissArmyKnifeCard extends LitElement {
 		const angleCoords = {'x1' : '0%', 'y1' : '0%', 'x2': '100%', 'y2' : '0%'};
 		this.angleCoords = angleCoords;
 		this.color1_offset = '0%';
-  
+*/
+		// #TODO must be removed after removal of segmented arcs part below
 		this.config = newConfig;
 		
 		// SEGMENTED ARCS
+/*
 		if (this.config.layout.segmented_arcs) {
 			this.config.layout.segmented_arcs.map(item => {
 
@@ -3121,15 +4213,18 @@ class devSwissArmyKnifeCard extends LitElement {
 		//
 		const widgetNames = ["area", "badge", "bar", "cirecle", "line", "name", "state"];
 		const widgetConstructors = [EntityAreaWidget, BadgeWidget, SparkleBarChartWidget, CircleWidget, LineWidget, EntityNameWidget, LineWidget];
-		
+*/		
 		const widgetsNew = {
 			"area": EntityAreaWidget,
 			"badge": BadgeWidget,
 			"bar": SparkleBarChartWidget,
 			"circle": CircleWidget,
+			"ellipse": EllipseTool,
+			"horseshoe": HorseshoeTool,
 			"icon": EntityIconWidget,
 			"line": LineWidget,
 			"name": EntityNameWidget,
+			"segarct": SegmentedArcTool,
 			"state": EntityStateWidget,
 			"slider": RangeSliderWidget,
 		}
@@ -3146,7 +4241,8 @@ console.log('config layout groups', this.config.layout.groups);
 						var argOpts = {...poep};
 						console.log('argopts', group, argOpts);
 						var argPos = { xpos: group.position.xpos / 100 * this.viewBox.width,
-													 ypos: group.position.ypos / 100 * this.viewBox.height };
+													 ypos: group.position.ypos / 100 * this.viewBox.height,
+													 scale: group.position.scale ? group.position.scale : 1 };
 						const newWidget = new widgetsNew[poep.widget](this, argOpts, argPos);
 						this.widgets.push({type: poep.widget, index: poep.id, widget: newWidget});
 					});
@@ -3216,12 +4312,23 @@ console.log('config layout groups', this.config.layout.groups);
 
 		console.log('*****Event - firstUpdated', this.cardId, new Date().getTime());
 
-		if (this.segmentedArcs)
+/*		if (this.segmentedArcs)
 		{
 			this.segmentedArcs.map(item => {
 				item.firstUpdated(changedProperties);
 			})
 		}
+*/
+		if (this.widgets) {
+			this.widgets.map((item, index) => {
+				if (item.type == "segarct") {
+					console.log('firstUpdated - calling SegmentedArcTool firstUpdated');
+					item.widget.firstUpdated(changedProperties);
+					//this.widgets[index].firstUpdated(changedProperties);
+				}
+			});
+		}
+
 		
 		if (this.widgets[4].type == "slider") {
 			this.widgets[4].widget.firstUpdated(changedProperties);
@@ -3243,12 +4350,15 @@ console.log('config layout groups', this.config.layout.groups);
 
 		console.log('*****Event - Updated', this.cardId, new Date().getTime());
 
-		if (this.segmentedArcs)
+		// #TODO
+		// Add/check this for widget/tool list. They an implement the updated function/callback
+/*		if (this.segmentedArcs)
 		{
 			this.segmentedArcs.map(item => {
 				item.updated(changedProperties);
 			})
 		}
+*/
   }
 
 
@@ -3272,6 +4382,15 @@ console.log('config layout groups', this.config.layout.groups);
 			return;
 		}
 
+    return html`
+      <ha-card>
+				<div class="container" id="container">
+					${this._renderSvg()}
+				</div>
+      </ha-card>
+    `;
+
+		// #TODO The svg style part must move to rendering horseshoetool I guess
     return html`
       <ha-card
       >
@@ -3364,8 +4483,10 @@ console.log('config layout groups', this.config.layout.groups);
 						// </g>
 console.log('all the widgets in renderWidgets', this.widgets);
 
+						// was on first line in return svg`
+//						${this._renderHorseShoe()}
+						
 		return svg`
-						${this._renderHorseShoe()}
 						<g id="datagroup" class="datagroup">
 							${this.widgets.map(widget => widget.widget.render())}
 							${this._renderIcons()}
@@ -3578,7 +4699,7 @@ console.log('all the widgets in renderWidgets', this.widgets);
 	* The horseshoes are rotated 220 degrees and are 2 * 26/36 * Math.PI * r in size 
 	* There you get your value of 408.4070449 ;-)
 	*/
-
+/*
   _renderHorseShoe() {
 
 	if (!this.config.show.horseshoe) return;
@@ -3605,7 +4726,7 @@ console.log('all the widgets in renderWidgets', this.widgets);
 			</g>
 		`;
   }
-
+*/
 /*  _renderArc() {
 
 	return svg`
@@ -3714,6 +4835,7 @@ console.log('all the widgets in renderWidgets', this.widgets);
 	}
 */
 
+/*
   _renderSegmentedArcs() {
     const {
       segmentedArcs,
@@ -3729,7 +4851,7 @@ console.log('_rendersegmentedarcs IN');
 
 		return svg`${svgItems}`;
   }
-
+*/
 /*******************************************************************************
 	* _renderIcon()
 	*
