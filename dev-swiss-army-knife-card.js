@@ -106,6 +106,7 @@ class Utils {
 		return (own / 100) * (SVG_DEFAULT_DIMENSIONS)
 						+ (group - SVG_DEFAULT_DIMENSIONS/2);
 	}
+
 	
 	static calculateDimension(dimension) {
 		return (dimension / 100) * (SVG_DEFAULT_DIMENSIONS);
@@ -2476,6 +2477,10 @@ class SegmentedArcTool extends BaseWidget {
 							
 							// We also have to set the style fill if the color stops and gradients are implemented
 							// As we're using styles, attributes won't work. Must use as.style.fill = 'calculated color'
+							// #TODO
+							// Can't use gradients probably because of custom path. Conic-gradient would be fine.
+							//
+							if (runningSegment & 1) as.style.fill = 'red';
 						}
 						thisWidget._cache[runningSegment] = d;
 						
@@ -4240,9 +4245,11 @@ console.log('config layout groups', this.config.layout.groups);
 					group.widgets.map(poep => {
 						var argOpts = {...poep};
 						console.log('argopts', group, argOpts);
-						var argPos = { xpos: group.position.xpos / 100 * this.viewBox.width,
-													 ypos: group.position.ypos / 100 * this.viewBox.height,
+
+						var argPos = { xpos: group.position.xpos / 100 * SVG_DEFAULT_DIMENSIONS,
+													 ypos: group.position.ypos / 100 * SVG_DEFAULT_DIMENSIONS,
 													 scale: group.position.scale ? group.position.scale : 1 };
+
 						const newWidget = new widgetsNew[poep.widget](this, argOpts, argPos);
 						this.widgets.push({type: poep.widget, index: poep.id, widget: newWidget});
 					});
