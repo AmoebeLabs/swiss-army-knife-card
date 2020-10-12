@@ -1360,16 +1360,17 @@ class EntityStateWidget extends BaseWidget {
 	*
 	* Summary.
 	*
+	* #TODO
+	* Migrate to BaseWidget class. Not yet done. issue #2
 	*/
 
-class EntityNameWidget {
+class EntityNameWidget extends BaseWidget {
 	constructor(argParent, argOpts, argPos) {
 		
 		const DEFAULT_NAME_OPTS = {
 		}
 		
-		this.id = Math.random().toString(36).substr(2, 9);
-		this._parent = argParent;
+		super(argParent, argOpts, argPos);
 
 		this.opts = {...DEFAULT_NAME_OPTS};
 		this.opts = {...this.opts, ...argOpts};
@@ -1379,14 +1380,6 @@ class EntityNameWidget {
 
 		this._name = {};
 		
-		this.groupPos = argPos;
-		
-		// Calculate real positions depending on aspectRatio and position...
-		// Positions are ALWAYS centered!
-		this.coords = {};
-		this.coords.xpos = Utils.calculateCoordinate(this.opts.xpos, this.groupPos.xpos);
-		this.coords.ypos = Utils.calculateCoordinate(this.opts.ypos, this.groupPos.ypos);
-
 		// Text is rendered in its own context. No need for SVG coordinates.
 
 		console.log('EntityName constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
@@ -1464,17 +1457,18 @@ class EntityNameWidget {
 	*
 	* Summary.
 	*
+	* #TODO
+	* - Convert to class using baseclass. Not yet done !!!!!!!!!!!!!!!!
 	*/
 
-class EntityAreaWidget {
+class EntityAreaWidget extends BaseWidget {
 	constructor(argParent, argOpts, argPos) {
 		
 		const DEFAULT_AREA_OPTS = {
 		}
-		
-		this.id = Math.random().toString(36).substr(2, 9);
-		this._parent = argParent;
 
+		super(argParent, argOpts, argPos);
+		
 		this.opts = {...DEFAULT_AREA_OPTS};
 		this.opts = {...this.opts, ...argOpts};
 
@@ -1483,14 +1477,6 @@ class EntityAreaWidget {
 
 		//this._name = {};
 		
-		this.groupPos = argPos;
-		
-		// Calculate real positions depending on aspectRatio and position...
-		// Positions are ALWAYS centered!
-		this.coords = {};
-		this.coords.xpos = Utils.calculateCoordinate(this.opts.xpos, this.groupPos.xpos);
-		this.coords.ypos = Utils.calculateCoordinate(this.opts.ypos, this.groupPos.ypos);
-
 		// Text is rendered in its own context. No need for SVG coordinates.
 
 		console.log('EntityAreaWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
@@ -2644,21 +2630,15 @@ class SegmentedArcTool extends BaseWidget {
 	 */
 	buildArcPath(argStartAngle, argEndAngle, argClockwise, argRadius, argWidth) {
 
-		// #TODO: must use this.coords values for xpos and ypos.
 		var start = this.polarToCartesian(this.coords.xpos, this.coords.ypos, argRadius, argEndAngle);
 		var end = this.polarToCartesian(this.coords.xpos, this.coords.ypos, argRadius, argStartAngle);
-//		var start = this.polarToCartesian(this.opts.xpos, this.opts.ypos, argRadius, argEndAngle);
-//		var end = this.polarToCartesian(this.opts.xpos, this.opts.ypos, argRadius, argStartAngle);
 		var largeArcFlag = Math.abs(argEndAngle - argStartAngle) <= 180 ? "0" : "1";
 		
 		const sweepFlag = argClockwise ? "0": "1";
 	
-		// #TODO: must use this.coords values for xpos and ypos.
 		var cutoutRadius = argRadius - argWidth,
 			start2 = this.polarToCartesian(this.coords.xpos, this.coords.ypos, cutoutRadius, argEndAngle),
 			end2 = this.polarToCartesian(this.coords.xpos, this.coords.ypos, cutoutRadius, argStartAngle),
-//			start2 = this.polarToCartesian(this.opts.xpos, this.opts.ypos, cutoutRadius, argEndAngle),
-//			end2 = this.polarToCartesian(this.opts.xpos, this.opts.ypos, cutoutRadius, argStartAngle),
 
 		d = [
 			"M", start.x, start.y,
@@ -2679,7 +2659,7 @@ class SegmentedArcTool extends BaseWidget {
 //=============================================================================
 //=============================================================================
 //=============================================================================
-
+/*
 class SegmentedArc {
 
 	constructor(argParent, argOpts, argPos) {
@@ -2803,7 +2783,8 @@ class SegmentedArc {
 		this.starttime = null;
 		console.log('segmentangles - init', this.id, this.opts.isScale, this._segmentAngles);
 	}
-
+*/
+/*
 	get objectId() {
 		return this.id;
 	}
@@ -2826,12 +2807,15 @@ class SegmentedArc {
 		//const na = this._arcId.querySelector("arc-segment-".concat(this.Id).concat("-").concat(1));
 		//const na2 = this._parent.shadowRoot.getElementById("arc-segment-".concat(this.Id).concat("-").concat(0));
 	}
-	
+*/
+/*
+
 	updated(changedProperties) {
 		// Element has updated. Now do the animation ???
 		// let dateTime = new Date().getTime();
 	}
-	
+*/
+/*	
 	render() {
 
     return svg`
@@ -2843,13 +2827,15 @@ class SegmentedArc {
 			</g>
 		`;
 	}
-
+*/
+/*
 	_renderScale() {
 		if (this._segmentedArcScale) return this._segmentedArcScale.render();
 		
 		//if (this.opts.show.scale) this._segmentedArcScale.render();
 	}
-	
+*/
+/*	
   _renderSegments() {
 		var arcStart = this.opts.start_angle;
 		var arcEnd = this.opts.end_angle;
@@ -3133,8 +3119,8 @@ class SegmentedArc {
 			return svg`${svgItems}`;
 		}
 	}
-	
-	
+*/	
+/*	
 	polarToCartesian(centerX, centerY, radius, angleInDegrees) {
 		var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
 
@@ -3143,6 +3129,7 @@ class SegmentedArc {
 			y: centerY + (radius * Math.sin(angleInRadians))
 		};
 	}
+*/
 
 	/*
 	 *
@@ -3154,6 +3141,7 @@ class SegmentedArc {
 	 * and the opts thing should go to. Leftover from example...
 	 *
 	 */
+/*
 	buildArcPath(argStartAngle, argEndAngle, argClockwise, argRadius, argWidth) {
 
 		var start = this.polarToCartesian(this.opts.xpos, this.opts.ypos, argRadius, argEndAngle);
@@ -3177,6 +3165,7 @@ class SegmentedArc {
 	}
 	
 } // class SegmentedArc
+*/
 
 //=============================================================================
 //=============================================================================
