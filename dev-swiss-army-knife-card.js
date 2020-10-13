@@ -2044,6 +2044,9 @@ class SparkleBarChartWidget extends BaseWidget {
 	}
 }
 
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
  /*******************************************************************************
 	* SegmentedArcTool class
 	*
@@ -2113,6 +2116,8 @@ class SegmentedArcTool extends BaseWidget {
 		//this.dimensions.segments.dash = Utils.calculateDimension(this.opts.segments.dash);
 		this.dimensions.scale_offset = Utils.calculateDimension(this.opts.scale_offset);
 		
+		// Added for confusion???????
+		this._firstUpdatedCalled = false;
 
 		// Remember the values to be able to render from/to
 		this._value = null;
@@ -2165,6 +2170,7 @@ class SegmentedArcTool extends BaseWidget {
 		}
 
 		this._segmentAngles = [];
+		this._segments = {};
 		
 		// Precalculate segments with start and end angle!
 		this._arc = {};
@@ -2172,24 +2178,125 @@ class SegmentedArcTool extends BaseWidget {
 		this._arc.clockwise = this.opts.end_angle > this.opts.start_angle;
 		this._arc.direction = this._arc.clockwise ? 1 : -1;
 		
+		// 2020.10.13 (see issue #5)
+		// Use different calculation for parts to support colorstops, colorlists and segment counts instead of the currently used dash (degrees) value
+		//
+		
+		// FIXEDCOLOR
+		if (this.opts.show.style == 'fixedcolor') {
+		}
+		// COLORLIST
+		else if (this.opts.show.style == 'colorlist') {
+			// Get number of segments, and their size in degrees.
+			this._segments.count = this.opts.segments.colorlist.colors.length;
+			this._segments.size = this._arc.size / this._segments.count;
+			this._segments.gap = this.opts.segments.colorlist.gap;
+			this._segments.sizeList = [];
+			for (var i = 0; i < this._segments.count; i++) {
+				this._segments.sizeList[i] = this._segments.size;
+			}
+				
+			// Use a running total for the size of the segments...
+			var segmentRunningSize = 0;
+			for (var i = 0; i < this._segments.count; i++) {
+				this._segmentAngles[i] = {"boundsStart": this.opts.start_angle + (segmentRunningSize * this._arc.direction),
+																	"boundsEnd": this.opts.start_angle + (segmentRunningSize + this._segments.sizeList[i] * this._arc.direction),
+																	"drawStart": this.opts.start_angle + (segmentRunningSize * this._arc.direction) + (this._segments.gap * this._arc.direction),
+																	"drawEnd": this.opts.start_angle + (segmentRunningSize + this._segments.sizeList[i] * this._arc.direction) - (this._segments.gap * this._arc.direction)};
+				segmentRunningSize += this._segments.sizeList[i];
+			}
+
+			console.log('colorstuff - COLORLIST', this._segments, this._segmentAngles);
+			
+		}
+		// COLORSTOPS
+		else if (this.opts.show.style == 'colorstops') {
+			// Get colorstops, remove outliers and make a key/value store...
+			this._segments.colorStops = {};
+			Object.keys(this.opts.segments.colorstops.colors).forEach((key) => {
+					if ((key >= this.opts.scale.min) &&
+							(key <= this.opts.scale.max))
+						this._segments.colorStops[key] = this.opts.segments.colorstops.colors[key];
+						
+				});
+				
+			// Insert dummy stopcolor value for max value for easier lookup...
+			this._segments.colorStops[this.opts.scale.max] = 'black';
+			
+			this._segments.sortedStops = Object.keys(this._segments.colorStops).map(n => Number(n)).sort((a, b) => a - b);
+
+			this._segments.count = this._segments.sortedStops.length - 1;
+			this._segments.gap = this.opts.segments.colorstops.gap;
+			
+			// Now depending on the colorstops and min/max values, calculate the size of each segment relative to the total arc size.
+			// First color in the list starts from Min!
+			
+			var runningColorStop = this.opts.scale.min;
+			var scaleRange = this.opts.scale.max - this.opts.scale.min;
+			this._segments.sizeList = [];
+			for (var i = 0; i < this._segments.count; i++) {
+				var colorSize = this._segments.sortedStops[i + 1] - runningColorStop;
+				runningColorStop += colorSize;
+				// Calculate fraction [0..1] of colorSize of min/max scale range
+				const fraction = colorSize / scaleRange;
+				const angleSize = fraction * this._arc.size;
+				this._segments.sizeList[i] = angleSize;
+			}
+			
+			// Use a running total for the size of the segments...
+			var segmentRunningSize = 0;
+			for (var i = 0; i < this._segments.count; i++) {
+				this._segmentAngles[i] = {"boundsStart": this.opts.start_angle + (segmentRunningSize * this._arc.direction),
+																	"boundsEnd": this.opts.start_angle + (segmentRunningSize + this._segments.sizeList[i] * this._arc.direction),
+																	"drawStart": this.opts.start_angle + (segmentRunningSize * this._arc.direction) + (this._segments.gap * this._arc.direction),
+																	"drawEnd": this.opts.start_angle + (segmentRunningSize + this._segments.sizeList[i] * this._arc.direction) - (this._segments.gap * this._arc.direction)};
+				segmentRunningSize += this._segments.sizeList[i];
+			}
+
+			console.log('colorstuff - COLORSTOPS', this._segments, this._segmentAngles);
+		}
+		// SIMPLEGRADIENT
+		else if (this.opts.show.style == 'simplegradient') {
+		};
+		
+		// Just dump to console for verifiation. Nothing is used yet of the new calculation method...
+		
+
+		// testing. use below two lines and sckip the calculation of the segmentAngles. Those are done above with different calculation...
+		this.skipOriginal = ((this.opts.show.style == 'colorstops') || (this.opts.show.style == 'colorlist'));
+		
+		// Set scale to new value. Never changes of course!!
+		if (this.skipOriginal) {
+			if (this.opts.isScale) this._valuePrev = this._value;
+			this._initialDraw = false;
+
+		}
+		
 		this._arc.parts = Math.floor(this._arc.size / Math.abs(this.opts.segments.dash));
 		this._arc.partsPartialSize = this._arc.size - (this._arc.parts * this.opts.segments.dash);
 		
-		for (var i=0; i< this._arc.parts; i++) {
-			this._segmentAngles[i] = {"boundsStart": this.opts.start_angle + (i * this.opts.segments.dash * this._arc.direction),
-																"boundsEnd": this.opts.start_angle + ((i + 1) * this.opts.segments.dash * this._arc.direction),
-																"drawStart": this.opts.start_angle + (i * this.opts.segments.dash * this._arc.direction) + (this.opts.segments.gap * this._arc.direction),
-																"drawEnd": this.opts.start_angle + ((i + 1) * this.opts.segments.dash * this._arc.direction) - (this.opts.segments.gap * this._arc.direction)};
+		if (this.skipOriginal) {
+			this._arc.parts = this._segmentAngles.length;
+			this._arc.partsPartialSize = 0;
 		}
-		if (this._arc.partsPartialSize > 0) {
-			this._segmentAngles[i] = {"boundsStart": this.opts.start_angle + (i * this.opts.segments.dash * this._arc.direction),
-																"boundsEnd": this.opts.start_angle + ((i + 0) * this.opts.segments.dash * this._arc.direction) +
-																				(this._arc.partsPartialSize * this._arc.direction),
+		else {
+			for (var i=0; i< this._arc.parts; i++) {
+				this._segmentAngles[i] = {"boundsStart": this.opts.start_angle + (i * this.opts.segments.dash * this._arc.direction),
+																	"boundsEnd": this.opts.start_angle + ((i + 1) * this.opts.segments.dash * this._arc.direction),
+																	"drawStart": this.opts.start_angle + (i * this.opts.segments.dash * this._arc.direction) + (this.opts.segments.gap * this._arc.direction),
+																	"drawEnd": this.opts.start_angle + ((i + 1) * this.opts.segments.dash * this._arc.direction) - (this.opts.segments.gap * this._arc.direction)};
+			}
+			if (this._arc.partsPartialSize > 0) {
+				this._segmentAngles[i] = {"boundsStart": this.opts.start_angle + (i * this.opts.segments.dash * this._arc.direction),
+																	"boundsEnd": this.opts.start_angle + ((i + 0) * this.opts.segments.dash * this._arc.direction) +
+																					(this._arc.partsPartialSize * this._arc.direction),
 
-																"drawStart": this.opts.start_angle + (i * this.opts.segments.dash * this._arc.direction) + (this.opts.segments.gap * this._arc.direction),
-																"drawEnd": this.opts.start_angle + ((i + 0) * this.opts.segments.dash * this._arc.direction) +
-																				(this._arc.partsPartialSize * this._arc.direction) - (this.opts.segments.gap * this._arc.direction)};
+																	"drawStart": this.opts.start_angle + (i * this.opts.segments.dash * this._arc.direction) + (this.opts.segments.gap * this._arc.direction),
+																	"drawEnd": this.opts.start_angle + ((i + 0) * this.opts.segments.dash * this._arc.direction) +
+																					(this._arc.partsPartialSize * this._arc.direction) - (this.opts.segments.gap * this._arc.direction)};
+			}
 		}
+
 		this.starttime = null;
 
 		console.log('SegmentedArcTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
@@ -2215,11 +2322,26 @@ class SegmentedArcTool extends BaseWidget {
 	// Me is updated. Get arc id for animations...
 	firstUpdated(changedProperties)
 	{
-		console.log('SegmentedArcTool - firstUpdated IN');
+		console.log('SegmentedArcTool - firstUpdated IN with _arcId/id', this._arcId, this.id, this.opts.isScale);
 		this._arcId = this._parent.shadowRoot.getElementById("arc-".concat(this.id));
 		//const na = '';//this._arcId.querySelector();
 		//const na = this._arcId.querySelector("arc-segment-".concat(this.Id).concat("-").concat(1));
 		//const na2 = this._parent.shadowRoot.getElementById("arc-segment-".concat(this.Id).concat("-").concat(0));
+		
+		this._firstUpdatedCalled = true;
+
+		// Just a try.
+		// 
+		// was this a bug. The scale was never called with updated. Hence always no arcId...
+		this._segmentedArcScale?.firstUpdated(changedProperties);
+		
+		if (this.skipOriginal) {
+			console.log('RENDERNEW - firstUpdated IN with _arcId/id/isScale/scale/connected', this._arcId, this.id, this.opts.isScale, this._segmentedArcScale, this._parent.connected);
+			if (!this.opts.isScale) this._valuePrev = null;
+			this._initialDraw = true;
+			// Huh? next call doesn't seem required to update / initiate animation???
+			//this._parent.requestUpdate();
+		}
 	}
 	
 	updated(changedProperties) {
@@ -2230,7 +2352,7 @@ class SegmentedArcTool extends BaseWidget {
 
 	render() {
 
-		console.log('SegmentedArcTool - Render IN');
+		console.log('SegmentedArcTool RENDERNEW - Render IN');
     return svg`
 			<g filter="url(#ds)" id="arc-${this.id}" class="arc">
 				<g >
@@ -2248,300 +2370,569 @@ class SegmentedArcTool extends BaseWidget {
 	}
 	
   _renderSegments() {
-		var arcStart = this.opts.start_angle;
-		var arcEnd = this.opts.end_angle;
-		var arcEndPrev = this.opts.end_angle;
-		var arcWidth = this.opts.width;
+
+		// migrate to new solution to draw segmented arc...
 		
-		var arcEndFull = this.opts.end_angle;
-		var arcClockwise = arcEnd > arcStart;
-		var arcPart = this.opts.segments.dash;
-		var arcDivider = this.opts.segments.gap;
+		if (this.skipOriginal) {
+			// Here we can rebuild all needed. Much will be the same I guess...
 
-		// #TODO: must use this.dimensions
-		var arcRadius = this.opts.radius;
-		
-		// calculate real end angle depending on value set in object and min/max scale
-		var val = Utils.calculateValueBetween(this.opts.scale.min, this.opts.scale.max, this._value);
-		var valPrev = Utils.calculateValueBetween(this.opts.scale.min, this.opts.scale.max, this._valuePrev);
-		if (val != valPrev) console.log('_renderSegments diff value old new', this.id, valPrev, val);
-
-		var arcSizeFull = Math.abs(arcEndFull - arcStart);
-
-		arcEnd = (val * arcSizeFull * this._arc.direction) + arcStart;
-		arcEndPrev = (valPrev * arcSizeFull* this._arc.direction) + arcStart;
-
-		// Styles are already converted to an Object {}...
-		let configStyle = {...this.opts.styles};
-		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-
-		let configStyleBg = {...this.opts.styles_bg};
-		const configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-		
-		var arcSize = Math.abs(arcEnd - arcStart);
-		var arcSizePrev = Math.abs(arcEndPrev - arcStart);
-		
-		// Calc diff in arc size. Can be positive and negative.
-		// Then get stepsize. We draw in 20 steps.
-		var arcSizeDiff = arcSizePrev - arcSize;
-		var arcStepSize = arcSizeDiff / 50;
-		var arcChangeClockwise = (arcSize > arcSizePrev) ? true : false;
-		
-		var svgItems = [];
-		
-		var fullParts = Math.floor(arcSize/Math.abs(arcPart));
-		var fullPartsAll = Math.floor(arcSizeFull/Math.abs(arcPart));
-
-		var d;
-		
-		// Count what's left of the arc. Start with the full size...
-		
-		var arcRest = arcSize;
-
-		// Draw background of segmented arc...
-		for (var k = 0; k < this._segmentAngles.length; k++) {
-			d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
-														this._arc.clockwise, arcRadius, arcWidth);
-
-			svgItems.push(svg`<path id="arc-segment-bg-${this.id}-${k}" class="arc__segment"
-													style="${configStyleBgStr}"
-													d="${d}"
-													/>`);
-
-		}
-
-		// Now draw the arc itself...
-		var arcPartStart;
-		var arcPartEnd;
-
-		
-		// Check if arcId does exist
-		if (this._arcId != null) {
-			console.log('_arcId does exist');
-
-			// Render current from cache
-			this._cache.forEach((item, index) => {
-				d = item;
-				//console.log('_renderSegments - from cache', this.id, index, d);
-				svgItems.push(svg`<path id="arc-segment-${this.id}-${index}" class="arc__segment"
-													style="${configStyleStr};"
-													d="${d}"
-													/>`);
-			});
+			// Added temp vars. animation doesn't work!!!!
+			var arcStart = this.opts.start_angle;
+			var arcEnd = this.opts.end_angle;
+			var arcEndPrev = this.opts.end_angle;
+			var arcWidth = this.opts.width;
 			
-			var tween = {};
+			var arcEndFull = this.opts.end_angle;
+			var arcClockwise = arcEnd > arcStart;
+			var arcPart = this.opts.segments.dash;
+			var arcDivider = this.opts.segments.gap;
+
+			// #TODO: must use this.dimensions
+			var arcRadius = this.opts.radius;
 			
-			function animateSegments(timestamp, thisWidget){
 
-					const easeOut = progress =>
-						Math.pow(--progress, 5) + 1;
+			console.log('RENDERNEW - IN _arcId, firstUpdatedCalled', this._arcId, this._firstUpdatedCalled);
+			// calculate real end angle depending on value set in object and min/max scale
+			var val = Utils.calculateValueBetween(this.opts.scale.min, this.opts.scale.max, this._value);
+			var valPrev = Utils.calculateValueBetween(this.opts.scale.min, this.opts.scale.max, this._valuePrev);
+			if (val != valPrev) console.log('RENDERNEW _renderSegments diff value old new', this.id, valPrev, val);
 
-					var frameSegment;
-					var runningSegment;
+					arcEnd = (val * this._arc.size * this._arc.direction) + this.opts.start_angle;
+					arcEndPrev = (valPrev * this._arc.size * this._arc.direction) + this.opts.start_angle;
+			var arcSize = Math.abs(arcEnd - this.opts.start_angle);
+			var arcSizePrev = Math.abs(arcEndPrev - this.opts.start_angle);
 
-					var timestamp = timestamp || new Date().getTime()
-					if (!tween.startTime) {
-						tween.startTime = timestamp;
-						tween.runningAngle = tween.fromAngle;
-					}
+			// Styles are already converted to an Object {}...
+			let configStyle = {...this.opts.styles};
+			const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
-					var runtime = timestamp - tween.startTime
-					tween.progress = Math.min(runtime / tween.duration, 1);
-					tween.progress = easeOut(tween.progress);
-					
-					const increase = ((thisWidget._arc.clockwise) 
-														? (tween.toAngle > tween.fromAngle) : (tween.fromAngle > tween.toAngle));
+			// Draw background of segmented arc...
+			let configStyleBg = {...this.opts.styles_bg};
+			const configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
-					// Calculate where the animation angle should be now in this animation frame: angle and segment.
-					tween.frameAngle = tween.fromAngle + ((tween.toAngle - tween.fromAngle) * tween.progress);
-					frameSegment = thisWidget._segmentAngles.findIndex((currentValue, index) =>
-							thisWidget._arc.clockwise
-							? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
-							: ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
-					
-					if (frameSegment == -1) {
-						console.log('animateSegments frameAngle not found', tween, thisWidget._segmentAngles);
-					}
-					
-					// Check where we actually are now. This might be in a different segment...
-					runningSegment = thisWidget._segmentAngles.findIndex((currentValue, index) => 
-							thisWidget._arc.clockwise
-							? ((tween.runningAngle <= currentValue.boundsEnd) && (tween.runningAngle >= currentValue.boundsStart))
-							: ((tween.runningAngle <= currentValue.boundsStart) && (tween.runningAngle >= currentValue.boundsEnd)));
+			var svgItems = [];
 
-					// Do render segments until the animation angle is at the requested animation frame angle.
-					do {
-						
-						var aniStartAngle = thisWidget._segmentAngles[runningSegment].drawStart;
-						var runningSegmentAngle = thisWidget._arc.clockwise
-																			? Math.min(thisWidget._segmentAngles[runningSegment].boundsEnd, tween.frameAngle)
-																			: Math.max(thisWidget._segmentAngles[runningSegment].boundsEnd, tween.frameAngle);
-						var aniEndAngle = thisWidget._arc.clockwise
-																? Math.min(thisWidget._segmentAngles[runningSegment].drawEnd, tween.frameAngle)
-																: Math.max(thisWidget._segmentAngles[runningSegment].drawEnd, tween.frameAngle);
-						// First phase. Just draw and ignore segments...
-						d = thisWidget.buildArcPath(aniStartAngle, aniEndAngle, thisWidget._arc.clockwise, arcRadius, arcWidth);
+			for (var k = 0; k < this._segmentAngles.length; k++) {
+				d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
+															this._arc.clockwise, this.opts.radius, this.opts.width);
 
-						let as;
-						const myarc = "arc-segment-".concat(thisWidget.id).concat("-").concat(runningSegment);
-						as = thisWidget._parent.shadowRoot.getElementById(myarc);
-						if (as) {
-							var e = as.getAttribute("d");
-							as.setAttribute("d", d);
-							
-							// We also have to set the style fill if the color stops and gradients are implemented
-							// As we're using styles, attributes won't work. Must use as.style.fill = 'calculated color'
-							// #TODO
-							// Can't use gradients probably because of custom path. Conic-gradient would be fine.
-							//
-							// First try...
-							if (thisWidget.opts.show.style =="colorstops") {
-								as.style.fill = thisWidget.opts.colorstops[runningSegment];
-							}
-						}
-						thisWidget._cache[runningSegment] = d;
-						
-						// If at end of animation, don't do the add to force going to next segment 
-						if (tween.frameAngle != runningSegmentAngle) {
-							runningSegmentAngle = runningSegmentAngle + (0.000001 * thisWidget._arc.direction);
-						}
+				svgItems.push(svg`<path id="arc-segment-bg-${this.id}-${k}" class="arc__segment"
+														style="${configStyleBgStr}"
+														d="${d}"
+														/>`);
 
-						var runningSegmentPrev = runningSegment;
-						runningSegment = thisWidget._segmentAngles.findIndex((currentValue, index) => 
-							thisWidget._arc.clockwise
-							? ((runningSegmentAngle <= currentValue.boundsEnd) && (runningSegmentAngle >= currentValue.boundsStart))
-							: ((runningSegmentAngle <= currentValue.boundsStart) && (runningSegmentAngle >= currentValue.boundsEnd)));		
-						
-						frameSegment = thisWidget._segmentAngles.findIndex((currentValue, index) => 
-							thisWidget._arc.clockwise
-							? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
-							: ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));		
-
-						if (!increase) {
-							if (runningSegmentPrev != runningSegment) {
-								console.log('movit - remove path', thisWidget.id, runningSegmentPrev);
-								if (thisWidget._arc.clockwise) {
-									as.removeAttribute("d");
-									thisWidget._cache[runningSegmentPrev] = null;
-								} else {
-									as.removeAttribute("d");
-									thisWidget._cache[runningSegmentPrev] = null;
-								}
-							}
-						}
-						tween.runningAngle = runningSegmentAngle;
-					} while ((tween.runningAngle != tween.frameAngle) && (runningSegment == runningSegmentPrev));
-
-					if (tween.progress != 1) {
-							thisWidget.rAFid = requestAnimationFrame(function(timestamp){
-									animateSegments(timestamp, thisWidget)
-							})
-					} else {
-						tween.startTime = null;
-					}
 			}
 
-			var mySelf = this; 
-			var arcCur = arcEndPrev;
-			
-			// Check if values changed and we should animate to another target then previously rendered
-			if ((val != valPrev) && (this._parent.connected == true) && (this._renderTo != this._value)) {
-				this._renderTo = this._value;
-				console.log('val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
-				
-				// If previous animation active, cancel this one before starting a new one...
-				if (this.rAFid) {
-					console.log('cancelling rAFid', this._parent.cardId, this.id, 'rAFid', this.rAFid);
-					cancelAnimationFrame(this.rAFid);
-				}
-				
-				// Start new animation with calculated settings...
-				// counter var not defined???
-				//console.log('starting animationframe timer...', this._parent.cardId, this.id, counter);
-				tween.fromAngle = arcEndPrev;
-				tween.toAngle = arcEnd;
-				tween.runningAngle = arcEndPrev;
-				tween.duration = Math.min(Math.max(500, this.opts.animation.duration * 1000), 5000);
-				tween.startTime = null;
-				this.rAFid = requestAnimationFrame(function(timestamp){
-																						animateSegments(timestamp, mySelf)
-				})
-			};
-			return svg`${svgItems}`;
+			// Check if arcId does exist
+			if (this._firstUpdatedCalled) {
+//			if ((this._arcId)) {
+				console.log('RENDERNEW _arcId DOES exist', this._arcId, this.id, this._firstUpdatedCalled);
 
-		} else {
-			// FIRST draw! Do IT!
-			console.log('_arcId does NOT exist');
+				// Render current from cache
+				this._cache.forEach((item, index) => {
+					d = item;
 
-			for(var i = 0; i < fullParts; i++) {
-				arcPartStart = this._segmentAngles[i].drawStart;
-				arcPartEnd = this._segmentAngles[i].drawEnd;
-				arcRest = arcRest - arcPart;
-				
-				d = this.buildArcPath(arcPartStart, arcPartEnd, arcClockwise, arcRadius, arcWidth);
-				this._cache[i] = d;
+					// extra, set color from colorlist as a test
+					var fill = this.opts.color;
+					if (this.opts.show.style =="colorlist") {
+						fill = this.opts.segments.colorlist.colors[index];
+					}
+					if (this.opts.show.style =="colorstops") {
+						fill = this._segments.colorStops[this._segments.sortedStops[index]];
+					}
 
-				// extra, set color from colorlist as a test
-				var fill = this.opts.color;
-				if (this.opts.show.style =="colorstops") {
-					fill = this.opts.colorstops[i];
-				}
+					//console.log('RENDERNEW _renderSegments - from cache', this.id, index, d);
+					svgItems.push(svg`<path id="arc-segment-${this.id}-${index}" class="arc__segment"
+														style="${configStyleStr} fill: ${fill};;"
+														d="${d}"
+														/>`);
+				});
+
+				var tween = {};
 				
-				svgItems.push(svg`<path id="arc-segment-${this.id}-${i}" class="arc__segment"
+				function animateSegmentsNEW(timestamp, thisWidget){
+
+						const easeOut = progress =>
+							Math.pow(--progress, 5) + 1;
+
+						var frameSegment;
+						var runningSegment;
+
+						var timestamp = timestamp || new Date().getTime()
+						if (!tween.startTime) {
+							tween.startTime = timestamp;
+							tween.runningAngle = tween.fromAngle;
+						}
+
+						//console.log('RENDERNEW - in animateSegmentsNEW');
+						
+						var runtime = timestamp - tween.startTime
+						tween.progress = Math.min(runtime / tween.duration, 1);
+						tween.progress = easeOut(tween.progress);
+						
+						const increase = ((thisWidget._arc.clockwise) 
+															? (tween.toAngle > tween.fromAngle) : (tween.fromAngle > tween.toAngle));
+
+						// Calculate where the animation angle should be now in this animation frame: angle and segment.
+						tween.frameAngle = tween.fromAngle + ((tween.toAngle - tween.fromAngle) * tween.progress);
+						frameSegment = thisWidget._segmentAngles.findIndex((currentValue, index) =>
+								thisWidget._arc.clockwise
+								? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
+								: ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
+						
+						if (frameSegment == -1) {
+							console.log('RENDERNEW animateSegments frameAngle not found', tween, thisWidget._segmentAngles);
+						}
+						
+						// Check where we actually are now. This might be in a different segment...
+						runningSegment = thisWidget._segmentAngles.findIndex((currentValue, index) => 
+								thisWidget._arc.clockwise
+								? ((tween.runningAngle <= currentValue.boundsEnd) && (tween.runningAngle >= currentValue.boundsStart))
+								: ((tween.runningAngle <= currentValue.boundsStart) && (tween.runningAngle >= currentValue.boundsEnd)));
+
+						// Do render segments until the animation angle is at the requested animation frame angle.
+						do {
+							
+							var aniStartAngle = thisWidget._segmentAngles[runningSegment].drawStart;
+							var runningSegmentAngle = thisWidget._arc.clockwise
+																				? Math.min(thisWidget._segmentAngles[runningSegment].boundsEnd, tween.frameAngle)
+																				: Math.max(thisWidget._segmentAngles[runningSegment].boundsEnd, tween.frameAngle);
+							var aniEndAngle = thisWidget._arc.clockwise
+																	? Math.min(thisWidget._segmentAngles[runningSegment].drawEnd, tween.frameAngle)
+																	: Math.max(thisWidget._segmentAngles[runningSegment].drawEnd, tween.frameAngle);
+							// First phase. Just draw and ignore segments...
+							d = thisWidget.buildArcPath(aniStartAngle, aniEndAngle, thisWidget._arc.clockwise, arcRadius, arcWidth);
+
+							let as;
+							const myarc = "arc-segment-".concat(thisWidget.id).concat("-").concat(runningSegment);
+							as = thisWidget._parent.shadowRoot.getElementById(myarc);
+							if (as) {
+								var e = as.getAttribute("d");
+								as.setAttribute("d", d);
+								
+								// We also have to set the style fill if the color stops and gradients are implemented
+								// As we're using styles, attributes won't work. Must use as.style.fill = 'calculated color'
+								// #TODO
+								// Can't use gradients probably because of custom path. Conic-gradient would be fine.
+								//
+								// First try...
+								if (thisWidget.opts.show.style =="colorlist") {
+									as.style.fill = thisWidget.opts.segments.colorlist.colors[runningSegment];
+								}
+							}
+							thisWidget._cache[runningSegment] = d;
+							
+							// If at end of animation, don't do the add to force going to next segment 
+							if (tween.frameAngle != runningSegmentAngle) {
+								runningSegmentAngle = runningSegmentAngle + (0.000001 * thisWidget._arc.direction);
+							}
+
+							var runningSegmentPrev = runningSegment;
+							runningSegment = thisWidget._segmentAngles.findIndex((currentValue, index) => 
+								thisWidget._arc.clockwise
+								? ((runningSegmentAngle <= currentValue.boundsEnd) && (runningSegmentAngle >= currentValue.boundsStart))
+								: ((runningSegmentAngle <= currentValue.boundsStart) && (runningSegmentAngle >= currentValue.boundsEnd)));		
+							
+							frameSegment = thisWidget._segmentAngles.findIndex((currentValue, index) => 
+								thisWidget._arc.clockwise
+								? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
+								: ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));		
+
+							if (!increase) {
+								if (runningSegmentPrev != runningSegment) {
+									console.log('RENDERNEW movit - remove path', thisWidget.id, runningSegmentPrev);
+									if (thisWidget._arc.clockwise) {
+										as.removeAttribute("d");
+										thisWidget._cache[runningSegmentPrev] = null;
+									} else {
+										as.removeAttribute("d");
+										thisWidget._cache[runningSegmentPrev] = null;
+									}
+								}
+							}
+							tween.runningAngle = runningSegmentAngle;
+						} while ((tween.runningAngle != tween.frameAngle) && (runningSegment == runningSegmentPrev));
+
+						if (tween.progress != 1) {
+								thisWidget.rAFid = requestAnimationFrame(function(timestamp){
+										animateSegmentsNEW(timestamp, thisWidget)
+								})
+						} else {
+							tween.startTime = null;
+						}
+				} // function animateSegmentsNEW
+
+				var mySelf = this; 
+				var arcCur = arcEndPrev;
+				
+				// Check if values changed and we should animate to another target then previously rendered
+				if ((val != valPrev) && (this._parent.connected == true) && (this._renderTo != this._value)) {
+					this._renderTo = this._value;
+					console.log('RENDERNEW val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
+					
+					// If previous animation active, cancel this one before starting a new one...
+					if (this.rAFid) {
+						console.log('RENDERNEW cancelling rAFid', this._parent.cardId, this.id, 'rAFid', this.rAFid);
+						cancelAnimationFrame(this.rAFid);
+					}
+					
+					// Start new animation with calculated settings...
+					// counter var not defined???
+					//console.log('starting animationframe timer...', this._parent.cardId, this.id, counter);
+					tween.fromAngle = arcEndPrev;
+					tween.toAngle = arcEnd;
+					tween.runningAngle = arcEndPrev;
+					tween.duration = Math.min(Math.max(500, this._initialDraw ? 500 : this.opts.animation.duration * 1000), 5000);
+					tween.startTime = null;
+					console.log('RENDERNEW - tween', this.id, tween);
+					this._initialDraw = false;
+					this.rAFid = requestAnimationFrame(function(timestamp){
+																							animateSegmentsNEW(timestamp, mySelf)
+					})
+				};
+
+
+				return svg`${svgItems}`;
+				
+				
+			} else {
+				// Initial FIRST draw.
+				// What if we 'abuse' the animation to do this, and we just create empty elements.
+				// Then we don't have to do difficult things.
+				// Just set some values to 0 and 'force' a full animation...
+				//
+				// Hmm. Stuff is not yet rendered, so DOM objects don't exist yet. How can we abuse the
+				// animation function to do the drawing then??
+				// --> Can use firstUpdated perhaps?? That was the first render, then do the first actual draw??
+				//
+				
+				console.log('RENDERNEW _arcId does NOT exist', this._arcId, this.id);
+
+				// Create empty elements, so no problem in animation function. All path's exist...
+				// An empty element has a width of 0!
+				for (var i=0; i < this._segmentAngles.length; i++) {
+					d = this.buildArcPath(this._segmentAngles[i].drawStart, this._segmentAngles[i].drawEnd,
+																this._arc.clockwise, this.opts.radius, this.opts.isScale ? this.opts.width : 0);
+
+					this._cache[i] = d;
+					
+					// extra, set color from colorlist as a test
+					var fill = this.opts.color;
+					if (this.opts.show.style =="colorlist") {
+						fill = this.opts.segments.colorlist.colors[i];
+					}
+					if (this.opts.show.style =="colorstops") {
+						fill = this._segments.colorStops[this._segments.sortedStops[i]];
+					}
+					
+					svgItems.push(svg`<path id="arc-segment-${this.id}-${i}" class="arc__segment"
 														style="${configStyleStr} fill: ${fill};"
 														d="${d}"
 														/>`);
+				}
+				
+				console.log('RENDERNEW - svgItems', svgItems, this._firstUpdatedCalled);
+				return svg`${svgItems}`;
+
 			}
 
-			this.arcEnd = arcPartEnd;
-			this.arcEndSegment = i;
+		// END OF NEW METHOD OF RENDERING	
+		} else {
+			var arcStart = this.opts.start_angle;
+			var arcEnd = this.opts.end_angle;
+			var arcEndPrev = this.opts.end_angle;
+			var arcWidth = this.opts.width;
+			
+			var arcEndFull = this.opts.end_angle;
+			var arcClockwise = arcEnd > arcStart;
+			var arcPart = this.opts.segments.dash;
+			var arcDivider = this.opts.segments.gap;
 
-			// Did we draw a single segment or not? If not, reset start & end to start...
-			if (fullParts < 1) {
-				arcPartStart = arcStart + (arcDivider * this._arc.direction);
-				arcPartEnd = arcPartStart - (2 * arcDivider * this._arc.direction);
+			// #TODO: must use this.dimensions
+			var arcRadius = this.opts.radius;
+			
+			// calculate real end angle depending on value set in object and min/max scale
+			var val = Utils.calculateValueBetween(this.opts.scale.min, this.opts.scale.max, this._value);
+			var valPrev = Utils.calculateValueBetween(this.opts.scale.min, this.opts.scale.max, this._valuePrev);
+			if (val != valPrev) console.log('_renderSegments diff value old new', this.id, valPrev, val);
+
+			var arcSizeFull = Math.abs(arcEndFull - arcStart);
+
+			arcEnd = (val * arcSizeFull * this._arc.direction) + arcStart;
+			arcEndPrev = (valPrev * arcSizeFull* this._arc.direction) + arcStart;
+
+			// Styles are already converted to an Object {}...
+			let configStyle = {...this.opts.styles};
+			const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+
+			let configStyleBg = {...this.opts.styles_bg};
+			const configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+			
+			var arcSize = Math.abs(arcEnd - arcStart);
+			var arcSizePrev = Math.abs(arcEndPrev - arcStart);
+			
+			// Calc diff in arc size. Can be positive and negative.
+			// Then get stepsize. We draw in 20 steps.
+			var arcSizeDiff = arcSizePrev - arcSize;
+			var arcStepSize = arcSizeDiff / 50;
+			var arcChangeClockwise = (arcSize > arcSizePrev) ? true : false;
+			
+			var svgItems = [];
+			
+			var fullParts = Math.floor(arcSize/Math.abs(arcPart));
+			var fullPartsAll = Math.floor(arcSizeFull/Math.abs(arcPart));
+
+			var d;
+			
+			// Count what's left of the arc. Start with the full size...
+			
+			var arcRest = arcSize;
+
+			// Draw background of segmented arc...
+			for (var k = 0; k < this._segmentAngles.length; k++) {
+				d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
+															this._arc.clockwise, arcRadius, arcWidth);
+
+				svgItems.push(svg`<path id="arc-segment-bg-${this.id}-${k}" class="arc__segment"
+														style="${configStyleBgStr}"
+														d="${d}"
+														/>`);
+
 			}
 
-			// If we have to draw the last partial arc, calculate size and draw it!
+			// Now draw the arc itself...
+			var arcPartStart;
+			var arcPartEnd;
 
-			if (arcRest > 0) {
-				var lastPartStart = this._segmentAngles[i].drawStart;
-				var lastPartEnd = this._segmentAngles[i].drawStart + (arcRest * this._arc.direction) - (arcDivider * this._arc.direction);
-				d = this.buildArcPath(lastPartStart,
-											lastPartEnd,
-											arcClockwise,
-											arcRadius, 
-											arcWidth);
+			
+			// Check if arcId does exist
+			if (this._arcId != null) {
+				console.log('_arcId does exist');
 
-				this._cache[i] = d;
-				svgItems.push(svg`<path id="arc-segment-${this.id}-${i}" class="arc__segment"
-													style="${configStyleStr}"
-													d="${d}"
-													/>`);
-				this.arcEnd = lastPartEnd;
+				// Render current from cache
+				this._cache.forEach((item, index) => {
+					d = item;
+					//console.log('_renderSegments - from cache', this.id, index, d);
+					svgItems.push(svg`<path id="arc-segment-${this.id}-${index}" class="arc__segment"
+														style="${configStyleStr};"
+														d="${d}"
+														/>`);
+				});
+				
+				var tween = {};
+				
+				function animateSegments(timestamp, thisWidget){
+
+						const easeOut = progress =>
+							Math.pow(--progress, 5) + 1;
+
+						var frameSegment;
+						var runningSegment;
+
+						var timestamp = timestamp || new Date().getTime()
+						if (!tween.startTime) {
+							tween.startTime = timestamp;
+							tween.runningAngle = tween.fromAngle;
+						}
+
+						var runtime = timestamp - tween.startTime
+						tween.progress = Math.min(runtime / tween.duration, 1);
+						tween.progress = easeOut(tween.progress);
+						
+						const increase = ((thisWidget._arc.clockwise) 
+															? (tween.toAngle > tween.fromAngle) : (tween.fromAngle > tween.toAngle));
+
+						// Calculate where the animation angle should be now in this animation frame: angle and segment.
+						tween.frameAngle = tween.fromAngle + ((tween.toAngle - tween.fromAngle) * tween.progress);
+						frameSegment = thisWidget._segmentAngles.findIndex((currentValue, index) =>
+								thisWidget._arc.clockwise
+								? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
+								: ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
+						
+						if (frameSegment == -1) {
+							console.log('animateSegments frameAngle not found', tween, thisWidget._segmentAngles);
+						}
+						
+						// Check where we actually are now. This might be in a different segment...
+						runningSegment = thisWidget._segmentAngles.findIndex((currentValue, index) => 
+								thisWidget._arc.clockwise
+								? ((tween.runningAngle <= currentValue.boundsEnd) && (tween.runningAngle >= currentValue.boundsStart))
+								: ((tween.runningAngle <= currentValue.boundsStart) && (tween.runningAngle >= currentValue.boundsEnd)));
+
+						// Do render segments until the animation angle is at the requested animation frame angle.
+						do {
+							
+							var aniStartAngle = thisWidget._segmentAngles[runningSegment].drawStart;
+							var runningSegmentAngle = thisWidget._arc.clockwise
+																				? Math.min(thisWidget._segmentAngles[runningSegment].boundsEnd, tween.frameAngle)
+																				: Math.max(thisWidget._segmentAngles[runningSegment].boundsEnd, tween.frameAngle);
+							var aniEndAngle = thisWidget._arc.clockwise
+																	? Math.min(thisWidget._segmentAngles[runningSegment].drawEnd, tween.frameAngle)
+																	: Math.max(thisWidget._segmentAngles[runningSegment].drawEnd, tween.frameAngle);
+							// First phase. Just draw and ignore segments...
+							d = thisWidget.buildArcPath(aniStartAngle, aniEndAngle, thisWidget._arc.clockwise, arcRadius, arcWidth);
+
+							let as;
+							const myarc = "arc-segment-".concat(thisWidget.id).concat("-").concat(runningSegment);
+							as = thisWidget._parent.shadowRoot.getElementById(myarc);
+							if (as) {
+								var e = as.getAttribute("d");
+								as.setAttribute("d", d);
+								
+								// We also have to set the style fill if the color stops and gradients are implemented
+								// As we're using styles, attributes won't work. Must use as.style.fill = 'calculated color'
+								// #TODO
+								// Can't use gradients probably because of custom path. Conic-gradient would be fine.
+								//
+								// First try...
+								if (thisWidget.opts.show.style =="colorstops") {
+									as.style.fill = thisWidget.opts.colorstops[runningSegment];
+								}
+							}
+							thisWidget._cache[runningSegment] = d;
+							
+							// If at end of animation, don't do the add to force going to next segment 
+							if (tween.frameAngle != runningSegmentAngle) {
+								runningSegmentAngle = runningSegmentAngle + (0.000001 * thisWidget._arc.direction);
+							}
+
+							var runningSegmentPrev = runningSegment;
+							runningSegment = thisWidget._segmentAngles.findIndex((currentValue, index) => 
+								thisWidget._arc.clockwise
+								? ((runningSegmentAngle <= currentValue.boundsEnd) && (runningSegmentAngle >= currentValue.boundsStart))
+								: ((runningSegmentAngle <= currentValue.boundsStart) && (runningSegmentAngle >= currentValue.boundsEnd)));		
+							
+							frameSegment = thisWidget._segmentAngles.findIndex((currentValue, index) => 
+								thisWidget._arc.clockwise
+								? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
+								: ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));		
+
+							if (!increase) {
+								if (runningSegmentPrev != runningSegment) {
+									console.log('movit - remove path', thisWidget.id, runningSegmentPrev);
+									if (thisWidget._arc.clockwise) {
+										as.removeAttribute("d");
+										thisWidget._cache[runningSegmentPrev] = null;
+									} else {
+										as.removeAttribute("d");
+										thisWidget._cache[runningSegmentPrev] = null;
+									}
+								}
+							}
+							tween.runningAngle = runningSegmentAngle;
+						} while ((tween.runningAngle != tween.frameAngle) && (runningSegment == runningSegmentPrev));
+
+						if (tween.progress != 1) {
+								thisWidget.rAFid = requestAnimationFrame(function(timestamp){
+										animateSegments(timestamp, thisWidget)
+								})
+						} else {
+							tween.startTime = null;
+						}
+				} // function animateSegments
+
+				var mySelf = this; 
+				var arcCur = arcEndPrev;
+				
+				// Check if values changed and we should animate to another target then previously rendered
+				if ((val != valPrev) && (this._parent.connected == true) && (this._renderTo != this._value)) {
+					this._renderTo = this._value;
+					console.log('val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
+					
+					// If previous animation active, cancel this one before starting a new one...
+					if (this.rAFid) {
+						console.log('cancelling rAFid', this._parent.cardId, this.id, 'rAFid', this.rAFid);
+						cancelAnimationFrame(this.rAFid);
+					}
+					
+					// Start new animation with calculated settings...
+					// counter var not defined???
+					//console.log('starting animationframe timer...', this._parent.cardId, this.id, counter);
+					tween.fromAngle = arcEndPrev;
+					tween.toAngle = arcEnd;
+					tween.runningAngle = arcEndPrev;
+					tween.duration = Math.min(Math.max(500, this.opts.animation.duration * 1000), 5000);
+					tween.startTime = null;
+					this.rAFid = requestAnimationFrame(function(timestamp){
+																							animateSegments(timestamp, mySelf)
+					})
+				};
+				return svg`${svgItems}`;
+
+			} else {
+				// FIRST draw! Do IT!
+				console.log('_arcId does NOT exist');
+
+				for(var i = 0; i < fullParts; i++) {
+					arcPartStart = this._segmentAngles[i].drawStart;
+					arcPartEnd = this._segmentAngles[i].drawEnd;
+					arcRest = arcRest - arcPart;
+					
+					d = this.buildArcPath(arcPartStart, arcPartEnd, arcClockwise, arcRadius, arcWidth);
+					this._cache[i] = d;
+
+					// extra, set color from colorlist as a test
+					var fill = this.opts.color;
+					if (this.opts.show.style =="colorstops") {
+						fill = this.opts.colorstops[i];
+					}
+					
+					svgItems.push(svg`<path id="arc-segment-${this.id}-${i}" class="arc__segment"
+															style="${configStyleStr} fill: ${fill};"
+															d="${d}"
+															/>`);
+				}
+
+				this.arcEnd = arcPartEnd;
 				this.arcEndSegment = i;
-				i += 1;
-			}
-			
-			// create empty elements, so no problem in animation function. All path's exist...
-			for (var j=i; j < fullPartsAll; j++) {
-				arcPartStart = this._segmentAngles[j].drawStart;
-				arcPartEnd = this._segmentAngles[j].drawStart;
 
-				d = this.buildArcPath(arcPartStart,
-											arcPartStart,
-											arcClockwise,
-											arcRadius, 
-											0);
-				this._cache[j] = d;
-				svgItems.push(svg`<path id="arc-segment-${this.id}-${j}" class="arc__segment"
-													style="${configStyleStr}"
-													d="${d}"
-													/>`);
-			}
-			
+				// Did we draw a single segment or not? If not, reset start & end to start...
+				if (fullParts < 1) {
+					arcPartStart = arcStart + (arcDivider * this._arc.direction);
+					arcPartEnd = arcPartStart - (2 * arcDivider * this._arc.direction);
+				}
 
-			return svg`${svgItems}`;
+				// If we have to draw the last partial arc, calculate size and draw it!
+
+				if (arcRest > 0) {
+					var lastPartStart = this._segmentAngles[i].drawStart;
+					var lastPartEnd = this._segmentAngles[i].drawStart + (arcRest * this._arc.direction) - (arcDivider * this._arc.direction);
+					d = this.buildArcPath(lastPartStart,
+												lastPartEnd,
+												arcClockwise,
+												arcRadius, 
+												arcWidth);
+
+					this._cache[i] = d;
+					svgItems.push(svg`<path id="arc-segment-${this.id}-${i}" class="arc__segment"
+														style="${configStyleStr}"
+														d="${d}"
+														/>`);
+					this.arcEnd = lastPartEnd;
+					this.arcEndSegment = i;
+					i += 1;
+				}
+				
+				// create empty elements, so no problem in animation function. All path's exist...
+				for (var j=i; j < fullPartsAll; j++) {
+					arcPartStart = this._segmentAngles[j].drawStart;
+					arcPartEnd = this._segmentAngles[j].drawStart;
+
+					d = this.buildArcPath(arcPartStart,
+												arcPartStart,
+												arcClockwise,
+												arcRadius, 
+												0);
+					this._cache[j] = d;
+					svgItems.push(svg`<path id="arc-segment-${this.id}-${j}" class="arc__segment"
+														style="${configStyleStr}"
+														d="${d}"
+														/>`);
+				}
+				
+
+				return svg`${svgItems}`;
+			}
 		}
 	}
 	
