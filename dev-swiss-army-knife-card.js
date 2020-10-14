@@ -148,7 +148,10 @@ class BaseWidget {
 
 		this.id = Math.random().toString(36).substr(2, 9);
 		this._parent = argParent;
-
+		
+		this.debug = this._parent.config.debug;
+		console.log('BaseWidget - debug', this.debug);
+		
 		// The position is the absolute position of the GROUP within the svg viewport.
 		// The widget is positioned relative to this origin. A widget is always relative
 		// to a 200x200 default svg viewport. A (50,50) position of the widget
@@ -246,7 +249,7 @@ class RangeSliderWidget extends BaseWidget {
 
 	//--
 
-		console.log('RangeSliderWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+		if (this.debug) console.log('RangeSliderWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
 	}
 
   updateValue() {
@@ -354,10 +357,10 @@ class RangeSliderWidget extends BaseWidget {
 			thisValue.rid = window.requestAnimationFrame(Frame);
 			thisValue.updateValue();
 			thisValue.updatePath(thisValue.m);
-			//console.log('pointer in Frame', thisValue.m);
+			//if (this.debug) console.log('pointer in Frame', thisValue.m);
 		}
 		
-		console.log('slider - firstUpdated');
+		if (this.debug) console.log('slider - firstUpdated');
 		// #TODO
 		// svg moet een svg object zijn, want er worden functies op uitgevoerd.
 		// dus deze slider moet een eigen svg element krijgen...
@@ -376,7 +379,7 @@ class RangeSliderWidget extends BaseWidget {
 			this.elements.text = this.elements.svg.querySelector("#_2 text");
 		}
 
-		console.log('slider - firstUpdated svg = ', this.elements.svg, 'path=', this.elements.path, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
+		if (this.debug) console.log('slider - firstUpdated svg = ', this.elements.svg, 'path=', this.elements.path, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
 
 //    this.inputElement = witness; ////
 
@@ -385,8 +388,8 @@ class RangeSliderWidget extends BaseWidget {
       this.dragging = true;
       this.m = this.oMousePosSVG(e);
 			this.m.x = Math.round(this.m.x / 5) * 5;
-      console.clear();
-      console.log('pointerDOWN',Math.round(this.m.x * 100) / 100);
+      if (this.debug) console.clear();
+      if (this.debug) console.log('pointerDOWN',Math.round(this.m.x * 100) / 100);
       this.target = this.svgH/.75;
       Frame();
     });
@@ -394,7 +397,7 @@ class RangeSliderWidget extends BaseWidget {
     this.elements.svg.addEventListener("pointerup", () => {
       this.dragging = false;
       this.target = 0;
-      console.log('pointerUP');
+      if (this.debug) console.log('pointerUP');
       Frame();
       //this.updatePath(m,deformation);
     });
@@ -403,7 +406,7 @@ class RangeSliderWidget extends BaseWidget {
 
       this.dragging = false;
       this.target = 0;
-      console.log('pointerOUT');
+      if (this.debug) console.log('pointerOUT');
       Frame();
     });
 
@@ -414,7 +417,7 @@ class RangeSliderWidget extends BaseWidget {
 				this.m.x = Math.round(this.m.x / 5) * 5;
 
         console.clear();
-        console.log('pointerMOVE', this.m.x, Math.round(this.m.x * 100) / 100);
+        if (this.debug) console.log('pointerMOVE', this.m.x, Math.round(this.m.x * 100) / 100);
         this.target = this.svgH/.75;
         Frame();
       }
@@ -432,7 +435,7 @@ class RangeSliderWidget extends BaseWidget {
 
   _renderRangeSlider() {
 
-		console.log('slider - _renderRangeSlider');
+		if (this.debug) console.log('slider - _renderRangeSlider');
 
 		// Get configuration styles as the default styles
 		let configStyle = {...this.opts.styles};
@@ -578,7 +581,7 @@ class LineWidget extends BaseWidget {
 			this.svg.x2 = this.coords.x2;
 			this.svg.y2 = this.coords.y2;
 		}
-		console.log('LineWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+		if (this.debug) console.log('LineWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
 	}
 
  /*******************************************************************************
@@ -606,7 +609,7 @@ class LineWidget extends BaseWidget {
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 		
-		console.log('_renderLine POEP', this.opts.type, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
+		if (this.debug) console.log('_renderLine POEP', this.opts.type, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
 		return svg`
 			<line
 				x1="${this.svg.x1}"
@@ -667,7 +670,7 @@ class CircleWidget extends BaseWidget {
 		
 		this.dimensions.radius = Utils.calculateDimension(argOpts.radius)
 
-		console.log('CircleWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+		if (this.debug) console.log('CircleWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
 	}
 
  /*******************************************************************************
@@ -754,7 +757,7 @@ class EllipseTool extends BaseWidget {
 		this.dimensions.radiusx = Utils.calculateDimension(argOpts.radiusx)
 		this.dimensions.radiusy = Utils.calculateDimension(argOpts.radiusy)
 
-		console.log('EllipseTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+		if (this.debug) console.log('EllipseTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
 	}
 
  /*******************************************************************************
@@ -781,7 +784,7 @@ class EllipseTool extends BaseWidget {
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-		console.log('EllipseTool - renderEllipse', this.coords.xpos, this.coords.ypos, this.dimensions.radiusx, this.dimensions.radiusy);
+		if (this.debug) console.log('EllipseTool - renderEllipse', this.coords.xpos, this.coords.ypos, this.dimensions.radiusx, this.dimensions.radiusy);
 
 		return svg`
 			<ellipse filter="url(#ds)"
@@ -894,7 +897,7 @@ class EntityIconWidget extends BaseWidget {
 			this.coords.ypx = this.coords.ypx - (this.dimensions.iconPixels * 0.5) - (this.dimensions.iconPixels * 0.25);
 		}
 
-		console.log('EntityIconWidget constructor coords, dimensions, opts', this.coords, this.dimensions, this.opts);
+		if (this.debug) console.log('EntityIconWidget constructor coords, dimensions, opts', this.coords, this.dimensions, this.opts);
 	}
 
  /*******************************************************************************
@@ -1046,7 +1049,7 @@ class EntityIconWidget extends BaseWidget {
 		let xlatex = diffx / this.groupPos.scale;
 		let xlatey = diffy / this.groupPos.scale;
 		let scale = this.groupPos.scale;
-		console.log('renderIcon - xlatex/y values', scale, this.groupPos.scale, xlatex, xlatey, this.coords, this.dimensions);
+		if (this.debug) console.log('renderIcon - xlatex/y values', scale, this.groupPos.scale, xlatex, xlatey, this.coords, this.dimensions);
 */		
     return svg`
 			<g filter="url(#ds)" id="icon-${this.id}" class="svgicon" transform="scale(${this.groupPos.scale}) translate(${this.dimensions.xlateX} ${this.dimensions.xlateY})"
@@ -1108,7 +1111,7 @@ class BadgeWidget extends BaseWidget {
 		this.svg.rightYpos = this.svg.ypos;
 		this.svg.rightWidth = ((100 - this.opts.ratio) / 100) * this.dimensions.width;
 
-		console.log('BadgeWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+		if (this.debug) console.log('BadgeWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
 	}
 
  /*******************************************************************************
@@ -1217,7 +1220,7 @@ class EntityStateWidget extends BaseWidget {
 		if (argOpts.show) this.opts.show = Object.assign(...argOpts.show);
 		this.opts.show = {...DEFAULT_STATE_OPTS.show, ...this.opts.show};
 		
-		console.log('EntityStateWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+		if (this.debug) console.log('EntityStateWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
 	}
 
 	set value(state) {
@@ -1355,7 +1358,7 @@ class EntityNameWidget extends BaseWidget {
 		
 		// Text is rendered in its own context. No need for SVG coordinates.
 
-		console.log('EntityName constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+		if (this.debug) console.log('EntityName constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
 	}
 
  /*******************************************************************************
@@ -1452,7 +1455,7 @@ class EntityAreaWidget extends BaseWidget {
 		
 		// Text is rendered in its own context. No need for SVG coordinates.
 
-		console.log('EntityAreaWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+		if (this.debug) console.log('EntityAreaWidget constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
 	}
 
  /*******************************************************************************
@@ -1619,7 +1622,7 @@ class HorseshoeTool extends BaseWidget {
 		//====================
 		// End setConfig part.
 
-		console.log('HorseshoeTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+		if (this.debug) console.log('HorseshoeTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
 	}
 
  /*******************************************************************************
@@ -1695,7 +1698,7 @@ class HorseshoeTool extends BaseWidget {
 
 			this.angleCoords = angleCoords;
 		}
-		console.log('HorseshoeTool set value', this.cardId, state);
+		if (this.debug) console.log('HorseshoeTool set value', this.cardId, state);
 
 		return true;
 	}
@@ -1898,7 +1901,7 @@ class SparkleBarChartWidget extends BaseWidget {
 		this._scale = {};
 		this._needsRendering = false;
 
-		console.log('SparkleBarChart constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+		if (this.debug) console.log('SparkleBarChart constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
 	}
 	
  /*******************************************************************************
@@ -1959,7 +1962,7 @@ class SparkleBarChartWidget extends BaseWidget {
 
 		// VERTICAL
 		if (this.opts.type == 'vertical') {
-			console.log('bar is vertical');
+			if (this.debug) console.log('bar is vertical');
 			this._series.forEach((item, index) => {
 				if (!_bars[index]) _bars[index] = {};
 				_bars[index].length = ((item - this._scale.min) / (this._scale.size)) * this.dimensions.height;
@@ -1970,7 +1973,7 @@ class SparkleBarChartWidget extends BaseWidget {
 			});
 			// HORIZONTAL
 		} else if (this.opts.type == 'horizontal') {
-			console.log('bar is horizontal');
+			if (this.debug) console.log('bar is horizontal');
 			this._data.forEach((item, index) => {
 				if (!_bars[index]) _bars[index] = {};
 				_bars[index].length = ((item - this._scale.min) / (this._scale.size)) * this.dimensions.width;
@@ -1980,7 +1983,7 @@ class SparkleBarChartWidget extends BaseWidget {
 				_bars[index].x2 = _bars[index].x1 + this._bars[index].length;
 			});
 		} else {
-			console.log("SparkleBarChartWidget - unknown barchart type (horizontal or vertical)");
+			if (this.debug) console.log("SparkleBarChartWidget - unknown barchart type (horizontal or vertical)");
 		}
 	}
 
@@ -1997,7 +2000,7 @@ class SparkleBarChartWidget extends BaseWidget {
 		
 		if (this._bars.length == 0) return;
 		
-		console.log('_renderBars IN', this.id);
+		if (this.debug) console.log('_renderBars IN', this.id);
 		// Get configuration styles as the default styles
 		// Styles are already converted to an Object {}...
 		let configStyle = {...this.opts.styles};
@@ -2006,7 +2009,7 @@ class SparkleBarChartWidget extends BaseWidget {
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
 		this._bars.forEach((item, index) => {
-			console.log('_renderBars - bars', item, index);
+			if (this.debug) console.log('_renderBars - bars', item, index);
 			svgItems.push(svg`
 				<line id="line-segment-${this.id}-${index}" class="line__segment"
 									style="${configStyleStr}"
@@ -2018,7 +2021,7 @@ class SparkleBarChartWidget extends BaseWidget {
 									/>
 				`);
 		});
-		console.log('_renderBars OUT', this.id);
+		if (this.debug) console.log('_renderBars OUT', this.id);
 		
 		return svg`${svgItems}`;
 	}
@@ -2067,7 +2070,7 @@ class SegmentedArcTool extends BaseWidget {
 			styles: { "stroke-linecap": 'round;',
 								"fill": 'var(--primary-color);',
 								"stroke": 'none;',
-								"stroke-width": '10;',
+								"stroke-width": '0.5;',
 								"fill-rule": 'evenodd;',
 								"stroke-linejoin": 'round;'
 			},
@@ -2091,13 +2094,14 @@ class SegmentedArcTool extends BaseWidget {
 		}	
 
 		super(argParent, argOpts, argPos);
-		
 		this.opts = {...DEFAULT_SEGARC_OPTS};
 		this.opts = {...this.opts, ...argOpts};
 
 		// Check for gap. Big enough?
-		const minGap = this.opts.radius * Math.PI / SVG_VIEW_BOX / 2;
-		this.opts.segments.gap = Math.max(minGap, this.opts.segments.gap);
+		if (this.opts.segments.gap > 0) {
+			const minGap = this.opts.radius * Math.PI / SVG_VIEW_BOX / 2;
+			this.opts.segments.gap = Math.max(minGap, this.opts.segments.gap);
+		}
 
 		if (argOpts.styles) this.opts.styles = {...argOpts.styles};
 		this.opts.styles = {...DEFAULT_SEGARC_OPTS.styles, ...this.opts.styles};
@@ -2206,7 +2210,7 @@ class SegmentedArcTool extends BaseWidget {
 				segmentRunningSize += this._segments.sizeList[i];
 			}
 
-			console.log('colorstuff - COLORLIST', this._segments, this._segmentAngles);
+			if (this.debug) console.log('colorstuff - COLORLIST', this._segments, this._segmentAngles);
 			
 		}
 		// COLORSTOPS
@@ -2253,7 +2257,7 @@ class SegmentedArcTool extends BaseWidget {
 				segmentRunningSize += this._segments.sizeList[i];
 			}
 
-			console.log('colorstuff - COLORSTOPS', this._segments, this._segmentAngles);
+			if (this.debug) console.log('colorstuff - COLORSTOPS', this._segments, this._segmentAngles);
 		}
 		// SIMPLEGRADIENT
 		else if (this.opts.show.style == 'simplegradient') {
@@ -2299,8 +2303,8 @@ class SegmentedArcTool extends BaseWidget {
 
 		this.starttime = null;
 
-		console.log('SegmentedArcTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
-		console.log('SegmentedArcTool - init', this.id, this.opts.isScale, this._segmentAngles);
+		if (this.debug) console.log('SegmentedArcTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.opts);
+		if (this.debug) console.log('SegmentedArcTool - init', this.id, this.opts.isScale, this._segmentAngles);
 	}
 
 	get objectId() {
@@ -2308,7 +2312,7 @@ class SegmentedArcTool extends BaseWidget {
 	}
 	
 	set value(state) {
-		console.log('SegmentedArcTool - set value IN');
+		if (this.debug) console.log('SegmentedArcTool - set value IN');
 
 		if (this.opts.isScale) return false;
 		if (this._value == state) return false;
@@ -2322,7 +2326,7 @@ class SegmentedArcTool extends BaseWidget {
 	// Me is updated. Get arc id for animations...
 	firstUpdated(changedProperties)
 	{
-		console.log('SegmentedArcTool - firstUpdated IN with _arcId/id', this._arcId, this.id, this.opts.isScale);
+		if (this.debug) console.log('SegmentedArcTool - firstUpdated IN with _arcId/id', this._arcId, this.id, this.opts.isScale);
 		this._arcId = this._parent.shadowRoot.getElementById("arc-".concat(this.id));
 		//const na = '';//this._arcId.querySelector();
 		//const na = this._arcId.querySelector("arc-segment-".concat(this.Id).concat("-").concat(1));
@@ -2336,7 +2340,7 @@ class SegmentedArcTool extends BaseWidget {
 		this._segmentedArcScale?.firstUpdated(changedProperties);
 		
 		if (this.skipOriginal) {
-			console.log('RENDERNEW - firstUpdated IN with _arcId/id/isScale/scale/connected', this._arcId, this.id, this.opts.isScale, this._segmentedArcScale, this._parent.connected);
+			if (this.debug) console.log('RENDERNEW - firstUpdated IN with _arcId/id/isScale/scale/connected', this._arcId, this.id, this.opts.isScale, this._segmentedArcScale, this._parent.connected);
 			if (!this.opts.isScale) this._valuePrev = null;
 			this._initialDraw = true;
 			// Huh? next call doesn't seem required to update / initiate animation???
@@ -2345,14 +2349,14 @@ class SegmentedArcTool extends BaseWidget {
 	}
 	
 	updated(changedProperties) {
-		console.log('SegmentedArcTool - updated IN');
+		if (this.debug) console.log('SegmentedArcTool - updated IN');
 		// Element has updated. Now do the animation ???
 		// let dateTime = new Date().getTime();
 	}
 
 	render() {
 
-		console.log('SegmentedArcTool RENDERNEW - Render IN');
+		if (this.debug) console.log('SegmentedArcTool RENDERNEW - Render IN');
     return svg`
 			<g filter="url(#ds)" id="arc-${this.id}" class="arc">
 				<g >
@@ -2391,11 +2395,11 @@ class SegmentedArcTool extends BaseWidget {
 			var arcRadius = this.opts.radius;
 			
 
-			console.log('RENDERNEW - IN _arcId, firstUpdatedCalled', this._arcId, this._firstUpdatedCalled);
+			if (this.debug) console.log('RENDERNEW - IN _arcId, firstUpdatedCalled', this._arcId, this._firstUpdatedCalled);
 			// calculate real end angle depending on value set in object and min/max scale
 			var val = Utils.calculateValueBetween(this.opts.scale.min, this.opts.scale.max, this._value);
 			var valPrev = Utils.calculateValueBetween(this.opts.scale.min, this.opts.scale.max, this._valuePrev);
-			if (val != valPrev) console.log('RENDERNEW _renderSegments diff value old new', this.id, valPrev, val);
+			if (val != valPrev) if (this.debug) console.log('RENDERNEW _renderSegments diff value old new', this.id, valPrev, val);
 
 					arcEnd = (val * this._arc.size * this._arc.direction) + this.opts.start_angle;
 					arcEndPrev = (valPrev * this._arc.size * this._arc.direction) + this.opts.start_angle;
@@ -2426,7 +2430,7 @@ class SegmentedArcTool extends BaseWidget {
 			// Check if arcId does exist
 			if (this._firstUpdatedCalled) {
 //			if ((this._arcId)) {
-				console.log('RENDERNEW _arcId DOES exist', this._arcId, this.id, this._firstUpdatedCalled);
+				if (this.debug) console.log('RENDERNEW _arcId DOES exist', this._arcId, this.id, this._firstUpdatedCalled);
 
 				// Render current from cache
 				this._cache.forEach((item, index) => {
@@ -2441,7 +2445,7 @@ class SegmentedArcTool extends BaseWidget {
 						fill = this._segments.colorStops[this._segments.sortedStops[index]];
 					}
 
-					//console.log('RENDERNEW _renderSegments - from cache', this.id, index, d);
+					//if (this.debug) console.log('RENDERNEW _renderSegments - from cache', this.id, index, d);
 					svgItems.push(svg`<path id="arc-segment-${this.id}-${index}" class="arc__segment"
 														style="${configStyleStr} fill: ${fill};;"
 														d="${d}"
@@ -2450,6 +2454,20 @@ class SegmentedArcTool extends BaseWidget {
 
 				var tween = {};
 				
+/*
+With a very short animation duration, and small segments, only first segment is drawn.
+It seems progress = 1 (ready), but runningAngle is 10.8 and frameAngle is 25.2, two segments ahead...
+segment 1 - drawn, segment2 - not, segment3 - not. After new value, drawing starts at segment3...
+
+{fromAngle: 0, toAngle: 25.200000000000003, runningAngle: 0, duration: 10, startTime: null}
+duration: 10
+frameAngle: 25.200000000000003
+fromAngle: 0
+progress: 1
+runningAngle: 10.800000999999998
+startTime: null
+toAngle: 25.200000000000003
+*/
 				function animateSegmentsNEW(timestamp, thisWidget){
 
 						const easeOut = progress =>
@@ -2464,7 +2482,7 @@ class SegmentedArcTool extends BaseWidget {
 							tween.runningAngle = tween.fromAngle;
 						}
 
-						//console.log('RENDERNEW - in animateSegmentsNEW');
+						if (thisWidget.debug) console.log('RENDERNEW - in animateSegmentsNEW', thisWidget.id, tween);
 						
 						var runtime = timestamp - tween.startTime
 						tween.progress = Math.min(runtime / tween.duration, 1);
@@ -2481,7 +2499,7 @@ class SegmentedArcTool extends BaseWidget {
 								: ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
 						
 						if (frameSegment == -1) {
-							console.log('RENDERNEW animateSegments frameAngle not found', tween, thisWidget._segmentAngles);
+							if (thisWidget.debug) console.log('RENDERNEW animateSegments frameAngle not found', tween, thisWidget._segmentAngles);
 						}
 						
 						// Check where we actually are now. This might be in a different segment...
@@ -2540,7 +2558,7 @@ class SegmentedArcTool extends BaseWidget {
 
 							if (!increase) {
 								if (runningSegmentPrev != runningSegment) {
-									console.log('RENDERNEW movit - remove path', thisWidget.id, runningSegmentPrev);
+									if (thisWidget.debug) console.log('RENDERNEW movit - remove path', thisWidget.id, runningSegmentPrev);
 									if (thisWidget._arc.clockwise) {
 										as.removeAttribute("d");
 										thisWidget._cache[runningSegmentPrev] = null;
@@ -2551,14 +2569,23 @@ class SegmentedArcTool extends BaseWidget {
 								}
 							}
 							tween.runningAngle = runningSegmentAngle;
-						} while ((tween.runningAngle != tween.frameAngle) && (runningSegment == runningSegmentPrev));
+							if (thisWidget.debug) console.log('RENDERNEW - animation loop tween', thisWidget.id, tween, runningSegment, runningSegmentPrev);
+						} while ((tween.runningAngle != tween.frameAngle) /* && (runningSegment == runningSegmentPrev)*/);
 
-						if (tween.progress != 1) {
+						// NTS @ 2020.10.14
+						// In a fast paced animation - say 10msec - multiple segments should be drawn, while tween.progress already has the value of 1.
+						// This means only the first segment is drawn - due to the "&& (runningSegment == runningSegmentPrev)" test above.
+						// To fix this:
+						// - either remove that test (why was it there????)... Or
+						// - add the line "|| (runningSegment != runningSegmentPrev)" to the if() below to make sure another animation frame is requested
+						//   altough tween.progress == 1.
+						if ((tween.progress != 1) /*|| (runningSegment != runningSegmentPrev)*/) {
 								thisWidget.rAFid = requestAnimationFrame(function(timestamp){
 										animateSegmentsNEW(timestamp, thisWidget)
 								})
 						} else {
 							tween.startTime = null;
+							if (thisWidget.debug) console.log('RENDERNEW - animation loop ENDING tween', thisWidget.id, tween, runningSegment, runningSegmentPrev);
 						}
 				} // function animateSegmentsNEW
 
@@ -2568,23 +2595,23 @@ class SegmentedArcTool extends BaseWidget {
 				// Check if values changed and we should animate to another target then previously rendered
 				if ((val != valPrev) && (this._parent.connected == true) && (this._renderTo != this._value)) {
 					this._renderTo = this._value;
-					console.log('RENDERNEW val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
+					//if (this.debug) console.log('RENDERNEW val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
 					
 					// If previous animation active, cancel this one before starting a new one...
 					if (this.rAFid) {
-						console.log('RENDERNEW cancelling rAFid', this._parent.cardId, this.id, 'rAFid', this.rAFid);
+						//if (this.debug) console.log('RENDERNEW cancelling rAFid', this._parent.cardId, this.id, 'rAFid', this.rAFid);
 						cancelAnimationFrame(this.rAFid);
 					}
 					
 					// Start new animation with calculated settings...
 					// counter var not defined???
-					//console.log('starting animationframe timer...', this._parent.cardId, this.id, counter);
+					//if (this.debug) console.log('starting animationframe timer...', this._parent.cardId, this.id, counter);
 					tween.fromAngle = arcEndPrev;
 					tween.toAngle = arcEnd;
 					tween.runningAngle = arcEndPrev;
 					tween.duration = Math.min(Math.max(500, this._initialDraw ? 500 : this.opts.animation.duration * 1000), 5000);
 					tween.startTime = null;
-					console.log('RENDERNEW - tween', this.id, tween);
+					if (this.debug) console.log('RENDERNEW - tween', this.id, tween);
 					this._initialDraw = false;
 					this.rAFid = requestAnimationFrame(function(timestamp){
 																							animateSegmentsNEW(timestamp, mySelf)
@@ -2606,7 +2633,7 @@ class SegmentedArcTool extends BaseWidget {
 				// --> Can use firstUpdated perhaps?? That was the first render, then do the first actual draw??
 				//
 				
-				console.log('RENDERNEW _arcId does NOT exist', this._arcId, this.id);
+				if (this.debug) console.log('RENDERNEW _arcId does NOT exist', this._arcId, this.id);
 
 				// Create empty elements, so no problem in animation function. All path's exist...
 				// An empty element has a width of 0!
@@ -2631,7 +2658,7 @@ class SegmentedArcTool extends BaseWidget {
 														/>`);
 				}
 				
-				console.log('RENDERNEW - svgItems', svgItems, this._firstUpdatedCalled);
+				if (this.debug) console.log('RENDERNEW - svgItems', svgItems, this._firstUpdatedCalled);
 				return svg`${svgItems}`;
 
 			}
@@ -2654,7 +2681,7 @@ class SegmentedArcTool extends BaseWidget {
 			// calculate real end angle depending on value set in object and min/max scale
 			var val = Utils.calculateValueBetween(this.opts.scale.min, this.opts.scale.max, this._value);
 			var valPrev = Utils.calculateValueBetween(this.opts.scale.min, this.opts.scale.max, this._valuePrev);
-			if (val != valPrev) console.log('_renderSegments diff value old new', this.id, valPrev, val);
+			if (val != valPrev) if (this.debug) console.log('_renderSegments diff value old new', this.id, valPrev, val);
 
 			var arcSizeFull = Math.abs(arcEndFull - arcStart);
 
@@ -2707,12 +2734,12 @@ class SegmentedArcTool extends BaseWidget {
 			
 			// Check if arcId does exist
 			if (this._arcId != null) {
-				console.log('_arcId does exist');
+				if (this.debug) console.log('_arcId does exist');
 
 				// Render current from cache
 				this._cache.forEach((item, index) => {
 					d = item;
-					//console.log('_renderSegments - from cache', this.id, index, d);
+					//if (this.debug) console.log('_renderSegments - from cache', this.id, index, d);
 					svgItems.push(svg`<path id="arc-segment-${this.id}-${index}" class="arc__segment"
 														style="${configStyleStr};"
 														d="${d}"
@@ -2750,7 +2777,7 @@ class SegmentedArcTool extends BaseWidget {
 								: ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
 						
 						if (frameSegment == -1) {
-							console.log('animateSegments frameAngle not found', tween, thisWidget._segmentAngles);
+							if (this.debug) console.log('animateSegments frameAngle not found', tween, thisWidget._segmentAngles);
 						}
 						
 						// Check where we actually are now. This might be in a different segment...
@@ -2809,7 +2836,7 @@ class SegmentedArcTool extends BaseWidget {
 
 							if (!increase) {
 								if (runningSegmentPrev != runningSegment) {
-									console.log('movit - remove path', thisWidget.id, runningSegmentPrev);
+									if (this.debug) console.log('movit - remove path', thisWidget.id, runningSegmentPrev);
 									if (thisWidget._arc.clockwise) {
 										as.removeAttribute("d");
 										thisWidget._cache[runningSegmentPrev] = null;
@@ -2837,17 +2864,17 @@ class SegmentedArcTool extends BaseWidget {
 				// Check if values changed and we should animate to another target then previously rendered
 				if ((val != valPrev) && (this._parent.connected == true) && (this._renderTo != this._value)) {
 					this._renderTo = this._value;
-					console.log('val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
+					if (this.debug) console.log('val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
 					
 					// If previous animation active, cancel this one before starting a new one...
 					if (this.rAFid) {
-						console.log('cancelling rAFid', this._parent.cardId, this.id, 'rAFid', this.rAFid);
+						if (this.debug) console.log('cancelling rAFid', this._parent.cardId, this.id, 'rAFid', this.rAFid);
 						cancelAnimationFrame(this.rAFid);
 					}
 					
 					// Start new animation with calculated settings...
 					// counter var not defined???
-					//console.log('starting animationframe timer...', this._parent.cardId, this.id, counter);
+					//if (this.debug) console.log('starting animationframe timer...', this._parent.cardId, this.id, counter);
 					tween.fromAngle = arcEndPrev;
 					tween.toAngle = arcEnd;
 					tween.runningAngle = arcEndPrev;
@@ -2861,7 +2888,7 @@ class SegmentedArcTool extends BaseWidget {
 
 			} else {
 				// FIRST draw! Do IT!
-				console.log('_arcId does NOT exist');
+				if (this.debug) console.log('_arcId does NOT exist');
 
 				for(var i = 0; i < fullParts; i++) {
 					arcPartStart = this._segmentAngles[i].drawStart;
@@ -3026,7 +3053,7 @@ class devSwissArmyKnifeCard extends LitElement {
 		this.isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
 		this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 		
-		console.log('*****Event - card - constructor', this.cardId, new Date().getTime());
+		if (this.debug) console.log('*****Event - card - constructor', this.cardId, new Date().getTime());
   }
 
  /*******************************************************************************
@@ -3617,11 +3644,11 @@ class devSwissArmyKnifeCard extends LitElement {
 
   set hass(hass) {
 		// Set ref to hass, use "_"for the name ;-)
-		console.log('*****Event - set hass', this.cardId, new Date().getTime());
+		if (this.debug) console.log('*****Event - set hass', this.cardId, new Date().getTime());
 		this._hass = hass;
 		
 		if (!this.connected) {
-			console.log('set hass but NOT connected', this.cardId);
+			if (this.debug) console.log('set hass but NOT connected', this.cardId);
 
 		// 2020.02.10 Troubels with connectcallback late, so windows are not yet calculated. ie 
 		// things around icons go wrong...
@@ -3748,10 +3775,10 @@ class devSwissArmyKnifeCard extends LitElement {
 		if (this.widgets) {
 			this.widgets.map((item, index) => {
 				if (true || item.type == "segarct") {
-					console.log('set hass - SegmentedArcTool found', item, index);
+					if (this.debug) console.log('set hass - SegmentedArcTool found', item, index);
 					if ((item.widget.opts.hasOwnProperty('entity_index')))
 					{
-						console.log('set hass - SegmentedArcTool set value', typeof item.widget.value);
+						if (this.debug) console.log('set hass - SegmentedArcTool set value', typeof item.widget.value);
 
 						item.widget.value = this.attributesStr[item.widget.opts.entity_index]
 																								? this.attributesStr[item.widget.opts.entity_index]
@@ -3775,10 +3802,10 @@ class devSwissArmyKnifeCard extends LitElement {
 	*/
 
   setConfig(config) {
-		console.log('*****Event - setConfig', this.cardId, new Date().getTime());
+		if (this.debug) console.log('*****Event - setConfig', this.cardId, new Date().getTime());
 		config = JSON.parse(JSON.stringify(config))
 
-		console.log('setConfig', this.cardId);
+		if (this.debug) console.log('setConfig', this.cardId);
 
 		const aspectRatios = new Map([
 			["1/1", {"width": 1 * SVG_DEFAULT_DIMENSIONS, "height": 1 * SVG_DEFAULT_DIMENSIONS}],
@@ -3865,14 +3892,14 @@ class devSwissArmyKnifeCard extends LitElement {
 //			"icon": EntityIconWidget,
 		
 		if (this.config.layout.groups) {
-console.log('config layout groups FCFG', this.config);
-console.log('config layout groups', this.config.layout.groups);
+if (this.debug) console.log('config layout groups FCFG', this.config);
+if (this.debug) console.log('config layout groups', this.config.layout.groups);
 			this.config.layout.groups.map(group => {
 
 				if (group.widgets) {
 					group.widgets.map(poep => {
 						var argOpts = {...poep};
-						console.log('argopts', group, argOpts);
+						if (this.debug) console.log('argopts', group, argOpts);
 
 						var argPos = { xpos: group.position.xpos / 100 * SVG_DEFAULT_DIMENSIONS,
 													 ypos: group.position.ypos / 100 * SVG_DEFAULT_DIMENSIONS,
@@ -3892,11 +3919,11 @@ console.log('config layout groups', this.config.layout.groups);
 	if (this.config.templates) {
 		if (this.config.groupstemplate) {
 			let widgets = Templates.replaceVariables(this.config.groupstemplate[1].variables, this.config.templates[0]);
-			console.log('template, widgets are: ', widgets);
+			if (this.debug) console.log('template, widgets are: ', widgets);
 		}
 	}
 
-	if ((config.debug) && (config.debug == true)) console.log('debug - setConfig', this.cardId, this.config);
+	if ((config.debug) && (config.debug == true)) if (this.debug) console.log('debug - setConfig', this.cardId, this.config);
 	}
 
  /*******************************************************************************
@@ -3906,7 +3933,7 @@ console.log('config layout groups', this.config.layout.groups);
 	*
 	*/
   connectedCallback() {
-		console.log('*****Event - connectedCallback', this.cardId, new Date().getTime());
+		if (this.debug) console.log('*****Event - connectedCallback', this.cardId, new Date().getTime());
 		this.connected = true;
     super.connectedCallback();
 		
@@ -3917,7 +3944,7 @@ console.log('config layout groups', this.config.layout.groups);
         this.update_interval * 1000,
       );
 		}
-		console.log('ConnectedCallback', this.cardId);
+		if (this.debug) console.log('ConnectedCallback', this.cardId);
 		this.requestUpdate();
   }
 
@@ -3928,12 +3955,12 @@ console.log('config layout groups', this.config.layout.groups);
 	*
 	*/
   disconnectedCallback() {
-		console.log('*****Event - disconnectedCallback', this.cardId, new Date().getTime());
+		if (this.debug) console.log('*****Event - disconnectedCallback', this.cardId, new Date().getTime());
     if (this.interval) {
       clearInterval(this.interval);
 		}			
     super.disconnectedCallback();
-		console.log('disconnectedCallback', this.cardId);
+		if (this.debug) console.log('disconnectedCallback', this.cardId);
 		this.connected = false;
   }
 
@@ -3945,12 +3972,12 @@ console.log('config layout groups', this.config.layout.groups);
 	*/
   firstUpdated(changedProperties) {
 
-		console.log('*****Event - firstUpdated', this.cardId, new Date().getTime());
+		if (this.debug) console.log('*****Event - firstUpdated', this.cardId, new Date().getTime());
 
 		if (this.widgets) {
 			this.widgets.map((item, index) => {
 				if (item.type == "segarct") {
-					console.log('firstUpdated - calling SegmentedArcTool firstUpdated');
+					if (this.debug) console.log('firstUpdated - calling SegmentedArcTool firstUpdated');
 					item.widget.firstUpdated(changedProperties);
 					//this.widgets[index].firstUpdated(changedProperties);
 				}
@@ -3976,7 +4003,7 @@ console.log('config layout groups', this.config.layout.groups);
 	*/
   updated(changedProperties) {
 
-		console.log('*****Event - Updated', this.cardId, new Date().getTime());
+		if (this.debug) console.log('*****Event - Updated', this.cardId, new Date().getTime());
 
 		// #TODO
 		// Add/check this for widget/tool list. They an implement the updated function/callback
@@ -4003,10 +4030,10 @@ console.log('config layout groups', this.config.layout.groups);
 
   render({ config } = this) {
 
-		console.log('*****Event - render', this.cardId, new Date().getTime());
+		if (this.debug) console.log('*****Event - render', this.cardId, new Date().getTime());
 
 		if (!this.connected) {
-			console.log('render but NOT connected', this.cardId, new Date().getTime());
+			if (this.debug) console.log('render but NOT connected', this.cardId, new Date().getTime());
 			return;
 		}
 
@@ -4093,7 +4120,7 @@ console.log('config layout groups', this.config.layout.groups);
 
 	_RenderWidgets() {
 
-console.log('all the widgets in renderWidgets', this.widgets);
+if (this.debug) console.log('all the widgets in renderWidgets', this.widgets);
 
 						
 		return svg`
@@ -4272,11 +4299,11 @@ console.log('all the widgets in renderWidgets', this.widgets);
       layout,
     } = this.config.layout; // was this.config.layout
 
-		if (this.config.debug) console.log('debug - _renderUserSvgs IN', this.config);
+		if (this.config.debug) if (this.debug) console.log('debug - _renderUserSvgs IN', this.config);
 		//if (!svgs) return;
 		if (!this.config.svgs) return;
 
-		if (this.config.debug) console.log('debug - _renderUserSvgs IN2');
+		if (this.config.debug) if (this.debug) console.log('debug - _renderUserSvgs IN2');
 		
 		const svgItems = this.config.svgs.map(item => {
 
@@ -4290,7 +4317,7 @@ console.log('all the widgets in renderWidgets', this.widgets);
 //this._renderUserSvg(item)}
 		})
 
-		if (this.config.debug) console.log('debug - _renderUserSvgs OUT', svgItems);
+		if (this.config.debug) if (this.debug) console.log('debug - _renderUserSvgs OUT', svgItems);
 		return svg`${svgItems}`;		
 	}
 
@@ -4883,7 +4910,7 @@ console.log('all the widgets in renderWidgets', this.widgets);
 		var barhours = 2;
 		
 		if (entity.type == 'bar') {
-			console.log('entity.type == bar', entity);
+			if (this.debug) console.log('entity.type == bar', entity);
 			hours = this.widgets[entity.idx].widget.opts.hours;
 			barhours = this.widgets[entity.idx].widget.opts.barhours;
 		}
