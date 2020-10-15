@@ -195,7 +195,7 @@ class RangeSliderTool extends BaseTool {
 
 
 		const DEFAULT_SLIDER_CONFIG = {
-				type: 'horizontal',
+				orientation: 'horizontal',
 				styles: {
 					"slider": {
 						"stroke-linecap": 'round;',
@@ -552,30 +552,27 @@ class LineTool extends BaseTool {
 
 		this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 		
-		if ((this.config.type == 'vertical') || (this.config.type == 'horizontal'))
+		if ((this.config.orientation == 'vertical') || (this.config.orientation == 'horizontal'))
 				this.dimensions.length = Utils.calculateDimension(argConfig.length);
 
-		if (this.config.type == 'fromto') {
+		if (this.config.orientation == 'fromto') {
 			this.coords.x1 = Utils.calculateCoordinate(argConfig.x1, this.toolsetPos.cx);
 			this.coords.y1 = Utils.calculateCoordinate(argConfig.y1, this.toolsetPos.cy);
 			this.coords.x2 = Utils.calculateCoordinate(argConfig.x2, this.toolsetPos.cx);
 			this.coords.y2 = Utils.calculateCoordinate(argConfig.y2, this.toolsetPos.cy);
 		}
 
-		// #TODO: replace coords.cx by coords.cx to denote the CENTER position, as opposed to the x1,y1 etc. positions.
-		// Makes it also clear that the given pos is centered. Should also be in the yaml files. Makes it much more clear
-		// Then text & icon are bx,by, ie baseline sort of positions.
-		if (this.config.type == 'vertical') {
+		if (this.config.orientation == 'vertical') {
 			this.svg.x1 = this.coords.cx;
 			this.svg.y1 = this.coords.cy - this.dimensions.length/2;
 			this.svg.x2 = this.coords.cx;
 			this.svg.y2 = this.coords.cy + this.dimensions.length/2;
-		} else if (this.config.type == 'horizontal') {
+		} else if (this.config.orientation == 'horizontal') {
 			this.svg.x1 = this.coords.cx - this.dimensions.length/2;
 			this.svg.y1 = this.coords.cy;
 			this.svg.x2 = this.coords.cx + this.dimensions.length/2;
 			this.svg.y2 = this.coords.cy;
-		} else if (this.config.type == 'fromto') {
+		} else if (this.config.orientation == 'fromto') {
 			this.svg.x1 = this.coords.x1;
 			this.svg.y1 = this.coords.y1;
 			this.svg.x2 = this.coords.x2;
@@ -1953,7 +1950,7 @@ class SparkleBarChartTool extends BaseTool {
 		this.computeMinMax();
 
 		// VERTICAL
-		if (this.config.type == 'vertical') {
+		if (this.config.orientation == 'vertical') {
 			if (this.debug) console.log('bar is vertical');
 			this._series.forEach((item, index) => {
 				if (!_bars[index]) _bars[index] = {};
@@ -1964,7 +1961,7 @@ class SparkleBarChartTool extends BaseTool {
 				_bars[index].y2 = _bars[index].y1 - this._bars[index].length;
 			});
 			// HORIZONTAL
-		} else if (this.config.type == 'horizontal') {
+		} else if (this.config.orientation == 'horizontal') {
 			if (this.debug) console.log('bar is horizontal');
 			this._data.forEach((item, index) => {
 				if (!_bars[index]) _bars[index] = {};
@@ -1975,7 +1972,7 @@ class SparkleBarChartTool extends BaseTool {
 				_bars[index].x2 = _bars[index].x1 + this._bars[index].length;
 			});
 		} else {
-			if (this.debug) console.log("SparkleBarChartTool - unknown barchart type (horizontal or vertical)");
+			if (this.debug) console.log("SparkleBarChartTool - unknown barchart orientation (horizontal or vertical)");
 		}
 	}
 
@@ -3034,6 +3031,11 @@ class devSwissArmyKnifeCard extends LitElement {
 		
 		this.vbars = [];
 		this.rects = [];
+
+		// Create the lists for the toolsets and the tools
+		// - toolsets contain a list of toolsets with tools
+		// - tools contain the full list of tools!
+		this.toolsets = [];
 		this.tools = [];
 		
 		// For history query interval updates.
@@ -3041,7 +3043,12 @@ class devSwissArmyKnifeCard extends LitElement {
 		this.updating = false;
 		this.update_interval = 300;
 		
-		// http://jsfiddle.net/jlubean/dL5cLjxt/
+		// Safari is the new IE.
+		// Check for iOS / iPadOS / Safari to be able to work around some 'features'
+		// Some bugs are already 9 years old, and not fixed yet by Apple!
+		//
+		// Detection from: http://jsfiddle.net/jlubean/dL5cLjxt/
+		//
 		this.isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
 		this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 		
@@ -3766,7 +3773,7 @@ class devSwissArmyKnifeCard extends LitElement {
 		//
 		if (this.tools) {
 			this.tools.map((item, index) => {
-				if (true || item.type == "segarct") {
+				if (true || item.type == "segarc") {
 					if (this.debug) console.log('set hass - SegmentedArcTool found', item, index);
 					if ((item.tool.config.hasOwnProperty('entity_index')))
 					{
@@ -3861,6 +3868,11 @@ class devSwissArmyKnifeCard extends LitElement {
     if (!config.layout) {
       throw Error('No layout defined');
     }
+
+    if (!config.layout.toolsets) {
+      throw Error('No toolsets defined');
+    }
+
     // testing
     if (config.entities) {
       const newdomain = this._computeDomain(config.entities[0].entity);
@@ -3900,13 +3912,10 @@ class devSwissArmyKnifeCard extends LitElement {
 			"icon": EntityIconTool,
 			"line": LineTool,
 			"name": EntityNameTool,
-			"segarct": SegmentedArcTool,
+			"segarc": SegmentedArcTool,
 			"state": EntityStateTool,
 			"slider": RangeSliderTool,
 		}
-//			"state": EntityStateTool,
-//			"icon": EntityIconTool,
-		
 
 		// #TODO 2020.10.14
 		// - Merge templates into the toolsets (formerly groups) and tools (formerly tools)
@@ -3918,7 +3927,94 @@ class devSwissArmyKnifeCard extends LitElement {
 		// toolsets -> list of toolsets -> tools -> list of tools.
 		// this.toolsets[].tools[].
 		//
-		if (this.config.layout.toolsets) {
+		
+		// Maintain two lists of tools:
+		// - A list with toolsets containing tools
+		// - A list with all the tools for easey traversing all tools created
+
+		this.kvTemplates = [];
+		if (this.config.templates) {
+			this.config.templates.map((template, index) => {
+				this.kvTemplates[template.template] = index;
+			});
+		}
+		console.log('toolconfig, kvtemplates', this.kvTemplates);
+		
+		this.config.layout.toolsets.map(toolset => {
+			
+			var argToolset = { config: toolset,
+													tools: []};
+			var toolList = null;
+			
+			// Oke. NOw we have a toolset. Check if this one references a template
+			// and replace with given variables of current toolset.
+			if (toolset.template) {
+				console.log('toolconfig, template defined in toolset', toolset.template, this.config.templates);
+				console.log('toolconfig, index template name', this.config.templates[this.kvTemplates[toolset.template]]);
+
+				if (this.config.templates[this.kvTemplates[toolset.template]]) {
+					console.log('toolconfig, template found in templates', toolset.template);
+					// Step 1: get template variables replaced by template defaults and given variables in toolset.
+					toolList = Templates.replaceVariables(toolset.variables, this.config.templates[this.kvTemplates[toolset.template]]);
+					console.log('Step 1: toolconfig, replacing template vars', toolList);
+					console.log('Step 1b: toolconfig, check toolset.tools', toolset);
+					
+					// Step 2: merge toolConfig with rest of toolset configuration.
+					//				 So you can override the template, or extend the template!
+					
+					// More difficult than expected.
+					// We have to merge the tool definitions. This is an array, and we have to match the tools of course to merge them, and add new...
+					// HOW?
+					
+					// We merge on tool id!!!!
+					// Merge two lists based on this id. If not found, concat, otherwise merge the tool values...
+					
+					var found = false;
+					var toolAdd = [];
+					var atIndex = null;
+					toolset.tools.map((tool, index) => {
+						toolList.map((toolT, indexT) => {
+							if (tool.id == toolT.id) {
+								toolList[indexT] = {...toolList[indexT], ...tool};
+								found = true;
+//								atIndex = indexT;
+							}
+						});
+						if (!found) toolAdd = toolAdd.concat(toolset.tools[index]);
+					});
+					//toolList = toolList.concat(toolset.tools);
+					
+					toolList = toolList.concat(toolAdd);
+					console.log('Step 2: templating, toolconfig', toolList);
+				}
+			} else {
+				// We don't have a template to run, get list of tools and use that...
+				toolList = toolset.tools;
+			}
+			console.log('Step 3: outside test, toolconfig list', toolList);
+
+			toolList.map(toolConfig => {
+//			toolset.tools?.map(toolConfig => {
+				// create toolset and push to this.toolsets list
+				
+				// Use argPos for now. Should pass the toolset config to the tool
+				// #TODO
+				var argConfig = {...toolConfig};
+				
+				var argPos = { cx: toolset.position.cx / 100 * SVG_DEFAULT_DIMENSIONS,
+											 cy: toolset.position.cy / 100 * SVG_DEFAULT_DIMENSIONS,
+											 scale: toolset.position.scale ? toolset.position.scale : 1 };
+				const newTool = new toolsNew[toolConfig.type](this, argConfig, argPos);
+				this.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
+
+				argToolset.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
+				
+			});
+				this.toolsets.push(argToolset);
+		});
+		console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
+		
+/*		if (this.config.layout.toolsets) {
 if (this.debug) console.log('config layout toolsets FCFG', this.config);
 if (this.debug) console.log('config layout toolsets', this.config.layout.toolsets);
 			this.config.layout.toolsets.map(toolset => {
@@ -3940,7 +4036,7 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 			});
 			
 		}
-			
+*/			
 	// Template test. 2020.09.30
 	// Seems to work...
 	if (this.config.templates) {
@@ -4003,7 +4099,7 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 
 		if (this.tools) {
 			this.tools.map((item, index) => {
-				if (item.type == "segarct") {
+				if (item.type == "segarc") {
 					if (this.debug) console.log('firstUpdated - calling SegmentedArcTool firstUpdated');
 					item.tool.firstUpdated(changedProperties);
 					//this.tools[index].firstUpdated(changedProperties);
