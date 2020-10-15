@@ -83,34 +83,35 @@ cards:
           dimensions: 2/2
           
           layout:
-            groups:
-              - group: group9
+            toolsets:
+              # ==============================================================================
+              - toolset: toolset9
                 position:
-                  xpos: 80
-                  ypos: 20
+                  cx: 80
+                  cy: 20
                 # wat als je bij delen een ander object kunt opgeven als context, dus als formaat.
                 # als je bij de vbars kunt zetten: context: badge.1 bijv.
-                # als nu alle xpos en ypos die bij argPos worden opgegeven deze badge zijn, dan kun je dus zonder
+                # als nu alle cx en cy die bij argPos worden opgegeven deze badge zijn, dan kun je dus zonder
                 # iets verder te wijzigen, kun je alles relatief maken binnen de badge in dit geval. Alsof alle delen
                 # IN de badge zitten, of gerendered worden vanuit de badge. Dat zou helemaal mooi zijn als dat kan,
-                # want dan kun je heb ginnen een svg group doen, en dus ook clippen: een barchart kan dan helemaal
+                # want dan kun je heb ginnen een svg toolset doen, en dus ook clippen: een barchart kan dan helemaal
                 # in de hoek gezet worden zondar dat de randen eroverheen gaan.
-                widgets:
-                  - widget: 'badge'
+                tools:
+                  - type: 'badge'
                     id: 1
                     entity_index: 1
-                    xpos: 50
-                    ypos: 50
+                    cx: 50
+                    cy: 50
                     height: 40
                     width: 160
                     ratio: 40
 
-                  - widget: 'bar'
+                  - type: 'bar'
                     id: 2
-                    type: vertical
+                    orientation: vertical
                     entity_index: 1
-                    xpos: 2
-                    ypos: 50
+                    cx: 2
+                    cy: 50
                     width: 50
                     height: 30
                     hours: 24
@@ -119,28 +120,28 @@ cards:
                       stroke: var(--theme-gradient-color-01);
                       stroke-linecap: butt;
 
-                  - widget: 'name'
+                  - type: 'name'
                     id: 3
                     entity_index: 1
-                    xpos: 82
-                    ypos: 42
+                    cx: 82
+                    cy: 42
                     styles:
                       text-anchor: center;
                       font-size: 1.5em;
                       fill: black;
 
-                  - widget: 'state'
+                  - type: 'state'
                     id: 4
                     entity_index: 1
-                    xpos: 82
-                    ypos: 67
+                    cx: 82
+                    cy: 67
                     styles:
                       text-anchor: center;
                       font-size: 1.9em;
                       font-weight: 700;
                       fill: black;
                       
-                  - widget: 'slider'
+                  - type: 'slider'
                     id: 10
                     entity_index: 1
                     slide_action:
@@ -148,81 +149,9 @@ cards:
                       parameter: temperature
                       # service: light.turn_on
                       # parameter: brightness_pct
-                    xpos: 50
-                    ypos: 90
-
-                  
-                # badges:
-                  # - badge: 1
-                    # entity_index: 1
-                    # xpos: 50
-                    # ypos: 50
-                    # height: 40
-                    # width: 160
-                    # ratio: 40
-                # vbars:
-                  # - id: 0
-                    # entity_index: 1
-                    # xpos: 2
-                    # ypos: 50
-                    # width: 50
-                    # height: 30
-                    # hours: 24
-                    # barhours: 2
-                    # styles:
-                      # stroke: var(--theme-gradient-color-01);
-                      # stroke-linecap: butt;
-                # states:
-                  # - id: 0
-                    # entity_index: 1
-                    # xpos: 82
-                    # ypos: 67
-                    # styles:
-                      # text-anchor: center;
-                      # font-size: 1.9em;
-                      # font-weight: 700;
-                      # fill: black;
-                # names:
-                  # - id: 0
-                    # entity_index: 1
-                    # xpos: 82
-                    # ypos: 42
-                    # styles:
-                      # text-anchor: center;
-                      # font-size: 1.5em;
-                      # fill: black;
+                    cx: 50
+                    cy: 90
               
-            # states:
-              # # States 0 refers to the first entity in the list, ie index 0
-              # - id: 0
-                # entity_index: 1
-                # xpos: 66
-                # ypos: 27
-                # styles:
-                  # text-anchor: center;
-                  # font-size: 1.9em;
-                  # font-weight: 700;
-                  # fill: black;
-            # names:
-              # # Check size of badge. Name is in right side. Is 54% wide. list, ie index 0
-              # - id: 0
-                # entity_index: 1
-                # xpos: 66
-                # ypos: 17
-                # styles:
-                  # text-anchor: center;
-                  # font-size: 1.5em;
-                  # fill: black;
-              
-          # Scale set to -10 to +40 degrees celcius            
-          horseshoe_scale:
-            min: -10
-            max: 40
-          # color stop list with 10 colors defined in the theme. With the `lineargradient` fill style, only the
-          # first (16:) and last (25:) colors are used. The thresholds are ignored with this setting.
-          color_stops:
-            16: '#FFF6E3'
-            25: '#FF8C06' 
         - !include card-blank-card.yaml
 
     - type: horizontal-stack
@@ -263,75 +192,72 @@ cards:
               decimals: 2
               unit: '1m'
 
-          show:
-            horseshoe: false
-            horseshoe_style: 'lineargradient'
-          
           debug: false
           
           # maak hiervan dimensions: dan duidelijker: is dus 2x2 dan!!
           dimensions: 2/1
           
-          # group 11 was 50/50, now 100/50 due to 2/1 dimension!!
+          # toolset 11 was 50/50, now 100/50 due to 2/1 dimension!!
           layout:
-            groups:
-              - group: group11
+            toolsets:
+              # ==============================================================================
+              - toolset: toolset11
                 position:
-                  xpos: 100
-                  ypos: 50
+                  cx: 100
+                  cy: 50
                   scale: 1
                 # wat als je bij delen een ander object kunt opgeven als context, dus als formaat.
                 # als je bij de vbars kunt zetten: context: badge.1 bijv.
-                # als nu alle xpos en ypos die bij argPos worden opgegeven deze badge zijn, dan kun je dus zonder
+                # als nu alle cx en cy die bij argPos worden opgegeven deze badge zijn, dan kun je dus zonder
                 # iets verder te wijzigen, kun je alles relatief maken binnen de badge in dit geval. Alsof alle delen
                 # IN de badge zitten, of gerendered worden vanuit de badge. Dat zou helemaal mooi zijn als dat kan,
-                # want dan kun je heb ginnen een svg group doen, en dus ook clippen: een barchart kan dan helemaal
+                # want dan kun je heb ginnen een svg toolset doen, en dus ook clippen: een barchart kan dan helemaal
                 # in de hoek gezet worden zondar dat de randen eroverheen gaan.
-                widgets:
-                  - widget: circle
+                tools:
+                  - type: circle
                     id: 1
-                    xpos: 55
-                    ypos: 85
+                    cx: 55
+                    cy: 85
                     radius: 8
                     styles:
                       stroke: white;
                       stroke-width: 5;
                       fill: none;
-                  - widget: circle
+                  - type: circle
                     id: 2
-                    xpos: 85
-                    ypos: 85
+                    cx: 85
+                    cy: 85
                     radius: 6
                     styles:
                       stroke: white;
                       stroke-width: 5;
                       fill: none;
-                  - widget: 'line'
+                  - type: 'line'
                     id: 1
-                    type: horizontal
-                    xpos: 50
-                    ypos: 50
+                    orientation: horizontal
+                    cx: 50
+                    cy: 50
                     length: 90
 
-                  - widget: 'line'
+                  - type: 'line'
                     id: 2
-                    type: horizontal
-                    xpos: 50
-                    ypos: 70
+                    orientation: horizontal
+                    cx: 50
+                    cy: 70
                     length: 90
 
-                  - widget: 'line'
+                  - type: 'line'
                     id: 3
-                    type: fromto
+                    orientation: fromto
                     x1: -10
                     y1: 70
                     x2: 40
                     y2: 50
 
-                  - widget: 'ellipse'
+                  - type: 'ellipse'
                     id: 10
-                    xpos: 50
-                    ypos: 20
+                    cx: 50
+                    cy: 20
                     radiusx: 80
                     radiusy: 20
                     styles:
@@ -339,29 +265,29 @@ cards:
                       stroke-width: 5;
                       fill: none;
 
-                  - widget: 'name'
+                  - type: 'name'
                     id: 3
                     entity_index: 1
-                    xpos: 5
-                    ypos: 62.5
+                    cx: 5
+                    cy: 62.5
                     styles:
                       text-anchor: start;
                       font-size: 1.5em;
 
-                  - widget: 'state'
+                  - type: 'state'
                     id: 4
                     entity_index: 1
-                    xpos: 5
-                    ypos: 90
+                    cx: 5
+                    cy: 90
                     styles:
                       text-anchor: start;
                       font-size: 1.9em;
                       font-weight: 700;
                       
-                  - widget: 'horseshoe'
+                  - type: 'horseshoe'
                     id: 10
-                    xpos: 120
-                    ypos: 30
+                    cx: 120
+                    cy: 30
                     radius: 30
                     entity_index: 5
                     show:
@@ -375,15 +301,6 @@ cards:
                       16: '#FFF6E3'
                       25: '#FF8C06' 
 
-          # Scale set to -10 to +40 degrees celcius            
-          horseshoe_scale:
-            min: -10
-            max: 40
-          # color stop list with 10 colors defined in the theme. With the `lineargradient` fill style, only the
-          # first (16:) and last (25:) colors are used. The thresholds are ignored with this setting.
-          color_stops:
-            16: '#FFF6E3'
-            25: '#FF8C06' 
         - !include card-blank-card.yaml
         - !include card-blank-card.yaml
         - !include card-blank-card.yaml
@@ -437,13 +354,13 @@ cards:
             - entity: sensor.livingroom_movement_illuminance
               icon: mdi:white-balance-sunny
 
-          # show:
-            # horseshoe: false
-            # horseshoe_style: 'lineargradient'
-          
           dimensions: 2/1
 
           debug: false
+          
+          show:
+            # explictly enable the use of the usersvg tool.
+            usersvg : true
           
           # deze templates kunnen in een file. die je bijv. sak_templates noemt. ergens includen in lovelace, en dan 
           # kun je ze vanuit lovelace benaderen. zie decluttering_templates.
@@ -451,54 +368,57 @@ cards:
           # dus geen card template, maar wat dan wel. dc kent ook element templates. even goed kijken, voordat ik iets
           # maak wat er al is!
           #
-          # toch maar apart zie ik doen. dus dan kan ik groepen met widgets definieren. en die hergebruiken.
+          # toch maar apart zie ik doen. dus dan kan ik groepen met tools definieren. en die hergebruiken.
           # eerst kijken of dat werken kan...
-          # templates:
-            # - template: poep
-              # defaults: 
-                # - entity0: 0
-                # - entity1: 1
-                # - entity2: 2
-              # widgets:
-                # - widget: state
-                  # id: 4
-                  # entity_index: '[[entity0]]'
-                # - widget: state
-                  # id: 5
-                  # entity_index: '[[entity1]]'
-                # - widget: state
-                  # id: 6
-                  # entity_index: '[[entity2]]'
+          templates:
+            - template: poep
+              defaults: 
+                - entity0: 0
+                - entity1: 1
+                - entity2: 2
+              tools:
+                - type: state
+                  id: '[[id0]]'
+                  entity_index: '[[entity0]]'
+                  cx: 50
+                  cy: 5
+                - type: state
+                  id: '[[id1]]'
+                  cx: 50
+                  cy: 10
+                  entity_index: '[[entity1]]'
+                - type: state
+                  id: '[[id2]]'
+                  cx: 50
+                  cy: 15
+                  entity_index: '[[entity2]]'
 
-          # groupstemplate:
-            # - grouptemplate: pietjepuk
+          # toolsets:
+            # - toolset: pietjepuk
               # template: poep
               # position:
-                # xpos: 25
-                # ypos: 60
+                # cx: 25
+                # cy: 60
                 # scale: 1
 
-            # - grouptemplate: jantjepuk
+            # - toolset: jantjepuk
               # template: poep
               # position:
-                # xpos: 12.5
-                # ypos: 60
+                # cx: 12.5
+                # cy: 60
                 # scale: 1
               # variables:
                 # - entity0: 3
                 # - entity1: 4
                 # - entity2: 5
                 
-          # poep: false
-          # pis: true
-            
           # svgs:
             # - svg: 0
               # width: 200
               # height: 200
               # scale: 50
-              # xpos: 50
-              # ypos: 50
+              # cx: 50
+              # cy: 50
               # data: |
                 # <rect rx="20" ry="1" id="svg_1" height="50" width="200" y="91.453125" x="39" stroke-width="2" stroke="#fff" fill="#aaa"/>
                 # <path d="m 0 0 h 50 v 10 l 5 5 l -5 5 l 0 10 h -50 z " stroke-width="2" stroke="#fff" fill="#aaa"/>
@@ -511,22 +431,40 @@ cards:
               # data: |
                 # <rect rx="20" ry="1" id="svg_1" height="50" width="200" y="91.453125" x="39" stroke-width="2" stroke="#fff" fill="#aaa"/>
 
-          # stategroup 12.5/50 to 25/50.
+          # statetoolset 12.5/50 to 25/50.
           layout:
-            # poeperdepoep: 4
-            # poep: 5
-            groups:
-              - group: stategroup
+            toolsets:
+              # ==============================================================================
+              - toolset: pietjepuk
+                template: poep
                 position:
-                  xpos: 25
-                  ypos: 50
+                  cx: 25
+                  cy: 50
                   scale: 1
-                widgets:
-                  - widget: segarct
+                variables:
+                  - id0: 4
+                  - id1: 5
+                  - id2: 6
+                tools:
+                  - type: name
+                    id: 5
+                    cx: 50
+                    cy: 90
+                    entity_index: 3
+                    fuckyou: 'yes'
+
+              # ==============================================================================
+              - toolset: statetoolset
+                position:
+                  cx: 25
+                  cy: 50
+                  scale: 1
+                tools:
+                  - type: segarc
                     id: 0
                     entity_index: 0
-                    xpos: 50
-                    ypos: 50
+                    cx: 50
+                    cy: 50
                     start_angle: 0
                     end_angle: 360
                     width: 10
@@ -553,104 +491,59 @@ cards:
                     styles_bg:
                       fill: var(--primary-background-color);
 
-                  - widget: state
+                  - type: state
                   # States 0 refers to the first entity in the list, ie index 0
                   # font-size was 1.7em. Test with 2.5em
                     id: 4
                     entity_index: 0
-                    xpos: 50
-                    ypos: 60
+                    cx: 50
+                    cy: 60
                     styles:
                       text-anchor: center;
                       font-size: 1.7em;
                       color: var(--theme-gradient-color-01);
-                  # 2020.10.01 yxpos/ypos of Widgets are not calculated correctly it seems.
-                  # the positions defined below specify the coords, independant of group position?!?!?!?!?!
+                  # 2020.10.01 ycx/cy of Widgets are not calculated correctly it seems.
+                  # the positions defined below specify the coords, independant of toolset position?!?!?!?!?!
                   # was 12,5 / 45. Should be 50 / 45??
-                  - widget: icon
+                  - type: icon
                     id: 5
                     entity_index: 0
-                    xpos: 50
-                    ypos: 47
+                    cx: 50
+                    cy: 47
                     align: center
                     icon_size: 2.5
 
-              - group: areagroup
+              # ==============================================================================
+              - toolset: areatoolset
                 position:
-                  xpos: 100
-                  ypos: 95
+                  cx: 100
+                  cy: 95
                   scale: 1
-                widgets:
+                tools:
                   # Areas 0 refers to the first entity in the list, ie index 0
-                  - widget: area
+                  - type: area
                     id: 0
                     entity_index: 0
-                    xpos: 50
-                    ypos: 50
+                    cx: 50
+                    cy: 50
                     styles:
                       font-size: 1.5em;
               
-              # Thse circles that are largely offscreen cause a 0.5-1sec delay while switching to this panel on the iPad.
-              # PC / Chrome has no problems. It works, but makes initial rendering slow. No idea why!!!! But now I know, that it is NOT the card itself
-              # and the sheer number of widgets displayed! It is just Safari again!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-              #
-              # BUT, BUT, BUT
-              # The older version - flexibile card - also shows those circles, even two cards, but performs very well (on old version of hass btw).
-              # Is this hass, or a problem/change with the view and/or card software that is done different from the sak card??????
-              #
-              # YEP, flce(s) performs good with two of these NUC like cards. So what is the real problem????????
-              # - group: circlegroup
-                # position:
-                  # xpos: 100
-                  # ypos: 140
-                  # scale: 1
-                # widgets:
-                  # - widget: circle
-                    # id: 0
-                    # xpos: 50
-                    # ypos: 50
-                    # radius: 75
-                    # styles:
-                      # stroke: var(--theme-gradient-color-01);
-                      # stroke-width: 10;
-                      # fill: none;
 
-                  # - widget: circle 
-                    # id: 3
-                    # xpos: 50
-                    # ypos: 50
-                    # radius: 75
-                    # styles:
-                      # stroke: var(--theme-gradient-color-02);
-                      # stroke-width: 40;
-                      # fill: none;
-                      # stroke-dasharray: 5 67;
-                      # stroke-dashoffset: 54;
-
-                  # - widget: circle
-                    # id: 1
-                    # xpos: 50
-                    # ypos: 52
-                    # radius: 67.5
-                    # styles:
-                      # stroke: var(--theme-gradient-color-02);
-                      # stroke-width: 10;
-                      # fill: none;
-
-
+              # ==============================================================================
               # 36.25/25 -> 72.5/25
-              - group: stategroup2
+              - toolset: statetoolset2
                 position:
-                  xpos: 72.50
-                  ypos: 25
+                  cx: 72.50
+                  cy: 25
                   scale: 1
-                widgets:
+                tools:
                   # States 1 refers to the second entity in the list, ie index 1
-                  - widget: segarct
+                  - type: segarc
                     id: 1
                     entity_index: 1
-                    xpos: 50
-                    ypos: 50
+                    cx: 50
+                    cy: 50
                     start_angle: 0
                     end_angle: 360
                     width: 10
@@ -670,7 +563,7 @@ cards:
                           - 'var(--theme-gradient-color-02)'
                       colorstops:
                         gap: 0
-                        # arc can be 'followsegment', or 'followvalue'
+                        # arc can be 'followcolorstop', or 'followvalue'
                         arc_color: 'followcolorstop'
                         colors:
                           00: 'DarkSeaGreen'
@@ -685,37 +578,38 @@ cards:
                     styles_bg:
                       fill: var(--primary-background-color);
 
-                  - widget: state
+                  - type: state
                     id: 5
                     entity_index: 1
-                    xpos: 50
-                    ypos: 60
+                    cx: 50
+                    cy: 60
                     styles:
                       text-anchor: center;
                       font-size: 1.7em;
                       color: var(--theme-gradient-color-02);
-                  - widget: icon
+                  - type: icon
                     id: 1
                     entity_index: 1
                     # was 36.25 / 20. Nu 50 / 35
-                    xpos: 50
-                    ypos: 47
+                    cx: 50
+                    cy: 47
                     align: center
                     icon_size: 2.5
 
 
               # 63.76/25 -> 127.5/25
-              - group: stategroup3
+              # ==============================================================================
+              - toolset: statetoolset3
                 position:
-                  xpos: 127.50
-                  ypos: 25
+                  cx: 127.50
+                  cy: 25
                   scale: 1
-                widgets:
-                  - widget: segarct
+                tools:
+                  - type: segarc
                     id: 2
                     entity_index: 2
-                    xpos: 50
-                    ypos: 50
+                    cx: 50
+                    cy: 50
                     start_angle: 0
                     end_angle: 360
                     width: 10
@@ -786,37 +680,38 @@ cards:
                     styles_bg:
                       fill: var(--primary-background-color);
 
-                  - widget: state
+                  - type: state
                     id: 6
                     entity_index: 2
-                    xpos: 50
-                    ypos: 60
+                    cx: 50
+                    cy: 60
                     styles:
                       text-anchor: center;
                       font-size: 1.7em;
                       color: var(--theme-gradient-color-01);
-                  - widget: icon
+                  - type: icon
                     id: 2
                     entity_index: 2
                     # was 63.75 / 20. Nu 50/35
-                    xpos: 50
-                    ypos: 47
+                    cx: 50
+                    cy: 47
                     align: center
                     icon_size: 2.5
 
               # 87.5/50 -> 175/50
-              - group: stategroup4
+              # ==============================================================================
+              - toolset: statetoolset4
                 position:
-                  xpos: 175
-                  ypos: 50
+                  cx: 175
+                  cy: 50
                   scale: 1
-                widgets:
+                tools:
                   # States 1 refers to the second entity in the list, ie index 1
-                  - widget: segarct
+                  - type: segarc
                     id: 3
                     entity_index: 3
-                    xpos: 50
-                    ypos: 50
+                    cx: 50
+                    cy: 50
                     start_angle: 0
                     end_angle: 360
                     width: 10
@@ -845,44 +740,55 @@ cards:
                     styles_bg:
                       fill: var(--primary-background-color);
 
-                  - widget: state
+                  - type: state
                     id: 7
                     entity_index: 3
-                    xpos: 50
-                    ypos: 60
+                    cx: 50
+                    cy: 60
                     styles:
                       text-anchor: center;
                       font-size: 1.7em;
                       color: var(--theme-gradient-color-02);
-                  - widget: icon
+                  - type: icon
                     id: 3
                     entity_index: 3
                     # was 87.5 / 45. Nu 50 / 35
-                    xpos: 50
-                    ypos: 47
+                    cx: 50
+                    cy: 47
                     align: center
                     icon_size: 2.5
 
-              - group: circlegroup
+              # Thse circles that are largely offscreen cause a 0.5-1sec delay while switching to this panel on the iPad.
+              # PC / Chrome has no problems. It works, but makes initial rendering slow. No idea why!!!! But now I know, that it is NOT the card itself
+              # and the sheer number of tools displayed! It is just Safari again!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+              #
+              # BUT, BUT, BUT
+              # The older version - flexibile card - also shows those circles, even two cards, but performs very well (on old version of hass btw).
+              # Is this hass, or a problem/change with the view and/or card software that is done different from the sak card??????
+              #
+              # YEP, flce(s) performs good with two of these NUC like cards. So what is the real problem????????
+
+              # ==============================================================================
+              - toolset: circletoolset
                 position:
-                  xpos: 100
-                  ypos: 140
+                  cx: 100
+                  cy: 140
                   scale: 1
-                widgets:
-                  - widget: circle
+                tools:
+                  - type: circle
                     id: 0
-                    xpos: 50
-                    ypos: 50
+                    cx: 50
+                    cy: 50
                     radius: 75
                     styles:
                       stroke: var(--theme-gradient-color-01);
                       stroke-width: 10;
                       fill: none;
 
-                  - widget: circle 
+                  - type: circle 
                     id: 3
-                    xpos: 50
-                    ypos: 50
+                    cx: 50
+                    cy: 50
                     radius: 75
                     styles:
                       stroke: var(--theme-gradient-color-02);
@@ -891,226 +797,15 @@ cards:
                       stroke-dasharray: 5 67;
                       stroke-dashoffset: 54;
 
-                  - widget: circle
+                  - type: circle
                     id: 1
-                    xpos: 50
-                    ypos: 52
+                    cx: 50
+                    cy: 52
                     radius: 67.5
                     styles:
                       stroke: var(--theme-gradient-color-02);
                       stroke-width: 10;
                       fill: none;
-
-              
-            # circles:
-              # - id: 0
-                # xpos: 50
-                # ypos: 140
-                # radius: 150
-                # styles:
-                  # stroke: var(--theme-gradient-color-01);
-                  # stroke-width: 10;
-                  # fill: none;
-# #                  stroke-dasharray: 2;
-
-              # - id: 3
-                # xpos: 50
-                # ypos: 140
-                # radius: 150
-                # styles:
-                  # stroke: var(--theme-gradient-color-02);
-                  # stroke-width: 40;
-                  # fill: none;
-                  # stroke-dasharray: 5 67;
-                  # stroke-dashoffset: 54;
-
-              # - id: 1
-                # xpos: 50
-                # ypos: 140
-                # radius: 135
-                # styles:
-                  # stroke: var(--theme-gradient-color-02);
-                  # stroke-width: 10;
-                  # fill: none;
-
-              
-            # segmented_arcs:
-              # - id: 0
-                # entity_index: 0
-                # xpos: 50
-                # ypos: 100
-                # start_angle: 0
-                # end_angle: 360
-                # width: 10
-                # radius: 50
-                # scale:
-                  # min: 0
-                  # max: 2
-                # show:
-                  # scale: false
-                # segments:
-                  # dash: 360
-                  # gap: 1
-                # animation:
-                  # duration: 5
-                # styles:
-                  # fill: var(--theme-gradient-color-01);
-                  # # marker-end: url(#markerArrow);
-                # styles_bg:
-                  # fill: var(--primary-background-color);
-
-              # - id: 1
-                # entity_index: 1
-                # xpos: 145
-                # ypos: 50
-                # start_angle: 0
-                # end_angle: 360
-                # width: 10
-                # radius: 50
-                # scale:
-                  # min: 0
-                  # max: 100
-                # show:
-                  # scale: false
-                # segments:
-                  # dash: 360
-                  # gap: 1
-                # animation:
-                  # duration: 5
-                # styles:
-                  # fill: var(--theme-gradient-color-02);
-                  # # marker-end: url(#markerArrow);
-                # styles_bg:
-                  # fill: var(--primary-background-color);
-
-              # Second part
-              # - id: 2
-                # entity_index: 2
-                # xpos: 255
-                # ypos: 50
-                # start_angle: 0
-                # end_angle: 360
-                # width: 10
-                # radius: 50
-                # scale:
-                  # min: 0
-                  # max: 100
-                # show:
-                  # scale: false
-                # segments:
-                  # dash: 18
-                  # gap: 1
-                # animation:
-                  # duration: 5
-                # styles:
-                  # fill: var(--theme-gradient-color-03);
-                  # #marker-end: url(#markerArrow);
-                # styles_bg:
-                  # fill: var(--primary-background-color);
-
-              # - id: 3
-                # entity_index: 3
-                # xpos: 350
-                # ypos: 100
-                # start_angle: 0
-                # end_angle: 360
-                # width: 10
-                # radius: 50
-                # scale:
-                  # min: 0
-                  # max: 2
-                # show:
-                  # scale: false
-                # animation:
-                  # duration: 5
-                # segments:
-                  # dash: 360
-                  # gap: 1
-                # styles:
-                  # fill: var(--theme-gradient-color-04);
-                  # # marker-end: url(#markerCircle);
-                # styles_bg:
-                  # fill: var(--primary-background-color);
-
-
-            # states:
-              # States 0 refers to the first entity in the list, ie index 0
-              # - id: 0
-                # entity_index: 0
-                # xpos: 12.5
-                # ypos: 60
-                # styles:
-                  # text-anchor: center;
-                  # font-size: 1.7em;
-                  # color: var(--theme-gradient-color-01);
-              # States 1 refers to the second entity in the list, ie index 1
-              # - id: 1
-                # entity_index: 1
-                # xpos: 36.25
-                # ypos: 35
-                # styles:
-                  # text-anchor: center;
-                  # font-size: 1.7em;
-                  # color: var(--theme-gradient-color-02);
-
-              # - id: 2
-                # entity_index: 2
-                # xpos: 63.75
-                # ypos: 35
-                # styles:
-                  # text-anchor: center;
-                  # font-size: 1.7em;
-                  # color: var(--theme-gradient-color-01);
-              # States 1 refers to the second entity in the list, ie index 1
-              # - id: 3
-                # entity_index: 3
-                # xpos: 87.5
-                # ypos: 60
-                # styles:
-                  # text-anchor: center;
-                  # font-size: 1.7em;
-                  # color: var(--theme-gradient-color-02);
-
-            # icons:
-              # # Icons 0 refers to the second entity in the list, ie index 1
-              # # - id: 0
-                # # entity_index: 0
-                # # xpos: 22.5
-                # # ypos: 45
-                # # align: center
-                # # icon_size: 2.5
-              # # # Icons 1 refers to the third entity in the list, ie index 2
-              # # - id: 1
-                # # entity_index: 1
-                # # xpos: 46.25
-                # # ypos: 20
-                # # align: center
-                # # icon_size: 2.5
-
-              # # Icons 0 refers to the second entity in the list, ie index 1
-              # # - id: 2
-                # # entity_index: 2
-                # # xpos: 63.75
-                # # ypos: 20
-                # # align: center
-                # # icon_size: 2.5
-              # # Icons 1 refers to the third entity in the list, ie index 2
-              # # - id: 3
-                # # entity_index: 3
-                # # xpos: 77.5
-                # # ypos: 45
-                # # align: center
-                # # icon_size: 2.5
-              # # extra icon. Entity abuse...
-              # - id: 4
-                # entity_index: 4
-                # xpos: 1
-                # ypos: 10
-                # align: center
-                # icon_size: 5
-                # styles:
-                  # fill: var(--primary-background-color);
-              
 
 #
 # https://css-tricks.com/almanac/properties/s/stroke-linecap/
@@ -1118,23 +813,6 @@ cards:
 # regarding css settings:
 # This will override a presentation attribute <path stroke-linecap="square" ... />
 # This will not override an inline style e.g. <path style="stroke-linecap: square;" ... />
-                  
+                
 
-          # # Scale set to -10 to +40 degrees celcius            
-          # horseshoe_scale:
-            # min: -10
-            # max: 40
-          # # color stop list with 10 colors defined in the theme. With the `lineargradient` fill style, only the
-          # # first (16:) and last (25:) colors are used. The thresholds are ignored with this setting.
-          # color_stops:
-            # 16: '#FFF6E3'
-            # 17: '#FFE9B9'
-            # 18: '#FFDA8A'
-            # 19: '#FFCB5B'
-            # 20: '#FFBF37'
-            # 21: '#ffb414'
-            # 22: '#FFAD12'
-            # 23: '#FFA40E'
-            # 24: '#FF9C0B' 
-            # 25: '#FF8C06' 
         - !include card-blank-card.yaml
