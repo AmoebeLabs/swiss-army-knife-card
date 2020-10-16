@@ -191,7 +191,13 @@ cards:
             - entity: sensor.load_1m
               decimals: 2
               unit: '1m'
-
+            - entity: light.1st_floor_hall_light              
+              name: 'hall'
+              icon: mdi:lightbulb
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.1st_floor_hall_light" }
           debug: false
           
           # maak hiervan dimensions: dan duidelijker: is dus 2x2 dan!!
@@ -219,10 +225,23 @@ cards:
                     cx: 55
                     cy: 85
                     radius: 8
+                    entity_index: 6
                     styles:
                       stroke: white;
                       stroke-width: 5;
-                      fill: none;
+                      fill: black;
+                    animations:
+                      - state: 'on'
+                        styles:
+                          - fill: var(--theme-gradient-color-08);
+                          - opacity: 0.9;
+                          - animation: jello 1s ease-in-out both;
+                          - transform-origin: center;
+                      - state: 'off'
+                        reuse: true
+                        styles:
+                          - transform-origin: center;
+                          - animation: zoomOut 1s ease-out both;
                   - type: circle
                     id: 2
                     cx: 85
@@ -452,6 +471,39 @@ cards:
                     cy: 90
                     entity_index: 3
                     fuckyou: 'yes'
+                  - id: 6
+                    # For icons, can I change them according to the state??? ie other MDI icon, and other color?????
+                    # The current implementation is only styling, but an icon is not a style, is it??
+                    # WOuld be nice: for icon animations!!! Nice for batteries: show icon per percentage!!
+                    # In that case: operator: '%'. Then automatic icon selection??
+                    #
+                    # More: if changing properties is possible (icon), then changing name should also be nice??
+                    #       or for a texttool, the text for the tool. Default = as defined, rest is specific??
+                    #
+                    # The IconTool's set value could do this. Specific animations per class.
+                    # Using different operators, specific per class. The basetool ignore's them, doesn't do anything!!
+                    # must add this to the github issue, not here!!
+                    animations:
+                      - state: '25'
+                        operator: '>='
+                        styles:
+                          - fill: red;
+                          - transform-origin: center;
+                          - animation: blinkingText 1.2s infinite;
+                      - state: '10'
+                        operator: '>='
+                        styles:
+                          - fill: yellow;
+                          - transform-origin: center;
+                          - animation: flash 5s infinite;
+                      - state: '0'
+                        operator: '>='
+                        styles:
+                          - fill: DarkSeaGreen;
+                          - opacity: 0.9;
+                          - animation: pulse 1s ease-in-out both;
+                          - transform-origin: center;
+                  
 
               # ==============================================================================
               - toolset: statetoolset
