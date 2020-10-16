@@ -181,6 +181,70 @@ class BaseTool {
 		this.dimensions.xlateX = diffx / this.toolsetPos.scale;
 		this.dimensions.xlateY = diffy / this.toolsetPos.scale;		
 	}
+
+ /*******************************************************************************
+	* set value()
+	*
+	* Summary.
+	*	Receive new state data for the entity this circle is linked to. Called from set hass();
+	*
+	*/
+	set value(state) {
+
+		if (this.debug) console.log('BaseTool set value(state)', state);
+		if (this._value?.toLowerCase() == state.toLowerCase()) return false;
+		
+		this._valuePrev = this._value || state;
+		this._value = state;
+		this._valueIsDirty = true;
+
+		// If animations defined, calculate style for current state.
+
+		var isMatch = false;
+		if (this.config.animations) Object.keys(this.config.animations).map(animation => {
+			const entityIndex = this.config.entity_index;
+			var item = this.config.animations[animation];
+			
+			if (isMatch) return true;
+			
+			// Assume equals operator if not defined...
+			var operator = item.operator ? item.operator : "=";
+			switch(operator) {
+				case "=":
+					isMatch = this._value.toLowerCase() == item.state.toLowerCase();
+					break;
+				case "!=":
+					isMatch = this._value.toLowerCase() != item.state.toLowerCase();
+					break;
+				case ">":
+					isMatch = Number(this._value.toLowerCase()) > Number(item.state.toLowerCase());
+					break;
+				case "<":
+					isMatch = Number(this._value.toLowerCase()) < Number(item.state.toLowerCase());
+					break;
+				case ">=":
+					isMatch = Number(this._value.toLowerCase()) >= Number(item.state.toLowerCase());
+					break;
+				case "<=":
+					isMatch = Number(this._value.toLowerCase()) <= Number(item.state.toLowerCase());
+					break;
+				default:
+					// Unknown operator. Just do nothing and return;
+					isMatch = false;
+			}
+			// if animation state not equals sensor state, return... Nothing to animate for this state...
+			//if (this._value.toLowerCase() != item.state.toLowerCase()) return;			
+			console.log('EntityStateTool, animation, match, value, config, operator', isMatch, this._value, item.state, item.operator);
+			if (!isMatch) return true;
+			
+			if (!this.animationStyle || !item.reuse) this.animationStyle = {};
+			this.animationStyle = Object.assign(this.animationStyle, ...item.styles);
+		});
+		
+		return true;
+
+	}
+
 }
 
  /*******************************************************************************
@@ -221,7 +285,7 @@ class RangeSliderTool extends BaseTool {
 		
 		this.dimensions.length = Utils.calculateDimension(argConfig.length)
 
-		if (this.config.type == 'vertical') {
+		if (this.config.orientation == 'vertical') {
 			this.svg.x1 = this.coords.cx;
 			this.svg.y1 = this.coords.cy - this.dimensions.length/2;
 			this.svg.x2 = this.coords.cx;
@@ -238,7 +302,7 @@ class RangeSliderTool extends BaseTool {
 		this.svgH = 40;
     this.deformation = this.svgH/2;
     this.target = this.svgH/4;
-    this._value = 0;
+    this._value = null;
     this.dragging = false;
 
 		this.SVG_NS = "http://www.w3.org/2000/svg";
@@ -606,7 +670,7 @@ class LineTool extends BaseTool {
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 		
-		if (this.debug) console.log('_renderLine POEP', this.config.type, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
+		if (this.debug) console.log('_renderLine POEP', this.config.orientation, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
 		return svg`
 			<line
 				x1="${this.svg.x1}"
@@ -671,6 +735,72 @@ class CircleTool extends BaseTool {
 	}
 
  /*******************************************************************************
+	* set value()
+	*
+	* Summary.
+	*	Receive new state data for the entity this circle is linked to. Called from set hass();
+	*
+	*/
+	set value(state) {
+		var changed = super.value = state;
+
+		console.log('circletool, animation, set value', state);
+		
+
+/*
+		if (this._value?.toLowerCase() == state.toLowerCase()) return false;
+		
+		this._valuePrev = this._value || state;
+		this._value = state;
+		this._valueIsDirty = true;
+
+		// If animations defined, calculate style for current state.
+
+		var isMatch = false;
+		if (this.config.animations) Object.keys(this.config.animations).map(animation => {
+			const entityIndex = this.config.entity_index;
+			console.log('circletool, animation', this.config.animations, animation, entityIndex);
+			var item = this.config.animations[animation];
+			
+			// Assume equals operator if not defined...
+			var operator = item.operator ? item.operator : "=";
+			switch(operator) {
+				case "=":
+					isMatch = this._value.toLowerCase() == item.state.toLowerCase();
+					break;
+				case "!=":
+					isMatch = this._value.toLowerCase() != item.state.toLowerCase();
+					break;
+				case ">":
+					isMatch = this._value.toLowerCase() > item.state.toLowerCase();
+					break;
+				case "<":
+					isMatch = this._value.toLowerCase() < item.state.toLowerCase();
+					break;
+				case ">=":
+					isMatch = this._value.toLowerCase() >= item.state.toLowerCase();
+					break;
+				case "<=":
+					isMatch = this._value.toLowerCase() <= item.state.toLowerCase();
+					break;
+				default:
+					// Unknown operator. Just do nothing and return;
+					isMatch = false;
+			}
+			// if animation state not equals sensor state, return... Nothing to animate for this state...
+			//if (this._value.toLowerCase() != item.state.toLowerCase()) return;			
+			if (!isMatch) return true;
+			
+			if (!this.animationStyle || !item.reuse) this.animationStyle = {};
+			this.animationStyle = Object.assign(this.animationStyle, ...item.styles);
+		});
+		
+		return true;
+*/
+		return changed;
+	}
+
+ /*******************************************************************************
 	* _renderCircle()
 	*
 	* Summary.
@@ -690,7 +820,7 @@ class CircleTool extends BaseTool {
 			stateStyle = Object.assign(stateStyle, this._parent.animations.circles[this.config.animation_id]);
 
 		// Merge the two, where the runtime styles may overwrite the statically configured styles
-		configStyle = { ...configStyle, ...stateStyle};
+		configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
@@ -890,7 +1020,7 @@ class EntityIconTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* _renderIcon()
+	* _()
 	*
 	* Summary.
 	*	Renders the icon using precalculated coordinates and dimensions.
@@ -1199,8 +1329,8 @@ class EntityStateTool extends BaseTool {
 		this.config = {...DEFAULT_STATE_CONFIG};
 		this.config = {...this.config, ...argConfig};
 
-		this._value = 0;
-		this._valuePrev = 0;
+//		this._value = 0;
+//		this._valuePrev = 0;
 		this._valueIsDirty = false;
 		
 		if (argConfig.styles) this.config.styles = {...argConfig.styles};
@@ -1213,12 +1343,71 @@ class EntityStateTool extends BaseTool {
 	}
 
 	set value(state) {
+
+		var changed = super.value = state;
+
+/*
 		if (this._value == state) return false;
 		
 		this._valuePrev = this._value || state;
 		this._value = state;
 		this._valueIsDirty = true;
 		return true;
+*/
+		console.log('EntityStateTool, animation, set value', state);
+/*
+		if (this._value?.toLowerCase() == state.toLowerCase()) return false;
+		
+		this._valuePrev = this._value || state;
+		this._value = state;
+		this._valueIsDirty = true;
+
+		// If animations defined, calculate style for current state.
+
+		var isMatch = false;
+		if (this.config.animations) Object.keys(this.config.animations).map(animation => {
+			const entityIndex = this.config.entity_index;
+			console.log('EntityStateTool, animation', this.config.animations, animation, entityIndex);
+			var item = this.config.animations[animation];
+			
+			// Assume quals operator if not defined...
+			var operator = item.operator ? item.operator : "=";
+			switch(operator) {
+				case "=":
+					isMatch = this._value.toLowerCase() == item.state.toLowerCase();
+					break;
+				case "!=":
+					isMatch = this._value.toLowerCase() != item.state.toLowerCase();
+					break;
+				case ">":
+					isMatch = Number(this._value.toLowerCase()) > Number(item.state.toLowerCase());
+					break;
+				case "<":
+					isMatch = Number(this._value.toLowerCase()) < Number(item.state.toLowerCase());
+					break;
+				case ">=":
+					isMatch = Number(this._value.toLowerCase()) >= Number(item.state.toLowerCase());
+					break;
+				case "<=":
+					isMatch = Number(this._value.toLowerCase()) <= Number(item.state.toLowerCase());
+					break;
+				default:
+					// Unknown operator. Just do nothing and return;
+					isMatch = false;
+			}
+			// if animation state not equals sensor state, return... Nothing to animate for this state...
+			//if (this._value.toLowerCase() != item.state.toLowerCase()) return;			
+			console.log('EntityStateTool, animation, match, value, config, operator', isMatch, this._value, item.state, item.operator);
+			if (!isMatch) return true;
+			
+			if (!this.animationStyle || !item.reuse) this.animationStyle = {};
+			this.animationStyle = Object.assign(this.animationStyle, ...item.styles);
+		});
+		
+		return true;
+*/
+		return changed;
+
 	}
 	
 	render() {
@@ -1254,7 +1443,7 @@ class EntityStateTool extends BaseTool {
 			stateStyle = Object.assign(stateStyle, this._parent.animations.states[this.config.index]);
 
 		// Merge the two, where the runtime styles may overwrite the statically configured styles
-		configStyle = { ...configStyle, ...stateStyle};
+		configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
@@ -1881,7 +2070,7 @@ class SparkleBarChartTool extends BaseTool {
 		// Calculate real dimensions...
 		this.dimensions.margin = Utils.calculateDimension(this.config.margin);
 		// #TODO: Nog check op style? voor hor anders dan vert???
-		const theWidth = (this.config.type == 'vertical') ?  this.dimensions.width : this.dimensions.height;
+		const theWidth = (this.config.orientation == 'vertical') ?  this.dimensions.width : this.dimensions.height;
 
 		this.dimensions.barWidth = (theWidth - (((this.config.hours / this.config.barhours) - 1) *
 																this.dimensions.margin)) / (this.config.hours / this.config.barhours);
@@ -3102,6 +3291,14 @@ class devSwissArmyKnifeCard extends LitElement {
 				}
 			}			
 
+			@keyframes blinkingText {
+				0%{   opacity: 0%;   }
+				49%{  opacity: 0%;   }
+				60%{  opacity: 100%; }
+				99%{  opacity: 100%; }
+				100%{ opacity: 0%;   }
+			}
+			
 			@keyframes zoomOut {
 				from {
 					opacity: 1;
@@ -3688,6 +3885,19 @@ class devSwissArmyKnifeCard extends LitElement {
 			index++;
 		}
 
+		if (this.connected) {
+			if (this.update_interval) {
+      
+			// Fix crash while set hass not yet called, and thus no access to entities!
+				this.updateOnInterval();
+				this.interval = setInterval(
+					() => this.updateOnInterval(),
+					this.update_interval * 1000,
+				);
+			}
+		}
+
+
 		if (!entityHasChanged) {
 			return;
 		}
@@ -3873,6 +4083,11 @@ class devSwissArmyKnifeCard extends LitElement {
       throw Error('No toolsets defined');
     }
 
+		// Added at 2020.10.16
+		//config.entities.map((entity, index) => {
+		//	this.entities[index] = hass.states[entity];
+		//});
+		
     // testing
     if (config.entities) {
       const newdomain = this._computeDomain(config.entities[0].entity);
@@ -4060,12 +4275,16 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 		this.connected = true;
     super.connectedCallback();
 		
-		if (this.update_interval) {
-      this.updateOnInterval();
-      this.interval = setInterval(
-        () => this.updateOnInterval(),
-        this.update_interval * 1000,
-      );
+		if (this._hass) {
+			if (this.update_interval) {
+      
+			// Fix crash while set hass not yet called, and thus no access to entities!
+				this.updateOnInterval();
+				this.interval = setInterval(
+					() => this.updateOnInterval(),
+					this.update_interval * 1000,
+				);
+			}
 		}
 		if (this.debug) console.log('ConnectedCallback', this.cardId);
 		this.requestUpdate();
@@ -4899,6 +5118,8 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
     url += `?filter_entity_id=${entityId}`;
     if (end) url += `&end_time=${end.toISOString()}`;
     if (skipInitialState) url += '&skip_initial_state';
+
+		console.log('fetchRecent - call is', entityId, start, end, skipInitialState, url);
     return this._hass.callApi('GET', url);
   }
 	
@@ -4925,7 +5146,8 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
 				j++;
 			}
 		});
-
+		console.log('updateData, entityList from tools', entityList);
+		
 		if (this.vbars.length > 0) {
 			this.vbars.map((item, i) => {
 				const end = new Date();
