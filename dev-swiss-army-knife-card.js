@@ -65,9 +65,14 @@ class Utils {
 	* Summary.
 	*	Clips the val value between start and end, and returns the between value ;-)
 	*
+	* Note:
+	* At start, state values are set to 'null' to make sure it has no value!
+	* If such a value is detected, return 0(%) as the relative value.
+	* In normal cases, this happens to be the _valuePrev, so 0% is ok!!!!
 	*/
 
   static calculateValueBetween(argStart, argEnd, argVal) {
+		if (!argVal) return 0;
     return (Math.min(Math.max(argVal, argStart), argEnd) - argStart) / (argEnd - argStart);
   }
 	
@@ -2372,7 +2377,7 @@ class SegmentedArcTool extends BaseTool {
 			// Get number of segments, and their size in degrees.
 			this._segments.count = this.config.segments.colorlist.colors.length;
 			this._segments.size = this._arc.size / this._segments.count;
-			this._segments.gap = this.config.segments.colorlist.gap;
+			this._segments.gap = this.config.segments.colorlist.gap ? this.config.segments.colorlist.gap : 1;
 			this._segments.sizeList = [];
 			for (var i = 0; i < this._segments.count; i++) {
 				this._segments.sizeList[i] = this._segments.size;
@@ -2382,9 +2387,9 @@ class SegmentedArcTool extends BaseTool {
 			var segmentRunningSize = 0;
 			for (var i = 0; i < this._segments.count; i++) {
 				this._segmentAngles[i] = {"boundsStart": this.config.start_angle + (segmentRunningSize * this._arc.direction),
-																	"boundsEnd": this.config.start_angle + (segmentRunningSize + this._segments.sizeList[i] * this._arc.direction),
+																	"boundsEnd": this.config.start_angle + ((segmentRunningSize + this._segments.sizeList[i]) * this._arc.direction),
 																	"drawStart": this.config.start_angle + (segmentRunningSize * this._arc.direction) + (this._segments.gap * this._arc.direction),
-																	"drawEnd": this.config.start_angle + (segmentRunningSize + this._segments.sizeList[i] * this._arc.direction) - (this._segments.gap * this._arc.direction)};
+																	"drawEnd": this.config.start_angle + ((segmentRunningSize + this._segments.sizeList[i]) * this._arc.direction) - (this._segments.gap * this._arc.direction)};
 				segmentRunningSize += this._segments.sizeList[i];
 			}
 
@@ -2408,7 +2413,7 @@ class SegmentedArcTool extends BaseTool {
 			this._segments.sortedStops = Object.keys(this._segments.colorStops).map(n => Number(n)).sort((a, b) => a - b);
 
 			this._segments.count = this._segments.sortedStops.length - 1;
-			this._segments.gap = this.config.segments.colorstops.gap;
+			this._segments.gap = this.config.segments.colorstops.gap ? this.config.segments.colorstops.gap : 1;
 			
 			// Now depending on the colorstops and min/max values, calculate the size of each segment relative to the total arc size.
 			// First color in the list starts from Min!
@@ -2429,13 +2434,14 @@ class SegmentedArcTool extends BaseTool {
 			var segmentRunningSize = 0;
 			for (var i = 0; i < this._segments.count; i++) {
 				this._segmentAngles[i] = {"boundsStart": this.config.start_angle + (segmentRunningSize * this._arc.direction),
-																	"boundsEnd": this.config.start_angle + (segmentRunningSize + this._segments.sizeList[i] * this._arc.direction),
+																	"boundsEnd": this.config.start_angle + ((segmentRunningSize + this._segments.sizeList[i]) * this._arc.direction),
 																	"drawStart": this.config.start_angle + (segmentRunningSize * this._arc.direction) + (this._segments.gap * this._arc.direction),
-																	"drawEnd": this.config.start_angle + (segmentRunningSize + this._segments.sizeList[i] * this._arc.direction) - (this._segments.gap * this._arc.direction)};
+																	"drawEnd": this.config.start_angle + ((segmentRunningSize + this._segments.sizeList[i]) * this._arc.direction) - (this._segments.gap * this._arc.direction)};
 				segmentRunningSize += this._segments.sizeList[i];
+				if (this.debug) console.log('colorstuff - COLORSTOPS++ segments', segmentRunningSize, this._segmentAngles[i]);
 			}
 
-			if (this.debug) console.log('colorstuff - COLORSTOPS', this._segments, this._segmentAngles);
+			if (this.debug) console.log('colorstuff - COLORSTOPS++', this._segments, this._segmentAngles, this._arc.direction, this._segments.count);
 		}
 		// SIMPLEGRADIENT
 		else if (this.config.show.style == 'simplegradient') {
@@ -2494,10 +2500,12 @@ class SegmentedArcTool extends BaseTool {
 
 		if (this.config.isScale) return false;
 		if (this._value == state) return false;
+
+		var changed = super.value = state;
 		
-		this._valuePrev = this._value || state;
-		this._value = state;
-		this._valueIsDirty = true;
+//		this._valuePrev = this._value || state;
+//		this._value = state;
+//		this._valueIsDirty = true;
 		return true;
 	}
 	
@@ -2577,6 +2585,7 @@ class SegmentedArcTool extends BaseTool {
 			// calculate real end angle depending on value set in object and min/max scale
 			var val = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._value);
 			var valPrev = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._valuePrev);
+			if (this.debug) if (!this._valuePrev) console.log('*****UNDEFINED', this._value, this._valuePrev, valPrev);
 			if (val != valPrev) if (this.debug) console.log('RENDERNEW _renderSegments diff value old new', this.toolId, valPrev, val);
 
 					arcEnd = (val * this._arc.size * this._arc.direction) + this.config.start_angle;
@@ -2955,7 +2964,7 @@ toAngle: 25.200000000000003
 								: ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
 						
 						if (frameSegment == -1) {
-							if (this.debug) console.log('animateSegments frameAngle not found', tween, thisTool._segmentAngles);
+							if (thisTool.debug) console.log('animateSegments frameAngle not found', tween, thisTool._segmentAngles);
 						}
 						
 						// Check where we actually are now. This might be in a different segment...
