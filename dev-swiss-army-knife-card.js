@@ -197,11 +197,11 @@ class BaseTool {
 	set value(state) {
 
 		if (this.debug) console.log('BaseTool set value(state)', state);
-		if (this._value?.toLowerCase() == state.toLowerCase()) return false;
+		if (this._stateValue?.toLowerCase() == state.toLowerCase()) return false;
 		
-		this._valuePrev = this._value || state;
-		this._value = state;
-		this._valueIsDirty = true;
+		this._stateValuePrev = this._stateValue || state;
+		this._stateValue = state;
+		this._stateValueIsDirty = true;
 
 		// If animations defined, calculate style for current state.
 
@@ -216,34 +216,35 @@ class BaseTool {
 			var operator = item.operator ? item.operator : "=";
 			switch(operator) {
 				case "=":
-					isMatch = this._value.toLowerCase() == item.state.toLowerCase();
+					isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
 					break;
 				case "!=":
-					isMatch = this._value.toLowerCase() != item.state.toLowerCase();
+					isMatch = this._stateValue.toLowerCase() != item.state.toLowerCase();
 					break;
 				case ">":
-					isMatch = Number(this._value.toLowerCase()) > Number(item.state.toLowerCase());
+					isMatch = Number(this._stateValue.toLowerCase()) > Number(item.state.toLowerCase());
 					break;
 				case "<":
-					isMatch = Number(this._value.toLowerCase()) < Number(item.state.toLowerCase());
+					isMatch = Number(this._stateValue.toLowerCase()) < Number(item.state.toLowerCase());
 					break;
 				case ">=":
-					isMatch = Number(this._value.toLowerCase()) >= Number(item.state.toLowerCase());
+					isMatch = Number(this._stateValue.toLowerCase()) >= Number(item.state.toLowerCase());
 					break;
 				case "<=":
-					isMatch = Number(this._value.toLowerCase()) <= Number(item.state.toLowerCase());
+					isMatch = Number(this._stateValue.toLowerCase()) <= Number(item.state.toLowerCase());
 					break;
 				default:
 					// Unknown operator. Just do nothing and return;
 					isMatch = false;
 			}
 			// if animation state not equals sensor state, return... Nothing to animate for this state...
-			//if (this._value.toLowerCase() != item.state.toLowerCase()) return;			
-			console.log('EntityStateTool, animation, match, value, config, operator', isMatch, this._value, item.state, item.operator);
+			//if (this._stateValue.toLowerCase() != item.state.toLowerCase()) return;			
+			if (this.debug) console.log('EntityStateTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
 			if (!isMatch) return true;
 			
 			if (!this.animationStyle || !item.reuse) this.animationStyle = {};
-			this.animationStyle = Object.assign(this.animationStyle, ...item.styles);
+			//this.animationStyle = Object.assign(this.animationStyle, ...item.styles);
+			this.animationStyle = {...this.animationStyle, ...item.styles};
 		});
 		
 		return true;
@@ -265,6 +266,7 @@ class RangeSliderTool extends BaseTool {
 
 		const DEFAULT_SLIDER_CONFIG = {
 				orientation: 'horizontal',
+				length: 80,
 				styles: {
 					"slider": {
 						"stroke-linecap": 'round;',
@@ -290,40 +292,103 @@ class RangeSliderTool extends BaseTool {
 		
 		this.dimensions.length = Utils.calculateDimension(argConfig.length)
 
+		this.dimensions.handle = {};
+		this.dimensions.handle.width = Utils.calculateDimension(argConfig.handle.width);
+		this.dimensions.handle.height = Utils.calculateDimension(argConfig.handle.height);
+		this.dimensions.handle.popout = Utils.calculateDimension(argConfig.handle.popout);
+
+		// Define the bounding box for the pointer / touch events to get detected.
+
 		if (this.config.orientation == 'vertical') {
 			this.svg.x1 = this.coords.cx;
 			this.svg.y1 = this.coords.cy - this.dimensions.length/2;
 			this.svg.x2 = this.coords.cx;
 			this.svg.y2 = this.coords.cy + this.dimensions.length/2;
+			this.svg.width = this.dimensions.handle.width;
+			this.svg.height = this.dimensions.length;
 		} else {
 			this.svg.x1 = this.coords.cx - this.dimensions.length/2;
 			this.svg.y1 = this.coords.cy;
 			this.svg.x2 = this.coords.cx + this.dimensions.length/2;
 			this.svg.y2 = this.coords.cy;
+			this.svg.width = this.dimensions.length;
+			this.svg.height = this.dimensions.handle.height;
 		}
 
+		this.svg.scale = {};
+		this.svg.scale.min = this.valueToSvg(this, this.config.scale.min);
+		this.svg.scale.max = this.valueToSvg(this, this.config.scale.max);
+		
 	// Specific rangeslider stuff...
 		this.elements = {};
-		this.svgH = 40;
-    this.deformation = this.svgH/2;
-    this.target = this.svgH/4;
+		//this.config.handle.popout = 40;
+    this.deformation = this.dimensions.handle.popout/4;
+    this.target = this.dimensions.handle.popout;
     this._value = null;
     this.dragging = false;
 
 		this.SVG_NS = "http://www.w3.org/2000/svg";
 		this.SVG_XLINK = "http://www.w3.org/1999/xlink";
 		this.rid = null;
-		this.m = { x: 100, y: this.svg.y + this.svgH / 2 };
+		//this.m = { x: 100, y: this.svg.y + this.dimensions.handle.popoutt / 2 };
+		this.m = { x: svg.x1, y: this.svg.y1};
 		
-
+		// hardcoded for testing.
+		// value in box is in steps of 5. So 0..100 is 0,5, 10, etc..
+		this.stepValue = 2;
+		this.velocity = 10;
 	//--
 
 		if (this.debug) console.log('RangeSliderTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
 	}
 
+	// svg coordinates to actual slider value
+	svgToValue(argThis, m) {
+		// svg is within viewbox / slider size
+		// length is argThis.dimensions.length
+		
+		
+		// is m.x in svg x1/x2 range. Then translate to actual value.
+		// need scale.min / max...
+		
+		if (argThis.config.orientation == 'horizontal') {
+			var xpos = m.x - argThis.svg.x1;
+			var xposp = xpos / argThis.dimensions.length;
+			var state = ((argThis.config.scale.max - argThis.config.scale.min) * xposp) + argThis.config.scale.min;
+			//var state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, xposp);
+			if (this.debug) console.log ('SLIDER - svgToValue results)', xpos, xposp, state);
+			return state;
+		} else if (argThis.config.orientation == 'vertical') {
+			// y is calculated from lower y value. So slider is from bottom to top...
+			var ypos = argThis.svg.y2 - m.y;
+			var yposp = ypos / argThis.dimensions.length;
+			var state = ((argThis.config.scale.max - argThis.config.scale.min) * yposp) + argThis.config.scale.min;
+			//var state = Utils.calculateValueBetween(argThis.configscale.min, argThis.configscale.max, yposp);
+			if (this.debug) console.log ('SLIDER - svgToValue results)', xpos, xposp, state);
+			return state;
+		}
+	}
+	
+	valueToSvg(argValue) {
+
+		if (this.config.orientation == 'horizontal') {
+			var state = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, argValue);
+
+			var xposp = state * this.dimensions.length;
+			var xpos = this.svg.x1 + xposp;
+			return xpos;
+		} else if (this.config.orientation == 'vertical') {
+			var state = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, argValue);
+
+			var yposp = state * this.dimensions.length;
+			var ypos = this.svg.y2 + yposp;
+			return ypos;
+		}
+	}
+	
   updateValue() {
     let dist = this.target - this._value;
-    let vel = dist / 10;
+    let vel = dist / this.velocity;
     this._value += vel;
     //improvement
     if (Math.abs(dist) < 0.01) {
@@ -334,43 +399,119 @@ class RangeSliderTool extends BaseTool {
     }
   }
 
-  updatePath(m) {
-    this.d = this.curvedPath(m.x, this.svg.y + this.svgH / 2, this.deformation, this._value);
-    this.elements.path.setAttributeNS(null, "d", this.d);
+/*
+  updatePathOld(argThis, m) {
+    if (this.config.orientation == 'horizontal') {
+			this.d = this.curvedPath(m.x, this.svg.y + this.dimensions.handle.popout / 2, this.deformation, this._value);
+			this.elements.path.setAttributeNS(null, "d", this.d);
 
-    this.elements.thumb.setAttributeNS(null, "r", 1 + this._value / 3);
-    this.elements.thumb.setAttributeNS(null, "cx", m.x);
-
+			this.elements.thumb.setAttributeNS(null, "r", 1 + this._value / 3);
+			this.elements.thumb.setAttributeNS(null, "cx", m.x);
+		} else if (this.config.orientation == 'vertical') {
+			this.d = this.curvedPath(m.x + this.dimensions.handle.popout / 2, this.svg.y, this.deformation, this._value);
+			this.elements.path.setAttributeNS(null, "d", this.d);
+			this.elements.thumb.setAttributeNS(null, "r", 1 + this._value / 3);
+			this.elements.thumb.setAttributeNS(null, "cy", m.y);
+		}
+		
     this.updateLabel(m);
     this.updateInput(m);
   }
+*/
+  updatePath(argThis, m) {
+    // HORIZONTAL
+		if (argThis.config.orientation == 'horizontal') {
+			//argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argThis.dimensions.handle.popout / 1000, argThis.deformation, argThis._value);
+			argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argThis.dimensions.handle.height / 2, argThis.deformation, argThis._value);
+			argThis.elements.path.setAttributeNS(null, "d", argThis.d);
 
+			argThis.elements.thumb.setAttributeNS(null, "r", 1 + argThis._value / 3);
+			argThis.elements.thumb.setAttributeNS(null, "cx", m.x);
+		} //VERTICAL
+		else if (argThis.config.orientation == 'vertical') {
+//			argThis.d = argThis.curvedPath(m.x + argThis.dimensions.handle.width / 2, argThis.svg.y, argThis.deformation, argThis._value);
+			argThis.d = argThis.curvedPath(argThis.svg.x + argThis.dimensions.handle.width / 2, m.y, argThis.deformation, argThis._value);
+			argThis.elements.path.setAttributeNS(null, "d", argThis.d);
+			argThis.elements.thumb.setAttributeNS(null, "r", 1 + argThis._value / 3);
+			argThis.elements.thumb.setAttributeNS(null, "cy", m.y);
+		}
+		
+    argThis.updateLabel(argThis, m);
+    argThis.updateInput(m);
+  }
+
+/*
   updateLabel2(m) {
-    this.elements.label.setAttributeNS(
-      null,
-      "transform",
-      `translate(${m.x}, ${this.svg.y + this.svgH / 1 - this._value}) scale(2)`
-    );
+    if (this.config.orientation == 'horizontal') {
+			this.elements.label.setAttributeNS(
+				null,
+				"transform",
+				`translate(${m.x}, ${this.svg.y + this.dimensions.handle.popout / 1 - this._value}) scale(2)`
+			);
 
-    this.elements.text.textContent = Math.round(m.x);
+			this.elements.text.textContent = Math.round(this.svgToValue(m));
+			
+		} else if (this.config.orientation == 'vertical') {
+			this.elements.label.setAttributeNS(
+				null,
+				"transform",
+				`translate(${this.svg.x + this.dimensions.handle.popout / 1 - this._value}, ${m.y}) scale(2)`
+			);
+
+			this.elements.text.textContent = Math.round(this.svgToValue(m));
+		}
+  }
+*/  
+  updateLabel(argThis, m) {
+    if (this.debug) console.log('SLIDER - updateLabel start', m, argThis.config.orientation);
+		if (argThis.config.orientation == 'horizontal') {
+
+			// The -30 is for correction width of box around label??????
+			
+			argThis.elements.label.setAttributeNS(
+				null,
+				"transform",
+				`translate(${m.x - this.dimensions.handle.width/2},${argThis.svg.y /*- argThis.dimensions.handle.popout/100*/ - argThis._value}) scale(1)`
+			);
+/*
+			argThis.elements.label.setAttributeNS(
+				null,
+				"transform",
+				`translate(${m.x - 30},${argThis.svg.y - argThis.dimensions.handle.popout / 100 - argThis._value}) scale(2)`
+			);
+*/
+			argThis.elements.text.textContent = Math.round(argThis.svgToValue(argThis, m));
+			if (this.debug) console.log('SLIDER - updateLabel horizontal', m, argThis.svgToValue(argThis, m));
+			
+//			argThis.elements.text.textContent = Math.round(argThis.svgToValue(m));
+			
+		} else if (argThis.config.orientation == 'vertical') {
+			argThis.elements.label.setAttributeNS(
+				null,
+				"transform",
+				`translate(${argThis.svg.x /*- argThis.dimensions.handle.popout*/ - argThis._value}, ${m.y - this.dimensions.handle.height/2}) scale(1)`
+			);
+
+			argThis.elements.text.textContent = Math.round(argThis.svgToValue(argThis, m));
+			if (this.debug) console.log('SLIDER - updateLabel vertical', m, argThis.svgToValue(argThis, m));
+		}
   }
   
-  updateLabel(m) {
-    this.elements.label.setAttributeNS(
-      null,
-      "transform",
-      `translate(${m.x - 30},${this.svg.y - this.svgH / 100 - this._value}) scale(2)`
-    );
-
-    this.elements.text.textContent = Math.round(m.x);
-  }
-  
+	// What does this function do?? Need??
+	// Is this the actual html input value that is set?? Guess so..
 	updateInput(m) {
     //this.inputElement.value = Math.round(m.x);
   }
 
 
-	 oMousePosSVG(e) {
+	 
+	/*
+	* oMousePosSVG
+	*
+	* Translate mouse/touch client window coordinates to SVG window coordinates
+	*
+	*/
+	oMousePosSVG(e) {
 		var p = this.elements.svg.createSVGPoint();
 		p.x = e.clientX;
 		p.y = e.clientY;
@@ -383,26 +524,103 @@ class RangeSliderTool extends BaseTool {
 
 	// HELPERS
 
-	 curvedPath(X, Y, defX, defY) {
+	 /*
+	 * Draw curved path with popout at centered & mouse position
+	 *
+	 * Horizontal:
+	 * - x = mouse position
+	 * - y = fixed y position of slider 
+	 * - deform = deformation of Q control points
+	 * - popout = current value (using animation) of popout in -y direction 
+	 *
+	 * Vertical:
+	 * - x = fixed x position of slider 
+	 * - y = mouse position
+	 * - deform = deformation of Q control points
+	 * - popout = current value (using animation) of popout in -x direction 
+	 *
+	 */
+	 curvedPath(argX, argY, argDeform, argPopout) {
 		//let def = 5;//deformation
 		//let Y = 20;
 		//let X = mouse position
-		let D = { cx: Math.max(20, Math.min(X, 200)), cy: Y - defY, r: 1 };
-		let B = { cx: Math.max(20, Math.min(D.cx - defX, 100)), cy: Y, r: 1 };
-		let F = { cx: Math.max(20, Math.min(D.cx + defX, 100)), cy: Y, r: 1 };
-		let A = { cx: Math.max(20, Math.min(D.cx - 2 * defX, 100)), cy: Y, r: 1 };
-		let G = { cx: Math.max(20, Math.min(D.cx + 2 * defX, 100)), cy: Y, r: 1 };
+		
+		if (this.debug) console.log("SLIDER - curvedPath, args", argX, argY, argDeform, argPopout);
+		const offset = this.svg.y1;
 
+    // HORIZONTAL
+		if (this.config.orientation == 'horizontal') {
+			// Coordinates are clipped between the start and end of the slider, svg.x1 and svg.x2
+			var D = { cx: Math.max(this.svg.x1, Math.min(argX, 									this.svg.x2)), cy: argY - argPopout, r: 1 };
+			var B = { cx: Math.max(this.svg.x1, Math.min(D.cx - argDeform, 			this.svg.x2)), cy: argY, 				r: 1 };
+			var F = { cx: Math.max(this.svg.x1, Math.min(D.cx + argDeform, 			this.svg.x2)), cy: argY, 				r: 1 };
+			var A = { cx: Math.max(this.svg.x1, Math.min(D.cx - 2 * argDeform, 	this.svg.x2)), cy: argY, 				r: 1 };
+			var G = { cx: Math.max(this.svg.x1, Math.min(D.cx + 2 * argDeform, 	this.svg.x2)), cy: argY, 				r: 1 };
+
+			var S = this.svg.x1;
+			var U = argY;
+
+			var T = this.svg.x2;
+			var V = A.cy;
+			V = argY;
+			
+		} // VERTICAL
+		else if (this.config.orientation == 'vertical') {
+			// Coordinates are clipped between the bottom and top of the slider, svg.y1 and svg.y2
+
+/*
+			var D = { cy: Math.max(this.svg.y2, Math.min(argY, 									this.svg.y1)), cx: argX - argPopout, r: 1 };
+			var B = { cy: Math.max(this.svg.y2, Math.min(D.cy - argDeform, 			this.svg.y1)), cx: argX, 				r: 1 };
+			var F = { cy: Math.max(this.svg.y2, Math.min(D.cy + argDeform, 			this.svg.y1)), cx: argX,					r: 1 };
+			var A = { cy: Math.max(this.svg.y2, Math.min(D.cy - 2 * argDeform,	this.svg.y1)), cx: argX, 				r: 1 };
+			var G = { cy: Math.max(this.svg.y2, Math.min(D.cy + 2 * argDeform, 	this.svg.y1)), cx: argX, 				r: 1 };
+*/
+
+			var D = { cy: Math.max(this.svg.y1, Math.min(argY, 									this.svg.y2)), cx: argX - argPopout, r: 1 };
+			var B = { cy: Math.max(this.svg.y1, Math.min(D.cy - 1 * argDeform, 			this.svg.y2)), cx: argX, 				r: 1 };
+			var F = { cy: Math.max(this.svg.y1, Math.min(D.cy + 1 * argDeform, 			this.svg.y2)), cx: argX,					r: 1 };
+			var A = { cy: Math.max(this.svg.y1, Math.min(D.cy - 2 * argDeform, 	this.svg.y2)), cx: argX, 				r: 1 };
+			var G = { cy: Math.max(this.svg.y1, Math.min(D.cy + 2 * argDeform, 	this.svg.y2)), cx: argX, 				r: 1 };
+
+			var S = this.svg.y1;
+			var T = this.svg.y2;
+			var U = argX;
+			
+			S = A.cx;
+			U = this.svg.y1;
+
+			T = argX;
+			V = this.svg.y2;
+			//T = 50;
+			//V = 50;
+		}
+/*
+    if (this.config.orientation == 'horizontal') {
+			var D = { cx: Math.max(20, Math.min(X, 200)), cy: Y - defY, r: 1 };
+			var B = { cx: Math.max(20, Math.min(D.cx - defX, 100)), cy: Y, r: 1 };
+			var F = { cx: Math.max(20, Math.min(D.cx + defX, 100)), cy: Y, r: 1 };
+			var A = { cx: Math.max(20, Math.min(D.cx - 2 * defX, 100)), cy: Y, r: 1 };
+			var G = { cx: Math.max(20, Math.min(D.cx + 2 * defX, 100)), cy: Y, r: 1 };
+		} else if (this.config.orientation == 'vertical') {
+			var D = { cy: Math.max(20, Math.min(X, 200)), cy: Y - defY, r: 1 };
+			var B = { cy: Math.max(20, Math.min(D.cy - defX, 100)), cy: Y, r: 1 };
+			var F = { cy: Math.max(20, Math.min(D.cy + defX, 100)), cy: Y, r: 1 };
+			var A = { cy: Math.max(20, Math.min(D.cy - 2 * defX, 100)), cy: Y, r: 1 };
+			var G = { cy: Math.max(20, Math.min(D.cy + 2 * defX, 100)), cy: Y, r: 1 };
+		}
+*/
 		let C = this.interpolatePoint(B, D, 1, 2);
 		C.r = 1;
 		let E = this.interpolatePoint(D, F, 1, 2);
 		E.r = 1;
 
-		return `M0,${Y} L${A.cx},${A.cy}
+		//console.log("SLIDER - curvedPath values A=", A, this.svg.x2, "B=", B, "C=", C);
+		// Draw the horizontal start slider, then the 3 Q curves, and the rest of the horizontal slider.
+		return `M${S},${U} L${A.cx},${A.cy}
 								Q${B.cx},${B.cy} ${C.cx},${C.cy}
 								Q${D.cx},${D.cy} ${E.cx},${E.cy}
 								Q${F.cx},${F.cy} ${G.cx},${G.cy}
-								L100,${A.cy}
+								L${T},${V} L${S+1}, ${U+1}
 	`;
 	}
 
@@ -411,10 +629,19 @@ class RangeSliderTool extends BaseTool {
 		//point b
 		//line divided in n segments
 		//find the i-th point
-		var o = {
-			cx: a.cx + (b.cx - a.cx) * (i / n),
-			cy: a.cy + (b.cy - a.cy) * (i / n)
-		};
+		
+		if (this.config.orientation == 'horizontal') {
+			var o = {
+				cx: a.cx + (b.cx - a.cx) * (i / n),
+				cy: a.cy + (b.cy - a.cy) * (i / n)
+			};
+		}
+		else if (this.config.orientation == 'vertical') {
+			var o = {
+				cx: a.cx + (b.cx - a.cx) * (i / n),
+				cy: a.cy + (b.cy - a.cy) * (i / n)
+			};
+		}
 		return o;
 	}
 
@@ -425,7 +652,7 @@ class RangeSliderTool extends BaseTool {
 		function Frame() {
 			thisValue.rid = window.requestAnimationFrame(Frame);
 			thisValue.updateValue();
-			thisValue.updatePath(thisValue.m);
+			thisValue.updatePath(thisValue, thisValue.m);
 			//if (this.debug) console.log('pointer in Frame', thisValue.m);
 		}
 		
@@ -441,7 +668,7 @@ class RangeSliderTool extends BaseTool {
 //    this.thumb = _2.querySelector("circle");
 
 		if (true) {
-			this.elements.label = this.elements.svg.querySelector("#_2 path");
+			this.elements.label = this.elements.svg.querySelector("#_2 path#label-".concat(this.toolId));
 			this.elements.text = this.elements.svg.querySelector("#_2 text textPath");
 		} else {
 			this.elements.label = this.elements.svg.querySelector("#_2 rect");
@@ -456,10 +683,10 @@ class RangeSliderTool extends BaseTool {
     this.elements.svg.addEventListener("pointerdown", e => {
       this.dragging = true;
       this.m = this.oMousePosSVG(e);
-			this.m.x = Math.round(this.m.x / 5) * 5;
-      if (this.debug) console.clear();
+			//this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
+      //if (this.debug) console.clear();
       if (this.debug) console.log('pointerDOWN',Math.round(this.m.x * 100) / 100);
-      this.target = this.svgH/.75;
+      this.target = this.dimensions.handle.popout;
       Frame();
     });
 
@@ -473,7 +700,7 @@ class RangeSliderTool extends BaseTool {
 
     this.elements.svg.addEventListener("pointerout", () => {
 
-      this.dragging = false;
+			this.dragging = false;
       this.target = 0;
       if (this.debug) console.log('pointerOUT');
       Frame();
@@ -482,16 +709,44 @@ class RangeSliderTool extends BaseTool {
     this.elements.svg.addEventListener("pointermove", e => {
       if (this.dragging) {
         this.m = this.oMousePosSVG(e);
-				this.m.x = Math.max(10, Math.min(this.m.x, 90.0));
-				this.m.x = Math.round(this.m.x / 5) * 5;
+				
+				// Clip pointer to scale.
+				//this.m.x = Math.max(this.svg.scale.min, Math.min(this.m.x, this.svg.scale.max));
+				//this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
+				//this.m.x = Math.max(10, Math.min(this.m.x, 90.0));
+				//this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
 
-        console.clear();
+        //console.clear();
         if (this.debug) console.log('pointerMOVE', this.m.x, Math.round(this.m.x * 100) / 100);
-        this.target = this.svgH/.75;
+        this.target = this.dimensions.handle.popout;
         Frame();
       }
     });
 
+	}
+
+/*******************************************************************************
+	* set value()
+	*
+	* Summary.
+	*	Receive new state data for the entity this rangeslider is linked to. Called from set hass();
+	* Sets the brightness value of the slider. This is a value 0..255. We display %, so translate
+	*
+	*/
+	set value(state) {
+		var changed = super.value = state;
+
+		console.log('rangeslidertool, animation, set value', state);
+		
+		// What to do here??
+		// We must know the domain or attribute to know what to do.
+		// Light domain --> do something with brightness etc.
+		
+		// Or: in YAML: set translation range, 0..255 for brightness -> 0..100%.
+		
+		// for now: use external range for internal scale. No conversion for now. just testing
+		
+		return changed;
 	}
 
  /*******************************************************************************
@@ -511,18 +766,44 @@ class RangeSliderTool extends BaseTool {
 		
 		// Get the runtime styles, caused by states & animation settings
 		let stateStyle = {};
-		if (this._parent.animations.lines[this.config.animation_id])
-			stateStyle = Object.assign(stateStyle, this._parent.animations.lines[this.config.animation_id]);
+		//if (this._parent.animations.lines[this.config.animation_id])
+		//	stateStyle = Object.assign(stateStyle, this._parent.animations.lines[this.config.animation_id]);
 
 		// Merge the two, where the runtime styles may overwrite the statically configured styles
 		configStyle = { ...configStyle, ...stateStyle};
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
-		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+		const configStyleStrSlider = JSON.stringify(configStyle.slider).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+		const configStyleStrHandle = JSON.stringify(configStyle.handle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 		
 		const toRender = []
 		//toRender.push(html`<input type="range" id="witness" value="50" disabled style="display:none">`);
 
+		// Calculate startOffset for text along path. Get it about centered along topside...
+		const startOffset = 100/2 * (this.dimensions.handle.width / ((this.dimensions.handle.width * 2) + (this.dimensions.handle.height * 2)));
+		
+// 					<path d="M${this.svg.x1},${this.svg.y1} L${this.svg.x2},${this.svg.y1}" stroke="var(--theme-gradient-color-01)" stroke-width="5" fill="var(--theme-gradient-color-03)" pointer-events="none" 
+
+		toRender.push(svg`
+				<g id="poep-${this.toolId}" >
+					<rect x="${this.svg.x1}" y="${this.svg.y1}" width="${this.svg.width}" height="${this.svg.height}" style="fill: none" pointer-events="all"/>
+					
+					<path d="M1,1 L20,20" stroke="var(--theme-gradient-color-01)" stroke-width="5" fill="var(--theme-gradient-color-03)" pointer-events="none" stroke-linecap="round"/>
+					<g id="_2" pointer-events="none">
+						<path id="label-${this.toolId}" transform="translate(100,220) scale(5)"
+							d="M 0 0 h ${this.dimensions.handle.width} v ${this.dimensions.handle.height} h -${this.dimensions.handle.width} v -${this.dimensions.handle.height}"
+							style="fill: var(--theme-gradient-color-01); stroke: grey; stroke-width:2" style="${configStyleStrSlider}"/>
+
+						<circle cx="${this.svg.x}" cy="${this.svg.y}" r="1" fill="none" pointer-events="none"/>
+
+						<text text-anchor="middle" transform="translate(0,${this.dimensions.handle.height/4})" pointer-events="none" >
+						<textPath startOffset="${startOffset}%" text-anchor="middle" dominant-baseline="hanging" style="${configStyleStrHandle}" href="#label-${this.toolId}" pointer-events="none">
+            50
+						</textPath>
+					</g>
+				</g>
+			`);
+/*
 		toRender.push(svg`
 				<g id="poep" >
 					<rect x="0" y="100" width="100" height="80" style="fill: none" pointer-events="all"/>
@@ -534,12 +815,13 @@ class RangeSliderTool extends BaseTool {
 						<circle cy="${this.svg.y + 20}" r="2" fill="white" pointer-events="none"/>
 
 						<text text-anchor="middle" transform="translate(0,10)" pointer-events="none" >
-						<textPath startOffset="15%" dominant-baseline="hanging" fill="black" font-size="2em" font-weight="700" xlink:href="#label" pointer-events="none">
+						<textPath startOffset="50%" dominant-baseline="hanging" fill="black" font-size="2em" font-weight="700" xlink:href="#label" pointer-events="none">
             50
 						</textPath>
 					</g>
 				</g>
 			`);
+*/
 /*
 		toRender.push(svg`
 				<g id="poep" >
@@ -569,6 +851,13 @@ class RangeSliderTool extends BaseTool {
 	*
 	*/
 	render() {
+// viewbox="0,0,400,400"
+    return svg`
+			<svg  xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}" class="rangeslider" pointer-events="all"
+			>
+				${this._renderRangeSlider()}
+			</svg>
+		`;
 
     return svg`
 			<svg viewbox="-10,-100,400,400" id="rangeslider-${this.toolId}" class="rangeslider" pointer-events="all"
@@ -753,11 +1042,11 @@ class CircleTool extends BaseTool {
 		
 
 /*
-		if (this._value?.toLowerCase() == state.toLowerCase()) return false;
+		if (this._stateValue?.toLowerCase() == state.toLowerCase()) return false;
 		
-		this._valuePrev = this._value || state;
-		this._value = state;
-		this._valueIsDirty = true;
+		this._stateValuePrev = this._stateValue || state;
+		this._stateValue = state;
+		this._stateValueIsDirty = true;
 
 		// If animations defined, calculate style for current state.
 
@@ -771,29 +1060,29 @@ class CircleTool extends BaseTool {
 			var operator = item.operator ? item.operator : "=";
 			switch(operator) {
 				case "=":
-					isMatch = this._value.toLowerCase() == item.state.toLowerCase();
+					isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
 					break;
 				case "!=":
-					isMatch = this._value.toLowerCase() != item.state.toLowerCase();
+					isMatch = this._stateValue.toLowerCase() != item.state.toLowerCase();
 					break;
 				case ">":
-					isMatch = this._value.toLowerCase() > item.state.toLowerCase();
+					isMatch = this._stateValue.toLowerCase() > item.state.toLowerCase();
 					break;
 				case "<":
-					isMatch = this._value.toLowerCase() < item.state.toLowerCase();
+					isMatch = this._stateValue.toLowerCase() < item.state.toLowerCase();
 					break;
 				case ">=":
-					isMatch = this._value.toLowerCase() >= item.state.toLowerCase();
+					isMatch = this._stateValue.toLowerCase() >= item.state.toLowerCase();
 					break;
 				case "<=":
-					isMatch = this._value.toLowerCase() <= item.state.toLowerCase();
+					isMatch = this._stateValue.toLowerCase() <= item.state.toLowerCase();
 					break;
 				default:
 					// Unknown operator. Just do nothing and return;
 					isMatch = false;
 			}
 			// if animation state not equals sensor state, return... Nothing to animate for this state...
-			//if (this._value.toLowerCase() != item.state.toLowerCase()) return;			
+			//if (this._stateValue.toLowerCase() != item.state.toLowerCase()) return;			
 			if (!isMatch) return true;
 			
 			if (!this.animationStyle || !item.reuse) this.animationStyle = {};
@@ -820,12 +1109,13 @@ class CircleTool extends BaseTool {
 		let configStyle = {...this.config.styles};
 		
 		// Get the runtime styles, caused by states & animation settings
-		let stateStyle = {};
-		if (this._parent.animations.circles[this.config.animation_id])
-			stateStyle = Object.assign(stateStyle, this._parent.animations.circles[this.config.animation_id]);
+		//let stateStyle = {};
+		//if (this._parent.animations.circles[this.config.animation_id])
+		//	stateStyle = Object.assign(stateStyle, this._parent.animations.circles[this.config.animation_id]);
 
 		// Merge the two, where the runtime styles may overwrite the statically configured styles
-		configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
+		//configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
+		configStyle = { ...configStyle, ...this.animationStyle};
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
@@ -907,12 +1197,13 @@ class EllipseTool extends BaseTool {
 		let configStyle = {...this.config.styles};
 		
 		// Get the runtime styles, caused by states & animation settings
-		let stateStyle = {};
-		if (this._parent.animations.circles[this.config.animation_id])
-			stateStyle = Object.assign(stateStyle, this._parent.animations.circles[this.config.animation_id]);
+		//let stateStyle = {};
+		//if (this._parent.animations.circles[this.config.animation_id])
+		//	stateStyle = Object.assign(stateStyle, this._parent.animations.circles[this.config.animation_id]);
 
 		// Merge the two, where the runtime styles may overwrite the statically configured styles
-		configStyle = { ...configStyle, ...stateStyle};
+		//configStyle = { ...configStyle, ...stateStyle};
+		configStyle = { ...configStyle, ...this.animationStyle};
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
@@ -1031,6 +1322,7 @@ class EntityIconTool extends BaseTool {
 	*	Renders the icon using precalculated coordinates and dimensions.
 	* Only the runtime style is calculated before rendering the icon
 	*
+	* THIS IS THE ONE!!!!
 	*/
 
   _renderIcon() {
@@ -1039,13 +1331,14 @@ class EntityIconTool extends BaseTool {
 		let configStyle = {...this.config.styles};
 		
 		// Get the runtime styles, caused by states & animation settings
-		let stateStyle = {};
-		if (this._parent.animations.icons[this.config.animation_id])
-			stateStyle = Object.assign(stateStyle, this._parent.animations.icons[this.config.animation_id]);
+		//let stateStyle = {};
+		//if (this._parent.animations.icons[this.config.animation_id])
+		//	stateStyle = Object.assign(stateStyle, this._parent.animations.icons[this.config.animation_id]);
 
 		// Merge the two, where the runtime styles may overwrite the statically configured styles
-		configStyle = { ...configStyle, ...stateStyle};
-		
+		//configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
+		configStyle = { ...configStyle, ...this.animationStyle};
+
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
@@ -1064,7 +1357,8 @@ class EntityIconTool extends BaseTool {
 
 		//	const parentClientWidth = this.parentElement.clientWidth;
 			const clientWidth = this._parent.clientWidth; // hard coded adjust for padding...
-			const correction = clientWidth / this._parent.viewBox.width;
+			var correction = clientWidth / (this._parent.viewBox.width);
+			var correctionRect = clientWidth / (this._parent.viewBox.width + 50);
 
 			// icon is not calculated against viewbox, but against toolset pos 
 			//this.coords.xpx = (x * this._parent.viewBox.width);
@@ -1073,7 +1367,8 @@ class EntityIconTool extends BaseTool {
 			this.coords.xpx = this.coords.cx;//(x * this._parent.viewBox.width);
 			this.coords.ypx = this.coords.cy;//(y * this._parent.viewBox.height);
 			
-			if ((this._parent.isSafari) || (this._parent.iOS)) {
+			if (/*true &&*/ ((this._parent.isSafari) || (this._parent.iOS))) {
+				//correction = 1; // #HIERO #WIP
 				this.dimensions.iconSize = this.dimensions.iconSize * correction;
 
 				this.coords.xpx = (this.coords.xpx * correction) - (this.dimensions.iconPixels * adjust * correction);
@@ -1095,25 +1390,52 @@ class EntityIconTool extends BaseTool {
 //								<ha-icon .icon=${icon} style="${configStyleStr}";></ha-icon>
 //						</div>
 
+		// Safari stays a problem with icons. Using <img></img> seems to do something (sizes and position are different!!), but could it be that
+		// I can get the svg path for the icon, and then render that path? Then the foreignObject can be abused (size to 0,0) to hold the svg for Safari, nothing else...
+		
+		//this.elements.haIcon = this._parent.shadowRoot.getElementById("icon-".concat(this.toolId));
+		// The inspector shows: ha-icon id=, shadow-root, ha-svg-icon, shadow-root, svg, path.
+		// Or can we use the svg use keyword??????
+		
+		if (!this.alternateColor) {this.alternateColor = 'white'};
+		if (this.alternateColor == 'white') {this.alternateColor = 'black'} else {this.alternateColor = 'white'};
+//				<rect width="${this.dimensions.iconPixels}" height="${this.dimensions.iconPixels}" x="${this.coords.xpx}" y="${this.coords.ypx}"
+//				<rect width="${this.dimensions.iconPixels}px" height="${this.dimensions.iconPixels}px" x="${this.coords.cx - this.dimensions.iconPixels/2}" y="${(this.coords.cy - this.dimensions.iconPixels)*1.8}"
+//					style="stroke-width:10;stroke:${this.alternateColor};fill:none"></rect>
+		
+		// NTS:
+		// Keep using the em values for the iconSize, and NOT the pixels, as this gives weird extra scaling on Safari!!
+		
+		// #TODO:
+		// Could it be possible to simply use this: https://www.sitepoint.com/how-to-translate-from-dom-to-svg-coordinates-and-back-again/
+		// to get the Safari client coordiantes. Already used for clicks in slider, so use also for this stuff to place icon not on svg coordinates, but xlated to client coords??
+		// Or are these the whole screen, and not the card size coordinates????
+		
 		if ((this._parent.isSafari) || (this._parent.iOS)) {	
 			return svg`
-				<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}">
-					<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
-								style="line-height:${this.dimensions.iconSize}em;">
-								<ha-icon .icon=${icon} style="${configStyleStr}";></ha-icon>
-					</div>
+				<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}" overflow="visible">
+					<body>
+						<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
+								style="line-height:${this.dimensions.iconSize}em;position:relative;border-style:solid;border-width:0;border-color:${this.alternateColor};">
+								<ha-icon .icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}";></ha-icon>
+						</div>
+					</body>
 				</foreignObject>
 				`;
 		} else {				
 			return svg`
+				<rect width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}"
+				style="stroke-width:2;stroke:${this.alternateColor};fill:none"></rect>
 				<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}">
 					<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
-								style="line-height:${this.dimensions.iconSize}em;">
-						<ha-icon .icon=${icon} style="${configStyleStr}"></ha-icon>
+								style="line-height:${this.dimensions.iconSize}em;border-style:solid;border-width:0;border-color:${this.alternateColor};">
+						<ha-icon .icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}"></ha-icon>
 					</div>
 				</foreignObject>
 				`;		
 		}
+
+
 /*
 		return svg`
 		<g @click=${e => this.handlePopup(e, this._parent.entities[this.config.entity_index])}>
@@ -1129,6 +1451,42 @@ class EntityIconTool extends BaseTool {
 */
 	}	
 
+	firstUpdated(changedProperties) {
+
+/*
+		if (!this.elements) this.elements = {};
+		this.elements.haIcon = this._parent.shadowRoot.getElementById("icon-".concat(this.toolId));
+		console.log("firstupdated - haicon", this.elements.haIcon);
+
+		var ele = this.elements.haIcon.shadowRoot.childNodes;
+		console.log("firstupdated - haicon ele", ele, ele.length);
+		
+		ele.map((node, index) => {
+			console.log("firstupdated, haicon, node", node, index);
+		});
+		for (node of ele) {
+			console.log("firstupdated, haicon, node loop", node);
+		}
+		
+//	ele = [...this.elements.haIcon.shadowRoot.childNodes].indexOf(element);
+		
+    this.elements.haSvgIcon = this.elements.haIcon.querySelector("ha-svg-icon");
+		var shadow = this.elements.haSvgIcon.shadowRoot;
+		console.log("firstupdated - haicon/shadow", shadow);
+		
+		console.log("firstupdated - haicon/svgIcon1", this.elements.haSvgIcon);
+    this.elements.haSvgIcon = this.elements.haIcon.querySelector("ha-svg-icon");
+		console.log("firstupdated - haicon/svgIcon2", this.elements.haSvgIcon);
+
+    this.elements.svg = this.elements.haSvgIcon.shadowRoot.querySelector("svg");
+		console.log("firstupdated - haicon/svg/svg", this.elements.svg);
+		
+		// The inspector shows: ha-icon id=, shadow-root, ha-svg-icon, shadow-root, svg, path.
+		// Or can we use the svg use keyword??????
+
+		console.log("ICON - firstUpdated - elements", this.elements);
+	*/}
+	
  /*******************************************************************************
 	* render()
 	*
@@ -1176,7 +1534,7 @@ class EntityIconTool extends BaseTool {
 		if (this.debug) console.log('renderIcon - xlatex/y values', scale, this.toolsetPos.scale, xlatex, xlatey, this.coords, this.dimensions);
 */		
     return svg`
-			<g filter="url(#ds)" id="icon-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale}) translate(${this.dimensions.xlateX} ${this.dimensions.xlateY})"
+			<g filter="url(#ds)" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale}) translate(${this.dimensions.xlateX} ${this.dimensions.xlateY})"
 				@click=${e => this._parent.handlePopup(e, this._parent.entities[this.config.entity_index])} >
 
 				${this._renderIcon()}
@@ -1334,9 +1692,9 @@ class EntityStateTool extends BaseTool {
 		this.config = {...DEFAULT_STATE_CONFIG};
 		this.config = {...this.config, ...argConfig};
 
-//		this._value = 0;
-//		this._valuePrev = 0;
-		this._valueIsDirty = false;
+//		this._stateValue = 0;
+//		this._stateValuePrev = 0;
+		this._stateValueIsDirty = false;
 		
 		if (argConfig.styles) this.config.styles = {...argConfig.styles};
 		this.config.styles = {...DEFAULT_STATE_CONFIG.styles, ...this.config.styles};
@@ -1352,20 +1710,20 @@ class EntityStateTool extends BaseTool {
 		var changed = super.value = state;
 
 /*
-		if (this._value == state) return false;
+		if (this._stateValue == state) return false;
 		
-		this._valuePrev = this._value || state;
-		this._value = state;
-		this._valueIsDirty = true;
+		this._stateValuePrev = this._stateValue || state;
+		this._stateValue = state;
+		this._stateValueIsDirty = true;
 		return true;
 */
 		console.log('EntityStateTool, animation, set value', state);
 /*
-		if (this._value?.toLowerCase() == state.toLowerCase()) return false;
+		if (this._stateValue?.toLowerCase() == state.toLowerCase()) return false;
 		
-		this._valuePrev = this._value || state;
-		this._value = state;
-		this._valueIsDirty = true;
+		this._stateValuePrev = this._stateValue || state;
+		this._stateValue = state;
+		this._stateValueIsDirty = true;
 
 		// If animations defined, calculate style for current state.
 
@@ -1379,30 +1737,30 @@ class EntityStateTool extends BaseTool {
 			var operator = item.operator ? item.operator : "=";
 			switch(operator) {
 				case "=":
-					isMatch = this._value.toLowerCase() == item.state.toLowerCase();
+					isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
 					break;
 				case "!=":
-					isMatch = this._value.toLowerCase() != item.state.toLowerCase();
+					isMatch = this._stateValue.toLowerCase() != item.state.toLowerCase();
 					break;
 				case ">":
-					isMatch = Number(this._value.toLowerCase()) > Number(item.state.toLowerCase());
+					isMatch = Number(this._stateValue.toLowerCase()) > Number(item.state.toLowerCase());
 					break;
 				case "<":
-					isMatch = Number(this._value.toLowerCase()) < Number(item.state.toLowerCase());
+					isMatch = Number(this._stateValue.toLowerCase()) < Number(item.state.toLowerCase());
 					break;
 				case ">=":
-					isMatch = Number(this._value.toLowerCase()) >= Number(item.state.toLowerCase());
+					isMatch = Number(this._stateValue.toLowerCase()) >= Number(item.state.toLowerCase());
 					break;
 				case "<=":
-					isMatch = Number(this._value.toLowerCase()) <= Number(item.state.toLowerCase());
+					isMatch = Number(this._stateValue.toLowerCase()) <= Number(item.state.toLowerCase());
 					break;
 				default:
 					// Unknown operator. Just do nothing and return;
 					isMatch = false;
 			}
 			// if animation state not equals sensor state, return... Nothing to animate for this state...
-			//if (this._value.toLowerCase() != item.state.toLowerCase()) return;			
-			console.log('EntityStateTool, animation, match, value, config, operator', isMatch, this._value, item.state, item.operator);
+			//if (this._stateValue.toLowerCase() != item.state.toLowerCase()) return;			
+			console.log('EntityStateTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
 			if (!isMatch) return true;
 			
 			if (!this.animationStyle || !item.reuse) this.animationStyle = {};
@@ -1443,12 +1801,13 @@ class EntityStateTool extends BaseTool {
 		if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
 		
 		// Get the runtime styles, caused by states & animation settings
-		let stateStyle = {};
-		if (this._parent.animations.states[this.config.index])
-			stateStyle = Object.assign(stateStyle, this._parent.animations.states[this.config.index]);
+		//let stateStyle = {};
+		//if (this._parent.animations.states[this.config.index])
+		//	stateStyle = Object.assign(stateStyle, this._parent.animations.states[this.config.index]);
 
 		// Merge the two, where the runtime styles may overwrite the statically configured styles
-		configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
+		//configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
+		configStyle = { ...configStyle, ...this.animationStyle};
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
@@ -1526,7 +1885,15 @@ class EntityStateTool extends BaseTool {
 class EntityNameTool extends BaseTool {
 	constructor(argParent, argConfig, argPos) {
 		
+		// See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/dominant-baseline
+		// Can be:
+		// - auto (above baseline)
+		// - middle (centered in y pos)
+		// - hanging (fully below baseline)
+		// - mathematical (text below baseline, but upperpart not)
+		// - text-top (above baseline)
 		const DEFAULT_NAME_CONFIG = {
+			"dominant-baseline": 'hanging;'
 		}
 		
 		super(argParent, argConfig, argPos);
@@ -1569,12 +1936,13 @@ class EntityNameTool extends BaseTool {
 		if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
 		
 		// Get the runtime styles, caused by states & animation settings
-		let stateStyle = {};
-		if (this._parent.animations.names[this.config.index])
-			stateStyle = Object.assign(stateStyle, this._parent.animations.names[this.config.index]);
+		//let stateStyle = {};
+		//if (this._parent.animations.names[this.config.index])
+		//	stateStyle = Object.assign(stateStyle, this._parent.animations.names[this.config.index]);
 
 		// Merge the two, where the runtime styles may overwrite the statically configured styles
-		configStyle = { ...configStyle, ...stateStyle};
+		//configStyle = { ...configStyle, ...stateStyle};
+		configStyle = { ...configStyle, ...this.animationStyle};
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
@@ -1666,12 +2034,13 @@ class EntityAreaTool extends BaseTool {
 		if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
 		
 		// Get the runtime styles, caused by states & animation settings
-		let stateStyle = {};
-		if (this._parent.animations.areas[this.config.index])
-			stateStyle = Object.assign(stateStyle, this._parent.animations.areas[this.config.index]);
+		//let stateStyle = {};
+		//if (this._parent.animations.areas[this.config.index])
+		//	stateStyle = Object.assign(stateStyle, this._parent.animations.areas[this.config.index]);
 
 		// Merge the two, where the runtime styles may overwrite the statically configured styles
-		configStyle = { ...configStyle, ...stateStyle};
+		//configStyle = { ...configStyle, ...stateStyle};
+		configStyle = { ...configStyle, ...this.animationStyle};
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
@@ -1819,11 +2188,11 @@ class HorseshoeTool extends BaseTool {
 	*/
 
 	set value(state) {
-		if (this._value == state) return false;
+		if (this._stateValue == state) return false;
 		
-		this._valuePrev = this._value || state;
-		this._value = state;
-		this._valueIsDirty = true;
+		this._stateValuePrev = this._stateValue || state;
+		this._stateValue = state;
+		this._stateValueIsDirty = true;
 
 		// Calculate the size of the arc to fill the dasharray with this 
 		// value. It will fill the horseshoe relative to the state and min/max
@@ -2307,9 +2676,9 @@ class SegmentedArcTool extends BaseTool {
 		this._firstUpdatedCalled = false;
 
 		// Remember the values to be able to render from/to
-		this._value = null;
-		this._valuePrev = null;
-		this._valueIsDirty = false;
+		this._stateValue = null;
+		this._stateValuePrev = null;
+		this._stateValueIsDirty = false;
 		this._renderFrom = null;
 		this._renderTo = null;
 
@@ -2330,7 +2699,7 @@ class SegmentedArcTool extends BaseTool {
 		
 		// This arc is the scale belonging to another arc??
 		if (this.config.isScale) {
-			this._value = this.config.scale.max;
+			this._stateValue = this.config.scale.max;
 			//this.config.show.scale = false;
 		} else {
 		
@@ -2455,7 +2824,7 @@ class SegmentedArcTool extends BaseTool {
 		
 		// Set scale to new value. Never changes of course!!
 		if (this.skipOriginal) {
-			if (this.config.isScale) this._valuePrev = this._value;
+			if (this.config.isScale) this._stateValuePrev = this._stateValue;
 			this._initialDraw = false;
 
 		}
@@ -2499,13 +2868,13 @@ class SegmentedArcTool extends BaseTool {
 		if (this.debug) console.log('SegmentedArcTool - set value IN');
 
 		if (this.config.isScale) return false;
-		if (this._value == state) return false;
+		if (this._stateValue == state) return false;
 
 		var changed = super.value = state;
 		
-//		this._valuePrev = this._value || state;
-//		this._value = state;
-//		this._valueIsDirty = true;
+//		this._stateValuePrev = this._stateValue || state;
+//		this._stateValue = state;
+//		this._stateValueIsDirty = true;
 		return true;
 	}
 	
@@ -2527,10 +2896,10 @@ class SegmentedArcTool extends BaseTool {
 		
 		if (this.skipOriginal) {
 			if (this.debug) console.log('RENDERNEW - firstUpdated IN with _arcId/id/isScale/scale/connected', this._arcId, this.toolId, this.config.isScale, this._segmentedArcScale, this._parent.connected);
-			if (!this.config.isScale) this._valuePrev = null;
+			if (!this.config.isScale) this._stateValuePrev = null;
 			this._initialDraw = true;
 			// Huh? next call doesn't seem required to update / initiate animation???
-			//this._parent.requestUpdate();
+			this._parent.requestUpdate();
 		}
 	}
 	
@@ -2583,9 +2952,9 @@ class SegmentedArcTool extends BaseTool {
 
 			if (this.debug) console.log('RENDERNEW - IN _arcId, firstUpdatedCalled', this._arcId, this._firstUpdatedCalled);
 			// calculate real end angle depending on value set in object and min/max scale
-			var val = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._value);
-			var valPrev = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._valuePrev);
-			if (this.debug) if (!this._valuePrev) console.log('*****UNDEFINED', this._value, this._valuePrev, valPrev);
+			var val = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValue);
+			var valPrev = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValuePrev);
+			if (this.debug) if (!this._stateValuePrev) console.log('*****UNDEFINED', this._stateValue, this._stateValuePrev, valPrev);
 			if (val != valPrev) if (this.debug) console.log('RENDERNEW _renderSegments diff value old new', this.toolId, valPrev, val);
 
 					arcEnd = (val * this._arc.size * this._arc.direction) + this.config.start_angle;
@@ -2780,8 +3149,8 @@ toAngle: 25.200000000000003
 				var arcCur = arcEndPrev;
 				
 				// Check if values changed and we should animate to another target then previously rendered
-				if ((val != valPrev) && (this._parent.connected == true) && (this._renderTo != this._value)) {
-					this._renderTo = this._value;
+				if ((val != valPrev) && (this._parent.connected == true) && (this._renderTo != this._stateValue)) {
+					this._renderTo = this._stateValue;
 					//if (this.debug) console.log('RENDERNEW val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
 					
 					// If previous animation active, cancel this one before starting a new one...
@@ -2866,8 +3235,8 @@ toAngle: 25.200000000000003
 			var arcRadius = this.config.radius;
 			
 			// calculate real end angle depending on value set in object and min/max scale
-			var val = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._value);
-			var valPrev = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._valuePrev);
+			var val = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValue);
+			var valPrev = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValuePrev);
 			if (val != valPrev) if (this.debug) console.log('_renderSegments diff value old new', this.toolId, valPrev, val);
 
 			var arcSizeFull = Math.abs(arcEndFull - arcStart);
@@ -3049,8 +3418,8 @@ toAngle: 25.200000000000003
 				var arcCur = arcEndPrev;
 				
 				// Check if values changed and we should animate to another target then previously rendered
-				if ((val != valPrev) && (this._parent.connected == true) && (this._renderTo != this._value)) {
-					this._renderTo = this._value;
+				if ((val != valPrev) && (this._parent.connected == true) && (this._renderTo != this._stateValue)) {
+					this._renderTo = this._stateValue;
 					if (this.debug) console.log('val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
 					
 					// If previous animation active, cancel this one before starting a new one...
@@ -3881,6 +4250,7 @@ class devSwissArmyKnifeCard extends LitElement {
 						entityHasChanged = true;
 					}
 					attrSet = true;
+					console.log("set hass - attrSet=true", newStateStr);
 				}
 			}
 			if (!attrSet) {
@@ -3889,9 +4259,11 @@ class devSwissArmyKnifeCard extends LitElement {
 					this.entitiesStr[index] = newStateStr;
 					entityHasChanged = true;
 				}
+				console.log("set hass - attrSet=false", newStateStr);
 			}
 			
 			index++;
+			attrSet = false;
 		}
 
 		if (this.connected) {
@@ -4009,6 +4381,7 @@ class devSwissArmyKnifeCard extends LitElement {
 		
 		// For now, always force update to render the card if any of the states or attributes have changed...
     if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
+		this.requestUpdate();
   }
 
  /*******************************************************************************
@@ -4079,6 +4452,7 @@ class devSwissArmyKnifeCard extends LitElement {
 		
 		if (config.dimensions) this.dimensions = config.dimensions;
 		this.viewBox = aspectRatios.get(this.dimensions);
+		console.log("Set Config dimensions viewbox", this.dimensions, this.viewBox);
 
 		
     if (!config.entities) {
@@ -4323,23 +4697,43 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 	*/
   firstUpdated(changedProperties) {
 
-		if (this.debug) console.log('*****Event - firstUpdated', this.cardId, new Date().getTime());
+		/*if (this.debug)*/ console.log('*****Event - firstUpdated', this.cardId, new Date().getTime());
 
 		if (this.tools) {
 			this.tools.map((item, index) => {
+				
+				console.log("firstupdated, calling item/index", item, index);
 				if (item.type == "segarc") {
 					if (this.debug) console.log('firstUpdated - calling SegmentedArcTool firstUpdated');
 					item.tool.firstUpdated(changedProperties);
 					//this.tools[index].firstUpdated(changedProperties);
 				}
+
+				if (item.type == "slider") {
+					if (this.debug) console.log('firstUpdated - calling Slider firstUpdated');
+					item.tool.firstUpdated(changedProperties);
+					//this.tools[index].firstUpdated(changedProperties);
+				}
+
+				if (item.type == "icon") {
+					if (this.debug) console.log('firstUpdated - calling Icon firstUpdated');
+					item.tool.firstUpdated(changedProperties);
+					console.log("called firstupdated on icon tool");
+					//this.tools[index].firstUpdated(changedProperties);
+				}
+
+
 			});
 		}
 
-		
+/*		
 		if (this.tools[4].type == "slider") {
 			this.tools[4].tool.firstUpdated(changedProperties);
 		}
-
+		if (this.tools[5]?.type == "slider") {
+			this.tools[5].tool.firstUpdated(changedProperties);
+		}
+*/
 		// Force rerender after first update.
 		// Seems to be required to render the icons correctly on iOS / Safari devices.
  		this.requestUpdate();
@@ -4680,7 +5074,7 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
 	*
 	*/
 
-	_renderIcon(item) {
+	_renderIconOLD(item) {
 
 	if (!item) return;
 
@@ -4920,10 +5314,10 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
     const state = Number(inState);
 
     if (entityConfig.decimals === undefined || Number.isNaN(entityConfig.decimals) || Number.isNaN(state))
-      return Math.round(state * 100) / 100;
+      return (Math.round(state * 100) / 100).toString();
 
     const x = 10 ** entityConfig.decimals;
-    return (Math.round(state * x) / x).toFixed(entityConfig.decimals);
+    return (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString();
   }
         
  
