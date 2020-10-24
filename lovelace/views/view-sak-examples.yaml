@@ -3037,7 +3037,7 @@ cards:
 
     - type: horizontal-stack
       cards:
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
 
         # Example 1T::
         #
@@ -3064,7 +3064,7 @@ cards:
               icon: mdi:gauge
 
           dimensions: 2/1
-          debug: true
+          debug: false
           
           layout:
             toolsets:
@@ -3452,12 +3452,12 @@ cards:
             # 23: '#FFA40E'
             # 24: '#FF9C0B' 
             # 25: '#FF8C06' 
-        # - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
 
 
     - type: horizontal-stack
       cards:
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
 
         # Example 4T::
         #
@@ -3563,11 +3563,11 @@ cards:
                       stroke-linecap: butt;
 
 
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
 
     - type: horizontal-stack
       cards:
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
 
         # Example 5T::
         #
@@ -3737,12 +3737,12 @@ cards:
                     styles:
                       stroke: var(--theme-gradient-color-03);
                       stroke-linecap: butt;
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
 
 
     - type: horizontal-stack
       cards:
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
 
         # Example 7T::
         #
@@ -3787,7 +3787,7 @@ cards:
                     cx: 100
                     cy: 98
                     styles:
-                      - font-size: 2em;
+                      font-size: 1.5em;
 
                   - type: 'segarc'
                     id: 0
@@ -4130,11 +4130,11 @@ cards:
             # 23: '#FFA40E'
             # 24: '#FF9C0B' 
             # 25: '#FF8C06' 
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
 
     - type: horizontal-stack
       cards:
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
         # Example 8T::
         #
         # Circle with 4 arcs along them with interconnecting lines...Livingroom temp, humi, pressure and lux
@@ -4418,11 +4418,11 @@ cards:
                       stroke: var(--theme-gradient-color-02);
                       stroke-width: 10;
                       fill: none;
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
 
     - type: horizontal-stack
       cards:
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
         # Example 10T::
         #
         # Circle with system cpu monitoring. NIce for easy CPU changes in graph
@@ -4673,4 +4673,362 @@ cards:
                       stroke: var(--theme-gradient-color-02);
                       stroke-width: 10;
                       fill: none;
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
+
+
+    - type: horizontal-stack
+      cards:
+        ##- !include card-blank-card.yaml
+        # Example 20T::
+        #
+        # Light buttons test...
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_left_light
+              name: Duo Links
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.livingroom_light_duo_left_light" }
+            - entity: light.livingroom_light_duo_right_light #rechter_lamp_voor
+              area: Woonkamer
+              name: Duo Rechts
+              icon: mdi:floor-lamp-dual #'mdi:grid-large' border-left
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.livingroom_light_duo_right_light" }
+            - entity: light.livingroom_light_front_right_light
+              area: Woonkamer
+              name: Muurlamp
+              icon: mdi:wall-sconce #'border-right' #'mdi:grid-large'
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.livingroom_light_front_right_light" }
+
+            # Get brightness attributes for the sliders
+            - entity: light.livingroom_light_duo_left_light
+              attribute: brightness
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+            - entity: light.livingroom_light_front_right_light
+              attribute: brightness
+              
+          dimensions: 3/1
+          debug: false
+              
+          layout:
+            toolsets:
+              - toolset: light-button1
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: circle
+                    cx: 50
+                    cy: 30
+                    radius: 25
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        styles:
+                          stroke-width: 5;
+                          stroke: var(--theme-gradient-color-08);
+                          opacity: 0.9;
+                          fill: none;
+                          #- fill:  var(--theme-gradient-color-08);
+                          # - animation: flash 2s ease-in-out both;
+                          # - transform-origin: center;
+                      - state: 'off'
+                        styles:
+                          stroke-width: 5;
+                          stroke: var(--theme-gradient-color-01);
+                          #- fill:  var(--theme-gradient-color-01);
+                          #- color: var(--theme-gradient-color-01);
+                          opacity: 0.7;
+                          fill: none;
+                    
+                  - type: icon
+                    cx: 50
+                    cy: 45
+                    entity_index: 0
+                    align: center
+                    icon_size: 6
+                    animations:
+                      - state: 'on'
+                        styles:
+                          color: var(--theme-gradient-color-08);
+                          opacity: 0.9;
+                          # - animation: flash 2s ease-in-out both;
+                          # - transform-origin: center;
+                      - state: 'off'
+                        styles:
+                          color: var(--theme-gradient-color-01);
+                          opacity: 0.7;
+
+                  - type: name
+                    cx: 5
+                    cy: 75
+                    entity_index: 0
+                    styles:
+                      font-size: 1.5em;
+                      font-weight: 700;
+                      text-anchor: start;
+                  - type: area
+                    entity_index: 0
+                    cx: 5
+                    cy: 85
+                    styles:
+                      font-size: 1em;
+                      text-anchor: start;
+                  - type: state
+                    cx: 5
+                    cy: 95
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        styles:
+                          fill: var(--theme-gradient-color-08);
+                          opacity: 0.9;
+                      - state: 'off'
+                        reuse: true
+                        styles:
+                          fill: var(--theme-gradient-color-01);
+                          opacity: 0.7;
+                    styles:
+                      font-size: 1.5em;
+                      text-anchor: start;
+
+
+              - toolset: light-button2
+                position:
+                  cx: 150
+                  cy: 50
+                tools:
+                  - type: circle
+                    cx: 50
+                    cy: 30
+                    radius: 25
+                    entity_index: 1
+                    animations:
+                      - state: 'on'
+                        styles:
+                          stroke-width: 5;
+                          stroke: var(--theme-gradient-color-08);
+                          opacity: 0.9;
+                          fill: none;
+                          #- fill:  var(--theme-gradient-color-08);
+                          # - animation: flash 2s ease-in-out both;
+                          # - transform-origin: center;
+                      - state: 'off'
+                        styles:
+                          stroke-width: 5;
+                          stroke: var(--theme-gradient-color-01);
+                          #- fill:  var(--theme-gradient-color-01);
+                          #- color: var(--theme-gradient-color-01);
+                          opacity: 0.7;
+                          fill: none;
+                  - type: icon
+                    cx: 50
+                    cy: 45
+                    entity_index: 1
+                    align: center
+                    icon_size: 6
+                    animations:
+                      - state: 'on'
+                        styles:
+                          color: var(--theme-gradient-color-08);
+                          opacity: 0.9;
+                          # - animation: flash 2s ease-in-out both;
+                          # - transform-origin: center;
+                      - state: 'off'
+                        styles:
+                          color: var(--theme-gradient-color-01);
+                          opacity: 0.7;
+                  - type: name
+                    cx: 5
+                    cy: 75
+                    entity_index: 1
+                    styles:
+                      font-size: 1.5em;
+                      font-weight: 700;
+                      text-anchor: start;
+                  - type: area
+                    entity_index: 1
+                    cx: 5
+                    cy: 85
+                    styles:
+                      font-size: 1em;
+                      text-anchor: start;
+                  - type: state
+                    cx: 5
+                    cy: 95
+                    entity_index: 1
+                    styles:
+                      font-size: 1.5em;
+                      text-anchor: start;
+
+              # TOOLSET
+              #
+              # Possible to have animation on the toolset??
+              # As a replacement for a card??
+              # control all elements in animation in toolset??
+              
+              - toolset: light-button3
+                position:
+                  cx: 250
+                  cy: 50
+                # difficult. Some use color, other fill. HOw to directly address the tools????
+                # How does button card do this? In that case all elements are controlled by single state of button card...
+                # IS done via sub styles for the fields. So easy. But no disabling of sliders possible, just styles...
+                # animations:
+                  # - state: 'on'
+                    # styles:
+                      # slider.11:
+                        # slider:
+                        # handle:
+                          # color: var(--theme-gradient-color-08);
+                          # opacity: 0.9;
+                      # # - animation: flash 2s ease-in-out both;
+                      # # - transform-origin: center;
+                  # - state: 'off'
+                    # styles:
+                      # - color: var(--theme-gradient-color-01);
+                      # - opacity: 0.7;
+                
+                tools:
+                  # - type: circle
+                    # cx: 50
+                    # cy: 30
+                    # radius: 25
+                    # entity_index: 2
+                    # animations:
+                      # - state: 'on'
+                        # styles:
+                          # - stroke-width: 0;
+                          # - stroke: var(--theme-gradient-color-08);
+                          # # - stroke: var(--primary-background-color);
+                          # - opacity: 0.9;
+                          # - fill: none;
+                          # #- fill:  var(--theme-gradient-color-08);
+                          # # - animation: flash 2s ease-in-out both;
+                          # # - transform-origin: center;
+                      # - state: 'off'
+                        # styles:
+                          # - stroke-width: 0;
+                          # - stroke: var(--primary-background-color);
+                          # #- fill:  var(--theme-gradient-color-01);
+                          # #- color: var(--theme-gradient-color-01);
+                          # - opacity: 0.7;
+                          # - fill: none;
+                  # ICON
+                  - type: icon
+                    cx: 50
+                    cy: 45
+                    entity_index: 2
+                    align: center
+                    icon_size: 6
+                    animations:
+                      - state: 'on'
+                        styles:
+                          color: var(--theme-gradient-color-08);
+                          opacity: 0.9;
+                          # - animation: flash 2s ease-in-out both;
+                          # - transform-origin: center;
+                      - state: 'off'
+                        styles:
+                          color: var(--theme-gradient-color-01);
+                          opacity: 0.7;
+                  
+                  #
+                  # How to control slider enable/disable if light is switched on/off/unavailable, etc.
+                  # Separate entity_index for this, ie two of them??
+                  # entity index for percentage.
+                  # enable/disable for other stuff. Disable/enable/grey out. Via default animation????
+                  
+                  # NAME
+                  - type: name
+                    cx: 5
+                    cy: 70
+                    entity_index: 2
+                    styles:
+                      font-size: 1.5em;
+                      font-weight: 700;
+                      text-anchor: start;
+                  - type: area
+                    entity_index: 2
+                    cx: 5
+                    cy: 80
+                    styles:
+                      font-size: 1em;
+                      text-anchor: start;
+                  # # STATE
+                  # - type: state
+                    # cx: 5
+                    # cy: 95
+                    # entity_index: 2
+                    # styles:
+                      # font-size: 1.5em;
+                      # text-anchor: start;
+                  # SLIDER
+                  - type: slider
+                    id: 11
+                    cx: 50
+                    cy: 85
+                    length: 90
+                    entity_index: 5
+                    control_index: 5
+                    orientation: 'horizontal'
+                    scale:
+                      min: 0
+                      max: 100
+                    handle:
+                      width: 20
+                      height: 12
+                      popout: 30
+                    slide_action:
+                      service: light.turn_on
+                      parameter: brightness_pct
+                    styles:
+                      slider:
+                        fill: var(--theme-gradient-color-03);
+                        stroke: var(--theme-gradient-color-01);
+                        stroke-width: 2;
+                      handle:
+                        font-size: 1.2em;
+                        font-weight: 700;
+                        fill: black;
+
+        # - type: custom:decluttering-card
+          # template: button_light_template
+          # variables:
+            # - entity: light.livingroom_light_duo_left_light #linker_lamp_voor
+            # - area: Woonkamer
+            # - name: Duo Links
+            # - icon: 'floor-lamp-dual' #'mdi:grid-large' mdi-floor-lamp-dual
+
+        # - type: custom:decluttering-card
+          # template: button_light_template
+          # variables:
+            # - entity: light.livingroom_light_duo_right_light #rechter_lamp_voor
+            # - area: Woonkamer
+            # - name: Duo Rechts
+            # - icon: 'floor-lamp-dual' #'mdi:grid-large' border-left
+
+        # - type: custom:decluttering-card
+          # template: button_light_template
+          # variables:
+# #              - entity: light.muurlamp_voor
+            # - entity: light.livingroom_light_front_right_light
+            # - area: Woonkamer
+            # - name: Muurlamp
+            # - icon: 'wall-sconce' #'border-right' #'mdi:grid-large'
+
+        ##- !include card-blank-card.yaml
+
