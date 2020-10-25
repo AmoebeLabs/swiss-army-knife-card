@@ -1072,14 +1072,14 @@ cards:
                 # xpos: 25
                 # ypos: 54
                 # align: center
-                # icon_size: 3
+                # icon_size: 18
               # # Icons 1 refers to the third entity in the list, ie index 2
               # - id: 1
                 # entity_index: 7
                 # xpos: 75
                 # ypos: 54
                 # align: center
-                # icon_size: 3
+                # icon_size: 18
 
             # areas:
               # # Areas 0 refers to the first entity in the list, ie index 0
@@ -1233,14 +1233,14 @@ cards:
                 # xpos: 5
                 # ypos: 15
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
               # # Icons 1 refers to the third entity in the list, ie index 2
               # - id: 1
                 # entity_index: 7
                 # xpos: 95
                 # ypos: 15
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
 
             # vbars:
               # - id: 0
@@ -1507,14 +1507,14 @@ cards:
                 # xpos: 5
                 # ypos: 15
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
               # # Icons 1 refers to the third entity in the list, ie index 2
               # - id: 1
                 # entity_index: 7
                 # xpos: 45
                 # ypos: 15
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
 
               # # Icons 0 refers to the second entity in the list, ie index 1
               # - id: 2
@@ -1522,14 +1522,14 @@ cards:
                 # xpos: 55
                 # ypos: 15
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
               # # Icons 1 refers to the third entity in the list, ie index 2
               # - id: 3
                 # entity_index: 7
                 # xpos: 95
                 # ypos: 15
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
 
             # vbars:
               # - id: 0
@@ -2226,14 +2226,14 @@ cards:
                 # xpos: 27.5
                 # ypos: 54
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
               # # Icons 1 refers to the third entity in the list, ie index 2
               # - id: 1
                 # entity_index: 7
                 # xpos: 69
                 # ypos: 54
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
 
             # areas:
               # # Areas 0 refers to the first entity in the list, ie index 0
@@ -2363,7 +2363,7 @@ cards:
                     # # xpos: 12.5
                     # # ypos: 40
                     # # align: center
-                    # # icon_size: 2.5
+                    # # icon_size: 15
               
             # segmented_arcs:
               # - id: 0
@@ -2497,14 +2497,14 @@ cards:
                 # xpos: 12.5
                 # ypos: 40
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
               # # Icons 1 refers to the third entity in the list, ie index 2
               # - id: 1
                 # entity_index: 1
                 # xpos: 37.5
                 # ypos: 40
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
 
               # # Icons 0 refers to the second entity in the list, ie index 1
               # - id: 2
@@ -2512,14 +2512,14 @@ cards:
                 # xpos: 62.5
                 # ypos: 40
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
               # # Icons 1 refers to the third entity in the list, ie index 2
               # - id: 3
                 # entity_index: 3
                 # xpos: 87.5
                 # ypos: 40
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
 
             # vbars:
               # - id: 0
@@ -2831,14 +2831,14 @@ cards:
                 # xpos: 12.5
                 # ypos: 45
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
               # # Icons 1 refers to the third entity in the list, ie index 2
               # - id: 1
                 # entity_index: 1
                 # xpos: 36.25
                 # ypos: 20
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
 
               # # Icons 0 refers to the second entity in the list, ie index 1
               # - id: 2
@@ -2846,14 +2846,14 @@ cards:
                 # xpos: 63.75
                 # ypos: 20
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
               # # Icons 1 refers to the third entity in the list, ie index 2
               # - id: 3
                 # entity_index: 3
                 # xpos: 87.5
                 # ypos: 45
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
               # # extra icon. Entity abuse...
               # - id: 4
                 # entity_index: 4
@@ -3153,11 +3153,12 @@ cards:
                     id: 0
                     entity_index: 0
                     cx: 50
-                    cy: 65
+                    cy: 60
                     align: center
-                    icon_size: 3.5
+                    icon_size: 18.5
                     styles:
                       color: var(--theme-gradient-color-01);
+                      fill: var(--theme-gradient-color-01);
 
               # ==============================================================================
               - toolset: humi
@@ -3224,11 +3225,12 @@ cards:
                     id: 0
                     entity_index: 1
                     cx: 35
-                    cy: 65
+                    cy: 60
                     align: center
-                    icon_size: 3.5
+                    icon_size: 18.5
                     styles:
                       color: var(--theme-gradient-color-01);
+                      fill: var(--theme-gradient-color-01);
 
               # ==============================================================================
               - toolset: pressure
@@ -3277,11 +3279,12 @@ cards:
                     id: 0
                     entity_index: 2
                     cx: 65
-                    cy: 65
+                    cy: 60
                     align: center
-                    icon_size: 3.5
+                    icon_size: 18.5
                     styles:
                       color: var(--theme-gradient-color-01);
+                      fill: var(--theme-gradient-color-01);
 
 
               # # The pressure attribute
@@ -3542,11 +3545,12 @@ cards:
                     id: 0
                     entity_index: 0
                     cx: 10
-                    cy: 15
+                    cy: 10
                     align: center
-                    icon_size: 2.5
+                    icon_size: 15
                     styles:
                       color: var(--theme-gradient-color-01);
+                      fill: var(--theme-gradient-color-01);
 
                   - type: 'bar'
                     id: 0
@@ -3653,11 +3657,12 @@ cards:
                     id: 0
                     entity_index: 0
                     cx: 10
-                    cy: 15
+                    cy: 10
                     align: center
-                    icon_size: 2.5
+                    icon_size: 15
                     styles:
                       color: var(--theme-gradient-color-01);
+                      fill: var(--theme-gradient-color-01);
 
                   - type: 'bar'
                     id: 0
@@ -3718,11 +3723,12 @@ cards:
                     id: 1
                     entity_index: 1
                     cx: 90
-                    cy: 15
+                    cy: 10
                     align: center
-                    icon_size: 2.5
+                    icon_size: 15
                     styles:
                       color: var(--theme-gradient-color-02);
+                      fill: var(--theme-gradient-color-02);
 
                   - type: 'bar'
                     id: 1
@@ -3827,9 +3833,10 @@ cards:
                     cx: 25
                     cy: 40
                     align: center
-                    icon_size: 2.5
+                    icon_size: 15
                     styles:
                       color: var(--theme-gradient-color-01);
+                      fill: var(--theme-gradient-color-01);
 
                   - type: 'bar'
                     id: 0
@@ -3885,9 +3892,10 @@ cards:
                     cx: 75
                     cy: 40
                     align: center
-                    icon_size: 2.5
+                    icon_size: 15
                     styles:
                       color: var(--theme-gradient-color-03);
+                      fill: var(--theme-gradient-color-03);
 
                   - type: 'bar'
                     id: 1
@@ -4035,14 +4043,14 @@ cards:
                 # xpos: 12.5
                 # ypos: 40
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
               # # Icons 1 refers to the third entity in the list, ie index 2
               # - id: 1
                 # entity_index: 1
                 # xpos: 37.5
                 # ypos: 40
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
 
               # # Icons 0 refers to the second entity in the list, ie index 1
               # - id: 2
@@ -4050,14 +4058,14 @@ cards:
                 # xpos: 62.5
                 # ypos: 40
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
               # # Icons 1 refers to the third entity in the list, ie index 2
               # - id: 3
                 # entity_index: 3
                 # xpos: 87.5
                 # ypos: 40
                 # align: center
-                # icon_size: 2.5
+                # icon_size: 15
 
             # vbars:
               # - id: 0
@@ -4236,9 +4244,9 @@ cards:
                   id: 1
                   entity_index: '[[entity]]'
                   cx: 50
-                  cy: 47
+                  cy: 42
                   align: center
-                  icon_size: 2
+                  icon_size: 15
 
                 - type: state
                   id: 2
@@ -4249,6 +4257,7 @@ cards:
                     text-anchor: center;
                     font-size: 1.7em;
                     color: var(--theme-gradient-color-01);
+                    fill: var(--theme-gradient-color-01);
 
           layout:
             toolsets:
@@ -4500,9 +4509,9 @@ cards:
                   id: 1
                   entity_index: '[[entity]]'
                   cx: 50
-                  cy: 47
+                  cy: 42
                   align: center
-                  icon_size: 2.5
+                  icon_size: 15
 
                 - type: state
                   id: 2
@@ -4741,8 +4750,10 @@ cards:
                         styles:
                           stroke-width: 5;
                           stroke: var(--theme-gradient-color-08);
-                          opacity: 0.9;
-                          fill: none;
+                          stroke-opacity: 0.9;
+                          fill: white;
+                          fill-opacity: 0.1;
+                          #fill: none;
                           #- fill:  var(--theme-gradient-color-08);
                           # - animation: flash 2s ease-in-out both;
                           # - transform-origin: center;
@@ -4752,19 +4763,23 @@ cards:
                           stroke: var(--theme-gradient-color-01);
                           #- fill:  var(--theme-gradient-color-01);
                           #- color: var(--theme-gradient-color-01);
-                          opacity: 0.7;
-                          fill: none;
+                          stroke-opacity: 0.7;
+                          #fill: none;
+                    style:
+                      fill-opacity: 0.1;
+                      fill: black;
                     
                   - type: icon
                     cx: 50
-                    cy: 45
+                    cy: 30
                     entity_index: 0
                     align: center
-                    icon_size: 6
+                    icon_size: 36
                     animations:
                       - state: 'on'
                         styles:
                           color: var(--theme-gradient-color-08);
+                          fill: var(--theme-gradient-color-08);
                           opacity: 0.9;
                           # Animation doesn't work on the ha-icon. Must be one level above. svg group, div, foreignobject, etc.
                           # why??????????????????????????????????????
@@ -4774,7 +4789,11 @@ cards:
                       - state: 'off'
                         styles:
                           color: var(--theme-gradient-color-01);
+                          fill: var(--theme-gradient-color-01);
                           opacity: 0.7;
+                          animation: spin-stop 1s linear;
+                    styles:
+                      pointer-events: none;
 
                   - type: name
                     cx: 5
@@ -4840,20 +4859,22 @@ cards:
                           fill: none;
                   - type: icon
                     cx: 50
-                    cy: 45
+                    cy: 30
                     entity_index: 1
                     align: center
-                    icon_size: 6
+                    icon_size: 36
                     animations:
                       - state: 'on'
                         styles:
                           color: var(--theme-gradient-color-08);
+                          fill: var(--theme-gradient-color-08);
                           opacity: 0.9;
                           # - animation: flash 2s ease-in-out both;
                           # - transform-origin: center;
                       - state: 'off'
                         styles:
                           color: var(--theme-gradient-color-01);
+                          fill: var(--theme-gradient-color-01);
                           opacity: 0.7;
                   - type: name
                     cx: 5
@@ -4934,20 +4955,22 @@ cards:
                   # ICON
                   - type: icon
                     cx: 50
-                    cy: 45
+                    cy: 30
                     entity_index: 2
                     align: center
-                    icon_size: 6
+                    icon_size: 36
                     animations:
                       - state: 'on'
                         styles:
                           color: var(--theme-gradient-color-08);
+                          fill: var(--theme-gradient-color-08);
                           opacity: 0.9;
                           # - animation: flash 2s ease-in-out both;
                           # - transform-origin: center;
                       - state: 'off'
                         styles:
                           color: var(--theme-gradient-color-01);
+                          fill: var(--theme-gradient-color-01);
                           opacity: 0.7;
                   
                   #
