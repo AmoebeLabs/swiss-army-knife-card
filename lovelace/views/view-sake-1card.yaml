@@ -41,7 +41,7 @@ cards:
 
     - type: horizontal-stack
       cards:
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
         # Example 9::
         #
         # Badge tester
@@ -143,16 +143,63 @@ cards:
                       
                   - type: 'slider'
                     id: 10
+                    cx: 40
+                    cy: 90
+                    length: 40
                     entity_index: 1
+                    orientation: 'horizontal'
+                    scale:
+                      min: 15
+                      max: 25
+                    handle:
+                      width: 20
+                      height: 12
+                      popout: 27.5
                     slide_action:
                       service: climate.set_temperature
                       parameter: temperature
                       # service: light.turn_on
                       # parameter: brightness_pct
-                    cx: 50
+                    styles:
+                      slider:
+                        fill: var(--theme-gradient-color-03);
+                        stroke: var(--theme-gradient-color-01);
+                        stroke-width: 2;
+                      handle:
+                        font-size: 1.2em;
+                        font-weight: 700;
+                        fill: black;
+
+                  - type: 'slider'
+                    id: 11
+                    cx: 90
                     cy: 90
+                    length: 100
+                    entity_index: 1
+                    scale:
+                      min: 50
+                      max: 200
+                    handle:
+                      width: 20
+                      height: 12
+                      popout: 30
+                    orientation: 'vertical'
+                    slide_action:
+                      service: climate.set_temperature
+                      parameter: temperature
+                      # service: light.turn_on
+                      # parameter: brightness_pct
+                    styles:
+                      slider:
+                        fill: var(--theme-gradient-color-03);
+                        stroke: var(--theme-gradient-color-01);
+                        stroke-width: 2;
+                      handle:
+                        font-size: 1.2em;
+                        font-weight: 700;
+                        fill: black;
               
-        - !include card-blank-card.yaml
+        ##- !include card-blank-card.yaml
 
     - type: horizontal-stack
       cards:
@@ -233,15 +280,15 @@ cards:
                     animations:
                       - state: 'on'
                         styles:
-                          - fill: var(--theme-gradient-color-08);
-                          - opacity: 0.9;
-                          - animation: jello 1s ease-in-out both;
-                          - transform-origin: center;
+                          fill: var(--theme-gradient-color-08);
+                          opacity: 0.9;
+                          animation: jello 1s ease-in-out both;
+                          transform-origin: center;
                       - state: 'off'
                         reuse: true
                         styles:
-                          - transform-origin: center;
-                          - animation: zoomOut 1s ease-out both;
+                          transform-origin: center;
+                          animation: zoomOut 1s ease-out both;
                   - type: circle
                     id: 2
                     cx: 85
@@ -487,22 +534,22 @@ cards:
                       - state: '25'
                         operator: '>='
                         styles:
-                          - fill: red;
-                          - transform-origin: center;
-                          - animation: blinkingText 1.2s infinite;
+                          fill: red;
+                          transform-origin: center;
+                          animation: blinkingText 1.2s infinite;
                       - state: '10'
                         operator: '>='
                         styles:
-                          - fill: yellow;
-                          - transform-origin: center;
-                          - animation: flash 5s infinite;
+                          fill: yellow;
+                          transform-origin: center;
+                          animation: flash 5s infinite;
                       - state: '0'
                         operator: '>='
                         styles:
-                          - fill: DarkSeaGreen;
-                          - opacity: 0.9;
-                          - animation: pulse 1s ease-in-out both;
-                          - transform-origin: center;
+                          fill: DarkSeaGreen;
+                          opacity: 0.9;
+                          animation: pulse 1s ease-in-out both;
+                          transform-origin: center;
                   
 
               # ==============================================================================
@@ -519,8 +566,8 @@ cards:
                     cy: 50
                     start_angle: 0
                     end_angle: 360
-                    width: 10
-                    radius: 50
+                    width: 5
+                    radius: 25
                     scale:
                       min: 0
                       max: 2
@@ -598,8 +645,8 @@ cards:
                     cy: 50
                     start_angle: 0
                     end_angle: 360
-                    width: 10
-                    radius: 50
+                    width: 5
+                    radius: 25
                     scale:
                       min: 0
                       max: 100
@@ -664,8 +711,8 @@ cards:
                     cy: 50
                     start_angle: 0
                     end_angle: 360
-                    width: 10
-                    radius: 50
+                    width: 5
+                    radius: 25
                     scale:
                       min: 0
                       max: 100
@@ -766,8 +813,8 @@ cards:
                     cy: 50
                     start_angle: 0
                     end_angle: 360
-                    width: 10
-                    radius: 50
+                    width: 5
+                    radius: 25
                     scale:
                       min: 0
                       max: 2
@@ -821,43 +868,43 @@ cards:
               # YEP, flce(s) performs good with two of these NUC like cards. So what is the real problem????????
 
               # ==============================================================================
-              - toolset: circletoolset
-                position:
-                  cx: 100
-                  cy: 140
-                  scale: 1
-                tools:
-                  - type: circle
-                    id: 0
-                    cx: 50
-                    cy: 50
-                    radius: 75
-                    styles:
-                      stroke: var(--theme-gradient-color-01);
-                      stroke-width: 10;
-                      fill: none;
+              # - toolset: circletoolset
+                # position:
+                  # cx: 100
+                  # cy: 140
+                  # scale: 1
+                # tools:
+                  # - type: circle
+                    # id: 0
+                    # cx: 50
+                    # cy: 50
+                    # radius: 75
+                    # styles:
+                      # stroke: var(--theme-gradient-color-01);
+                      # stroke-width: 10;
+                      # fill: none;
 
-                  - type: circle 
-                    id: 3
-                    cx: 50
-                    cy: 50
-                    radius: 75
-                    styles:
-                      stroke: var(--theme-gradient-color-02);
-                      stroke-width: 40;
-                      fill: none;
-                      stroke-dasharray: 5 67;
-                      stroke-dashoffset: 54;
+                  # - type: circle 
+                    # id: 3
+                    # cx: 50
+                    # cy: 50
+                    # radius: 75
+                    # styles:
+                      # stroke: var(--theme-gradient-color-02);
+                      # stroke-width: 40;
+                      # fill: none;
+                      # stroke-dasharray: 5 67;
+                      # stroke-dashoffset: 54;
 
-                  - type: circle
-                    id: 1
-                    cx: 50
-                    cy: 52
-                    radius: 67.5
-                    styles:
-                      stroke: var(--theme-gradient-color-02);
-                      stroke-width: 10;
-                      fill: none;
+                  # - type: circle
+                    # id: 1
+                    # cx: 50
+                    # cy: 52
+                    # radius: 67.5
+                    # styles:
+                      # stroke: var(--theme-gradient-color-02);
+                      # stroke-width: 10;
+                      # fill: none;
 
 #
 # https://css-tricks.com/almanac/properties/s/stroke-linecap/
