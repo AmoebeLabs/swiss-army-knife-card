@@ -608,9 +608,9 @@ cards:
                     id: 5
                     entity_index: 0
                     cx: 50
-                    cy: 47
+                    cy: 42
                     align: center
-                    icon_size: 2.5
+                    icon_size: 15
 
               # ==============================================================================
               - toolset: areatoolset
@@ -691,9 +691,9 @@ cards:
                     entity_index: 1
                     # was 36.25 / 20. Nu 50 / 35
                     cx: 50
-                    cy: 47
+                    cy: 42
                     align: center
-                    icon_size: 2.5
+                    icon_size: 15
 
 
               # 63.76/25 -> 127.5/25
@@ -793,9 +793,9 @@ cards:
                     entity_index: 2
                     # was 63.75 / 20. Nu 50/35
                     cx: 50
-                    cy: 47
+                    cy: 42
                     align: center
-                    icon_size: 2.5
+                    icon_size: 15
 
               # 87.5/50 -> 175/50
               # ==============================================================================
@@ -853,9 +853,9 @@ cards:
                     entity_index: 3
                     # was 87.5 / 45. Nu 50 / 35
                     cx: 50
-                    cy: 47
+                    cy: 42
                     align: center
-                    icon_size: 2.5
+                    icon_size: 15
 
               # Thse circles that are largely offscreen cause a 0.5-1sec delay while switching to this panel on the iPad.
               # PC / Chrome has no problems. It works, but makes initial rendering slow. No idea why!!!! But now I know, that it is NOT the card itself
