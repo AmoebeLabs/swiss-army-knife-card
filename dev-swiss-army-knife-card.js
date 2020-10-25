@@ -81,14 +81,14 @@ class Utils {
 	//
 	// Group is 50,40. Say SVG is 200x200. Group is 100,80 within 200x200.
 	// Tool is 10,50. 0.1 * 200 = 20 + (100 - 200/2) = 20 + 0.
-	static calculateCoordinate(argOwn, argToolset) {
+	static calculateSvgCoordinate(argOwn, argToolset) {
 
 		return (argOwn / 100) * (SVG_DEFAULT_DIMENSIONS)
 						+ (argToolset - SVG_DEFAULT_DIMENSIONS/2);
 	}
 
 	
-	static calculateDimension(argDimension) {
+	static calculateSvgDimension(argDimension) {
 		return (argDimension / 100) * (SVG_DEFAULT_DIMENSIONS);
 	}
 }
@@ -163,29 +163,29 @@ class BaseTool {
 		this.toolsetPos = argPos;
 
 		// Calculate real positions depending on aspectRatio and position...
+//		this.coords = {};
 		// Positions are ALWAYS centered!
-		this.coords = {};
-		this.coords.cx = Utils.calculateCoordinate(argConfig.cx, this.toolsetPos.cx);
-		this.coords.cy = Utils.calculateCoordinate(argConfig.cy, this.toolsetPos.cy);
-
-		this.dimensions = {};
-		this.dimensions.height = argConfig.height ? Utils.calculateDimension(argConfig.height) : 0;
-		this.dimensions.width = argConfig.width ? Utils.calculateDimension(argConfig.width) : 0;
 
 		// Get SVG coordinates.
 		this.svg = {};
-		this.svg.x = (this.coords.cx) - (this.dimensions.width / 2);
-		this.svg.y = (this.coords.cy) - (this.dimensions.height / 2);
-		this.svg.cx = (this.coords.cx);
-		this.svg.cy = (this.coords.cy);
+		this.svg.cx = Utils.calculateSvgCoordinate(argConfig.cx, this.toolsetPos.cx);
+		this.svg.cy = Utils.calculateSvgCoordinate(argConfig.cy, this.toolsetPos.cy);
+
+		//this.dimensions = {};
+		this.svg.height = argConfig.height ? Utils.calculateSvgDimension(argConfig.height) : 0;
+		this.svg.width = argConfig.width ? Utils.calculateSvgDimension(argConfig.width) : 0;
+
+		this.svg.x = (this.svg.cx) - (this.svg.width / 2);
+		this.svg.y = (this.svg.cy) - (this.svg.height / 2);
+
 		
 		// Group scaling experiment. Calc translate values for SVG using the toolset scale value
-		let scalex = this.coords.cx * this.toolsetPos.scale;
-		let scaley = this.coords.cy * this.toolsetPos.scale;
-		let diffx = this.coords.cx - scalex;
-		let diffy = this.coords.cy - scaley;
-		this.dimensions.xlateX = diffx / this.toolsetPos.scale;
-		this.dimensions.xlateY = diffy / this.toolsetPos.scale;		
+		let scalex = this.svg.cx * this.toolsetPos.scale;
+		let scaley = this.svg.cy * this.toolsetPos.scale;
+		let diffx = this.svg.cx - scalex;
+		let diffy = this.svg.cy - scaley;
+		this.svg.xlateX = diffx / this.toolsetPos.scale;
+		this.svg.xlateY = diffy / this.toolsetPos.scale;		
 	}
 
  /*******************************************************************************
@@ -291,29 +291,29 @@ class RangeSliderTool extends BaseTool {
 
 		this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 		
-		this.dimensions.length = Utils.calculateDimension(argConfig.length)
+		this.svg.length = Utils.calculateSvgDimension(argConfig.length)
 
-		this.dimensions.handle = {};
-		this.dimensions.handle.width = Utils.calculateDimension(argConfig.handle.width);
-		this.dimensions.handle.height = Utils.calculateDimension(argConfig.handle.height);
-		this.dimensions.handle.popout = Utils.calculateDimension(argConfig.handle.popout);
+		this.svg.handle = {};
+		this.svg.handle.width = Utils.calculateSvgDimension(argConfig.handle.width);
+		this.svg.handle.height = Utils.calculateSvgDimension(argConfig.handle.height);
+		this.svg.handle.popout = Utils.calculateSvgDimension(argConfig.handle.popout);
 
 		// Define the bounding box for the pointer / touch events to get detected.
 
 		if (this.config.orientation == 'vertical') {
-			this.svg.x1 = this.coords.cx;
-			this.svg.y1 = this.coords.cy - this.dimensions.length/2;
-			this.svg.x2 = this.coords.cx;
-			this.svg.y2 = this.coords.cy + this.dimensions.length/2;
-			this.svg.width = this.dimensions.handle.width;
-			this.svg.height = this.dimensions.length;
+			this.svg.x1 = this.svg.cx;
+			this.svg.y1 = this.svg.cy - this.svg.length/2;
+			this.svg.x2 = this.svg.cx;
+			this.svg.y2 = this.svg.cy + this.svg.length/2;
+			this.svg.width = this.svg.handle.width;
+			this.svg.height = this.svg.length;
 		} else {
-			this.svg.x1 = this.coords.cx - this.dimensions.length/2;
-			this.svg.y1 = this.coords.cy;
-			this.svg.x2 = this.coords.cx + this.dimensions.length/2;
-			this.svg.y2 = this.coords.cy;
-			this.svg.width = this.dimensions.length;
-			this.svg.height = this.dimensions.handle.height;
+			this.svg.x1 = this.svg.cx - this.svg.length/2;
+			this.svg.y1 = this.svg.cy;
+			this.svg.x2 = this.svg.cx + this.svg.length/2;
+			this.svg.y2 = this.svg.cy;
+			this.svg.width = this.svg.length;
+			this.svg.height = this.svg.handle.height;
 		}
 
 		this.svg.scale = {};
@@ -323,15 +323,15 @@ class RangeSliderTool extends BaseTool {
 	// Specific rangeslider stuff...
 		this.elements = {};
 		//this.config.handle.popout = 40;
-    this.deformation = this.dimensions.handle.popout/4;
-    this.target = this.dimensions.handle.popout;
+    this.deformation = this.svg.handle.popout/4;
+    this.target = this.svg.handle.popout;
     this._value = null;
     this.dragging = false;
 
 		this.SVG_NS = "http://www.w3.org/2000/svg";
 		this.SVG_XLINK = "http://www.w3.org/1999/xlink";
 		this.rid = null;
-		//this.m = { x: 100, y: this.svg.y + this.dimensions.handle.popoutt / 2 };
+		//this.m = { x: 100, y: this.svg.y + this.svg.handle.popoutt / 2 };
 		this.m = { x: svg.x1, y: this.svg.y1};
 		
 		// hardcoded for testing.
@@ -346,7 +346,7 @@ class RangeSliderTool extends BaseTool {
 	// svg coordinates to actual slider value
 	svgToValue(argThis, m) {
 		// svg is within viewbox / slider size
-		// length is argThis.dimensions.length
+		// length is argthis.svg.length
 		
 		
 		// is m.x in svg x1/x2 range. Then translate to actual value.
@@ -354,7 +354,7 @@ class RangeSliderTool extends BaseTool {
 		
 		if (argThis.config.orientation == 'horizontal') {
 			var xpos = m.x - argThis.svg.x1;
-			var xposp = xpos / argThis.dimensions.length;
+			var xposp = xpos / argthis.svg.length;
 			var state = ((argThis.config.scale.max - argThis.config.scale.min) * xposp) + argThis.config.scale.min;
 			//var state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, xposp);
 			if (this.debug) console.log ('SLIDER - svgToValue results)', xpos, xposp, state);
@@ -362,7 +362,7 @@ class RangeSliderTool extends BaseTool {
 		} else if (argThis.config.orientation == 'vertical') {
 			// y is calculated from lower y value. So slider is from bottom to top...
 			var ypos = argThis.svg.y2 - m.y;
-			var yposp = ypos / argThis.dimensions.length;
+			var yposp = ypos / argthis.svg.length;
 			var state = ((argThis.config.scale.max - argThis.config.scale.min) * yposp) + argThis.config.scale.min;
 			//var state = Utils.calculateValueBetween(argThis.configscale.min, argThis.configscale.max, yposp);
 			if (this.debug) console.log ('SLIDER - svgToValue results)', xpos, xposp, state);
@@ -375,13 +375,13 @@ class RangeSliderTool extends BaseTool {
 		if (this.config.orientation == 'horizontal') {
 			var state = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, argValue);
 
-			var xposp = state * this.dimensions.length;
+			var xposp = state * this.svg.length;
 			var xpos = this.svg.x1 + xposp;
 			return xpos;
 		} else if (this.config.orientation == 'vertical') {
 			var state = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, argValue);
 
-			var yposp = state * this.dimensions.length;
+			var yposp = state * this.svg.length;
 			var ypos = this.svg.y2 + yposp;
 			return ypos;
 		}
@@ -403,16 +403,16 @@ class RangeSliderTool extends BaseTool {
   updatePath(argThis, m) {
     // HORIZONTAL
 		if (argThis.config.orientation == 'horizontal') {
-			//argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argThis.dimensions.handle.popout / 1000, argThis.deformation, argThis._value);
-			argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argThis.dimensions.handle.height / 2, argThis.deformation, argThis._value);
+			//argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argthis.svg.handle.popout / 1000, argThis.deformation, argThis._value);
+			argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argthis.svg.handle.height / 2, argThis.deformation, argThis._value);
 			argThis.elements.path.setAttributeNS(null, "d", argThis.d);
 
 			argThis.elements.thumb.setAttributeNS(null, "r", 1 + argThis._value / 3);
 			argThis.elements.thumb.setAttributeNS(null, "cx", m.x);
 		} //VERTICAL
 		else if (argThis.config.orientation == 'vertical') {
-//			argThis.d = argThis.curvedPath(m.x + argThis.dimensions.handle.width / 2, argThis.svg.y, argThis.deformation, argThis._value);
-			argThis.d = argThis.curvedPath(argThis.svg.x + argThis.dimensions.handle.width / 2, m.y, argThis.deformation, argThis._value);
+//			argThis.d = argThis.curvedPath(m.x + argthis.svg.handle.width / 2, argThis.svg.y, argThis.deformation, argThis._value);
+			argThis.d = argThis.curvedPath(argThis.svg.x + argthis.svg.handle.width / 2, m.y, argThis.deformation, argThis._value);
 			argThis.elements.path.setAttributeNS(null, "d", argThis.d);
 			argThis.elements.thumb.setAttributeNS(null, "r", 1 + argThis._value / 3);
 			argThis.elements.thumb.setAttributeNS(null, "cy", m.y);
@@ -431,7 +431,7 @@ class RangeSliderTool extends BaseTool {
 			argThis.elements.label.setAttributeNS(
 				null,
 				"transform",
-				`translate(${m.x - this.dimensions.handle.width/2},${argThis.svg.y /*- argThis.dimensions.handle.popout/100*/ - argThis._value}) scale(1)`
+				`translate(${m.x - this.svg.handle.width/2},${argThis.svg.y /*- argthis.svg.handle.popout/100*/ - argThis._value}) scale(1)`
 			);
 			argThis.elements.text.textContent = Math.round(argThis.svgToValue(argThis, m));
 			if (this.debug) console.log('SLIDER - updateLabel horizontal', m, argThis.svgToValue(argThis, m));
@@ -440,7 +440,7 @@ class RangeSliderTool extends BaseTool {
 			argThis.elements.label.setAttributeNS(
 				null,
 				"transform",
-				`translate(${argThis.svg.x /*- argThis.dimensions.handle.popout*/ - argThis._value}, ${m.y - this.dimensions.handle.height/2}) scale(1)`
+				`translate(${argThis.svg.x /*- argthis.svg.handle.popout*/ - argThis._value}, ${m.y - this.svg.handle.height/2}) scale(1)`
 			);
 
 			argThis.elements.text.textContent = Math.round(argThis.svgToValue(argThis, m));
@@ -614,7 +614,7 @@ class RangeSliderTool extends BaseTool {
 			//this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
       //if (this.debug) console.clear();
       if (this.debug) console.log('pointerDOWN',Math.round(this.m.x * 100) / 100);
-      this.target = this.dimensions.handle.popout;
+      this.target = this.svg.handle.popout;
       Frame();
     });
 
@@ -646,7 +646,7 @@ class RangeSliderTool extends BaseTool {
 
         //console.clear();
         if (this.debug) console.log('pointerMOVE', this.m.x, Math.round(this.m.x * 100) / 100);
-        this.target = this.dimensions.handle.popout;
+        this.target = this.svg.handle.popout;
         Frame();
       }
     });
@@ -708,7 +708,7 @@ class RangeSliderTool extends BaseTool {
 		//toRender.push(html`<input type="range" id="witness" value="50" disabled style="display:none">`);
 
 		// Calculate startOffset for text along path. Get it about centered along topside...
-		const startOffset = 100/2 * (this.dimensions.handle.width / ((this.dimensions.handle.width * 2) + (this.dimensions.handle.height * 2)));
+		const startOffset = 100/2 * (this.svg.handle.width / ((this.svg.handle.width * 2) + (this.svg.handle.height * 2)));
 		
 // 					<path d="M${this.svg.x1},${this.svg.y1} L${this.svg.x2},${this.svg.y1}" stroke="var(--theme-gradient-color-01)" stroke-width="5" fill="var(--theme-gradient-color-03)" pointer-events="none" 
 
@@ -719,12 +719,12 @@ class RangeSliderTool extends BaseTool {
 					<path d="M1,1 L20,20" stroke="var(--theme-gradient-color-01)" stroke-width="5" fill="var(--theme-gradient-color-03)" pointer-events="none" stroke-linecap="round"/>
 					<g id="_2" pointer-events="none">
 						<path id="label-${this.toolId}" transform="translate(100,220) scale(5)"
-							d="M 0 0 h ${this.dimensions.handle.width} v ${this.dimensions.handle.height} h -${this.dimensions.handle.width} v -${this.dimensions.handle.height}"
+							d="M 0 0 h ${this.svg.handle.width} v ${this.svg.handle.height} h -${this.svg.handle.width} v -${this.svg.handle.height}"
 							style="fill: var(--theme-gradient-color-01); stroke: grey; stroke-width:2" style="${configStyleStrSlider}"/>
 
 						<circle cx="${this.svg.x}" cy="${this.svg.y}" r="1" fill="none" pointer-events="none"/>
 
-						<text text-anchor="middle" transform="translate(0,${this.dimensions.handle.height/4})" pointer-events="none" >
+						<text text-anchor="middle" transform="translate(0,${this.svg.handle.height/4})" pointer-events="none" >
 						<textPath startOffset="${startOffset}%" text-anchor="middle" dominant-baseline="hanging" style="${configStyleStrHandle}" href="#label-${this.toolId}" pointer-events="none">
             50
 						</textPath>
@@ -839,30 +839,30 @@ class LineTool extends BaseTool {
 		this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 		
 		if ((this.config.orientation == 'vertical') || (this.config.orientation == 'horizontal'))
-				this.dimensions.length = Utils.calculateDimension(argConfig.length);
+				this.svg.length = Utils.calculateSvgDimension(argConfig.length);
 
 		if (this.config.orientation == 'fromto') {
-			this.coords.x1 = Utils.calculateCoordinate(argConfig.x1, this.toolsetPos.cx);
-			this.coords.y1 = Utils.calculateCoordinate(argConfig.y1, this.toolsetPos.cy);
-			this.coords.x2 = Utils.calculateCoordinate(argConfig.x2, this.toolsetPos.cx);
-			this.coords.y2 = Utils.calculateCoordinate(argConfig.y2, this.toolsetPos.cy);
+			this.svg.x1 = Utils.calculateSvgCoordinate(argConfig.x1, this.toolsetPos.cx);
+			this.svg.y1 = Utils.calculateSvgCoordinate(argConfig.y1, this.toolsetPos.cy);
+			this.svg.x2 = Utils.calculateSvgCoordinate(argConfig.x2, this.toolsetPos.cx);
+			this.svg.y2 = Utils.calculateSvgCoordinate(argConfig.y2, this.toolsetPos.cy);
 		}
 
 		if (this.config.orientation == 'vertical') {
-			this.svg.x1 = this.coords.cx;
-			this.svg.y1 = this.coords.cy - this.dimensions.length/2;
-			this.svg.x2 = this.coords.cx;
-			this.svg.y2 = this.coords.cy + this.dimensions.length/2;
+			this.svg.x1 = this.svg.cx;
+			this.svg.y1 = this.svg.cy - this.svg.length/2;
+			this.svg.x2 = this.svg.cx;
+			this.svg.y2 = this.svg.cy + this.svg.length/2;
 		} else if (this.config.orientation == 'horizontal') {
-			this.svg.x1 = this.coords.cx - this.dimensions.length/2;
-			this.svg.y1 = this.coords.cy;
-			this.svg.x2 = this.coords.cx + this.dimensions.length/2;
-			this.svg.y2 = this.coords.cy;
+			this.svg.x1 = this.svg.cx - this.svg.length/2;
+			this.svg.y1 = this.svg.cy;
+			this.svg.x2 = this.svg.cx + this.svg.length/2;
+			this.svg.y2 = this.svg.cy;
 		} else if (this.config.orientation == 'fromto') {
-			this.svg.x1 = this.coords.x1;
-			this.svg.y1 = this.coords.y1;
-			this.svg.x2 = this.coords.x2;
-			this.svg.y2 = this.coords.y2;
+			this.svg.x1 = this.svg.x1;
+			this.svg.y1 = this.svg.y1;
+			this.svg.x2 = this.svg.x2;
+			this.svg.y2 = this.svg.y2;
 		}
 		if (this.debug) console.log('LineTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
 	}
@@ -954,7 +954,7 @@ class CircleTool extends BaseTool {
 
 		this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 		
-		this.dimensions.radius = Utils.calculateDimension(argConfig.radius)
+		this.svg.radius = Utils.calculateSvgDimension(argConfig.radius)
 
 		if (this.debug) console.log('CircleTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
 	}
@@ -1000,7 +1000,7 @@ class CircleTool extends BaseTool {
 		
 		return svg`
 			<circle filter="url(#ds)"
-				cx="${this.coords.cx}"% cy="${this.coords.cy}"% r="${this.dimensions.radius}"
+				cx="${this.svg.cx}"% cy="${this.svg.cy}"% r="${this.svg.radius}"
 				style="${configStyleStr}"/>					
 			`;
 	}	
@@ -1054,8 +1054,8 @@ class EllipseTool extends BaseTool {
 
 		this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 		
-		this.dimensions.radiusx = Utils.calculateDimension(argConfig.radiusx)
-		this.dimensions.radiusy = Utils.calculateDimension(argConfig.radiusy)
+		this.svg.radiusx = Utils.calculateSvgDimension(argConfig.radiusx)
+		this.svg.radiusy = Utils.calculateSvgDimension(argConfig.radiusy)
 
 		if (this.debug) console.log('EllipseTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
 	}
@@ -1085,12 +1085,12 @@ class EllipseTool extends BaseTool {
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-		if (this.debug) console.log('EllipseTool - renderEllipse', this.coords.cx, this.coords.cy, this.dimensions.radiusx, this.dimensions.radiusy);
+		if (this.debug) console.log('EllipseTool - renderEllipse', this.svg.cx, this.svg.cy, this.svg.radiusx, this.svg.radiusy);
 
 		return svg`
 			<ellipse filter="url(#ds)"
-				cx="${this.coords.cx}"% cy="${this.coords.cy}"%
-				rx="${this.dimensions.radiusx}" ry="${this.dimensions.radiusy}"
+				cx="${this.svg.cx}"% cy="${this.svg.cy}"%
+				rx="${this.svg.radiusx}" ry="${this.svg.radiusy}"
 				style="${configStyleStr}"/>					
 			`;
 	}	
@@ -1157,8 +1157,8 @@ class EntityIconTool extends BaseTool {
 		// Safari doesn't use the svg viewport for rendering of the foreignObject, but the real clientsize.
 		// So positioning an icon doesn't work correctly...
 		
-		this.dimensions.iconSize = this.config.icon_size ? this.config.icon_size : 2;
-		this.dimensions.iconPixels = this.dimensions.iconSize * FONT_SIZE;
+		this.svg.iconSize = this.config.icon_size ? this.config.icon_size : 2;
+		this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
 		const x = this.config.cx ? this.config.cx / 100 : 0.5;
 		const y = this.config.cy ? this.config.cy / 100 : 0.5;
 		
@@ -1170,24 +1170,24 @@ class EntityIconTool extends BaseTool {
 		const correction = clientWidth / this._parent.viewBox.width;
 
 		// icon is not calculated against viewbox, but against toolset pos 
-		//this.coords.xpx = (x * this._parent.viewBox.width);
-		//this.coords.ypx = (y * this._parent.viewBox.height);
+		//this.svg.xpx = (x * this._parent.viewBox.width);
+		//this.svg.ypx = (y * this._parent.viewBox.height);
 
-		this.coords.xpx = this.coords.cx;//(x * this._parent.viewBox.width);
-		this.coords.ypx = this.coords.cy;//(y * this._parent.viewBox.height);
+		this.svg.xpx = this.svg.cx;//(x * this._parent.viewBox.width);
+		this.svg.ypx = this.svg.cy;//(y * this._parent.viewBox.height);
 
 		
 		if ((this._parent.isSafari) || (this._parent.iOS)) {
-			this.dimensions.iconSize = this.dimensions.iconSize * correction;
+			this.svg.iconSize = this.svg.iconSize * correction;
 
-			this.coords.xpx = (this.coords.xpx * correction) - (this.dimensions.iconPixels * adjust * correction);
-			this.coords.ypx = (this.coords.ypx * correction) - (this.dimensions.iconPixels * 0.5 * correction) - (this.dimensions.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
+			this.svg.xpx = (this.svg.xpx * correction) - (this.svg.iconPixels * adjust * correction);
+			this.svg.ypx = (this.svg.ypx * correction) - (this.svg.iconPixels * 0.5 * correction) - (this.svg.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
 		} else {
 			// Get x,y in viewbox dimensions and center with half of size of icon.
 			// Adjust horizontal for aligning. Can be 1, 0.5 and -1
 			// Adjust vertical for half of height... and correct for 0.25em textfont to align.
-			this.coords.xpx = this.coords.xpx - (this.dimensions.iconPixels * adjust);
-			this.coords.ypx = this.coords.ypx - (this.dimensions.iconPixels * 0.5) - (this.dimensions.iconPixels * 0.25);
+			this.svg.xpx = this.svg.xpx - (this.svg.iconPixels * adjust);
+			this.svg.ypx = this.svg.ypx - (this.svg.iconPixels * 0.5) - (this.svg.iconPixels * 0.25);
 		}
 
 		if (this.debug) console.log('EntityIconTool constructor coords, dimensions, config', this.coords, this.dimensions, this.config);
@@ -1223,10 +1223,10 @@ class EntityIconTool extends BaseTool {
 		const icon = this._parent._buildIcon(
 			this._parent.entities[this.config.entity_index], this._parent.config.entities[this.config.entity_index]);
 
-		if (true || (this.coords.xpx == 0)) {
+		if (true || (this.svg.xpx == 0)) {
 			
-			this.dimensions.iconSize = this.config.icon_size ? this.config.icon_size : 2;
-			this.dimensions.iconPixels = this.dimensions.iconSize * FONT_SIZE;
+			this.svg.iconSize = this.config.icon_size ? this.config.icon_size : 2;
+			this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
 			const x = this.config.cx ? this.config.cx / 100 : 0.5;
 			const y = this.config.cy ? this.config.cy / 100 : 0.5;
 			
@@ -1239,30 +1239,30 @@ class EntityIconTool extends BaseTool {
 			var correctionRect = clientWidth / (this._parent.viewBox.width + 50);
 
 			// icon is not calculated against viewbox, but against toolset pos 
-			//this.coords.xpx = (x * this._parent.viewBox.width);
-			//this.coords.ypx = (y * this._parent.viewBox.height);
+			//this.svg.xpx = (x * this._parent.viewBox.width);
+			//this.svg.ypx = (y * this._parent.viewBox.height);
 
-			this.coords.xpx = this.coords.cx;//(x * this._parent.viewBox.width);
-			this.coords.ypx = this.coords.cy;//(y * this._parent.viewBox.height);
+			this.svg.xpx = this.svg.cx;//(x * this._parent.viewBox.width);
+			this.svg.ypx = this.svg.cy;//(y * this._parent.viewBox.height);
 			
 			if (/*true &&*/ ((this._parent.isSafari) || (this._parent.iOS))) {
 				//correction = 1; // #HIERO #WIP
-				this.dimensions.iconSize = this.dimensions.iconSize * correction;
+				this.svg.iconSize = this.svg.iconSize * correction;
 
-				this.coords.xpx = (this.coords.xpx * correction) - (this.dimensions.iconPixels * adjust * correction);
-				this.coords.ypx = (this.coords.ypx * correction) - (this.dimensions.iconPixels * 0.9 * correction);
-												//- (this.dimensions.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
+				this.svg.xpx = (this.svg.xpx * correction) - (this.svg.iconPixels * adjust * correction);
+				this.svg.ypx = (this.svg.ypx * correction) - (this.svg.iconPixels * 0.9 * correction);
+												//- (this.svg.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
 			} else {
 				// Get x,y in viewbox dimensions and center with half of size of icon.
 				// Adjust horizontal for aligning. Can be 1, 0.5 and -1
 				// Adjust vertical for half of height... and correct for 0.25em textfont to align.
-				this.coords.xpx = this.coords.xpx - (this.dimensions.iconPixels * adjust);
-				this.coords.ypx = this.coords.ypx - (this.dimensions.iconPixels * 0.9);
-																					//+ (this.dimensions.iconPixels * 0.5);
+				this.svg.xpx = this.svg.xpx - (this.svg.iconPixels * adjust);
+				this.svg.ypx = this.svg.ypx - (this.svg.iconPixels * 0.9);
+																					//+ (this.svg.iconPixels * 0.5);
 			}
 		}
 
-//				<foreignObject width="${this.dimensions.iconPixels}" height="${this.dimensions.iconPixels}" x="${this.coords.xpx}" y="${this.coords.ypx}">
+//				<foreignObject width="${this.svg.iconPixels}" height="${this.svg.iconPixels}" x="${this.svg.xpx}" y="${this.svg.ypx}">
 
 //						<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml" width="100%" height="100% !important">
 //								<ha-icon .icon=${icon} style="${configStyleStr}";></ha-icon>
@@ -1277,8 +1277,8 @@ class EntityIconTool extends BaseTool {
 		
 		if (!this.alternateColor) {this.alternateColor = 'white'};
 		if (this.alternateColor == 'white') {this.alternateColor = 'black'} else {this.alternateColor = 'white'};
-//				<rect width="${this.dimensions.iconPixels}" height="${this.dimensions.iconPixels}" x="${this.coords.xpx}" y="${this.coords.ypx}"
-//				<rect width="${this.dimensions.iconPixels}px" height="${this.dimensions.iconPixels}px" x="${this.coords.cx - this.dimensions.iconPixels/2}" y="${(this.coords.cy - this.dimensions.iconPixels)*1.8}"
+//				<rect width="${this.svg.iconPixels}" height="${this.svg.iconPixels}" x="${this.svg.xpx}" y="${this.svg.ypx}"
+//				<rect width="${this.svg.iconPixels}px" height="${this.svg.iconPixels}px" x="${this.svg.cx - this.svg.iconPixels/2}" y="${(this.svg.cy - this.svg.iconPixels)*1.8}"
 //					style="stroke-width:10;stroke:${this.alternateColor};fill:none"></rect>
 		
 		// NTS:
@@ -1297,34 +1297,34 @@ class EntityIconTool extends BaseTool {
 		
 		if (!this.iconSvg) this.iconSvg = this._parent.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot.querySelectorAll("*")[0]?.path;
 		
-//width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em"
-//x="${this.coords.cx}" y="${this.coords.cy}
+//width="${this.svg.iconSize}em" height="${this.svg.iconSize}em"
+//x="${this.svg.cx}" y="${this.svg.cy}
 
 //				<svg viewbox="0, 0, 24, 24" preserveAspectRatio="xMidYMid meet" focusable="false" x="-200" height="50%"
-// 						<rect x="0" y="0" width="100%" height="100%" fill="none" stroke="yellow" stroke-width="5" x="${this.coords.xpx}" y="${this.coords.ypx}"></rect>
+// 						<rect x="0" y="0" width="100%" height="100%" fill="none" stroke="yellow" stroke-width="5" x="${this.svg.xpx}" y="${this.svg.ypx}"></rect>
 
 // 						<svg preserveAspectRatio="xMidYMid meet" focusable="false">
 //				</svg>
 
-		var scale = this.dimensions.iconPixels / 24;
+		var scale = this.svg.iconPixels / 24;
 		
 		if ((this._parent.isSafari) || (this._parent.iOS)) {	
 			if (this.iconSvg) {
-				this.svg.x1 = this.svg.x - this.dimensions.iconPixels / 2;
-				this.svg.y1 = this.svg.y - this.dimensions.iconPixels*0.9;
+				this.svg.x1 = this.svg.x - this.svg.iconPixels / 2;
+				this.svg.y1 = this.svg.y - this.svg.iconPixels*0.9;
 				return svg`
 					<g id="icon-${this.toolId}"  style="${configStyleStr}" transform-origin="${this.svg.cx} ${this.svg.cy}">
-						<rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.dimensions.iconPixels}" width="${this.dimensions.iconPixels}" stroke="yellow" stroke-width="2" opacity="0%"></rect>
+						<rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}" width="${this.svg.iconPixels}" stroke="yellow" stroke-width="2" opacity="0%"></rect>
 						<path d="${this.iconSvg}" fill="red" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"
 						></path>
 					<g>
 				`;
 			} else {
 				return svg`
-					<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}" overflow="visible">
+					<foreignObject width="${this.svg.iconSize}em" height="${this.svg.iconSize}em" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="visible">
 						<body>
 							<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
-									style="line-height:${this.dimensions.iconSize}em;position:relative;border-style:solid;border-width:0;border-color:${this.alternateColor};">
+									style="line-height:${this.svg.iconSize}em;position:relative;border-style:solid;border-width:0;border-color:${this.alternateColor};">
 									<ha-icon icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}";></ha-icon>
 							</div>
 						</body>
@@ -1333,10 +1333,10 @@ class EntityIconTool extends BaseTool {
 			}
 		} else {				
 			return svg`
-				<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}"
-												transform-origin="${this.coords.xpx + 12}px ${this.coords.ypx + 13.3}px">
+				<foreignObject width="${this.svg.iconSize}em" height="${this.svg.iconSize}em" x="${this.svg.xpx}" y="${this.svg.ypx}"
+												transform-origin="${this.svg.xpx + 12}px ${this.svg.ypx + 13.3}px">
 					<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
-								style="line-height:${this.dimensions.iconSize}em;border-style:solid;border-width:0;border-color:${this.alternateColor};">
+								style="line-height:${this.svg.iconSize}em;border-style:solid;border-width:0;border-color:${this.alternateColor};">
 						<ha-icon icon=${icon} id="icon-${this.toolId}"  style="${configStyleStr}"></ha-icon>
 					</div>
 				</foreignObject>
@@ -1347,11 +1347,11 @@ class EntityIconTool extends BaseTool {
 /* Remove rectangle around icon...
 		} else {				
 			return svg`
-				<rect width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}"
+				<rect width="${this.svg.iconSize}em" height="${this.svg.iconSize}em" x="${this.svg.xpx}" y="${this.svg.ypx}"
 				style="stroke-width:2;stroke:${this.alternateColor};fill:none"></rect>
-				<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}">
+				<foreignObject width="${this.svg.iconSize}em" height="${this.svg.iconSize}em" x="${this.svg.xpx}" y="${this.svg.ypx}">
 					<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
-								style="line-height:${this.dimensions.iconSize}em;border-style:solid;border-width:0;border-color:${this.alternateColor};">
+								style="line-height:${this.svg.iconSize}em;border-style:solid;border-width:0;border-color:${this.alternateColor};">
 						<ha-icon icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}"></ha-icon>
 					</div>
 				</foreignObject>
@@ -1361,7 +1361,7 @@ class EntityIconTool extends BaseTool {
 /*
 		return svg`
 		<g @click=${e => this.handlePopup(e, this._parent.entities[this.config.entity_index])}>
-			<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}">
+			<foreignObject width="${this.svg.iconSize}em" height="${this.svg.iconSize}em" x="${this.svg.xpx}" y="${this.svg.ypx}">
 				<body>
 					<div class="icon">
 						<ha-icon .icon=${icon} style="${configStyleStr}";></ha-icon>
@@ -1415,17 +1415,17 @@ class EntityIconTool extends BaseTool {
 		// then should be, ie not centered...
 		
 /*
-		let scalex = this.coords.cx * this.toolsetPos.scale;
-		let scaley = this.coords.cy * this.toolsetPos.scale;
-		let diffx = this.coords.cx - scalex;
-		let diffy = this.coords.cy - scaley;
+		let scalex = this.svg.cx * this.toolsetPos.scale;
+		let scaley = this.svg.cy * this.toolsetPos.scale;
+		let diffx = this.svg.cx - scalex;
+		let diffy = this.svg.cy - scaley;
 		let xlatex = diffx / this.toolsetPos.scale;
 		let xlatey = diffy / this.toolsetPos.scale;
 		let scale = this.toolsetPos.scale;
 		if (this.debug) console.log('renderIcon - xlatex/y values', scale, this.toolsetPos.scale, xlatex, xlatey, this.coords, this.dimensions);
 */		
     return svg`
-			<g filter="url(#ds)" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale}) translate(${this.dimensions.xlateX} ${this.dimensions.xlateY})"
+			<g filter="url(#ds)" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale}) translate(${this.svg.xlateX} ${this.svg.xlateY})"
 				@click=${e => this._parent.handlePopup(e, this._parent.entities[this.config.entity_index])} >
 
 				${this._renderIcon()}
@@ -1474,13 +1474,13 @@ class BadgeTool extends BaseTool {
 		this.svg.radius = 5;
 		this.svg.leftXpos = this.svg.x;
 		this.svg.leftYpos = this.svg.y;
-		this.svg.leftWidth = (this.config.ratio / 100) * this.dimensions.width;
-		this.svg.arrowSize = (this.dimensions.height * this.config.divider / 100) / 2;
-		this.svg.divSize = (this.dimensions.height * (100 - this.config.divider) / 100) / 2;
+		this.svg.leftWidth = (this.config.ratio / 100) * this.svg.width;
+		this.svg.arrowSize = (this.svg.height * this.config.divider / 100) / 2;
+		this.svg.divSize = (this.svg.height * (100 - this.config.divider) / 100) / 2;
 
 		this.svg.rightXpos = this.svg.x + this.svg.leftWidth;
 		this.svg.rightYpos = this.svg.y;
-		this.svg.rightWidth = ((100 - this.config.ratio) / 100) * this.dimensions.width;
+		this.svg.rightWidth = ((100 - this.config.ratio) / 100) * this.svg.width;
 
 		if (this.debug) console.log('BadgeTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
 	}
@@ -1515,10 +1515,10 @@ class BadgeTool extends BaseTool {
 						M ${this.svg.rightXpos} ${this.svg.rightYpos}
 						h ${this.svg.rightWidth - this.svg.radius}
 						a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} ${this.svg.radius}
-						v ${this.dimensions.height - 2 * this.svg.radius}
+						v ${this.svg.height - 2 * this.svg.radius}
 						a ${this.svg.radius} ${this.svg.radius} 0 0 1 -${this.svg.radius} ${this.svg.radius}
 						h -${this.svg.rightWidth - this.svg.radius}
-						v -${this.dimensions.height - 2 * this.svg.radius}
+						v -${this.svg.height - 2 * this.svg.radius}
 						z
 						"
 						style="${configStyleRightStr}"/>
@@ -1532,7 +1532,7 @@ class BadgeTool extends BaseTool {
 						l 0 ${this.svg.divSize}
 						h -${this.svg.leftWidth - this.svg.radius}
 						a -${this.svg.radius} -${this.svg.radius} 0 0 1 -${this.svg.radius} -${this.svg.radius}
-						v -${this.dimensions.height - 2 * this.svg.radius}
+						v -${this.svg.height - 2 * this.svg.radius}
 						a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} -${this.svg.radius}
 						"
 						style="${configStyleLeftStr}"/>
@@ -1773,7 +1773,7 @@ class EntityNameTool extends BaseTool {
 
 		return svg`
 				<text>
-					<tspan class="entity__name" x="${this.coords.cx}" y="${this.coords.cy}" style="${configStyleStr}">${name}</tspan>
+					<tspan class="entity__name" x="${this.svg.cx}" y="${this.svg.cy}" style="${configStyleStr}">${name}</tspan>
 				</text>
 			`;
 	}	
@@ -1865,7 +1865,7 @@ class EntityAreaTool extends BaseTool {
 
 		return svg`
 				<text class="entity__area">
-					<tspan class="entity__area" x="${this.coords.cx}" y="${this.coords.cy}" style="${configStyleStr}">${area}</tspan>
+					<tspan class="entity__area" x="${this.svg.cx}" y="${this.svg.cy}" style="${configStyleStr}">${area}</tspan>
 				</text>
 			`;
 	}	
@@ -1947,21 +1947,21 @@ class HorseshoeTool extends BaseTool {
 
 		this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 		
-		this.dimensions.radius = Utils.calculateDimension(this.config.radius)
-		this.dimensions.radius_ticks = Utils.calculateDimension(0.95 * this.config.radius)
+		this.svg.radius = Utils.calculateSvgDimension(this.config.radius)
+		this.svg.radius_ticks = Utils.calculateSvgDimension(0.95 * this.config.radius)
 
-		this.dimensions.horseshoe_scale = {};
-		this.dimensions.horseshoe_scale.width = Utils.calculateDimension(this.config.horseshoe_scale.width);
-		this.dimensions.horseshoe_state = {};
-		this.dimensions.horseshoe_state.width = Utils.calculateDimension(this.config.horseshoe_state.width);
-		this.dimensions.horseshoe_scale.dasharray = 2 * 26/36 * Math.PI * this.dimensions.radius;
+		this.svg.horseshoe_scale = {};
+		this.svg.horseshoe_scale.width = Utils.calculateSvgDimension(this.config.horseshoe_scale.width);
+		this.svg.horseshoe_state = {};
+		this.svg.horseshoe_state.width = Utils.calculateSvgDimension(this.config.horseshoe_state.width);
+		this.svg.horseshoe_scale.dasharray = 2 * 26/36 * Math.PI * this.svg.radius;
 		
 		// The horseshoe is rotated around its svg base point. This is NOT the center of the circle!
 		// Adjust x and y positions within the svg viewport to re-center the circle after rotating
 		this.svg.rotate = {};
 		this.svg.rotate.degrees = -220;
-		this.svg.rotate.shiftX = this.coords.cx;
-		this.svg.rotate.shiftY = this.coords.cy;
+		this.svg.rotate.shiftX = this.svg.cx;
+		this.svg.rotate.shiftY = this.svg.cy;
 		
     // Get colorstops and make a key/value store...
 		this.colorStops = {};
@@ -2103,7 +2103,7 @@ class HorseshoeTool extends BaseTool {
 		// If steps exactly match the max. value/range, add extra step for that max value.
 		if ((Math.floor(((steps) * tickSize) + startTickValue)) <= (config.horseshoe_scale.max)) {steps++;}
 		
-		const radius = this.dimensions.horseshoe_scale.width ? this.dimensions.horseshoe_scale.width / 2 : 6/2;
+		const radius = this.svg.horseshoe_scale.width ? this.svg.horseshoe_scale.width / 2 : 6/2;
 		var angle;
 		var scaleItems = [];
 
@@ -2113,8 +2113,8 @@ class HorseshoeTool extends BaseTool {
 		for (i = 0; i < steps; i++) {
 			angle = startAngle + ((-230 + (360 - i*angleStepSize)) * Math.PI / 180);
 			scaleItems[i] = svg`
-				<circle cx="${this.coords.cx - Math.sin(angle)*this.dimensions.radius_ticks}"
-								cy="${this.coords.cy - Math.cos(angle)*this.dimensions.radius_ticks}" r="${radius}"
+				<circle cx="${this.svg.cx - Math.sin(angle)*this.svg.radius_ticks}"
+								cy="${this.svg.cy - Math.cos(angle)*this.svg.radius_ticks}" r="${radius}"
 								fill="${stroke}">
 			`;
 /*
@@ -2149,19 +2149,19 @@ class HorseshoeTool extends BaseTool {
 
 	return svg`
 			<g id="horseshoe__svg__group" class="horseshoe__svg__group">
-				<circle id="horseshoe__scale" class="horseshoe__scale" cx="${this.coords.cx}" cy="${this.coords.cy}" r="${this.dimensions.radius}"
+				<circle id="horseshoe__scale" class="horseshoe__scale" cx="${this.svg.cx}" cy="${this.svg.cy}" r="${this.svg.radius}"
 					fill="${this.fill || 'rgba(0, 0, 0, 0)'}"
 					stroke="${this.config.horseshoe_scale.color || '#000000'}"
-					stroke-dasharray="${this.dimensions.horseshoe_scale.dasharray}"
-					stroke-width="${this.dimensions.horseshoe_scale.width}" 
+					stroke-dasharray="${this.svg.horseshoe_scale.dasharray}"
+					stroke-width="${this.svg.horseshoe_scale.width}" 
 					stroke-linecap="square"
 					transform="rotate(-220 ${this.svg.rotate.shiftX} ${this.svg.rotate.shiftY})"/>
 
-				<circle id="horseshoe__state__value" class="horseshoe__state__value" cx="${this.coords.cx}" cy="${this.coords.cy}" r="${this.dimensions.radius}"
+				<circle id="horseshoe__state__value" class="horseshoe__state__value" cx="${this.svg.cx}" cy="${this.svg.cy}" r="${this.svg.radius}"
 					fill="${this.config.fill || 'rgba(0, 0, 0, 0)'}"
 					stroke="url('#horseshoe__gradient-${this.cardId}')"
 					stroke-dasharray="${this.dashArray}"
-					stroke-width="${this.dimensions.horseshoe_state.width}" 
+					stroke-width="${this.svg.horseshoe_state.width}" 
 					stroke-linecap="square"
 					transform="rotate(-220 ${this.svg.rotate.shiftX} ${this.svg.rotate.shiftY})"/>
 				
@@ -2257,12 +2257,12 @@ class SparkleBarChartTool extends BaseTool {
 		this.config.show = {...DEFAULT_BARCHART_CONFIG.show, ...this.config.show};
 		
 		// Calculate real dimensions...
-		this.dimensions.margin = Utils.calculateDimension(this.config.margin);
+		this.svg.margin = Utils.calculateSvgDimension(this.config.margin);
 		// #TODO: Nog check op style? voor hor anders dan vert???
-		const theWidth = (this.config.orientation == 'vertical') ?  this.dimensions.width : this.dimensions.height;
+		const theWidth = (this.config.orientation == 'vertical') ?  this.svg.width : this.svg.height;
 
-		this.dimensions.barWidth = (theWidth - (((this.config.hours / this.config.barhours) - 1) *
-																this.dimensions.margin)) / (this.config.hours / this.config.barhours);
+		this.svg.barWidth = (theWidth - (((this.config.hours / this.config.barhours) - 1) *
+																this.svg.margin)) / (this.config.hours / this.config.barhours);
 		this._data = []; //new Array(this.hours).fill(0);
 		this._bars = []; //new Array(this.hours).fill({});
 		this._scale = {};
@@ -2332,10 +2332,10 @@ class SparkleBarChartTool extends BaseTool {
 			if (this.debug) console.log('bar is vertical');
 			this._series.forEach((item, index) => {
 				if (!_bars[index]) _bars[index] = {};
-				_bars[index].length = ((item - this._scale.min) / (this._scale.size)) * this.dimensions.height;
-				_bars[index].x1 = this.svg.x + ((this.dimensions.barWidth + this.dimensions.margin) * index);
+				_bars[index].length = ((item - this._scale.min) / (this._scale.size)) * this.svg.height;
+				_bars[index].x1 = this.svg.x + ((this.svg.barWidth + this.svg.margin) * index);
 				_bars[index].x2 = _bars[index].x1;
-				_bars[index].y1 = this.svg.y + this.dimensions.height;
+				_bars[index].y1 = this.svg.y + this.svg.height;
 				_bars[index].y2 = _bars[index].y1 - this._bars[index].length;
 			});
 			// HORIZONTAL
@@ -2343,8 +2343,8 @@ class SparkleBarChartTool extends BaseTool {
 			if (this.debug) console.log('bar is horizontal');
 			this._data.forEach((item, index) => {
 				if (!_bars[index]) _bars[index] = {};
-				_bars[index].length = ((item - this._scale.min) / (this._scale.size)) * this.dimensions.width;
-				_bars[index].y1 = this.svg.y + ((this.dimensions.barWidth + this.dimensions.margin) * index);
+				_bars[index].length = ((item - this._scale.min) / (this._scale.size)) * this.svg.width;
+				_bars[index].y1 = this.svg.y + ((this.svg.barWidth + this.svg.margin) * index);
 				_bars[index].y2 = _bars[index].y1;
 				_bars[index].x1 = this.svg.x;
 				_bars[index].x2 = _bars[index].x1 + this._bars[index].length;
@@ -2384,7 +2384,7 @@ class SparkleBarChartTool extends BaseTool {
 									x2="${this._bars[index].x2}"
 									y1="${this._bars[index].y1}"
 									y2="${this._bars[index].y2}"
-									stroke-width="${this.dimensions.barWidth}"
+									stroke-width="${this.svg.barWidth}"
 									/>
 				`);
 		});
@@ -2431,7 +2431,7 @@ class SegmentedArcTool extends BaseTool {
 			cx: 50,
 			cy: 50,
 			radius: 45,
-			width: 6,
+			width: 3,
 			margin: 1.5,
 			color: 'var(--primary-color)',
 			styles: { "stroke-linecap": 'round;',
@@ -2455,7 +2455,7 @@ class SegmentedArcTool extends BaseTool {
 							"scale_offset": 0,
 							"scale": false,
 						},
-			scale_offset: -9,
+			scale_offset: -4.5,
 			isScale: false,
 			animation: {"duration": 1.5 },
 		}	
@@ -2481,11 +2481,11 @@ class SegmentedArcTool extends BaseTool {
 
 		this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 		
-		this.dimensions.radius = Utils.calculateDimension(argConfig.radius);
-		this.dimensions.segments = {};
-		this.dimensions.segments.gap = Utils.calculateDimension(this.config.segments.gap);
-		//this.dimensions.segments.dash = Utils.calculateDimension(this.config.segments.dash);
-		this.dimensions.scale_offset = Utils.calculateDimension(this.config.scale_offset);
+		this.svg.radius = Utils.calculateSvgDimension(argConfig.radius);
+		this.svg.segments = {};
+		this.svg.segments.gap = Utils.calculateSvgDimension(this.config.segments.gap);
+		//this.svg.segments.dash = Utils.calculateSvgDimension(this.config.segments.dash);
+		this.svg.scale_offset = Utils.calculateSvgDimension(this.config.scale_offset);
 		
 		// Added for confusion???????
 		this._firstUpdatedCalled = false;
@@ -2530,7 +2530,7 @@ class SegmentedArcTool extends BaseTool {
 				// Cloning done. Now set specific scale options.
 				scaleConfig.show.scale = false;
 				scaleConfig.isScale = true;
-				scaleConfig.width = Utils.calculateDimension(1.5);
+				scaleConfig.width = 1.5;
 				scaleConfig.radius = this.config.radius - (this.config.width/2) + (scaleConfig.width/2) + (this.config.scale_offset);
 				//this._segmentedArcScale = new SegmentedArc(this._parent, scaleConfig);
 				this._segmentedArcScale = new SegmentedArcTool(this._parent, scaleConfig, argPos);
@@ -2754,15 +2754,17 @@ class SegmentedArcTool extends BaseTool {
 			var arcStart = this.config.start_angle;
 			var arcEnd = this.config.end_angle;
 			var arcEndPrev = this.config.end_angle;
-			var arcWidth = this.config.width;
+			//var arcWidth = this.config.width;
+			var arcWidth = this.svg.width;
 			
 			var arcEndFull = this.config.end_angle;
 			var arcClockwise = arcEnd > arcStart;
 			var arcPart = this.config.segments.dash;
 			var arcDivider = this.config.segments.gap;
 
-			// #TODO: must use this.dimensions
-			var arcRadius = this.config.radius;
+			// #DONE: must use this.dimensions
+			//var arcRadius = this.config.radius;
+			var arcRadius = this.svg.radius;
 			
 
 			if (this.debug) console.log('RENDERNEW - IN _arcId, firstUpdatedCalled', this._arcId, this._firstUpdatedCalled);
@@ -2789,7 +2791,7 @@ class SegmentedArcTool extends BaseTool {
 
 			for (var k = 0; k < this._segmentAngles.length; k++) {
 				d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
-															this._arc.clockwise, this.config.radius, this.config.width);
+															this._arc.clockwise, this.svg.radius, this.svg.width);
 
 				svgItems.push(svg`<path id="arc-segment-bg-${this.toolId}-${k}" class="arc__segment"
 														style="${configStyleBgStr}"
@@ -3010,7 +3012,7 @@ toAngle: 25.200000000000003
 				// An empty element has a width of 0!
 				for (var i=0; i < this._segmentAngles.length; i++) {
 					d = this.buildArcPath(this._segmentAngles[i].drawStart, this._segmentAngles[i].drawEnd,
-																this._arc.clockwise, this.config.radius, this.config.isScale ? this.config.width : 0);
+																this._arc.clockwise, this.svg.radius, this.config.isScale ? this.svg.width : 0);
 
 					this._cache[i] = d;
 					
@@ -3039,15 +3041,17 @@ toAngle: 25.200000000000003
 			var arcStart = this.config.start_angle;
 			var arcEnd = this.config.end_angle;
 			var arcEndPrev = this.config.end_angle;
-			var arcWidth = this.config.width;
+			//var arcWidth = this.config.width;
+			var arcWidth = this.svg.width;
 			
 			var arcEndFull = this.config.end_angle;
 			var arcClockwise = arcEnd > arcStart;
 			var arcPart = this.config.segments.dash;
 			var arcDivider = this.config.segments.gap;
 
-			// #TODO: must use this.dimensions
-			var arcRadius = this.config.radius;
+			// #DONE: must use this.dimensions
+			//var arcRadius = this.config.radius;
+			var arcRadius = this.svg.radius;
 			
 			// calculate real end angle depending on value set in object and min/max scale
 			var val = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValue);
@@ -3356,15 +3360,15 @@ toAngle: 25.200000000000003
 	 */
 	buildArcPath(argStartAngle, argEndAngle, argClockwise, argRadius, argWidth) {
 
-		var start = this.polarToCartesian(this.coords.cx, this.coords.cy, argRadius, argEndAngle);
-		var end = this.polarToCartesian(this.coords.cx, this.coords.cy, argRadius, argStartAngle);
+		var start = this.polarToCartesian(this.svg.cx, this.svg.cy, argRadius, argEndAngle);
+		var end = this.polarToCartesian(this.svg.cx, this.svg.cy, argRadius, argStartAngle);
 		var largeArcFlag = Math.abs(argEndAngle - argStartAngle) <= 180 ? "0" : "1";
 		
 		const sweepFlag = argClockwise ? "0": "1";
 	
 		var cutoutRadius = argRadius - argWidth,
-			start2 = this.polarToCartesian(this.coords.cx, this.coords.cy, cutoutRadius, argEndAngle),
-			end2 = this.polarToCartesian(this.coords.cx, this.coords.cy, cutoutRadius, argStartAngle),
+			start2 = this.polarToCartesian(this.svg.cx, this.svg.cy, cutoutRadius, argEndAngle),
+			end2 = this.polarToCartesian(this.svg.cx, this.svg.cy, cutoutRadius, argStartAngle),
 
 		d = [
 			"M", start.x, start.y,
