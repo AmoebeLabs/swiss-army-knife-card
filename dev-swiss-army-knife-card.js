@@ -346,7 +346,7 @@ class RangeSliderTool extends BaseTool {
 	// svg coordinates to actual slider value
 	svgToValue(argThis, m) {
 		// svg is within viewbox / slider size
-		// length is argthis.svg.length
+		// length is argThis.svg.length
 		
 		
 		// is m.x in svg x1/x2 range. Then translate to actual value.
@@ -354,7 +354,7 @@ class RangeSliderTool extends BaseTool {
 		
 		if (argThis.config.orientation == 'horizontal') {
 			var xpos = m.x - argThis.svg.x1;
-			var xposp = xpos / argthis.svg.length;
+			var xposp = xpos / argThis.svg.length;
 			var state = ((argThis.config.scale.max - argThis.config.scale.min) * xposp) + argThis.config.scale.min;
 			//var state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, xposp);
 			if (this.debug) console.log ('SLIDER - svgToValue results)', xpos, xposp, state);
@@ -362,7 +362,7 @@ class RangeSliderTool extends BaseTool {
 		} else if (argThis.config.orientation == 'vertical') {
 			// y is calculated from lower y value. So slider is from bottom to top...
 			var ypos = argThis.svg.y2 - m.y;
-			var yposp = ypos / argthis.svg.length;
+			var yposp = ypos / argThis.svg.length;
 			var state = ((argThis.config.scale.max - argThis.config.scale.min) * yposp) + argThis.config.scale.min;
 			//var state = Utils.calculateValueBetween(argThis.configscale.min, argThis.configscale.max, yposp);
 			if (this.debug) console.log ('SLIDER - svgToValue results)', xpos, xposp, state);
@@ -403,16 +403,16 @@ class RangeSliderTool extends BaseTool {
   updatePath(argThis, m) {
     // HORIZONTAL
 		if (argThis.config.orientation == 'horizontal') {
-			//argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argthis.svg.handle.popout / 1000, argThis.deformation, argThis._value);
-			argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argthis.svg.handle.height / 2, argThis.deformation, argThis._value);
+			//argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argThis.svg.handle.popout / 1000, argThis.deformation, argThis._value);
+			argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argThis.svg.handle.height / 2, argThis.deformation, argThis._value);
 			argThis.elements.path.setAttributeNS(null, "d", argThis.d);
 
 			argThis.elements.thumb.setAttributeNS(null, "r", 1 + argThis._value / 3);
 			argThis.elements.thumb.setAttributeNS(null, "cx", m.x);
 		} //VERTICAL
 		else if (argThis.config.orientation == 'vertical') {
-//			argThis.d = argThis.curvedPath(m.x + argthis.svg.handle.width / 2, argThis.svg.y, argThis.deformation, argThis._value);
-			argThis.d = argThis.curvedPath(argThis.svg.x + argthis.svg.handle.width / 2, m.y, argThis.deformation, argThis._value);
+//			argThis.d = argThis.curvedPath(m.x + argThis.svg.handle.width / 2, argThis.svg.y, argThis.deformation, argThis._value);
+			argThis.d = argThis.curvedPath(argThis.svg.x + argThis.svg.handle.width / 2, m.y, argThis.deformation, argThis._value);
 			argThis.elements.path.setAttributeNS(null, "d", argThis.d);
 			argThis.elements.thumb.setAttributeNS(null, "r", 1 + argThis._value / 3);
 			argThis.elements.thumb.setAttributeNS(null, "cy", m.y);
@@ -431,7 +431,7 @@ class RangeSliderTool extends BaseTool {
 			argThis.elements.label.setAttributeNS(
 				null,
 				"transform",
-				`translate(${m.x - this.svg.handle.width/2},${argThis.svg.y /*- argthis.svg.handle.popout/100*/ - argThis._value}) scale(1)`
+				`translate(${m.x - this.svg.handle.width/2},${argThis.svg.y /*- argThis.svg.handle.popout/100*/ - argThis._value}) scale(1)`
 			);
 			argThis.elements.text.textContent = Math.round(argThis.svgToValue(argThis, m));
 			if (this.debug) console.log('SLIDER - updateLabel horizontal', m, argThis.svgToValue(argThis, m));
@@ -440,7 +440,7 @@ class RangeSliderTool extends BaseTool {
 			argThis.elements.label.setAttributeNS(
 				null,
 				"transform",
-				`translate(${argThis.svg.x /*- argthis.svg.handle.popout*/ - argThis._value}, ${m.y - this.svg.handle.height/2}) scale(1)`
+				`translate(${argThis.svg.x /*- argThis.svg.handle.popout*/ - argThis._value}, ${m.y - this.svg.handle.height/2}) scale(1)`
 			);
 
 			argThis.elements.text.textContent = Math.round(argThis.svgToValue(argThis, m));
@@ -707,7 +707,7 @@ class RangeSliderTool extends BaseTool {
 		const toRender = []
 		//toRender.push(html`<input type="range" id="witness" value="50" disabled style="display:none">`);
 
-		// Calculate startOffset for text along path. Get it about centered along topside...
+		// Calculate startOffset for text along path. Get it about centered along topside of rectangle...
 		const startOffset = 100/2 * (this.svg.handle.width / ((this.svg.handle.width * 2) + (this.svg.handle.height * 2)));
 		
 // 					<path d="M${this.svg.x1},${this.svg.y1} L${this.svg.x2},${this.svg.y1}" stroke="var(--theme-gradient-color-01)" stroke-width="5" fill="var(--theme-gradient-color-03)" pointer-events="none" 
@@ -1131,6 +1131,8 @@ class EntityIconTool extends BaseTool {
 					"align-self": 'center;',
 					"height": '100%;',
 					"width": '100%;',
+					"fill": 'var(--primary-text-color);',
+					"color": 'var(--primary-text-color);',
 				}
 		}
 		super(argParent, argConfig, argPos);
@@ -1203,6 +1205,11 @@ class EntityIconTool extends BaseTool {
 	* THIS IS THE ONE!!!!
 	*/
 
+/*	_iconSvgTimeout() {
+		this._parent.requestUpdate();
+		this.iconTimeoutPending = false;
+	}
+*/	
   _renderIcon() {
 
 		// Get configuration styles as the default styles
@@ -1229,6 +1236,10 @@ class EntityIconTool extends BaseTool {
 			this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
 			const x = this.config.cx ? this.config.cx / 100 : 0.5;
 			const y = this.config.cy ? this.config.cy / 100 : 0.5;
+
+			// NEW NEW NEW Use % for size of icon...
+			this.svg.iconSize = this.config.icon_size ? this.config.icon_size : 2;
+			this.svg.iconPixels = Utils.calculateSvgDimension(this.svg.iconSize);
 			
 			const align = this.config.align ? this.config.align : 'center';
 			const adjust = (align == 'center' ? 0.5 : (align == 'start' ? -1 : +1));
@@ -1248,17 +1259,23 @@ class EntityIconTool extends BaseTool {
 			if (/*true &&*/ ((this._parent.isSafari) || (this._parent.iOS))) {
 				//correction = 1; // #HIERO #WIP
 				this.svg.iconSize = this.svg.iconSize * correction;
+				this.svg.iconPixels = this.svg.iconPixels * correction;
 
 				this.svg.xpx = (this.svg.xpx * correction) - (this.svg.iconPixels * adjust * correction);
 				this.svg.ypx = (this.svg.ypx * correction) - (this.svg.iconPixels * 0.9 * correction);
 												//- (this.svg.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
+				this.svg.xpx = (this.svg.cx  * correction) - (this.svg.iconPixels * adjust * correction);
+				this.svg.ypx = (this.svg.cy  * correction) - (this.svg.iconPixels * adjust * correction);
+
 			} else {
 				// Get x,y in viewbox dimensions and center with half of size of icon.
 				// Adjust horizontal for aligning. Can be 1, 0.5 and -1
-				// Adjust vertical for half of height... and correct for 0.25em textfont to align.
-				this.svg.xpx = this.svg.xpx - (this.svg.iconPixels * adjust);
-				this.svg.ypx = this.svg.ypx - (this.svg.iconPixels * 0.9);
-																					//+ (this.svg.iconPixels * 0.5);
+
+				this.svg.xpx = this.svg.cx - (this.svg.iconPixels * adjust);
+				this.svg.ypx = this.svg.cy - (this.svg.iconPixels * adjust);
+				
+				console.log("rendericon svg =", this.toolId, this.svg, this.config.cx, this.config.cy, align, adjust);
+
 			}
 		}
 
@@ -1276,7 +1293,7 @@ class EntityIconTool extends BaseTool {
 		// Or can we use the svg use keyword??????
 		
 		if (!this.alternateColor) {this.alternateColor = 'white'};
-		if (this.alternateColor == 'white') {this.alternateColor = 'black'} else {this.alternateColor = 'white'};
+		//if (this.alternateColor == 'white') {this.alternateColor = 'black'} else {this.alternateColor = 'white'};
 //				<rect width="${this.svg.iconPixels}" height="${this.svg.iconPixels}" x="${this.svg.xpx}" y="${this.svg.ypx}"
 //				<rect width="${this.svg.iconPixels}px" height="${this.svg.iconPixels}px" x="${this.svg.cx - this.svg.iconPixels/2}" y="${(this.svg.cy - this.svg.iconPixels)*1.8}"
 //					style="stroke-width:10;stroke:${this.alternateColor};fill:none"></rect>
@@ -1295,7 +1312,18 @@ class EntityIconTool extends BaseTool {
 		
 		//var iconSvg = null;
 		
-		if (!this.iconSvg) this.iconSvg = this._parent.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot.querySelectorAll("*")[0]?.path;
+		if (!this.iconSvg) {
+			this.iconSvg = this._parent.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot.querySelectorAll("*")[0]?.path;
+			if (!this.iconSvg) {
+				this._parent.pleaseReRender();
+//				if (!this.iconTimeoutPending) {
+//					this.iconTimeoutPending = true;
+//					setTimeout(
+//							() => this._iconSvgTimeout(),
+//							100);
+//				} else {
+			}
+		}
 		
 //width="${this.svg.iconSize}em" height="${this.svg.iconSize}em"
 //x="${this.svg.cx}" y="${this.svg.cy}
@@ -1306,25 +1334,40 @@ class EntityIconTool extends BaseTool {
 // 						<svg preserveAspectRatio="xMidYMid meet" focusable="false">
 //				</svg>
 
-		var scale = this.svg.iconPixels / 24;
+		//var scale = this.svg.iconPixels / 24;
+
+
+// Scaling experiment:
+// 						<path d="${this.iconSvg}" fill="red" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"
+
+		var scale = 1;
 		
 		if ((this._parent.isSafari) || (this._parent.iOS)) {	
 			if (this.iconSvg) {
-				this.svg.x1 = this.svg.x - this.svg.iconPixels / 2;
-				this.svg.y1 = this.svg.y - this.svg.iconPixels*0.9;
+				// Use original size, not the corrected one!
+				this.svg.iconSize = this.config.icon_size ? this.config.icon_size : 2;
+				this.svg.iconPixels = Utils.calculateSvgDimension(this.svg.iconSize);
+
+				this.svg.x1 = this.svg.cx - this.svg.iconPixels / 2;
+				this.svg.y1 = this.svg.cy - this.svg.iconPixels / 2;
+				this.svg.x1 = this.svg.cx - (this.svg.iconPixels * 0.5);
+				this.svg.y1 = this.svg.cy - (this.svg.iconPixels * 0.5);
+
+				scale = this.svg.iconPixels / 24;
+				// Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required to position the icon on its desired location.
+				// Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
 				return svg`
-					<g id="icon-${this.toolId}"  style="${configStyleStr}" transform-origin="${this.svg.cx} ${this.svg.cy}">
-						<rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}" width="${this.svg.iconPixels}" stroke="yellow" stroke-width="2" opacity="0%"></rect>
-						<path d="${this.iconSvg}" fill="red" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"
-						></path>
+					<g id="icon-${this.toolId}"  style="${configStyleStr}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
+						<rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke="yellow" stroke-width="0px" opacity="50%" fill="none"></rect>
+						<path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
 					<g>
 				`;
 			} else {
 				return svg`
-					<foreignObject width="${this.svg.iconSize}em" height="${this.svg.iconSize}em" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="visible">
+					<foreignObject width="0px" height="0px" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="visible">
 						<body>
 							<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
-									style="line-height:${this.svg.iconSize}em;position:relative;border-style:solid;border-width:0;border-color:${this.alternateColor};">
+									style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
 									<ha-icon icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}";></ha-icon>
 							</div>
 						</body>
@@ -1333,15 +1376,32 @@ class EntityIconTool extends BaseTool {
 			}
 		} else {				
 			return svg`
-				<foreignObject width="${this.svg.iconSize}em" height="${this.svg.iconSize}em" x="${this.svg.xpx}" y="${this.svg.ypx}"
-												transform-origin="${this.svg.xpx + 12}px ${this.svg.ypx + 13.3}px">
+				<foreignObject width="${this.svg.iconPixels}px" height="${this.svg.iconPixels}px" x="${this.svg.xpx}" y="${this.svg.ypx}"
+												>
 					<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
-								style="line-height:${this.svg.iconSize}em;border-style:solid;border-width:0;border-color:${this.alternateColor};">
-						<ha-icon icon=${icon} id="icon-${this.toolId}"  style="${configStyleStr}"></ha-icon>
+								style="line-height:${this.svg.iconPixels}px;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
+						<ha-icon icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}"></ha-icon>
 					</div>
 				</foreignObject>
 				`;		
 		}
+
+	// Check for foreignObject set to 0 height in first run on iOS etc.
+/*
+			} else {
+				return svg`
+					<foreignObject width="${this.svg.iconPixels}px" height="${this.svg.iconPixels}px" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="visible">
+						<body>
+							<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
+									style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
+									<ha-icon icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}";></ha-icon>
+							</div>
+						</body>
+					</foreignObject>
+					`;
+			}
+*/
+	
 //  Was in ha-icon icon style="${configStyleStr}"
 
 /* Remove rectangle around icon...
@@ -2982,7 +3042,9 @@ toAngle: 25.200000000000003
 					tween.fromAngle = arcEndPrev;
 					tween.toAngle = arcEnd;
 					tween.runningAngle = arcEndPrev;
-					tween.duration = Math.min(Math.max(500, this._initialDraw ? 500 : this.config.animation.duration * 1000), 5000);
+					// Render like an idiot the first time. Performs MUCH better @first load then having a zillion animations...
+					// NOt so heavy on an average PC, but my iPad and iPhone need some more time for this!
+					tween.duration = Math.min(Math.max(this._initialDraw ? 10 : 500, this._initialDraw ? 10 : this.config.animation.duration * 1000), 5000);
 					tween.startTime = null;
 					if (this.debug) console.log('RENDERNEW - tween', this.toolId, tween);
 					this._initialDraw = false;
@@ -3773,8 +3835,22 @@ class devSwissArmyKnifeCard extends LitElement {
 
 			@keyframes spin {
 				100% {
-					-webkit-transform: rotate(360deg);
+					-webkit-transform: -webkit-rotate(360deg);
 					transform: rotate(360deg);
+				}
+			}
+
+			@-webkit-keyframes spin {
+				100% {
+					-webkit-transform: -webkit-rotate(360deg);
+					transform: rotate(360deg);
+				}
+			}
+
+			@keyframes spin-stop {
+				100% {
+					-webkit-transform: -webkit-rotate(0deg);
+					transform: rotate(0deg);
 				}
 			}
 
@@ -4412,11 +4488,11 @@ class devSwissArmyKnifeCard extends LitElement {
       
 			// Fix crash while set hass not yet called, and thus no access to entities!
 				this.updateOnInterval();
-				// #TODO
+				// #TODO, modify to total interval
 				// Use fast interval at start, and normal interval after that, if _hass is defined...
 				this.interval = setInterval(
 					() => this.updateOnInterval(),
-					this._hass ? this.update_interval * 1000 : 1000,
+					this._hass ? this.update_interval * 1000 : 2000,
 				);
 			}
 //		}
@@ -4425,7 +4501,7 @@ class devSwissArmyKnifeCard extends LitElement {
 		//var pathh = this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path
 		//console.log("connectedcallback ICON TESTING pathh", pathh, this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*"));
 
-		this.requestUpdate();
+		//this.requestUpdate();
   }
 
  /*******************************************************************************
@@ -4568,8 +4644,23 @@ class devSwissArmyKnifeCard extends LitElement {
 */
   }
 
+/*******************************************************************************
+	* card::pleaseReRender()
+	*
+	*/
 
+	pleaseReRender() {
+		
+		this._reRender = true;
+	}
 
+	_reRenderTimeout() {
+		this._reRenderPending = false;
+		this._reRender = false;
+		this.requestUpdate();
+		console.log("_reRenderTimeout CALLED", this.cardId, new Date().getTime());
+	}
+	
  /*******************************************************************************
 	* card::render()
 	*
@@ -4601,6 +4692,8 @@ class devSwissArmyKnifeCard extends LitElement {
 			return;
 		}
 
+		// NEW for rerendering icons and stuff
+		this._reRender = false;
 
 //		var pathh = this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path
 //		if (this.debug) console.log("render ICON TESTING pathh", this.cardId, new Date().getSeconds().toString() + '.'+ new Date().getMilliseconds().toString(), pathh, this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*"));
@@ -4636,13 +4729,28 @@ class devSwissArmyKnifeCard extends LitElement {
 		var flash = this.shadowRoot.getElementById("flash")?.shadowRoot;
 		if (flash) {flash.onload = this.iconOnLoad(); }
 */		
-    return html`
+
+		var myHtml = 
+    html`
       <ha-card>
 				<div class="container" id="container">
 					${this._renderSvg()}
 				</div>
       </ha-card>
     `;
+		
+		// All cards have rendered, check if one of them needs another update in some time...
+		
+		if (this._reRender) {
+			if (!this._reRenderPending) {
+				this._reRenderPending = true;
+				setTimeout(
+						() => this._reRenderTimeout(),
+						16*16);
+			}
+		}
+		
+		return myHtml;
 
 /*
     return html`
@@ -5512,16 +5620,15 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
 		}
 
 		// now push data into object...
-		if (entity.type == 'hbars') {
-			this.hbars[entity.idx].data = [...theData];
-		}
+//		if (entity.type == 'hbars') {
+//			this.hbars[entity.idx].data = [...theData];
+//		}
 
-		if (entity.type == "vbars") {
-			this.vbars[entity.idx].data = [...theData];
-		}
+//		if (entity.type == "vbars") {
+//			this.vbars[entity.idx].data = [...theData];
+//		}
 
-		// 2019.10.10
-		// deze eruit om de tweede render binnen 16msec te achterhalen. Is dat deze soms??
+		// Request a rerender of the card after receiving new data
 		this.requestUpdate();
 
   }
