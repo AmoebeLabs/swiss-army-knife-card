@@ -103,7 +103,7 @@ class Utils {
 class Templates {
 	
  /*******************************************************************************
-	* replaceVariables()
+	* Templates::replaceVariables()
 	*
 	* Summary.
 	*	A toolset defines a template. This template is found and passed as argToolsetTemplate.
@@ -155,7 +155,6 @@ class BaseTool {
 		this._parent = argParent;
 		
 		this.debug = this._parent.config.debug;
-		console.log('BaseTool - debug', this.debug);
 		
 		// The position is the absolute position of the GROUP within the svg viewport.
 		// The tool is positioned relative to this origin. A tool is always relative
@@ -177,6 +176,8 @@ class BaseTool {
 		this.svg = {};
 		this.svg.x = (this.coords.cx) - (this.dimensions.width / 2);
 		this.svg.y = (this.coords.cy) - (this.dimensions.height / 2);
+		this.svg.cx = (this.coords.cx);
+		this.svg.cy = (this.coords.cy);
 		
 		// Group scaling experiment. Calc translate values for SVG using the toolset scale value
 		let scalex = this.coords.cx * this.toolsetPos.scale;
@@ -188,7 +189,7 @@ class BaseTool {
 	}
 
  /*******************************************************************************
-	* set value()
+	* BaseTool::set value()
 	*
 	* Summary.
 	*	Receive new state data for the entity this circle is linked to. Called from set hass();
@@ -399,25 +400,6 @@ class RangeSliderTool extends BaseTool {
     }
   }
 
-/*
-  updatePathOld(argThis, m) {
-    if (this.config.orientation == 'horizontal') {
-			this.d = this.curvedPath(m.x, this.svg.y + this.dimensions.handle.popout / 2, this.deformation, this._value);
-			this.elements.path.setAttributeNS(null, "d", this.d);
-
-			this.elements.thumb.setAttributeNS(null, "r", 1 + this._value / 3);
-			this.elements.thumb.setAttributeNS(null, "cx", m.x);
-		} else if (this.config.orientation == 'vertical') {
-			this.d = this.curvedPath(m.x + this.dimensions.handle.popout / 2, this.svg.y, this.deformation, this._value);
-			this.elements.path.setAttributeNS(null, "d", this.d);
-			this.elements.thumb.setAttributeNS(null, "r", 1 + this._value / 3);
-			this.elements.thumb.setAttributeNS(null, "cy", m.y);
-		}
-		
-    this.updateLabel(m);
-    this.updateInput(m);
-  }
-*/
   updatePath(argThis, m) {
     // HORIZONTAL
 		if (argThis.config.orientation == 'horizontal') {
@@ -440,28 +422,6 @@ class RangeSliderTool extends BaseTool {
     argThis.updateInput(m);
   }
 
-/*
-  updateLabel2(m) {
-    if (this.config.orientation == 'horizontal') {
-			this.elements.label.setAttributeNS(
-				null,
-				"transform",
-				`translate(${m.x}, ${this.svg.y + this.dimensions.handle.popout / 1 - this._value}) scale(2)`
-			);
-
-			this.elements.text.textContent = Math.round(this.svgToValue(m));
-			
-		} else if (this.config.orientation == 'vertical') {
-			this.elements.label.setAttributeNS(
-				null,
-				"transform",
-				`translate(${this.svg.x + this.dimensions.handle.popout / 1 - this._value}, ${m.y}) scale(2)`
-			);
-
-			this.elements.text.textContent = Math.round(this.svgToValue(m));
-		}
-  }
-*/  
   updateLabel(argThis, m) {
     if (this.debug) console.log('SLIDER - updateLabel start', m, argThis.config.orientation);
 		if (argThis.config.orientation == 'horizontal') {
@@ -473,17 +433,8 @@ class RangeSliderTool extends BaseTool {
 				"transform",
 				`translate(${m.x - this.dimensions.handle.width/2},${argThis.svg.y /*- argThis.dimensions.handle.popout/100*/ - argThis._value}) scale(1)`
 			);
-/*
-			argThis.elements.label.setAttributeNS(
-				null,
-				"transform",
-				`translate(${m.x - 30},${argThis.svg.y - argThis.dimensions.handle.popout / 100 - argThis._value}) scale(2)`
-			);
-*/
 			argThis.elements.text.textContent = Math.round(argThis.svgToValue(argThis, m));
 			if (this.debug) console.log('SLIDER - updateLabel horizontal', m, argThis.svgToValue(argThis, m));
-			
-//			argThis.elements.text.textContent = Math.round(argThis.svgToValue(m));
 			
 		} else if (argThis.config.orientation == 'vertical') {
 			argThis.elements.label.setAttributeNS(
@@ -568,17 +519,9 @@ class RangeSliderTool extends BaseTool {
 		else if (this.config.orientation == 'vertical') {
 			// Coordinates are clipped between the bottom and top of the slider, svg.y1 and svg.y2
 
-/*
-			var D = { cy: Math.max(this.svg.y2, Math.min(argY, 									this.svg.y1)), cx: argX - argPopout, r: 1 };
-			var B = { cy: Math.max(this.svg.y2, Math.min(D.cy - argDeform, 			this.svg.y1)), cx: argX, 				r: 1 };
-			var F = { cy: Math.max(this.svg.y2, Math.min(D.cy + argDeform, 			this.svg.y1)), cx: argX,					r: 1 };
-			var A = { cy: Math.max(this.svg.y2, Math.min(D.cy - 2 * argDeform,	this.svg.y1)), cx: argX, 				r: 1 };
-			var G = { cy: Math.max(this.svg.y2, Math.min(D.cy + 2 * argDeform, 	this.svg.y1)), cx: argX, 				r: 1 };
-*/
-
 			var D = { cy: Math.max(this.svg.y1, Math.min(argY, 									this.svg.y2)), cx: argX - argPopout, r: 1 };
-			var B = { cy: Math.max(this.svg.y1, Math.min(D.cy - 1 * argDeform, 			this.svg.y2)), cx: argX, 				r: 1 };
-			var F = { cy: Math.max(this.svg.y1, Math.min(D.cy + 1 * argDeform, 			this.svg.y2)), cx: argX,					r: 1 };
+			var B = { cy: Math.max(this.svg.y1, Math.min(D.cy - 1 * argDeform, 	this.svg.y2)), cx: argX, 				r: 1 };
+			var F = { cy: Math.max(this.svg.y1, Math.min(D.cy + 1 * argDeform, 	this.svg.y2)), cx: argX,					r: 1 };
 			var A = { cy: Math.max(this.svg.y1, Math.min(D.cy - 2 * argDeform, 	this.svg.y2)), cx: argX, 				r: 1 };
 			var G = { cy: Math.max(this.svg.y1, Math.min(D.cy + 2 * argDeform, 	this.svg.y2)), cx: argX, 				r: 1 };
 
@@ -594,21 +537,6 @@ class RangeSliderTool extends BaseTool {
 			//T = 50;
 			//V = 50;
 		}
-/*
-    if (this.config.orientation == 'horizontal') {
-			var D = { cx: Math.max(20, Math.min(X, 200)), cy: Y - defY, r: 1 };
-			var B = { cx: Math.max(20, Math.min(D.cx - defX, 100)), cy: Y, r: 1 };
-			var F = { cx: Math.max(20, Math.min(D.cx + defX, 100)), cy: Y, r: 1 };
-			var A = { cx: Math.max(20, Math.min(D.cx - 2 * defX, 100)), cy: Y, r: 1 };
-			var G = { cx: Math.max(20, Math.min(D.cx + 2 * defX, 100)), cy: Y, r: 1 };
-		} else if (this.config.orientation == 'vertical') {
-			var D = { cy: Math.max(20, Math.min(X, 200)), cy: Y - defY, r: 1 };
-			var B = { cy: Math.max(20, Math.min(D.cy - defX, 100)), cy: Y, r: 1 };
-			var F = { cy: Math.max(20, Math.min(D.cy + defX, 100)), cy: Y, r: 1 };
-			var A = { cy: Math.max(20, Math.min(D.cy - 2 * defX, 100)), cy: Y, r: 1 };
-			var G = { cy: Math.max(20, Math.min(D.cy + 2 * defX, 100)), cy: Y, r: 1 };
-		}
-*/
 		let C = this.interpolatePoint(B, D, 1, 2);
 		C.r = 1;
 		let E = this.interpolatePoint(D, F, 1, 2);
@@ -726,7 +654,7 @@ class RangeSliderTool extends BaseTool {
 	}
 
 /*******************************************************************************
-	* set value()
+	* RangeSliderTool::value()
 	*
 	* Summary.
 	*	Receive new state data for the entity this rangeslider is linked to. Called from set hass();
@@ -750,7 +678,7 @@ class RangeSliderTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* _renderRangeSlider()
+	* RangeSliderTool::_renderRangeSlider()
 	*
 	* Summary.
 	*	Renders the range slider
@@ -844,7 +772,7 @@ class RangeSliderTool extends BaseTool {
 	}	
 
  /*******************************************************************************
-	* render()
+	* RangeSliderTool::render()
 	*
 	* Summary.
 	*	The render() function for this object.
@@ -940,7 +868,7 @@ class LineTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* _renderLine()
+	* LineTool::_renderLine()
 	*
 	* Summary.
 	*	Renders the line using precalculated coordinates and dimensions.
@@ -954,12 +882,15 @@ class LineTool extends BaseTool {
 		let configStyle = {...this.config.styles};
 		
 		// Get the runtime styles, caused by states & animation settings
+/*
 		let stateStyle = {};
 		if (this._parent.animations.lines[this.config.animation_id])
 			stateStyle = Object.assign(stateStyle, this._parent.animations.lines[this.config.animation_id]);
+*/
 
 		// Merge the two, where the runtime styles may overwrite the statically configured styles
-		configStyle = { ...configStyle, ...stateStyle};
+		//configStyle = { ...configStyle, ...stateStyle};
+		configStyle = { ...configStyle, ...this.animationStyle};
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
@@ -976,7 +907,7 @@ class LineTool extends BaseTool {
 	}	
 
  /*******************************************************************************
-	* render()
+	* LineTool::render()
 	*
 	* Summary.
 	*	The render() function for this object.
@@ -1029,7 +960,7 @@ class CircleTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* set value()
+	* CircleTool::value()
 	*
 	* Summary.
 	*	Receive new state data for the entity this circle is linked to. Called from set hass();
@@ -1038,64 +969,11 @@ class CircleTool extends BaseTool {
 	set value(state) {
 		var changed = super.value = state;
 
-		console.log('circletool, animation, set value', state);
-		
-
-/*
-		if (this._stateValue?.toLowerCase() == state.toLowerCase()) return false;
-		
-		this._stateValuePrev = this._stateValue || state;
-		this._stateValue = state;
-		this._stateValueIsDirty = true;
-
-		// If animations defined, calculate style for current state.
-
-		var isMatch = false;
-		if (this.config.animations) Object.keys(this.config.animations).map(animation => {
-			const entityIndex = this.config.entity_index;
-			console.log('circletool, animation', this.config.animations, animation, entityIndex);
-			var item = this.config.animations[animation];
-			
-			// Assume equals operator if not defined...
-			var operator = item.operator ? item.operator : "=";
-			switch(operator) {
-				case "=":
-					isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
-					break;
-				case "!=":
-					isMatch = this._stateValue.toLowerCase() != item.state.toLowerCase();
-					break;
-				case ">":
-					isMatch = this._stateValue.toLowerCase() > item.state.toLowerCase();
-					break;
-				case "<":
-					isMatch = this._stateValue.toLowerCase() < item.state.toLowerCase();
-					break;
-				case ">=":
-					isMatch = this._stateValue.toLowerCase() >= item.state.toLowerCase();
-					break;
-				case "<=":
-					isMatch = this._stateValue.toLowerCase() <= item.state.toLowerCase();
-					break;
-				default:
-					// Unknown operator. Just do nothing and return;
-					isMatch = false;
-			}
-			// if animation state not equals sensor state, return... Nothing to animate for this state...
-			//if (this._stateValue.toLowerCase() != item.state.toLowerCase()) return;			
-			if (!isMatch) return true;
-			
-			if (!this.animationStyle || !item.reuse) this.animationStyle = {};
-			this.animationStyle = Object.assign(this.animationStyle, ...item.styles);
-		});
-		
-		return true;
-*/
 		return changed;
 	}
 
  /*******************************************************************************
-	* _renderCircle()
+	* CircleTool::_renderCircle()
 	*
 	* Summary.
 	*	Renders the circle using precalculated coordinates and dimensions.
@@ -1128,7 +1006,7 @@ class CircleTool extends BaseTool {
 	}	
 
  /*******************************************************************************
-	* render()
+	* CircleTool::render()
 	*
 	* Summary.
 	*	The render() function for this object.
@@ -1183,7 +1061,7 @@ class EllipseTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* _renderEllipse()
+	* EllipseTool::_renderEllipse()
 	*
 	* Summary.
 	*	Renders the ellipse using precalculated coordinates and dimensions.
@@ -1218,7 +1096,7 @@ class EllipseTool extends BaseTool {
 	}	
 
  /*******************************************************************************
-	* render()
+	* EllipseTool::render()
 	*
 	* Summary.
 	*	The render() function for this object.
@@ -1316,7 +1194,7 @@ class EntityIconTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* _()
+	* EntityIconTool::_renderIcon()
 	*
 	* Summary.
 	*	Renders the icon using precalculated coordinates and dimensions.
@@ -1411,17 +1289,62 @@ class EntityIconTool extends BaseTool {
 		// to get the Safari client coordiantes. Already used for clicks in slider, so use also for this stuff to place icon not on svg coordinates, but xlated to client coords??
 		// Or are these the whole screen, and not the card size coordinates????
 		
+		//console.log("ICON NAME", icon);
+		
+		// NOTE: .icon changed to icon. Why has this worked?????
+		
+		//var iconSvg = null;
+		
+		if (!this.iconSvg) this.iconSvg = this._parent.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot.querySelectorAll("*")[0]?.path;
+		
+//width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em"
+//x="${this.coords.cx}" y="${this.coords.cy}
+
+//				<svg viewbox="0, 0, 24, 24" preserveAspectRatio="xMidYMid meet" focusable="false" x="-200" height="50%"
+// 						<rect x="0" y="0" width="100%" height="100%" fill="none" stroke="yellow" stroke-width="5" x="${this.coords.xpx}" y="${this.coords.ypx}"></rect>
+
+// 						<svg preserveAspectRatio="xMidYMid meet" focusable="false">
+//				</svg>
+
+		var scale = this.dimensions.iconPixels / 24;
+		
 		if ((this._parent.isSafari) || (this._parent.iOS)) {	
-			return svg`
-				<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}" overflow="visible">
-					<body>
-						<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
-								style="line-height:${this.dimensions.iconSize}em;position:relative;border-style:solid;border-width:0;border-color:${this.alternateColor};">
-								<ha-icon .icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}";></ha-icon>
-						</div>
-					</body>
-				</foreignObject>
+			if (this.iconSvg) {
+				this.svg.x1 = this.svg.x - this.dimensions.iconPixels / 2;
+				this.svg.y1 = this.svg.y - this.dimensions.iconPixels*0.9;
+				return svg`
+					<g id="icon-${this.toolId}"  style="${configStyleStr}" transform-origin="${this.svg.cx} ${this.svg.cy}">
+						<rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.dimensions.iconPixels}" width="${this.dimensions.iconPixels}" stroke="yellow" stroke-width="2" opacity="0%"></rect>
+						<path d="${this.iconSvg}" fill="red" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"
+						></path>
+					<g>
 				`;
+			} else {
+				return svg`
+					<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}" overflow="visible">
+						<body>
+							<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
+									style="line-height:${this.dimensions.iconSize}em;position:relative;border-style:solid;border-width:0;border-color:${this.alternateColor};">
+									<ha-icon icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}";></ha-icon>
+							</div>
+						</body>
+					</foreignObject>
+					`;
+			}
+		} else {				
+			return svg`
+				<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}"
+												transform-origin="${this.coords.xpx + 12}px ${this.coords.ypx + 13.3}px">
+					<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
+								style="line-height:${this.dimensions.iconSize}em;border-style:solid;border-width:0;border-color:${this.alternateColor};">
+						<ha-icon icon=${icon} id="icon-${this.toolId}"  style="${configStyleStr}"></ha-icon>
+					</div>
+				</foreignObject>
+				`;		
+		}
+//  Was in ha-icon icon style="${configStyleStr}"
+
+/* Remove rectangle around icon...
 		} else {				
 			return svg`
 				<rect width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}"
@@ -1429,13 +1352,12 @@ class EntityIconTool extends BaseTool {
 				<foreignObject width="${this.dimensions.iconSize}em" height="${this.dimensions.iconSize}em" x="${this.coords.xpx}" y="${this.coords.ypx}">
 					<div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
 								style="line-height:${this.dimensions.iconSize}em;border-style:solid;border-width:0;border-color:${this.alternateColor};">
-						<ha-icon .icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}"></ha-icon>
+						<ha-icon icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}"></ha-icon>
 					</div>
 				</foreignObject>
 				`;		
 		}
-
-
+*/
 /*
 		return svg`
 		<g @click=${e => this.handlePopup(e, this._parent.entities[this.config.entity_index])}>
@@ -1453,42 +1375,11 @@ class EntityIconTool extends BaseTool {
 
 	firstUpdated(changedProperties) {
 
-/*
-		if (!this.elements) this.elements = {};
-		this.elements.haIcon = this._parent.shadowRoot.getElementById("icon-".concat(this.toolId));
-		console.log("firstupdated - haicon", this.elements.haIcon);
 
-		var ele = this.elements.haIcon.shadowRoot.childNodes;
-		console.log("firstupdated - haicon ele", ele, ele.length);
-		
-		ele.map((node, index) => {
-			console.log("firstupdated, haicon, node", node, index);
-		});
-		for (node of ele) {
-			console.log("firstupdated, haicon, node loop", node);
-		}
-		
-//	ele = [...this.elements.haIcon.shadowRoot.childNodes].indexOf(element);
-		
-    this.elements.haSvgIcon = this.elements.haIcon.querySelector("ha-svg-icon");
-		var shadow = this.elements.haSvgIcon.shadowRoot;
-		console.log("firstupdated - haicon/shadow", shadow);
-		
-		console.log("firstupdated - haicon/svgIcon1", this.elements.haSvgIcon);
-    this.elements.haSvgIcon = this.elements.haIcon.querySelector("ha-svg-icon");
-		console.log("firstupdated - haicon/svgIcon2", this.elements.haSvgIcon);
-
-    this.elements.svg = this.elements.haSvgIcon.shadowRoot.querySelector("svg");
-		console.log("firstupdated - haicon/svg/svg", this.elements.svg);
-		
-		// The inspector shows: ha-icon id=, shadow-root, ha-svg-icon, shadow-root, svg, path.
-		// Or can we use the svg use keyword??????
-
-		console.log("ICON - firstUpdated - elements", this.elements);
-	*/}
+	}
 	
  /*******************************************************************************
-	* render()
+	* EntityIconTool::render()
 	*
 	* Summary.
 	*	The render() function for this object.
@@ -1579,8 +1470,6 @@ class BadgeTool extends BaseTool {
 		if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
 		this.config.show = {...DEFAULT_BADGE_CONFIG.show, ...this.config.show};
 		
-//		this._badge = {};
-		
 		// Coordinates from left and right part.
 		this.svg.radius = 5;
 		this.svg.leftXpos = this.svg.x;
@@ -1597,7 +1486,7 @@ class BadgeTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* _renderBadge()
+	* BadgeTool::_renderBadge()
 	*
 	* Summary.
 	*	Renders the badge using precalculated coordinates and dimensions.
@@ -1654,7 +1543,7 @@ class BadgeTool extends BaseTool {
 	}	
 
  /*******************************************************************************
-	* render()
+	* BadgeTool::render()
 	*
 	* Summary.
 	*	The render() function for this object.
@@ -1709,68 +1598,7 @@ class EntityStateTool extends BaseTool {
 
 		var changed = super.value = state;
 
-/*
-		if (this._stateValue == state) return false;
-		
-		this._stateValuePrev = this._stateValue || state;
-		this._stateValue = state;
-		this._stateValueIsDirty = true;
-		return true;
-*/
-		console.log('EntityStateTool, animation, set value', state);
-/*
-		if (this._stateValue?.toLowerCase() == state.toLowerCase()) return false;
-		
-		this._stateValuePrev = this._stateValue || state;
-		this._stateValue = state;
-		this._stateValueIsDirty = true;
-
-		// If animations defined, calculate style for current state.
-
-		var isMatch = false;
-		if (this.config.animations) Object.keys(this.config.animations).map(animation => {
-			const entityIndex = this.config.entity_index;
-			console.log('EntityStateTool, animation', this.config.animations, animation, entityIndex);
-			var item = this.config.animations[animation];
-			
-			// Assume quals operator if not defined...
-			var operator = item.operator ? item.operator : "=";
-			switch(operator) {
-				case "=":
-					isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
-					break;
-				case "!=":
-					isMatch = this._stateValue.toLowerCase() != item.state.toLowerCase();
-					break;
-				case ">":
-					isMatch = Number(this._stateValue.toLowerCase()) > Number(item.state.toLowerCase());
-					break;
-				case "<":
-					isMatch = Number(this._stateValue.toLowerCase()) < Number(item.state.toLowerCase());
-					break;
-				case ">=":
-					isMatch = Number(this._stateValue.toLowerCase()) >= Number(item.state.toLowerCase());
-					break;
-				case "<=":
-					isMatch = Number(this._stateValue.toLowerCase()) <= Number(item.state.toLowerCase());
-					break;
-				default:
-					// Unknown operator. Just do nothing and return;
-					isMatch = false;
-			}
-			// if animation state not equals sensor state, return... Nothing to animate for this state...
-			//if (this._stateValue.toLowerCase() != item.state.toLowerCase()) return;			
-			console.log('EntityStateTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
-			if (!isMatch) return true;
-			
-			if (!this.animationStyle || !item.reuse) this.animationStyle = {};
-			this.animationStyle = Object.assign(this.animationStyle, ...item.styles);
-		});
-		
-		return true;
-*/
 		return changed;
-
 	}
 	
 	render() {
@@ -1912,7 +1740,7 @@ class EntityNameTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* _renderEntityName()
+	* EntityNameTool::_renderEntityName()
 	*
 	* Summary.
 	*	Renders the entity name using precalculated coordinates and dimensions.
@@ -1935,13 +1763,7 @@ class EntityNameTool extends BaseTool {
 		//if (item.styles) configStyle = Object.assign(configStyle, ...item.styles);
 		if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
 		
-		// Get the runtime styles, caused by states & animation settings
-		//let stateStyle = {};
-		//if (this._parent.animations.names[this.config.index])
-		//	stateStyle = Object.assign(stateStyle, this._parent.animations.names[this.config.index]);
-
 		// Merge the two, where the runtime styles may overwrite the statically configured styles
-		//configStyle = { ...configStyle, ...stateStyle};
 		configStyle = { ...configStyle, ...this.animationStyle};
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
@@ -1957,7 +1779,7 @@ class EntityNameTool extends BaseTool {
 	}	
 
  /*******************************************************************************
-	* render()
+	* EntityNameTool::render()
 	*
 	* Summary.
 	*	The render() function for this object.
@@ -2010,7 +1832,7 @@ class EntityAreaTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* _renderEntityArea()
+	* EntityAreaTool::_renderEntityArea()
 	*
 	* Summary.
 	*	Renders the entity area using precalculated coordinates and dimensions.
@@ -2033,13 +1855,7 @@ class EntityAreaTool extends BaseTool {
 		//if (item.styles) configStyle = Object.assign(configStyle, ...item.styles);
 		if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
 		
-		// Get the runtime styles, caused by states & animation settings
-		//let stateStyle = {};
-		//if (this._parent.animations.areas[this.config.index])
-		//	stateStyle = Object.assign(stateStyle, this._parent.animations.areas[this.config.index]);
-
 		// Merge the two, where the runtime styles may overwrite the statically configured styles
-		//configStyle = { ...configStyle, ...stateStyle};
 		configStyle = { ...configStyle, ...this.animationStyle};
 		
 		// Convert javascript records to plain text, without "{}" and "," between the styles.
@@ -2055,7 +1871,7 @@ class EntityAreaTool extends BaseTool {
 	}	
 
  /*******************************************************************************
-	* render()
+	* EntityAreaTool::render()
 	*
 	* Summary.
 	*	The render() function for this object.
@@ -2178,8 +1994,7 @@ class HorseshoeTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* HorseshoeTool.
-	*	- set value()
+	* HorseshoeTool::value()
 	*
 	* Summary.
 	*	Sets the value of the horseshoe. Value updated via set hass().
@@ -2256,7 +2071,7 @@ class HorseshoeTool extends BaseTool {
 	}
 
 /*******************************************************************************
-	* renderTickMarks()
+	* HorseshoeTool::_renderTickMarks()
 	*
 	* Summary.
 	* Renders the tick marks on the scale.
@@ -2313,7 +2128,7 @@ class HorseshoeTool extends BaseTool {
 	}
 
 /*******************************************************************************
-	* _renderHorseShoe()
+	* HorseshoeTool::_renderHorseShoe()
 	*
 	* Summary.
 	* Renders the horseshoe group.
@@ -2380,7 +2195,7 @@ class HorseshoeTool extends BaseTool {
 */
   }
  /*******************************************************************************
-	* render()
+	* HorseshoeTool::render()
 	*
 	* Summary.
 	*	The render() function for this object.
@@ -2457,7 +2272,7 @@ class SparkleBarChartTool extends BaseTool {
 	}
 	
  /*******************************************************************************
-	* computeMinMax()
+	* SparkleBarChartTool::computeMinMax()
 	*
 	* Summary.
 	*	Compute min/max values of bars to scale them to the maximum amount.
@@ -2477,7 +2292,7 @@ class SparkleBarChartTool extends BaseTool {
 	}	
 
  /*******************************************************************************
-	* set series
+	* SparkleBarChartTool::set series
 	*
 	* Summary.
 	*	Sets the timeseries for the barchart tool. Is an array of states.
@@ -2502,7 +2317,7 @@ class SparkleBarChartTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* computeBars()
+	* SparkleBarChartTool::computeBars()
 	*
 	* Summary.
 	*	Compute start and end of bars for easy rendering.
@@ -2540,7 +2355,7 @@ class SparkleBarChartTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* _renderBars()
+	* SparkleBarChartTool::_renderBars()
 	*
 	* Summary.
 	*	Render all the bars. Number of bars depend on hours and barhours settings.
@@ -2579,7 +2394,7 @@ class SparkleBarChartTool extends BaseTool {
 	}
 
  /*******************************************************************************
-	* render()
+	* SparkleBarChartTool::render()
 	*
 	* Summary.
 	*	The actual render() function called by the card for each tool.
@@ -3392,7 +3207,7 @@ toAngle: 25.200000000000003
 
 							if (!increase) {
 								if (runningSegmentPrev != runningSegment) {
-									if (this.debug) console.log('movit - remove path', thisTool.toolId, runningSegmentPrev);
+									if (thisTool.debug) console.log('movit - remove path', thisTool.toolId, runningSegmentPrev);
 									if (thisTool._arc.clockwise) {
 										as.removeAttribute("d");
 										thisTool._cache[runningSegmentPrev] = null;
@@ -3584,8 +3399,8 @@ class devSwissArmyKnifeCard extends LitElement {
 		this.attributesStr = [];
 		this.viewBoxSize = SVG_VIEW_BOX;
 		this.viewBox = {"width": SVG_VIEW_BOX, "height": SVG_VIEW_BOX};
-		//this.colorStops = {};
-    this.animations = {};
+
+/*    this.animations = {};
     this.animations.lines = {};
     this.animations.vlines = {};
     this.animations.hlines = {};
@@ -3598,7 +3413,7 @@ class devSwissArmyKnifeCard extends LitElement {
 		
 		this.vbars = [];
 		this.rects = [];
-
+*/
 		// Create the lists for the toolsets and the tools
 		// - toolsets contain a list of toolsets with tools
 		// - tools contain the full list of tools!
@@ -3644,7 +3459,7 @@ class devSwissArmyKnifeCard extends LitElement {
   }
 */	
  /*******************************************************************************
-	* styles()
+	* card::styles()
 	*
 	* Summary.
 	*	Returns the static CSS styles for the lit-element
@@ -3952,6 +3767,12 @@ class devSwissArmyKnifeCard extends LitElement {
 				}
 			}
 
+			@keyframes spin {
+				100% {
+					-webkit-transform: rotate(360deg);
+					transform: rotate(360deg);
+				}
+			}
 
 			@media screen and (min-width: 467px) {
 			  :host {
@@ -4209,7 +4030,7 @@ class devSwissArmyKnifeCard extends LitElement {
   }
 
  /*******************************************************************************
-	* hass()
+	* card::set hass()
 	*
 	* Summary.
 	*	Updates hass data for the card
@@ -4250,7 +4071,7 @@ class devSwissArmyKnifeCard extends LitElement {
 						entityHasChanged = true;
 					}
 					attrSet = true;
-					console.log("set hass - attrSet=true", newStateStr);
+					if (this.debug) console.log("set hass - attrSet=true", this.cardId, new Date().getSeconds().toString() + '.'+ new Date().getMilliseconds().toString(), newStateStr);
 				}
 			}
 			if (!attrSet) {
@@ -4259,26 +4080,15 @@ class devSwissArmyKnifeCard extends LitElement {
 					this.entitiesStr[index] = newStateStr;
 					entityHasChanged = true;
 				}
-				console.log("set hass - attrSet=false", newStateStr);
+				if (this.debug) console.log("set hass - attrSet=false", this.cardId, new Date().getSeconds().toString() + '.'+ new Date().getMilliseconds().toString(), newStateStr);
 			}
 			
 			index++;
 			attrSet = false;
 		}
 
-		if (this.connected) {
-			if (this.update_interval) {
-      
-			// Fix crash while set hass not yet called, and thus no access to entities!
-				this.updateOnInterval();
-				this.interval = setInterval(
-					() => this.updateOnInterval(),
-					this.update_interval * 1000,
-				);
-			}
-		}
-
-
+		// #TODO
+		// Temp disable this check, as in: don't return...
 		if (!entityHasChanged) {
 			return;
 		}
@@ -4310,49 +4120,6 @@ class devSwissArmyKnifeCard extends LitElement {
 		//	- tool.setValue(argValue / argState);
 		//	- tool.setSeries(argSeries); // for history data bar charts
 		//
-		if (this.config.animations) Object.keys(this.config.animations).map(animation => {
-      const entityIndex = animation.substr(Number(animation.indexOf('.') + 1));
-      this.config.animations[animation].map(item => {
-        // if animation state not equals sensor state, return... Nothing to animate for this state...
-				if (this.entities[entityIndex].state.toLowerCase() != item.state.toLowerCase()) return;
-        
-        if (item.vlines) {
-          item.vlines.map(item2 => {
-            if (!this.animations.vlines[item2.animation_id] || !item2.reuse) this.animations.vlines[item2.animation_id] = {};
-            this.animations.vlines[item2.animation_id] = Object.assign(this.animations.vlines[item2.animation_id], ...item2.styles);
-          })
-        }
-        
-        if (item.hlines) {
-          item.hlines.map(item2 => {
-            if (!this.animations.hlines[item2.animation_id] || !item2.reuse) this.animations.hlines[item2.animation_id] = {};
-            this.animations.hlines[item2.animation_id] = Object.assign(this.animations.hlines[item2.animation_id], ...item2.styles);
-          })
-        }
-
-        if (item.circles) {
-          item.circles.map(item2 => {
-            if (!this.animations.circles[item2.animation_id]  || !item2.reuse) this.animations.circles[item2.animation_id] = {};
-            this.animations.circles[item2.animation_id] = Object.assign(this.animations.circles[item2.animation_id], ...item2.styles);
-          })
-        }
-
-        if (item.icons) {
-          item.icons.map(item2 => {
-            if (!this.animations.icons[item2.animation_id] || !item2.reuse) this.animations.icons[item2.animation_id] = {};
-            this.animations.icons[item2.animation_id] = Object.assign(this.animations.icons[item2.animation_id], ...item2.styles);
-          })
-        }
-
-        if (item.states) {
-          item.states.map(item2 => {
-            if (!this.animations.states[item2.animation_id] || !item2.reuse) this.animations.states[item2.animation_id] = {};
-            this.animations.states[item2.animation_id] = Object.assign(this.animations.states[item2.animation_id], ...item2.styles);
-          })
-        }
-        
-      });
-    });
 		
 		// NOTE:
 		// Tool knows via this.config if entity_index and animation_index are specified.
@@ -4381,11 +4148,11 @@ class devSwissArmyKnifeCard extends LitElement {
 		
 		// For now, always force update to render the card if any of the states or attributes have changed...
     if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
-		this.requestUpdate();
+		//this.requestUpdate();
   }
 
  /*******************************************************************************
-	* setConfig()
+	* card::setConfig()
 	*
 	* Summary.
 	*	Sets/Updates the card configuration. Rarely called if the doc is right 
@@ -4396,6 +4163,8 @@ class devSwissArmyKnifeCard extends LitElement {
 		if (this.debug) console.log('*****Event - setConfig', this.cardId, new Date().getTime());
 		config = JSON.parse(JSON.stringify(config))
 
+		this.debug = config.debug ? config.debug : false;
+		
 		if (this.debug) console.log('setConfig', this.cardId);
 
 		const aspectRatios = new Map([
@@ -4452,7 +4221,6 @@ class devSwissArmyKnifeCard extends LitElement {
 		
 		if (config.dimensions) this.dimensions = config.dimensions;
 		this.viewBox = aspectRatios.get(this.dimensions);
-		console.log("Set Config dimensions viewbox", this.dimensions, this.viewBox);
 
 		
     if (!config.entities) {
@@ -4612,29 +4380,6 @@ class devSwissArmyKnifeCard extends LitElement {
 		});
 		console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
 		
-/*		if (this.config.layout.toolsets) {
-if (this.debug) console.log('config layout toolsets FCFG', this.config);
-if (this.debug) console.log('config layout toolsets', this.config.layout.toolsets);
-			this.config.layout.toolsets.map(toolset => {
-
-				if (toolset.tools) {
-					toolset.tools.map(poep => {
-						var argConfig = {...poep};
-						if (this.debug) console.log('argConfig', toolset, argConfig);
-
-						var argPos = { cx: toolset.position.cx / 100 * SVG_DEFAULT_DIMENSIONS,
-													 cy: toolset.position.cy / 100 * SVG_DEFAULT_DIMENSIONS,
-													 scale: toolset.position.scale ? toolset.position.scale : 1 };
-
-						const newTool = new toolsNew[poep.tool](this, argConfig, argPos);
-						this.tools.push({type: poep.tool, index: poep.id, tool: newTool});
-					});
-				}
-
-			});
-			
-		}
-*/			
 	// Template test. 2020.09.30
 	// Seems to work...
 	if (this.config.templates) {
@@ -4648,7 +4393,7 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 	}
 
  /*******************************************************************************
-	* connectedCallback()
+	* card::connectedCallback()
 	*
 	* Summary.
 	*
@@ -4658,23 +4403,29 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 		this.connected = true;
     super.connectedCallback();
 		
-		if (this._hass) {
+//		if (this._hass) {
 			if (this.update_interval) {
       
 			// Fix crash while set hass not yet called, and thus no access to entities!
 				this.updateOnInterval();
+				// #TODO
+				// Use fast interval at start, and normal interval after that, if _hass is defined...
 				this.interval = setInterval(
 					() => this.updateOnInterval(),
-					this.update_interval * 1000,
+					this._hass ? this.update_interval * 1000 : 1000,
 				);
 			}
-		}
+//		}
 		if (this.debug) console.log('ConnectedCallback', this.cardId);
+		
+		//var pathh = this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path
+		//console.log("connectedcallback ICON TESTING pathh", pathh, this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*"));
+
 		this.requestUpdate();
   }
 
  /*******************************************************************************
-	* disconnectedCallback()
+	* card::disconnectedCallback()
 	*
 	* Summary.
 	*
@@ -4690,19 +4441,19 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
   }
 
  /*******************************************************************************
-	* firstUpdated()
+	* card::firstUpdated()
 	*
 	* Summary.
 	*
 	*/
   firstUpdated(changedProperties) {
 
-		/*if (this.debug)*/ console.log('*****Event - firstUpdated', this.cardId, new Date().getTime());
+		if (this.debug) console.log('*****Event - firstUpdated', this.cardId, new Date().getTime());
 
 		if (this.tools) {
 			this.tools.map((item, index) => {
 				
-				console.log("firstupdated, calling item/index", item, index);
+				//console.log("firstupdated, calling item/index", item, index);
 				if (item.type == "segarc") {
 					if (this.debug) console.log('firstUpdated - calling SegmentedArcTool firstUpdated');
 					item.tool.firstUpdated(changedProperties);
@@ -4718,7 +4469,7 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 				if (item.type == "icon") {
 					if (this.debug) console.log('firstUpdated - calling Icon firstUpdated');
 					item.tool.firstUpdated(changedProperties);
-					console.log("called firstupdated on icon tool");
+					//console.log("called firstupdated on icon tool");
 					//this.tools[index].firstUpdated(changedProperties);
 				}
 
@@ -4726,6 +4477,57 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 			});
 		}
 
+		// ICON TEST #HERE
+		//
+		// 2020.10.22 Can't get into the shadowRoot of the icons.lock/flash elements... No childnodes, nothing.
+//	temp2.shadowRoot.querySelectorAll("*")[0].path
+// "M7,2V13H10V22L17,10H13L17,2H7Z"
+/*
+		this.icons = {};
+		this.icons.lock = this.shadowRoot.getElementById("lock");
+		this.icons.flash = this.shadowRoot.getElementById("flash");
+		console.log("ICON TESTING 1", this.icons.lock);
+
+		var nodelist = this.icons.flash.shadowRoot.querySelectorAll("*");
+		var pathh = this.shadowRoot.getElementById("flash").shadowRoot.querySelectorAll("*")[0]?.path
+		console.log("ICON TESTING pathh", pathh);
+
+		var hasvgicon = nodeList[0]
+		var svgPath = this.shadowRoot.getElementById("lock").shadowRoot.querySelector("ha-svg-icon")?.path;
+		console.log("ICON TESTING", svgPath);
+
+		var testPath = this.shadowRoot.getElementById("lock").shadowRoot.querySelector("svg")?.path;
+		console.log("ICON TESTING testpath", testPath, this.shadowRoot.getElementById("lock").shadowRoot);
+
+		var nextpath = this.shadowRoot.getElementById("lock").shadowRoot.querySelector("path");
+		console.log("ICON TESTING nextpath", nextpath);
+		
+		var mypath = this.shadowRoot.querySelector("ha-icon")?.shadowRoot.querySelector("svg");
+		console.log("ICON TESTING mypath", mypath);
+		
+		var shadow = this.icons.lock.shadowRoot;
+		console.log("ICON TESTING 2", shadow);
+		var hsi = this.icons.lock.shadowRoot.querySelector("ha-svg-icon");
+		var svg = this.icons.lock.shadowRoot.querySelector("svg");
+		console.log("ICON TESTING 3", hsi, svg);
+
+		var classname = shadow?.getElementsByClassName("ha-svg-icon");
+		console.log("ICON TESTING 4", classname);
+*/		
+/*
+		this.icons.lock.svg = this.icons.lock.shadowRoot.querySelector("*");
+		var ele = {};
+		var childNodes = [];
+		//var ele = array.from(this.icons.lock.shadowRoot.querySelectorAll());
+		//var childNodes = Array.from(this.icons.flash.shadowRoot.childNodes);
+		var classname = {};
+		//classname = this.icons.lock.shadowRoot.getElementsByClassName("ha-svg-icon");
+
+		this.icons.lock.shadow = this.shadowRoot.getElementById("lock").shadowRoot;
+		this.icons.lock.svg = this.shadowRoot.getElementById("lock").shadowRoot.shadowRoot;
+		
+		console.log("ICON TESTING", this.icons.lock, this.icons.flash, this.icons.lock.shadowRoot, this.icons.lock.shadow, this.icons.lock.svg, ele, childNodes, classname);
+*/
 /*		
 		if (this.tools[4].type == "slider") {
 			this.tools[4].tool.firstUpdated(changedProperties);
@@ -4736,12 +4538,13 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 */
 		// Force rerender after first update.
 		// Seems to be required to render the icons correctly on iOS / Safari devices.
- 		this.requestUpdate();
+		// #TODO, check requestupdates stuff
+ 		//this.requestUpdate();
 	}
 
 
  /*******************************************************************************
-	* updated()
+	* card::updated()
 	*
 	* Summary.
 	*
@@ -4764,16 +4567,28 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 
 
  /*******************************************************************************
-	* render()
+	* card::render()
 	*
 	* Summary.
 	* Renders the complete SVG based card according to the specified layout in which
 	* the user can specify name, area, entities, lines and dots.
 	* The horseshoe is rendered on the full card. This one can be moved a bit via CSS.
 	*
+	*
+	* render ICON TESTING pathh lzwzmegla undefined undefined
+	* render ICON TESTING pathh lzwzmegla undefined NodeList [ha-svg-icon]
+	* render ICON TESTING pathh lzwzmegla M7,2V13H10V22L17,10H13L17,2H7Z NodeList [ha-svg-icon]
 	*/
+  iconOnLoad(e, iconName) {
+		console.log("icononload", this.cardId, e, iconName);
 
-  render({ config } = this) {
+		var pathh = this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path
+		console.log("in icononload, icon testing, pathh", this.cardId, pathh, this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*"),
+		this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path);
+	}
+	
+//  render({ config } = this) {
+  render() {
 
 		if (this.debug) console.log('*****Event - render', this.cardId, new Date().getTime());
 
@@ -4782,6 +4597,41 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 			return;
 		}
 
+
+//		var pathh = this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path
+//		if (this.debug) console.log("render ICON TESTING pathh", this.cardId, new Date().getSeconds().toString() + '.'+ new Date().getMilliseconds().toString(), pathh, this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*"));
+		
+//		if (!pathh) {
+//			if (true || !this.iconInterval) {
+//				this.iconInterval = true;
+//				setTimeout(
+//						() => this.requestUpdate(),
+//						100);
+/*				this.iconInterval = setInterval(
+						() => this.requestUpdate(),
+						1000);
+*/
+//				if (this.debug) console.log("render icon testing, setting interval", this.iconInterval);
+//			}
+//		} else {
+/*
+			clearInterval(this.interval);
+			if (this.debug) console.log("render icon testing, clearing interval", this.iconInterval);
+			if (this.iconInterval) {
+				clearInterval(this.interval);
+				this.iconInterval = null;
+			}
+*/
+//			if (this.debug) console.log("render icon testing, clearing interval", this.iconInterval);
+//			this.iconInterval = false;
+//		}
+				
+/*
+		this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path);
+
+		var flash = this.shadowRoot.getElementById("flash")?.shadowRoot;
+		if (flash) {flash.onload = this.iconOnLoad(); }
+*/		
     return html`
       <ha-card>
 				<div class="container" id="container">
@@ -4790,8 +4640,31 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
       </ha-card>
     `;
 
-		// #TODO The svg style part must move to rendering horseshoetool I guess
+/*
     return html`
+      <ha-card>
+				<div class="container" id="container">
+						<div class="icon">
+								<ha-icon id="flash" icon="mdi:flash"></ha-icon>
+								<ha-icon id="lockk" icon="mdi:lock-outline"></ha-icon>
+								<ha-svg-icon icon="mdi:lock-outline" id="lock">	
+									<svg preserveAspectRatio="xMidYMid meet" focusable="false" viewBox="0 0 24 24">
+										<g>
+										<path d="M12,17C10.89,17 10,16.1 10,15C10,13.89 10.89,13 12,13A2,2 0 0,1 14,15A2,2 0 0,1 12,17M18,20V10H6V20H18M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V10C4,8.89 4.89,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"></path>
+										</g>
+									</svg>
+								</ha-svg-icon>
+						</div>
+				
+					${this._renderSvg()}
+				</div>
+      </ha-card>
+    `;
+*/
+
+		// #TODO The svg style part must move to rendering horseshoetool I guess
+		
+/*    return html`
       <ha-card
       >
 				<div class="container" id="container">
@@ -4806,6 +4679,7 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 			</svg>
       </ha-card>
     `;
+*/
   }
 
 /*      <ha-card
@@ -4867,11 +4741,12 @@ if (this.debug) console.log('config layout toolsets', this.config.layout.toolset
 
 if (this.debug) console.log('all the tools in renderTools', this.tools);
 
+// 							${this._renderIcons()}
+
 						
 		return svg`
 						<g id="datatoolset" class="datatoolset">
 							${this.tools.map(tool => tool.tool.render())}
-							${this._renderIcons()}
 							${this._renderUserSvgs()}
 						</g>
 
@@ -5065,113 +4940,6 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
 		if (this.config.debug) if (this.debug) console.log('debug - _renderUserSvgs OUT', svgItems);
 		return svg`${svgItems}`;		
 	}
-
-/*******************************************************************************
-	* _renderIcon()
-	*
-	* Summary.
-	* Renders a single icon.
-	*
-	*/
-
-	_renderIconOLD(item) {
-
-	if (!item) return;
-
-  item.entity = item.entity ? item.entity : 0;
-  
-	// get icon size, and calculate the foreignObject position and size. This must match the icon size
-	// 1em = FONT_SIZE pixels, so we can calculate the icon size, and x/y positions of the foreignObject
-	// the viewport is 200x200, so we can calulate the offset.
-	//
-	// NOTE:
-	// Safari doesn't use the svg viewport for rendering of the foreignObject, but the real clientsize.
-	// So positioning an icon doesn't work correctly...
-	
-	var iconSize = item.icon_size ? item.icon_size : 2;
-	var iconPixels = iconSize * FONT_SIZE;
-	const x = item.cx ? item.cx / 100 : 0.5;
-	const y = item.cy ? item.cy / 100 : 0.5;
-	
-	const align = item.align ? item.align : 'center';
-	const adjust = (align == 'center' ? 0.5 : (align == 'start' ? -1 : +1));
-
-//	const parentClientWidth = this.parentElement.clientWidth;
-	const clientWidth = this.clientWidth; // hard coded adjust for padding...
-	const correction = clientWidth / this.viewBox.width;
-
-	var xpx = (x * this.viewBox.width);
-	var ypx = (y * this.viewBox.height);
-
-	
-	if ((this.isSafari) || (this.iOS)) {
-		iconSize = iconSize * correction;
-
-		xpx = (xpx * correction) - (iconPixels * adjust * correction);
-		ypx = (ypx * correction) - (iconPixels * 0.5 * correction) - (iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
-	} else {
-		// Get x,y in viewbox dimensions and center with half of size of icon.
-		// Adjust horizontal for aligning. Can be 1, 0.5 and -1
-		// Adjust vertical for half of height... and correct for 0.25em textfont to align.
-		xpx = xpx - (iconPixels * adjust);
-		ypx = ypx - (iconPixels * 0.5) - (iconPixels * 0.25);
-	}
-
-  // Get configuration styles as the default styles
-  let configStyle = {};
-//  if (item.styles) configStyle = Object.assign(configStyle, ...item.styles);
-  if (item.styles) configStyle = {...configStyle, ...item.styles};
-  
-  // Get the runtime styles, caused by states & animation settings
-  let stateStyle = {};
-  if (this.animations.icons[item.animation_id])
-    stateStyle = Object.assign(stateStyle, this.animations.icons[item.animation_id]);
-
-  // Merge the two, where the runtime styles may overwrite the statically configured styles
-  configStyle = { ...configStyle, ...stateStyle};
-  
-  // Convert javascript records to plain text, without "{}" and "," between the styles.
-  const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-
-  const icon = this._buildIcon(this.entities[item.entity_index], this.config.entities[item.entity_index]);
-	
-	return svg`
-	<g @click=${e => this.handlePopup(e, this.entities[item.entity_index])}>
-		<foreignObject width="${iconSize}em" height="${iconSize}em" x="${xpx}" y="${ypx}">
-			<body>
-				<div class="icon">
-					<ha-icon .icon=${icon} style="--mdc-icon-size:100%;align-self:center;${configStyleStr}";></ha-icon>
-				</div>
-			</body>
-		</foreignObject>
-		<g>
-		`;
-	}
-
-/*******************************************************************************
-	* _renderIcons()
-	*
-	* Summary.
-	* Renders all the icons in the list.
-	*
-	*/
-	
-  _renderIcons() {
-    const {
-      layout,
-    } = this.config;
-
-		if (!layout) return;
-		if (!layout.icons) return;		
-		
-		const svgItems = layout.icons.map(item => {
-			return svg`
-					${this._renderIcon(item)}
-				`;
-		})
-
-		return svg`${svgItems}`;	
-  }
 
 /*******************************************************************************
 	* _handleClick()
@@ -5508,9 +5276,16 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
 	}
 	
   updateOnInterval() {
-		//return;
+		// Only update if hass is already set, this might be not the case the first few calls...
+		if (!this._hass) {
+			console.log("UpdateOnInterval - NO hass, returning");
+			return;
+		}
     if (this.stateChanged && !this.updating) {
-      this.stateChanged = false;
+      
+			// 2020.10.24
+			// Leave true, as multiple entities can be fetched. fetch every 5 minutes...
+			//this.stateChanged = false;
       this.updateData();
     }
   }
@@ -5551,6 +5326,7 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
 		});
 		console.log('updateData, entityList from tools', entityList);
 		
+/*
 		if (this.vbars.length > 0) {
 			this.vbars.map((item, i) => {
 				const end = new Date();
@@ -5562,7 +5338,7 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
 				j++;
 			});
 		}
-
+*/
 		// if (this.config.layout.vbars) {
 			// this.config.layout.vbars.map((item, i) => {
 				// const end = new Date();
@@ -5574,6 +5350,8 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
 				// j++;
 			// });
 		// }
+
+/*
 		if (this.config.layout.hbars) {
 			this.config.layout.hbars.map((item, i) => {
 				const end = new Date();
@@ -5585,7 +5363,7 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
 				j++;
 			});
 		}
-		
+*/		
 		// const end = new Date();
 		// const start = new Date();
     // start.setHours(end.getHours() - 24);
@@ -5598,6 +5376,10 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
       await Promise.all(promise);
     } finally {
       this.updating = false;
+			
+			// 2020.10.24
+			// why not updating? Should call here??
+			//this.requestUpdate();
     }
 	}
 	async updateEntity(entity, index, initStart, end) {
