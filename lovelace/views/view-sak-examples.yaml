@@ -3523,9 +3523,19 @@ cards:
                       max: 100
                     show:
                       scale: true
+                      style: 'colorstops'
                     segments:
-                      dash: 90
-                      gap: 1
+                      # colorstops:
+                        # template: colorstops_temperature_inside
+                        # variables:
+                          # - thegap: 3
+                      # dash: 90
+                      # gap: 1
+                      colorstops:
+                        template:
+                          name: colorstops_humidity
+                          variables:
+                            - thegap: 0
                     styles:
                       fill: var(--theme-gradient-color-01);
                     styles_bg:
@@ -3561,7 +3571,7 @@ cards:
                     width: 80
                     height: 25
                     hours: 24
-                    barhours: 2
+                    barhours: 1
                     styles:
                       stroke: var(--theme-gradient-color-01);
                       stroke-linecap: butt;
@@ -3635,9 +3645,15 @@ cards:
                       max: 100
                     show:
                       scale: true
+                      style: colorstops
                     segments:
-                      dash: 90
-                      gap: 1
+                      # dash: 90
+                      # gap: 1
+                      colorstops:
+                        template:
+                          name: colorstops_humidity
+                          variables:
+                            - thegap: 0
                     styles:
                       fill: var(--theme-gradient-color-01);
                     styles_bg:
@@ -3809,9 +3825,15 @@ cards:
                       max: 100
                     show:
                       scale: true
+                      style: colorstops
                     segments:
-                      dash: 90
-                      gap: 1
+                      # dash: 90
+                      # gap: 1
+                      colorstops:
+                        template:
+                          name: colorstops_humidity
+                          variables:
+                            - thegap: 0
                     styles:
                       fill: var(--theme-gradient-color-01);
                     styles_bg:
@@ -3868,9 +3890,15 @@ cards:
                       max: 25
                     show:
                       scale: true
+                      style: 'colorstops'
                     segments:
-                      dash: 18
-                      gap: 1
+                      # dash: 18
+                      # gap: 1
+                      colorstops:
+                        template:
+                          name: colorstops_temperature_inside
+                          variables:
+                            - thegap: 1
                     styles:
                       fill: var(--theme-gradient-color-03);
                     styles_bg:
@@ -4181,83 +4209,83 @@ cards:
           
           dimensions: 2/1
 
-          templatess:
-            - type: tools
-              name: tools-segarc-icon-state
-              tools:
+          # templatess:
+            # - type: tools
+              # name: tools-segarc-icon-state
+              # tools:
               
-            - type: colorstops
-              name: colorstops-lux
-              colorstops:
-                colors:
-                  0: 'grey'
-                  50: 'var(--theme-gradient-color-01)'
-                  75: 'var(--theme-gradient-color-02)'
-                  100: 'var(--theme-gradient-color-03)'
-                  125: 'var(--theme-gradient-color-04)'
-                  150: 'var(--theme-gradient-color-05)'
-                  175: 'var(--theme-gradient-color-06)'
-            - type: colorstops
-              name: colorstops-pressure
-              colorstops:
-                colors:
-                  980: 'lightgrey'
-                  990: 'var(--theme-gradient-color-01)'
-                  1020: 'var(--theme-gradient-color-05)'
+            # - type: colorstops
+              # name: colorstops-lux
+              # colorstops:
+                # colors:
+                  # 0: 'grey'
+                  # 50: 'var(--theme-gradient-color-01)'
+                  # 75: 'var(--theme-gradient-color-02)'
+                  # 100: 'var(--theme-gradient-color-03)'
+                  # 125: 'var(--theme-gradient-color-04)'
+                  # 150: 'var(--theme-gradient-color-05)'
+                  # 175: 'var(--theme-gradient-color-06)'
+            # - type: colorstops
+              # name: colorstops-pressure
+              # colorstops:
+                # colors:
+                  # 980: 'lightgrey'
+                  # 990: 'var(--theme-gradient-color-01)'
+                  # 1020: 'var(--theme-gradient-color-05)'
              
-          templates:
-            - template: segarc-icon-state
-              defaults: 
-                - entity: 0
-                - show_scale: false
-              tools:
-                - type: segarc
-                  id: 0
-                  entity_index: '[[entity]]'
-                  cx: 50
-                  cy: 50
-                  start_angle: 0
-                  end_angle: 360
-                  width: 5
-                  radius: 25
-                  scale:
-                    min: 0
-                    max: 100
-                  show:
-                    scale: '[[show_scale]]'
-                    style: 'colorlist'
-                  segments:
-                    #dash: 360
-                    gap: 1
-                    colorlist:
-                      gap: 1
-                      colors:
-                        - 'var(--theme-gradient-color-01)'
-                  animation:
-                    duration: 5
-                  styles:
-                    fill: var(--theme-gradient-color-01);
-                  styles_bg:
-                    fill: var(--primary-background-color);
+          # templates:
+            # - template: segarc-icon-state
+              # defaults: 
+                # - entity: 0
+                # - show_scale: false
+              # tools:
+                # - type: segarc
+                  # id: 0
+                  # entity_index: '[[entity]]'
+                  # cx: 50
+                  # cy: 50
+                  # start_angle: 0
+                  # end_angle: 360
+                  # width: 5
+                  # radius: 25
+                  # scale:
+                    # min: 0
+                    # max: 100
+                  # show:
+                    # scale: '[[show_scale]]'
+                    # style: 'colorlist'
+                  # segments:
+                    # #dash: 360
+                    # gap: 1
+                    # colorlist:
+                      # gap: 1
+                      # colors:
+                        # - 'var(--theme-gradient-color-01)'
+                  # animation:
+                    # duration: 5
+                  # styles:
+                    # fill: var(--theme-gradient-color-01);
+                  # styles_bg:
+                    # fill: var(--primary-background-color);
 
-                - type: icon
-                  id: 1
-                  entity_index: '[[entity]]'
-                  cx: 50
-                  cy: 42
-                  align: center
-                  icon_size: 15
+                # - type: icon
+                  # id: 1
+                  # entity_index: '[[entity]]'
+                  # cx: 50
+                  # cy: 42
+                  # align: center
+                  # icon_size: 15
 
-                - type: state
-                  id: 2
-                  entity_index: '[[entity]]'
-                  cx: 50
-                  cy: 60
-                  styles:
-                    text-anchor: center;
-                    font-size: 1.7em;
-                    color: var(--theme-gradient-color-01);
-                    fill: var(--theme-gradient-color-01);
+                # - type: state
+                  # id: 2
+                  # entity_index: '[[entity]]'
+                  # cx: 50
+                  # cy: 60
+                  # styles:
+                    # text-anchor: center;
+                    # font-size: 1.7em;
+                    # color: var(--theme-gradient-color-01);
+                    # fill: var(--theme-gradient-color-01);
 
           layout:
             toolsets:
@@ -4302,18 +4330,34 @@ cards:
               # ==============================================================================
 
               - toolset: humi
-                template: segarc-icon-state
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 0
+                    - show_scale: false
                 position:
                   cx: 25
                   cy: 50
                   scale: 1
-                variables:
-                  - entity: 0
-                  - show_scale: false
-
                 tools:
-                 - type: icon
-                   id: 1
+                  - type: segarc
+                    id: 0
+                    show:
+                      style: 'colorstops'
+                      scale: false
+                    scale:
+                      min: 0
+                      max: 100
+                    segments:
+                      colorstops:
+                        template:
+                          name: colorstops_humidity
+                          variables:
+                            - thegap: 1
+
+                # tools:
+                 # - type: icon
+                   # id: 1
 
               # ==============================================================================
               - toolset: areatoolset
@@ -4333,14 +4377,15 @@ cards:
               
               # ==============================================================================
               - toolset: temp
-                template: segarc-icon-state
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 1
+                    - show_scale: true
                 position:
                   cx: 72.50
                   cy: 25
                   scale: 1
-                variables:
-                  - entity: 1
-                  - show_scale: true
                 tools:
                   - type: segarc
                     id: 0
@@ -4352,26 +4397,31 @@ cards:
                       max: 23
                     segments:
                       colorstops:
-                        gap: 1
+                        template:
+                          name: colorstops_temperature_inside
+                          variables:
+                            - thegap: 3
+                        # gap: 1
                         # arc can be 'followcolorstop', or 'followvalue'
-                        colors:
-                          17: 'PowderBlue'
-                          19: 'var(--theme-gradient-color-01)'
-                          21: 'var(--theme-gradient-color-04)'
+                        # colors:
+                          # 17: 'PowderBlue'
+                          # 19: 'var(--theme-gradient-color-01)'
+                          # 21: 'var(--theme-gradient-color-04)'
                   - id: 2
                     styles:
                       font-size: 1.4em;
 
               # ==============================================================================
               - toolset: pressure
-                template: segarc-icon-state
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 2
+                    - show_scale: true
                 position:
                   cx: 127.50
                   cy: 25
                   scale: 1
-                variables:
-                  - entity: 2
-                  - show_scale: true
                 tools:
                   - type: segarc
                     id: 0
@@ -4395,14 +4445,15 @@ cards:
 
               # ==============================================================================
               - toolset: lux
-                template: segarc-icon-state
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 3
+                    - show_scale: false
                 position:
                   cx: 175
                   cy: 50
                   scale: 1
-                variables:
-                  - entity: 3
-                  - show_scale: false
                 tools:
                   - type: segarc
                     id: 0
@@ -4416,7 +4467,7 @@ cards:
                       colorstops:
                         gap: 0
                         # Can we use template colorstop lists? For easy re-use??
-                        template: colorstops-lux
+                        # template: colorstops-lux
                         colors:
                           0: 'var(--theme-gradient-color-09)'
                           25: 'var(--theme-gradient-color-07)'
@@ -4470,58 +4521,58 @@ cards:
           
           dimensions: 2/1
 
-          templates:
-            - template: segarc-icon-state
-              defaults: 
-                - entity: 0
-                - show_scale: false
-              tools:
-                - type: segarc
-                  id: 0
-                  entity_index: '[[entity]]'
-                  cx: 50
-                  cy: 50
-                  start_angle: 0
-                  end_angle: 360
-                  width: 5
-                  radius: 25
-                  scale:
-                    min: 0
-                    max: 100
-                  show:
-                    scale: '[[show_scale]]'
-                    style: 'colorlist'
-                  segments:
-                    #dash: 360
-                    gap: 1
-                    colorlist:
-                      gap: 1
-                      colors:
-                        - 'var(--theme-gradient-color-01)'
-                  animation:
-                    duration: 5
-                  styles:
-                    fill: var(--theme-gradient-color-01);
-                  styles_bg:
-                    fill: var(--primary-background-color);
+          # templates:
+            # - template: segarc-icon-state
+              # defaults: 
+                # - entity: 0
+                # - show_scale: false
+              # tools:
+                # - type: segarc
+                  # id: 0
+                  # entity_index: '[[entity]]'
+                  # cx: 50
+                  # cy: 50
+                  # start_angle: 0
+                  # end_angle: 360
+                  # width: 5
+                  # radius: 25
+                  # scale:
+                    # min: 0
+                    # max: 100
+                  # show:
+                    # scale: '[[show_scale]]'
+                    # style: 'colorlist'
+                  # segments:
+                    # #dash: 360
+                    # gap: 1
+                    # colorlist:
+                      # gap: 1
+                      # colors:
+                        # - 'var(--theme-gradient-color-01)'
+                  # animation:
+                    # duration: 5
+                  # styles:
+                    # fill: var(--theme-gradient-color-01);
+                  # styles_bg:
+                    # fill: var(--primary-background-color);
 
-                - type: icon
-                  id: 1
-                  entity_index: '[[entity]]'
-                  cx: 50
-                  cy: 42
-                  align: center
-                  icon_size: 15
+                # - type: icon
+                  # id: 1
+                  # entity_index: '[[entity]]'
+                  # cx: 50
+                  # cy: 42
+                  # align: center
+                  # icon_size: 15
 
-                - type: state
-                  id: 2
-                  entity_index: '[[entity]]'
-                  cx: 50
-                  cy: 60
-                  styles:
-                    text-anchor: center;
-                    font-size: 1.7em;
-                    color: var(--theme-gradient-color-01);
+                # - type: state
+                  # id: 2
+                  # entity_index: '[[entity]]'
+                  # cx: 50
+                  # cy: 60
+                  # styles:
+                    # text-anchor: center;
+                    # font-size: 1.7em;
+                    # color: var(--theme-gradient-color-01);
 
           layout:
             toolsets:
@@ -4567,14 +4618,15 @@ cards:
               # ==============================================================================
 
               - toolset: memory
-                template: segarc-icon-state
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 0
+                    - show_scale: false
                 position:
                   cx: 25
                   cy: 50
                   scale: 1
-                variables:
-                  - entity: 0
-                  - show_scale: false
 
                 tools:
                  - type: icon
@@ -4598,14 +4650,15 @@ cards:
               
               # ==============================================================================
               - toolset: disc
-                template: segarc-icon-state
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 1
+                    - show_scale: true
                 position:
                   cx: 72.50
                   cy: 25
                   scale: 1
-                variables:
-                  - entity: 1
-                  - show_scale: true
                 tools:
                   - type: segarc
                     id: 0
@@ -4625,14 +4678,15 @@ cards:
 
               # ==============================================================================
               - toolset: cpu
-                template: segarc-icon-state
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 2
+                    - show_scale: true
                 position:
                   cx: 127.50
                   cy: 25
                   scale: 1
-                variables:
-                  - entity: 2
-                  - show_scale: true
                 tools:
                   - type: segarc
                     id: 0
@@ -4658,14 +4712,15 @@ cards:
 
               # ==============================================================================
               - toolset: load1m
-                template: segarc-icon-state
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 3
+                    - show_scale: false
                 position:
                   cx: 175
                   cy: 50
                   scale: 1
-                variables:
-                  - entity: 3
-                  - show_scale: false
                 tools:
                   - type: segarc
                     id: 0
@@ -5059,3 +5114,83 @@ cards:
 
         ##- !include card-blank-card.yaml
 
+    - type: horizontal-stack
+      cards:
+        - type: custom:decluttering-card
+          template: sak_arc180_sparklinebar24_template
+          variables:
+            - entity: studyf_iaq_humidity
+            - name: Study Front
+            - decimals: 0
+            - scale_min: 0
+            - scale_max: 100
+        - type: custom:decluttering-card
+          template: sak_arc180_sparklinebar24_template
+          variables:
+            - entity: kitchen_iaq_humidity
+            - name: Kitchen
+            - decimals: 0
+            - scale_min: 0
+            - scale_max: 100
+        - type: custom:decluttering-card
+          template: sak_arc180_sparklinebar24_template
+          variables:
+            - entity: livingroom_iaq_humidity
+            - name: Living
+            - decimals: 0
+            - scale_min: 0
+            - scale_max: 100
+
+    - type: horizontal-stack
+      cards:
+        - type: custom:decluttering-card
+          template: sak_arc180_sparklinebar24_template_tpl
+          variables:
+            - entity: studyf_iaq_humidity
+            - name: Study Front
+            - decimals: 0
+            - scale_min: 0
+            - scale_max: 100
+        - type: custom:decluttering-card
+          template: sak_arc180_sparklinebar24_template_tpl
+          variables:
+            - entity: kitchen_iaq_humidity
+            - name: Kitchen
+            - decimals: 0
+            - scale_min: 0
+            - scale_max: 100
+        - type: custom:decluttering-card
+          template: sak_arc180_sparklinebar24_template_tpl
+          variables:
+            - entity: livingroom_iaq_humidity
+            - name: Living
+            - decimals: 0
+            - scale_min: 0
+            - scale_max: 100
+
+    - type: horizontal-stack
+      cards:
+        - type: custom:decluttering-card
+          template: sak_arc180_sparklinebar24_template_tpl
+          variables:
+            - entity: studym_iaq_humidity
+            - name: Study Back
+            - decimals: 0
+            - scale_min: 0
+            - scale_max: 100
+        - type: custom:decluttering-card
+          template: sak_arc180_sparklinebar24_template_tpl
+          variables:
+            - entity: bathroom_iaq_humidity
+            - name: Bathroom
+            - decimals: 0
+            - scale_min: 0
+            - scale_max: 100
+        - type: custom:decluttering-card
+          template: sak_arc180_sparklinebar24_template_tpl
+          variables:
+            - entity: bedroom_iaq_humidity
+            - name: Bedroom
+            - decimals: 0
+            - scale_min: 0
+            - scale_max: 100
