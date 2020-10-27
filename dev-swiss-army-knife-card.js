@@ -142,6 +142,38 @@ class Templates {
 		});
 		return JSON.parse(jsonConfig);		
 	}
+
+	static replaceVariables2(argVariables, argTemplate) {
+
+		if (!argVariables && !argTemplate.defaults) {
+			return argTemplate;
+		}
+		let variableArray = argVariables?.slice(0) ?? [];
+		
+		if (argTemplate.defaults) {
+			variableArray = variableArray.concat(argTemplate.defaults);
+			console.log('template', argTemplate.defaults, variableArray);
+		}
+		
+		let jsonConfig = JSON.stringify(argTemplate[argTemplate.type]);
+		variableArray.forEach(variable => {
+			const key = Object.keys(variable)[0];
+			const value = Object.values(variable)[0];
+			if (typeof value === 'number' || typeof value === 'boolean') {
+				const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
+				jsonConfig = jsonConfig.replace(rxp2, value);
+			}
+			if (typeof value === 'object') {
+				const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
+				const valueString = JSON.stringify(value);
+				jsonConfig = jsonConfig.replace(rxp2, valueString);
+			} else {
+				const rxp = new RegExp(`\\[\\[${key}\\]\\]`, 'gm');
+				jsonConfig = jsonConfig.replace(rxp, value);
+			}
+		});
+		return JSON.parse(jsonConfig);		
+	}
 	
 }
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -151,8 +183,10 @@ class Templates {
 class BaseTool {
 	constructor(argParent, argConfig, argPos) {
 
+
 		this.toolId = Math.random().toString(36).substr(2, 9);
 		this._parent = argParent;
+		//console.time("--> "+ this.toolId + " PERFORMANCE BaseTool::constructor");
 		
 		this.debug = this._parent.config.debug;
 		
@@ -186,6 +220,9 @@ class BaseTool {
 		let diffy = this.svg.cy - scaley;
 		this.svg.xlateX = diffx / this.toolsetPos.scale;
 		this.svg.xlateY = diffy / this.toolsetPos.scale;		
+
+		//console.timeEnd("--> "+ this.toolId + " PERFORMANCE BaseTool::constructor");
+
 	}
 
  /*******************************************************************************
@@ -2520,9 +2557,14 @@ class SegmentedArcTool extends BaseTool {
 			animation: {"duration": 1.5 },
 		}	
 
+
 		super(argParent, argConfig, argPos);
-		this.config = {...DEFAULT_SEGARC_CONFIG};
-		this.config = {...this.config, ...argConfig};
+
+		console.time("--> "+ this.toolId + " PERFORMANCE SegmentedArcTool::constructor");
+
+		//this.config = {...DEFAULT_SEGARC_CONFIG};
+		//this.config = {...this.config, ...argConfig};
+		this.config = {...DEFAULT_SEGARC_CONFIG, ...argConfig};
 
 		// Check for gap. Big enough?
 		if (this.config.segments.gap > 0) {
@@ -2612,6 +2654,33 @@ class SegmentedArcTool extends BaseTool {
 		// 2020.10.13 (see issue #5)
 		// Use different calculation for parts to support colorstops, colorlists and segment counts instead of the currently used dash (degrees) value
 		//
+		
+		var tcolorlist = {};
+		var colorlist = null;
+		// New template testing for colorstops
+		if (this.config.segments.colorlist?.template) {
+				colorlist = this.config.segments.colorlist;
+				if (this._parent.lovelace.lovelace.config.sak_templates[colorlist.template.name]) {
+					console.log('lovelace sak templates colorlist found', colorlist.template.name);
+					tcolorlist = Templates.replaceVariables(colorlist.template.variables, this._parent.lovelace.lovelace.config.sak_templates[colorlist.template.name]);
+				}
+		}
+		
+		var tcolorstops = {};
+		var colorstops = null;
+
+		if (this.config.segments.colorstops?.template) {
+				colorstops = this.config.segments.colorstops;
+				if (this._parent.lovelace.lovelace.config.sak_templates[colorstops.template.name]) {
+					console.log('lovelace sak templates colorstops found', colorstops.template, this._parent.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
+					tcolorstops = Templates.replaceVariables2(colorstops.template.variables, this._parent.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
+					console.log('lovelace sak templates colorstops replaced', colorstops.template, tcolorstops);
+					colorstops = {...tcolorstops, ...colorstops};
+					console.log('lovelace sak templates colorstops merged', colorstops);
+					this.config.segments.colorstops = {...colorstops};
+					console.log('lovelace sak templates colorstops config', this.config.segments);
+				}
+		}
 		
 		// FIXEDCOLOR
 		if (this.config.show.style == 'fixedcolor') {
@@ -2733,6 +2802,8 @@ class SegmentedArcTool extends BaseTool {
 
 		if (this.debug) console.log('SegmentedArcTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
 		if (this.debug) console.log('SegmentedArcTool - init', this.toolId, this.config.isScale, this._segmentAngles);
+
+		console.timeEnd("--> "+ this.toolId + " PERFORMANCE SegmentedArcTool::constructor");
 	}
 
 	get objectId() {
@@ -2849,15 +2920,18 @@ class SegmentedArcTool extends BaseTool {
 
 			var svgItems = [];
 
-			for (var k = 0; k < this._segmentAngles.length; k++) {
-				d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
-															this._arc.clockwise, this.svg.radius, this.svg.width);
+			// NO background needed for drawing scale...
+			if (!this.config.isScale) {
+				for (var k = 0; k < this._segmentAngles.length; k++) {
+					d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
+																this._arc.clockwise, this.svg.radius, this.svg.width);
 
-				svgItems.push(svg`<path id="arc-segment-bg-${this.toolId}-${k}" class="arc__segment"
-														style="${configStyleBgStr}"
-														d="${d}"
-														/>`);
+					svgItems.push(svg`<path id="arc-segment-bg-${this.toolId}-${k}" class="arc__segment"
+															style="${configStyleBgStr}"
+															d="${d}"
+															/>`);
 
+				}
 			}
 
 			// Check if arcId does exist
@@ -3153,15 +3227,17 @@ toAngle: 25.200000000000003
 			var arcRest = arcSize;
 
 			// Draw background of segmented arc...
-			for (var k = 0; k < this._segmentAngles.length; k++) {
-				d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
-															this._arc.clockwise, arcRadius, arcWidth);
+			if (!this.config.isScale) {
+				for (var k = 0; k < this._segmentAngles.length; k++) {
+					d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
+																this._arc.clockwise, arcRadius, arcWidth);
 
-				svgItems.push(svg`<path id="arc-segment-bg-${this.toolId}-${k}" class="arc__segment"
-														style="${configStyleBgStr}"
-														d="${d}"
-														/>`);
+					svgItems.push(svg`<path id="arc-segment-bg-${this.toolId}-${k}" class="arc__segment"
+															style="${configStyleBgStr}"
+															d="${d}"
+															/>`);
 
+				}
 			}
 
 			// Now draw the arc itself...
@@ -3499,6 +3575,15 @@ class devSwissArmyKnifeCard extends LitElement {
 		//
 		this.isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
 		this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+		const root = document.querySelector('home-assistant');
+		const main = root.shadowRoot.querySelector('home-assistant-main');
+		const drawer_layout = main.shadowRoot.querySelector('app-drawer-layout');
+		const pages = drawer_layout.querySelector('partial-panel-resolver');
+		this.lovelace = pages.querySelector('ha-panel-lovelace');
+		console.log("did I get Lovelace id?", this.cardId, root,  main, drawer_layout, pages, this.lovelace);
+
+		console.log("lovelace config is:", this.lovelace.lovelace.config);
 		
 		if (this.debug) console.log('*****Event - card - constructor', this.cardId, new Date().getTime());
   }
@@ -4118,6 +4203,8 @@ class devSwissArmyKnifeCard extends LitElement {
 	*/
 
   set hass(hass) {
+		//console.time("--> "+ this.cardId + " PERFORMANCE card::hass");
+
 		// Set ref to hass, use "_"for the name ;-)
 		if (this.debug) console.log('*****Event - set hass', this.cardId, new Date().getTime());
 		this._hass = hass;
@@ -4170,6 +4257,8 @@ class devSwissArmyKnifeCard extends LitElement {
 		// #TODO
 		// Temp disable this check, as in: don't return...
 		if (!entityHasChanged) {
+			//console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
+
 			return;
 		}
 
@@ -4229,6 +4318,8 @@ class devSwissArmyKnifeCard extends LitElement {
 		// For now, always force update to render the card if any of the states or attributes have changed...
     if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
 		//this.requestUpdate();
+
+		//console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
   }
 
  /*******************************************************************************
@@ -4240,6 +4331,8 @@ class devSwissArmyKnifeCard extends LitElement {
 	*/
 
   setConfig(config) {
+		console.time("--> " + this.cardId + " PERFORMANCE card::setConfig");
+
 		if (this.debug) console.log('*****Event - setConfig', this.cardId, new Date().getTime());
 		config = JSON.parse(JSON.stringify(config))
 
@@ -4384,26 +4477,91 @@ class devSwissArmyKnifeCard extends LitElement {
 				this.kvTemplates[template.template] = index;
 			});
 		}
-		console.log('toolconfig, kvtemplates', this.kvTemplates);
+		if (this.debug) console.log('toolconfig, kvtemplates', this.kvTemplates);
 		
-		this.config.layout.toolsets.map(toolset => {
+		this.config.layout.toolsets.map((toolset,toolidx) => {
 			
 			var argToolset = { config: toolset,
 													tools: []};
 			var toolList = null;
+
+/*
+		if (this.config.segments.colorstops?.template) {
+				colorstops = this.config.segments.colorstops;
+				if (this._parent.lovelace.lovelace.config.sak_templates[colorstops.template.name]) {
+					console.log('lovelace sak templates colorstops found', colorstops.template, this._parent.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
+					tcolorstops = Templates.replaceVariables2(colorstops.template.variables, this._parent.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
+					console.log('lovelace sak templates colorstops replaced', colorstops.template, tcolorstops);
+					colorstops = {...tcolorstops, ...colorstops};
+					console.log('lovelace sak templates colorstops merged', colorstops);
+					this.config.segments.colorstops = {...colorstops};
+					console.log('lovelace sak templates colorstops config', this.config.segments);
+				}
+		}
+*/			
+			var ttoolset = null;
 			
+			if (toolset.template) {
+				console.log("got toolset template", this.cardId, toolset, toolidx);
+
+				if (this.lovelace.lovelace.config.sak_templates[toolset.template.name]) {
+					console.log("got toolset template found", this.cardId, toolset, toolidx);
+
+					ttoolset = Templates.replaceVariables2(toolset.template.variables, this.lovelace.lovelace.config.sak_templates[toolset.template.name]);
+					console.log("got toolset replaced vars", this.cardId, ttoolset);
+					ttoolset.position = this.config.layout.toolsets[toolidx].position ? this.config.layout.toolsets[toolidx].position : ttoolset.position;
+					console.log("got toolset replaced vars2", this.cardId, ttoolset);
+					//this.config.layout.toolsets[toolidx].position = ttoolset.position;
+					//this.config.layout.toolsets[toolidx].tools = [...ttoolset.tools];
+
+					toolList = ttoolset.tools;
+
+
+					var found = false;
+					var toolAdd = [];
+					var atIndex = null;
+					toolset.tools.map((tool, index) => {
+						toolList.map((toolT, indexT) => {
+							if (tool.id == toolT.id) {
+								toolList[indexT] = {...toolList[indexT], ...tool};
+								found = true;
+//								atIndex = indexT;
+								console.log("got toolset toolid", tool, index, toolT, indexT, tool);
+							}
+						});
+						if (!found) toolAdd = toolAdd.concat(toolset.tools[index]);
+					});
+					//toolList = toolList.concat(toolset.tools);
+					
+					toolList = toolList.concat(toolAdd);
+					if (this.debug) console.log('Step 2: templating, toolconfig', toolList);
+
+					console.log('toolset ENDRESULT before', toolList, this.config.layout.toolsets[toolidx]);
+					this.config.layout.toolsets[toolidx].tools = [...toolList, ...this.config.layout.toolsets[toolidx].tools];
+					console.log('toolset ENDRESULT after', toolList, this.config.layout.toolsets[toolidx]);
+
+				}
+			} else {
+				// We don't have a template to run, get list of tools and use that...
+				toolList = toolset.tools;
+			}
+			
+			console.log("got toolset", this.cardId, toolList);
+
 			// Oke. NOw we have a toolset. Check if this one references a template
 			// and replace with given variables of current toolset.
+
+/*
 			if (toolset.template) {
-				console.log('toolconfig, template defined in toolset', toolset.template, this.config.templates);
-				console.log('toolconfig, index template name', this.config.templates[this.kvTemplates[toolset.template]]);
+				if (this.debug) console.log('toolconfig, template defined in toolset', toolset.template, this.config.templates);
+				if (this.debug) console.log('toolconfig, index template name', this.config.templates[this.kvTemplates[toolset.template]]);
 
 				if (this.config.templates[this.kvTemplates[toolset.template]]) {
-					console.log('toolconfig, template found in templates', toolset.template);
+					if (this.debug) console.log('toolconfig, template found in templates', toolset.template);
 					// Step 1: get template variables replaced by template defaults and given variables in toolset.
 					toolList = Templates.replaceVariables(toolset.variables, this.config.templates[this.kvTemplates[toolset.template]]);
-					console.log('Step 1: toolconfig, replacing template vars', toolList);
-					console.log('Step 1b: toolconfig, check toolset.tools', toolset);
+					if (this.debug) console.log('Step 1: toolconfig, replacing template vars', toolList);
+					if (this.debug) console.log('Step 1b: toolconfig, check toolset.tools', toolset);
 					
 					// Step 2: merge toolConfig with rest of toolset configuration.
 					//				 So you can override the template, or extend the template!
@@ -4431,14 +4589,14 @@ class devSwissArmyKnifeCard extends LitElement {
 					//toolList = toolList.concat(toolset.tools);
 					
 					toolList = toolList.concat(toolAdd);
-					console.log('Step 2: templating, toolconfig', toolList);
+					if (this.debug) console.log('Step 2: templating, toolconfig', toolList);
 				}
 			} else {
 				// We don't have a template to run, get list of tools and use that...
 				toolList = toolset.tools;
 			}
-			console.log('Step 3: outside test, toolconfig list', toolList);
-
+			if (this.debug) console.log('Step 3: outside test, toolconfig list', toolList);
+*/
 			toolList.map(toolConfig => {
 //			toolset.tools?.map(toolConfig => {
 				// create toolset and push to this.toolsets list
@@ -4458,7 +4616,7 @@ class devSwissArmyKnifeCard extends LitElement {
 			});
 				this.toolsets.push(argToolset);
 		});
-		console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
+		if (this.debug) console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
 		
 	// Template test. 2020.09.30
 	// Seems to work...
@@ -4469,7 +4627,9 @@ class devSwissArmyKnifeCard extends LitElement {
 		}
 	}
 
-	if ((config.debug) && (config.debug == true)) if (this.debug) console.log('debug - setConfig', this.cardId, this.config);
+		if ((config.debug) && (config.debug == true)) if (this.debug) console.log('debug - setConfig', this.cardId, this.config);
+		console.timeEnd("--> " + this.cardId + " PERFORMANCE card::setConfig");
+
 	}
 
  /*******************************************************************************
@@ -4479,6 +4639,8 @@ class devSwissArmyKnifeCard extends LitElement {
 	*
 	*/
   connectedCallback() {
+		console.time("--> " + this.cardId + " PERFORMANCE card::connectedCallback");
+
 		if (this.debug) console.log('*****Event - connectedCallback', this.cardId, new Date().getTime());
 		this.connected = true;
     super.connectedCallback();
@@ -4502,6 +4664,7 @@ class devSwissArmyKnifeCard extends LitElement {
 		//console.log("connectedcallback ICON TESTING pathh", pathh, this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*"));
 
 		//this.requestUpdate();
+		console.timeEnd("--> " + this.cardId + " PERFORMANCE card::connectedCallback");
   }
 
  /*******************************************************************************
@@ -4511,6 +4674,8 @@ class devSwissArmyKnifeCard extends LitElement {
 	*
 	*/
   disconnectedCallback() {
+		console.time("--> " + this.cardId + " PERFORMANCE card::disconnectedCallback");
+
 		if (this.debug) console.log('*****Event - disconnectedCallback', this.cardId, new Date().getTime());
     if (this.interval) {
       clearInterval(this.interval);
@@ -4518,6 +4683,7 @@ class devSwissArmyKnifeCard extends LitElement {
     super.disconnectedCallback();
 		if (this.debug) console.log('disconnectedCallback', this.cardId);
 		this.connected = false;
+		console.timeEnd("--> " + this.cardId + " PERFORMANCE card::disconnectedCallback");
   }
 
  /*******************************************************************************
@@ -4684,7 +4850,7 @@ class devSwissArmyKnifeCard extends LitElement {
 	
 //  render({ config } = this) {
   render() {
-
+		console.time("--> "+ this.cardId + " PERFORMANCE card::render");
 		if (this.debug) console.log('*****Event - render', this.cardId, new Date().getTime());
 
 		if (!this.connected) {
@@ -4749,6 +4915,7 @@ class devSwissArmyKnifeCard extends LitElement {
 						16*16);
 			}
 		}
+		console.timeEnd("--> "+ this.cardId + " PERFORMANCE card::render");
 		
 		return myHtml;
 
