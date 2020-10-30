@@ -5194,3 +5194,550 @@ cards:
             - decimals: 0
             - scale_min: 0
             - scale_max: 100
+
+    # light button test with decluttering template and sak template
+    - type: horizontal-stack
+      cards:
+        - type: custom:decluttering-card
+          template: sak_light_button_template_tpl
+          variables:
+            - entity: light.livingroom_light_duo_left_light #linker_lamp_voor
+            - area: Woonkamer
+            - name: Duo Links
+            - icon: 'mdi:floor-lamp-dual' #'mdi:grid-large' mdi-floor-lamp-dual
+        - type: custom:decluttering-card
+          template: sak_light_button_template_tpl
+          variables:
+            - entity: light.livingroom_light_duo_right_light #rechter_lamp_voor
+            - area: Woonkamer
+            - name: Duo Rechts
+            - icon: 'mdi:floor-lamp-dual' #'mdi:grid-large' border-left
+        - type: custom:decluttering-card
+          template: sak_light_button_template_tpl
+          variables:
+            - entity: light.livingroom_light_front_right_light
+            - area: Woonkamer
+            - name: Muurlamp
+            - icon: 'mdi:wall-sconce' #'border-right' #'mdi:grid-large'
+
+
+################################################################################################
+    - type: horizontal-stack
+      cards:
+        ##- !include card-blank-card.yaml
+        # Example 8T::
+        #
+        # Circle with 4 arcs along them with interconnecting lines...Livingroom temp, humi, pressure and lux
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            # Temperature
+            - entity: sensor.livingroom_iaq_temperature
+              decimals: 1
+              name: 'Livingroom'
+              icon: mdi:thermometer
+            # Presssure
+            - entity: sensor.livingroom_iaq_pressure
+              decimals: 0
+              icon: mdi:gauge
+            # Lux
+            - entity: sensor.livingroom_movement_illuminance
+              decimals: 0
+              icon: mdi:alarm-light-outline
+            # dummy for icon use
+            - entity: sensor.livingroom_movement_illuminance
+              icon: mdi:white-balance-sunny
+
+          debug: false
+          card_filter: card--dropshadow-heavy
+          show:
+            # explictly enable the use of the usersvg tool.
+            usersvg : true
+          
+          dimensions: 1/1
+
+          layout:
+            toolsets:
+
+              - toolset: temp
+              ## color lists to use for this toolset!
+              # Just like a color swatch in powerpoint, and other adobe stuff!!
+              # colorlist: a;ljfda;lsdjdsjf
+              # declare colorlist locally if specified.
+              # create the --theme-gradient-color-01: 'red' for instance if colorlist[01] is red.
+              #
+              # can this work?????
+              # --sak-swatch-color-01
+              # --sak-swatch-color-02
+              # --sak-swatch-color-03
+              # etc...
+              # sak-swatch-green-gradient
+              # sak-swatch-blue-gradient
+                position:
+                  cx: 50
+                  cy: 50
+                  scale: 1
+                tools:
+                  # Background
+                  - type: rectex
+                    cx: 50
+                    cy: 50
+                    width: 100
+                    height: 100
+                    radius:
+                      top: 5
+                      bottom: 10
+                    styles:
+                      stroke: var(--theme-gradient-color-01);
+                      fill: var(--theme-gradient-color-01);
+
+                  # Top part
+                  - type: rectex
+                    cx: 50
+                    cy: 20
+                    width: 100
+                    height: 40
+                    # rx: 2
+                    radius:
+                      top: 5
+                      bottom: 0
+                    styles:
+                      stroke: var(--theme-gradient-color-03);
+                      fill: var(--theme-gradient-color-03);
+                      # filter: url(#ds3);
+                  # background badge
+                  - type: rectex
+                    cx: 50
+                    cy: 50
+                    width: 80
+                    height: 80
+                    # rx: 2
+                    radius:
+                      top: 5
+                      bottom: 5
+                      top_right: 20
+                      bottom_left: 20
+                    styles:
+                      stroke: var(--theme-gradient-color-01);
+                      fill: var(--theme-gradient-color-01);
+                  # text badge 
+                  - type: rectex
+                    cx: 50
+                    cy: 18
+                    width: 80
+                    height: 16
+                    # rx: 0
+                    radius:
+                      top: 5
+                      bottom: 0
+                    styles:
+                      stroke: var(--theme-gradient-color-02);
+                      fill: var(--theme-gradient-color-02);
+                      # filter: url(#ds);
+
+                  - type: state
+                    cx: 35
+                    cy: 22
+                    entity_index: 0
+                    styles:
+                      text-anchor: middle;
+                      font-size: 2em;
+                      font-weight: 700;
+                      fill: black;
+                      filter: url(#ds);
+                  - type: line
+                    cx: 60
+                    cy: 18
+                    length: 10
+                    orientation: vertical
+                    styles:
+                      stroke: var(--theme-gradient-color-04);
+                      stroke: black;
+                      stroke-opacity: 0.5
+                      stroke-width: 3;
+                  - type: icon
+                    cx: 75
+                    cy: 17.5
+                    entity_index: 0
+                    align: center
+                    icon_size: 12
+                    styles:
+                      fill: black;
+                      color: black;
+
+                  - type: name
+                    cx: 50
+                    cy: 50
+                    entity_index: 0
+                    styles:
+                      text-anchor: middle;
+                      font-size: 1.6em;
+                      font-weight: 700;
+                      fill: black;
+                  - type: bar
+                    id: 2
+                    orientation: vertical
+                    entity_index: 0
+                    cx: 50
+                    cy: 70
+                    width: 70
+                    height: 25
+                    margin: 1.5
+                    hours: 24
+                    barhours: 2
+                    styles:
+                      stroke: grey;
+                      stroke-linecap: butt;
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            # Humidity
+            - entity: sensor.livingroom_iaq_humidity
+              decimals: 0
+              name: 'Livingroom'
+              area: '8T: Livingroom'
+              icon: mdi:water-percent
+
+          debug: false
+          
+          show:
+            # explictly enable the use of the usersvg tool.
+            usersvg : true
+          
+          dimensions: 1/1
+
+          layout:
+            toolsets:
+
+
+              - toolset: humi
+                position:
+                  cx: 50
+                  cy: 50
+                  scale: 1
+                tools:
+                  - type: rectangle
+                    cx: 50
+                    cy: 50
+                    width: 100
+                    height: 100
+                    rx: 2
+                    styles:
+                      stroke: var(--theme-gradient-color-01);
+                      fill: var(--theme-gradient-color-01);
+
+                  - type: rectangle
+                    cx: 50
+                    cy: 20
+                    width: 100
+                    height: 40
+                    rx: 2
+                    styles:
+                      stroke: var(--theme-gradient-color-03);
+                      fill: var(--theme-gradient-color-03);
+                  - type: rectangle
+                    cx: 50
+                    cy: 50
+                    width: 80
+                    height: 80
+                    rx: 2
+                    styles:
+                      stroke: var(--theme-gradient-color-01);
+                      fill: var(--theme-gradient-color-01);
+                  - type: rectangle
+                    cx: 50
+                    cy: 18
+                    width: 80
+                    height: 16
+                    rx: 0
+                    styles:
+                      stroke: var(--theme-gradient-color-02);
+                      fill: var(--theme-gradient-color-02);
+                  - type: state
+                    cx: 35
+                    cy: 22
+                    entity_index: 0
+                    styles:
+                      text-anchor: middle;
+                      font-size: 2em;
+                      font-weight: 700;
+                      fill: black;
+                  - type: line
+                    cx: 60
+                    cy: 18
+                    length: 10
+                    orientation: vertical
+                    styles:
+                      stroke: var(--theme-gradient-color-04);
+                      stroke: black;
+                      stroke-opacity: 0.5
+                      stroke-width: 3;
+                  - type: icon
+                    cx: 75
+                    cy: 17.5
+                    entity_index: 0
+                    align: center
+                    icon_size: 12
+                    styles:
+                      fill: black;
+                      color: black;
+
+                  - type: name
+                    cx: 50
+                    cy: 50
+                    entity_index: 0
+                    styles:
+                      text-anchor: middle;
+                      font-size: 1.6em;
+                      font-weight: 700;
+                      fill: black;
+                  - type: bar
+                    id: 2
+                    orientation: vertical
+                    entity_index: 0
+                    cx: 50
+                    cy: 70
+                    width: 70
+                    height: 25
+                    margin: 1.5
+                    hours: 24
+                    barhours: 2
+                    styles:
+                      stroke: grey;
+                      stroke-linecap: butt;
+
+        # - type: 'custom:dev-swiss-army-knife-card'
+          # entities:
+            # # Presssure
+            # - entity: sensor.livingroom_iaq_pressure
+              # decimals: 0
+              # icon: mdi:gauge
+              # name: 'Livingroom'
+
+          # debug: false
+          
+          # show:
+            # # explictly enable the use of the usersvg tool.
+            # usersvg : true
+          
+          # dimensions: 1/1
+
+          # layout:
+            # toolsets:
+
+
+              # - toolset: humi
+                # position:
+                  # cx: 50
+                  # cy: 50
+                  # scale: 1
+                # tools:
+                  # - type: rectangle
+                    # cx: 50
+                    # cy: 50
+                    # width: 100
+                    # height: 100
+                    # rx: 2
+                    # styles:
+                      # stroke: var(--theme-gradient-color-01);
+                      # fill: var(--theme-gradient-color-01);
+
+                  # - type: rectangle
+                    # cx: 50
+                    # cy: 20
+                    # width: 100
+                    # height: 40
+                    # rx: 2
+                    # styles:
+                      # stroke: var(--theme-gradient-color-03);
+                      # fill: var(--theme-gradient-color-03);
+                  # - type: rectangle
+                    # cx: 50
+                    # cy: 50
+                    # width: 80
+                    # height: 80
+                    # rx: 2
+                    # styles:
+                      # stroke: var(--theme-gradient-color-01);
+                      # fill: var(--theme-gradient-color-01);
+                  # - type: rectangle
+                    # cx: 50
+                    # cy: 18
+                    # width: 80
+                    # height: 16
+                    # rx: 0
+                    # styles:
+                      # stroke: var(--theme-gradient-color-02);
+                      # fill: var(--theme-gradient-color-02);
+                  # - type: state
+                    # cx: 35
+                    # cy: 22
+                    # entity_index: 0
+                    # styles:
+                      # text-anchor: middle;
+                      # font-size: 2em;
+                      # font-weight: 700;
+                      # fill: black;
+                  # - type: line
+                    # cx: 60
+                    # cy: 18
+                    # length: 10
+                    # orientation: vertical
+                    # styles:
+                      # stroke: var(--theme-gradient-color-04);
+                      # stroke: black;
+                      # stroke-opacity: 0.5
+                      # stroke-width: 3;
+                  # - type: icon
+                    # cx: 75
+                    # cy: 17.5
+                    # entity_index: 0
+                    # align: center
+                    # icon_size: 12
+                    # styles:
+                      # fill: black;
+                      # color: black;
+
+                  # - type: name
+                    # cx: 50
+                    # cy: 50
+                    # entity_index: 0
+                    # styles:
+                      # text-anchor: middle;
+                      # font-size: 1.6em;
+                      # font-weight: 700;
+                      # fill: black;
+                  # - type: bar
+                    # id: 2
+                    # orientation: vertical
+                    # entity_index: 0
+                    # cx: 50
+                    # cy: 70
+                    # width: 70
+                    # height: 25
+                    # margin: 1.5
+                    # hours: 24
+                    # barhours: 2
+                    # styles:
+                      # stroke: var(--theme-gradient-color-04);
+                      # stroke-linecap: butt;
+                                                    
+#####
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            # Lux
+            - entity: sensor.livingroom_movement_illuminance
+              decimals: 0
+              icon: mdi:alarm-light-outline
+              name: 'Livingroom'
+
+          debug: false
+          
+          show:
+            # explictly enable the use of the usersvg tool.
+            usersvg : true
+          
+          dimensions: 1/1
+
+          layout:
+            toolsets:
+
+
+              - toolset: humi
+                position:
+                  cx: 50
+                  cy: 50
+                  scale: 1
+                tools:
+                  - type: rectangle
+                    cx: 50
+                    cy: 50
+                    width: 100
+                    height: 100
+                    rx: 2
+                    styles:
+                      stroke: var(--theme-gradient-color-01);
+                      fill: var(--theme-gradient-color-01);
+
+                  - type: rectangle
+                    cx: 50
+                    cy: 20
+                    width: 100
+                    height: 40
+                    rx: 2
+                    styles:
+                      stroke: var(--theme-gradient-color-03);
+                      fill: var(--theme-gradient-color-03);
+                  - type: rectangle
+                    cx: 50
+                    cy: 50
+                    width: 80
+                    height: 80
+                    rx: 2
+                    styles:
+                      stroke: var(--theme-gradient-color-01);
+                      fill: var(--theme-gradient-color-01);
+                  - type: rectangle
+                    cx: 50
+                    cy: 18
+                    width: 80
+                    height: 16
+                    rx: 0
+                    styles:
+                      stroke: var(--theme-gradient-color-02);
+                      fill: var(--theme-gradient-color-02);
+                  - type: state
+                    cx: 35
+                    cy: 22
+                    entity_index: 0
+                    styles:
+                      text-anchor: middle;
+                      font-size: 2em;
+                      font-weight: 700;
+                      fill: black;
+                  - type: line
+                    cx: 60
+                    cy: 18
+                    length: 10
+                    orientation: vertical
+                    styles:
+                      stroke: var(--theme-gradient-color-04);
+                      stroke: black;
+                      stroke-opacity: 0.5
+                      stroke-width: 3;
+                  - type: icon
+                    cx: 75
+                    cy: 17.5
+                    entity_index: 0
+                    align: center
+                    icon_size: 12
+                    styles:
+                      fill: black;
+                      color: black;
+
+                  - type: name
+                    cx: 50
+                    cy: 50
+                    entity_index: 0
+                    styles:
+                      text-anchor: middle;
+                      font-size: 1.6em;
+                      font-weight: 700;
+                      fill: black;
+                  - type: bar
+                    id: 2
+                    orientation: vertical
+                    entity_index: 0
+                    cx: 50
+                    cy: 70
+                    width: 70
+                    height: 25
+                    margin: 1.5
+                    hours: 24
+                    barhours: 2
+                    styles:
+                      stroke: grey;
+                      # stroke: var(--theme-gradient-color-04);
+                      stroke-linecap: butt;
