@@ -149,7 +149,7 @@ toolset_arc180_sparklinebar24:
       - type: 'segarc'
         id: 2
         entity_index: '[[entity]]'
-        cx: 49
+        cx: 50
         cy: 50
         start_angle: -90
         end_angle: 90
@@ -199,10 +199,184 @@ toolset_arc180_sparklinebar24:
         entity_index: '[[entity]]'
         cx: 50
         cy: 85
-        width: 80
+        width: 90
         height: 25
         hours: 24
         barhours: 1
         styles:
           stroke: var(--theme-gradient-color-01);
           stroke-linecap: butt;
+
+#######################
+
+toolset_light_button:
+  type: toolset
+  defaults: 
+    - entity_light: 0
+    - entity_brightness: 1
+  toolset:
+    position:
+      cx: 50
+      cy: 50
+    tools:
+      # Static circle
+      - type: circle
+        cx: 50
+        cy: 30
+        radius: 25
+        entity_index: '[[entity_light]]'
+        # If on, hide this circle
+        animations:
+          - state: 'on'
+            styles:
+              opacity: 0;
+          - state: 'off'
+            styles:
+        styles:
+          fill-opacity: 0.1;
+          fill: black;
+          stroke-width: 5;
+          stroke: var(--theme-gradient-color-01);
+          stroke-opacity: 0.9;
+
+      #Animated circle
+      - type: circle
+        cx: 50
+        cy: 30
+        radius: 25
+        entity_index: '[[entity_light]]'
+        animations:
+          - state: 'on'
+            styles:
+              opacity: 1;
+              stroke-opacity: 1;
+              stroke-width: 5;
+              stroke: var(--theme-gradient-color-01);
+              fill: var(--theme-gradient-color-06);
+              fill-opacity: 0.9;
+              # transform-origin: top;
+              animation: jello 1s ease-in-out both;
+              # animation: pulse 1s ease-in-out both;
+              # animation: tada 1s ease-in-out both;
+              # animation: rubberBand 1s ease-in-out both;
+          - state: 'off'
+            reuse: true
+            styles:
+              opacity: 1;
+              animation: zoomOut 1s ease-out both;
+              transform-origin: inherit;
+              # stroke-width: 5;
+              # stroke: var(--theme-gradient-color-01);
+              # stroke-opacity: 1;
+              # fill-opacity: 0.9;
+              # fill: black;
+        styles:
+          opacity: 0;
+          # fill-opacity: 0.1;
+          # fill: black;
+          # fill: none;
+          # stroke-width: 5;
+          # stroke: var(--theme-gradient-color-01);
+          # stroke-opacity: 0.9;
+        
+      - type: icon
+        cx: 50
+        cy: 30
+        entity_index: '[[entity_light]]'
+        align: center
+        icon_size: 36
+        animations:
+          - state: 'on'
+            styles:
+              fill: var(--theme-gradient-color-01);
+              color: var(--theme-gradient-color-01);
+              fill-opacity: 0.9;
+          - state: 'off'
+            styles:
+              fill: var(--theme-gradient-color-01);
+              color: var(--theme-gradient-color-01);
+              fill-opacity: 0.7;
+        styles:
+          pointer-events: none;
+
+      - type: name
+        cx: 5
+        cy: 75
+        entity_index: '[[entity_light]]'
+        styles:
+          font-size: 1.5em;
+          font-weight: 700;
+          text-anchor: start;
+      - type: area
+        entity_index: 0
+        cx: 5
+        cy: 85
+        styles:
+          font-size: 1em;
+          text-anchor: start;
+      - type: state
+        cx: 5
+        cy: 95
+        entity_index: '[[entity_light]]'
+        animations:
+          - state: 'on'
+            styles:
+              fill: var(--theme-gradient-color-08);
+              opacity: 0.9;
+          - state: 'off'
+            reuse: true
+            styles:
+              fill: var(--theme-gradient-color-01);
+              opacity: 0.7;
+        styles:
+          font-size: 1.5em;
+          text-anchor: start;
+      - type: state
+        cx: 95
+        cy: 95
+        custom_fields:
+          - brightness: >
+              [[[
+                if (typeof(entity) === 'undefined') return;
+                
+                if ('brightness' in entity.attributes)
+                {
+                  if (entity.attributes
+                  && (entity.attributes.brightness <= 255)) {
+                    var bri = Math.round(entity.attributes.brightness / 2.55);
+                    return (bri ? bri : '0') + '%';
+                  }
+                }
+              ]]]
+        custom_value: >
+          [[[
+            if (typeof(entity) === 'undefined') return;
+            
+            if ('brightness' in entity.attributes)
+            {
+              if (entity.attributes
+              && (entity.attributes.brightness <= 255)) {
+                var bri = Math.round(entity.attributes.brightness / 2.55);
+                return (bri ? bri : '0') + '%';
+              }
+            }
+          ]]]
+        entity_index: '[[entity_brightness]]'
+        # Animation can run on the entities 'state', or on the custom_value.
+        # so - state: 'on', or for example - custom_value: '10%' in this case for light.
+        # Something must be done still, to make sure that presentation is with uom formatted, so must know uom.
+        animations:
+          - state: 'on'
+            entity_index: '[[entity_light]]'
+            styles:
+              fill: var(--theme-gradient-color-08);
+              opacity: 0.9;
+          - state: 'off'
+            entity_index: '[[entity_light]]'
+            reuse: true
+            styles:
+              fill: var(--theme-gradient-color-01);
+              opacity: 0.7;
+        styles:
+          font-size: 1.5em;
+          text-anchor: end;
