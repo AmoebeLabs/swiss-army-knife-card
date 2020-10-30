@@ -229,20 +229,40 @@ class BaseTool {
 	* BaseTool::set value()
 	*
 	* Summary.
-	*	Receive new state data for the entity this circle is linked to. Called from set hass();
+	*	Receive new state data for the entity this is linked to. Called from set hass();
 	*
 	*/
 	set value(state) {
 
-		if (this.debug) console.log('BaseTool set value(state)', state);
-		if (this._stateValue?.toLowerCase() == state.toLowerCase()) return false;
+		let localState = state;
 		
-		this._stateValuePrev = this._stateValue || state;
-		this._stateValue = state;
+		if (this.debug) console.log('BaseTool set value(state)', localState);
+		if (this._stateValue?.toLowerCase() == localState.toLowerCase()) return false;
+		
+		// testing calculated value
+		if (this.config.custom_value) {
+      const someValue = new Function('states', 'entity', 'user', 'hass', `'use strict'; ${this.config.custom_value.slice(4, -4)}`).call(
+        this,
+        this._parent._hass.states,
+        this._parent.entities[this.config.entity_index],
+        this._parent._hass.user,
+        this._parent._hass,
+      );
+			console.log("BaseTool::set value contains CUSTOM VALUE", this.config.custom_value, someValue);
+			localState = someValue;
+		}
+		console.log("BaseTool::set value contains localState", localState);
+		
+		this._stateValuePrev = this._stateValue || localState;
+		this._stateValue = localState;
 		this._stateValueIsDirty = true;
+		console.log("BaseTool::set value contains localState", localState, this._stateValuePrev, this._stateValue);
 
 		// If animations defined, calculate style for current state.
 
+		if (this._stateValue == 'undefined') return;
+		if (typeof(this._stateValue) === 'undefined') return;
+		
 		var isMatch = false;
 		if (this.config.animations) Object.keys(this.config.animations).map(animation => {
 			const entityIndex = this.config.entity_index;
@@ -250,7 +270,13 @@ class BaseTool {
 			
 			if (isMatch) return true;
 			
+			// #TODO:
+			// Default is item.state. But can also be item.custom_field[x], so you can compare with custom value
+			// Should index then not with item.state but item[custom_field[x]].toLowerCase() or similar...
+			// Or above, with the mapping of tghe item using the name?????
+			
 			// Assume equals operator if not defined...
+			console.log("set value(state), state, statevalue, item", state, this._stateValue, item.state);
 			var operator = item.operator ? item.operator : "=";
 			switch(operator) {
 				case "=":
@@ -976,6 +1002,7 @@ class CircleTool extends BaseTool {
 				cx: 50,
 				cy: 50,
 				radius: 50,
+
 		}
 
 		super(argParent, argConfig, argPos);
@@ -1036,7 +1063,7 @@ class CircleTool extends BaseTool {
 		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 		
 		return svg`
-			<circle filter="url(#ds)"
+			<circle filter="url(#ds)" 
 				cx="${this.svg.cx}"% cy="${this.svg.cy}"% r="${this.svg.radius}"
 				style="${configStyleStr}"/>					
 			`;
@@ -1052,9 +1079,275 @@ class CircleTool extends BaseTool {
 	render() {
 
     return svg`
-			<g filter="url(#ds)" id="circle-${this.toolId}" class="circle"
+			<g filter="url(#ds)" id="circle-${this.toolId}" class="circle" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
 				@click=${e => this._parent.handlePopup(e, this._parent.entities[this.config.entity_index])} >
 				${this._renderCircle()}
+			</g>
+		`;
+
+	}	
+} // END of class
+
+ /*******************************************************************************
+	* RectangleTool class
+	*
+	* Summary.
+	*
+	*/
+
+class RectangleTool extends BaseTool {
+	constructor(argParent, argConfig, argPos) {
+		
+		const DEFAULT_RECTANGLE_CONFIG = {
+				cx: 50,
+				cy: 50,
+				width: 50,
+				height: 50,
+				rx: 0,
+				styles: {
+					"stroke-linecap": 'round;',
+					"stroke": 'var(--primary-text-color);',
+					"opacity": '1.0;',
+					"stroke-width": '2;',
+					"fill": 'white',
+				}
+		}
+
+		super(argParent, argConfig, argPos);
+		
+		this.config = {...DEFAULT_RECTANGLE_CONFIG};
+		this.config = {...this.config, ...argConfig};
+
+		if (argConfig.styles) this.config.styles = {...argConfig.styles};
+		this.config.styles = {...DEFAULT_RECTANGLE_CONFIG.styles, ...this.config.styles};
+
+		if (argConfig.show) this.config.show = {...argConfig.show};
+		this.config.show = {...DEFAULT_RECTANGLE_CONFIG.show, ...this.config.show};
+
+		this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
+		
+		this.svg.rx = Utils.calculateSvgDimension(argConfig.rx)
+
+		if (this.debug) console.log('RectangleTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
+	}
+
+ /*******************************************************************************
+	* RectangleTool::value()
+	*
+	* Summary.
+	*	Receive new state data for the entity this circle is linked to. Called from set hass();
+	*
+	*/
+	set value(state) {
+		var changed = super.value = state;
+
+		return changed;
+	}
+
+ /*******************************************************************************
+	* RectangleTool::_renderRectangle()
+	*
+	* Summary.
+	*	Renders the circle using precalculated coordinates and dimensions.
+	* Only the runtime style is calculated before rendering the circle
+	*
+	*/
+
+  _renderRectangle() {
+
+		// Get configuration styles as the default styles
+		let configStyle = {...this.config.styles};
+		
+		// Get the runtime styles, caused by states & animation settings
+		//let stateStyle = {};
+		//if (this._parent.animations.circles[this.config.animation_id])
+		//	stateStyle = Object.assign(stateStyle, this._parent.animations.circles[this.config.animation_id]);
+
+		// Merge the two, where the runtime styles may overwrite the statically configured styles
+		//configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
+		configStyle = { ...configStyle, ...this.animationStyle};
+		
+		// Convert javascript records to plain text, without "{}" and "," between the styles.
+		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+		
+		console.log("_renderRectangle", this.toolId, this.svg);
+		
+		return svg`
+			<rect filter="url(#ds)" 
+				x="${this.svg.x}" y="${this.svg.y}" width="${this.svg.width}" height="${this.svg.height}" rx="${this.svg.rx}"
+				style="${configStyleStr}"/>					
+			`;
+	}	
+
+ /*******************************************************************************
+	* RectangleTool::render()
+	*
+	* Summary.
+	*	The render() function for this object.
+	*
+	*/
+	render() {
+
+    return svg`
+			<g filter="url(#ds)" id="circle-${this.toolId}" class="circle" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
+				@click=${e => this._parent.handlePopup(e, this._parent.entities[this.config.entity_index])} >
+				${this._renderRectangle()}
+			</g>
+		`;
+
+	}	
+} // END of class
+
+ /*******************************************************************************
+	* RectangleToolEx class
+	*
+	* Summary.
+	*
+	*/
+
+class RectangleToolEx extends BaseTool {
+	constructor(argParent, argConfig, argPos) {
+		
+		const DEFAULT_RECTANGLEEX_CONFIG = {
+				cx: 50,
+				cy: 50,
+				width: 50,
+				height: 50,
+				radius: {
+					all: 0,
+				},
+				styles: {
+					"stroke-linecap": 'round;',
+					"stroke": 'var(--primary-text-color);',
+					"opacity": '1.0;',
+					"stroke-width": '0;',
+					"fill": 'var(--primary-background-color)',
+				}
+		}
+		super(argParent, argConfig, argPos);
+		
+		this.config = {...DEFAULT_RECTANGLEEX_CONFIG};
+		this.config = {...this.config, ...argConfig};
+
+		if (argConfig.styles) this.config.styles = {...argConfig.styles};
+		this.config.styles = {...DEFAULT_RECTANGLEEX_CONFIG.styles, ...this.config.styles};
+
+		if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+		this.config.show = {...DEFAULT_RECTANGLEEX_CONFIG.show, ...this.config.show};
+		
+		// #TODO:
+		// Verify max radius, or just let it go, and let the user handle that right value.
+		// A q can be max height of rectangle, ie both corners added must be less than the height, but also less then the width...
+		
+		let maxRadius = Math.min(this.svg.height, this.svg.width) / 2;
+		let radius = 0;
+		radius = Utils.calculateSvgDimension(this.config.radius.all);
+		this.svg.radiusTopLeft = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
+															this.config.radius.top_left || this.config.radius.left || this.config.radius.top || radius))) || 0;
+
+		this.svg.radiusTopRight = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
+															this.config.radius.top_right || this.config.radius.right || this.config.radius.top || radius))) || 0;
+
+		this.svg.radiusBottomLeft = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
+															this.config.radius.bottom_left || this.config.radius.left || this.config.radius.bottom || radius))) || 0;
+
+		this.svg.radiusBottomRight = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
+															this.config.radius.bottom_right || this.config.radius.right || this.config.radius.bottom || radius))) || 0;
+		
+		if (this.debug) console.log('RectangleToolEx constructor coords, dimensions', this.toolId, this.svg, this.config);
+	}
+
+ /*******************************************************************************
+	* RectangleToolEx::_renderRectangleEx()
+	*
+	* Summary.
+	*	Renders the rectangle using lines and bezier curves with precalculated coordinates and dimensions.
+	*
+	* Refs for creating the path online:
+	*	-	https://mavo.io/demos/svgpath/
+	*
+	*/
+
+  _renderRectangleEx() {
+
+		var svgItems = [];
+		
+		// Get configuration styles as the default styles
+		let configStyle = {...this.config.styles};
+		
+		configStyle = {...configStyle, ...this.animationStyle};
+		
+		// Convert javascript records to plain text, without "{}" and "," between the styles.
+		const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+		
+		svgItems = svg``;
+		// filter="url(#ds)"
+		// filter="url(#card--dropshadow-medium--opaque--sepia90)"
+
+		svgItems = svg`
+			<g filter="url(#ds)" id="rectex-${this.toolId}">
+				<path  d="
+						M ${this.svg.x + this.svg.radiusTopLeft} ${this.svg.y}
+						h ${this.svg.width - this.svg.radiusTopLeft - this.svg.radiusTopRight}
+						q ${this.svg.radiusTopRight} 0 ${this.svg.radiusTopRight} ${this.svg.radiusTopRight}
+						v ${this.svg.height - this.svg.radiusTopRight - this.svg.radiusBottomRight}
+						q 0 ${this.svg.radiusBottomRight} -${this.svg.radiusBottomRight} ${this.svg.radiusBottomRight}
+						h -${this.svg.width - this.svg.radiusBottomRight - this.svg.radiusBottomLeft}
+						q -${this.svg.radiusBottomLeft} 0 -${this.svg.radiusBottomLeft} -${this.svg.radiusBottomLeft}
+						v -${this.svg.height - this.svg.radiusBottomLeft - this.svg.radiusTopLeft}
+						q 0 -${this.svg.radiusTopLeft} ${this.svg.radiusTopLeft} -${this.svg.radiusTopLeft}
+						"
+						style="${configStyleStr}"/>
+			</g>
+			`;
+		console.log("render _renderRectangleEx", svgItems);
+/*		svgItems = svg`
+			<g  id="badge-${this.toolId}">
+				<path filter="url(#ds)" d="
+						M ${this.svg.rightXpos} ${this.svg.rightYpos}
+						h ${this.svg.rightWidth - this.svg.radius}
+						a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} ${this.svg.radius}
+						v ${this.svg.height - 2 * this.svg.radius}
+						a ${this.svg.radius} ${this.svg.radius} 0 0 1 -${this.svg.radius} ${this.svg.radius}
+						h -${this.svg.rightWidth - this.svg.radius}
+						v -${this.svg.height - 2 * this.svg.radius}
+						z
+						"
+						style="${configStyleRightStr}"/>
+
+				<path filter="url(#ds)" d="
+						M ${this.svg.leftXpos + this.svg.radius} ${this.svg.leftYpos}
+						h ${this.svg.leftWidth - this.svg.radius}
+						v ${this.svg.divSize}
+						l ${this.svg.arrowSize} ${this.svg.arrowSize}
+						l -${this.svg.arrowSize} ${this.svg.arrowSize}
+						l 0 ${this.svg.divSize}
+						h -${this.svg.leftWidth - this.svg.radius}
+						a -${this.svg.radius} -${this.svg.radius} 0 0 1 -${this.svg.radius} -${this.svg.radius}
+						v -${this.svg.height - 2 * this.svg.radius}
+						a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} -${this.svg.radius}
+						"
+						style="${configStyleLeftStr}"/>
+			</g>
+			`;
+*/
+
+		return svg`${svgItems}`;
+	}	
+
+ /*******************************************************************************
+	* RectangleToolEx::render()
+	*
+	* Summary.
+	*	The render() function for this object.
+	*
+	*/
+	render() {
+
+    return svg`
+			<g id="rectex-${this.toolId}" class="rectex"
+				@click=${e => this._parent.handlePopup(e, this._parent.entities[this.config.entity_index])} >
+				${this._renderRectangleEx()}
 			</g>
 		`;
 
@@ -1766,10 +2059,13 @@ class EntityStateTool extends BaseTool {
 		
 		const uom = this._parent._buildUom(this._parent.entities[this.config.entity_index], this._parent.config.entities[this.config.entity_index]);
 
+/*
 		const state = (this._parent.config.entities[this.config.entity_index].attribute &&
 									this._parent.entities[this.config.entity_index].attributes[this._parent.config.entities[this.config.entity_index].attribute])
 									? this._parent.attributesStr[this.config.entity_index]
 									: this._parent.entitiesStr[this.config.entity_index];
+*/
+		const state = this._stateValue;
 		
 		if (this._parent._computeDomain(this._parent.entities[this.config.entity_index].entity_id) == 'sensor') {
 			return svg`
@@ -2430,7 +2726,7 @@ class SparkleBarChartTool extends BaseTool {
 			this._series.forEach((item, index) => {
 				if (!_bars[index]) _bars[index] = {};
 				_bars[index].length = ((item - this._scale.min) / (this._scale.size)) * this.svg.height;
-				_bars[index].x1 = this.svg.x + ((this.svg.barWidth + this.svg.margin) * index);
+				_bars[index].x1 = this.svg.x + this.svg.barWidth/2 + ((this.svg.barWidth + this.svg.margin) * index);
 				_bars[index].x2 = _bars[index].x1;
 				_bars[index].y1 = this.svg.y + this.svg.height;
 				_bars[index].y2 = _bars[index].y1 - this._bars[index].length;
@@ -2441,7 +2737,7 @@ class SparkleBarChartTool extends BaseTool {
 			this._data.forEach((item, index) => {
 				if (!_bars[index]) _bars[index] = {};
 				_bars[index].length = ((item - this._scale.min) / (this._scale.size)) * this.svg.width;
-				_bars[index].y1 = this.svg.y + ((this.svg.barWidth + this.svg.margin) * index);
+				_bars[index].y1 = this.svg.y + this.svg.barWidth/2 + ((this.svg.barWidth + this.svg.margin) * index);
 				_bars[index].y2 = _bars[index].y1;
 				_bars[index].x1 = this.svg.x;
 				_bars[index].x2 = _bars[index].x1 + this._bars[index].length;
@@ -4451,6 +4747,8 @@ class devSwissArmyKnifeCard extends LitElement {
 			"icon": EntityIconTool,
 			"line": LineTool,
 			"name": EntityNameTool,
+			"rectangle": RectangleTool,
+			"rectex": RectangleToolEx,
 			"segarc": SegmentedArcTool,
 			"state": EntityStateTool,
 			"slider": RangeSliderTool,
@@ -4520,24 +4818,28 @@ class devSwissArmyKnifeCard extends LitElement {
 					var found = false;
 					var toolAdd = [];
 					var atIndex = null;
-					toolset.tools.map((tool, index) => {
-						toolList.map((toolT, indexT) => {
-							if (tool.id == toolT.id) {
-								toolList[indexT] = {...toolList[indexT], ...tool};
-								found = true;
-//								atIndex = indexT;
-								console.log("got toolset toolid", tool, index, toolT, indexT, tool);
-							}
+					
+					// Check for empty tool list. This can be if template is used. Tools come from template, not from config...
+					if (toolset.tools) {
+						toolset.tools.map((tool, index) => {
+							toolList.map((toolT, indexT) => {
+								if (tool.id == toolT.id) {
+									toolList[indexT] = {...toolList[indexT], ...tool};
+									found = true;
+	//								atIndex = indexT;
+									console.log("got toolset toolid", tool, index, toolT, indexT, tool);
+								}
+							});
+							if (!found) toolAdd = toolAdd.concat(toolset.tools[index]);
 						});
-						if (!found) toolAdd = toolAdd.concat(toolset.tools[index]);
-					});
+					}
 					//toolList = toolList.concat(toolset.tools);
 					
 					toolList = toolList.concat(toolAdd);
 					if (this.debug) console.log('Step 2: templating, toolconfig', toolList);
 
 					console.log('toolset ENDRESULT before', toolList, this.config.layout.toolsets[toolidx]);
-					this.config.layout.toolsets[toolidx].tools = [...toolList, ...this.config.layout.toolsets[toolidx].tools];
+					if (this.config.layout.toolsets[toolidx].tools) this.config.layout.toolsets[toolidx].tools = [...toolList, ...this.config.layout.toolsets[toolidx].tools];
 					console.log('toolset ENDRESULT after', toolList, this.config.layout.toolsets[toolidx]);
 
 				}
@@ -5023,14 +5325,19 @@ if (this.debug) console.log('all the tools in renderTools', this.tools);
 // 							${this._renderIcons()}
 
 						
-		return svg`
-						<g id="datatoolset" class="datatoolset">
+		return svg` 
+						<g id="datatoolset" class="datatoolset" clip-path="url(#clip)">
 							${this.tools.map(tool => tool.tool.render())}
 							${this._renderUserSvgs()}
 						</g>
 
 
 						<defs>
+							<rect id="cliprect" width="100%" height="100%" fill="none" stroke="none" rx="3" />
+							<clipPath id="clip">
+								<use xlink:href="#cliprect"/>
+							</clipPath>
+
 							<marker viewBox="0 0 200 200" id="markerCircle" markerWidth="8" markerHeight="8" refX="5" refY="5">
 									<circle cx="5" cy="5" r="3" style="stroke: none; fill:currentColor;"/>
 							</marker>
