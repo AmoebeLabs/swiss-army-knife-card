@@ -1,5 +1,6 @@
 #
 #
+#
 # View			: swiss-army-knife- (sake2)
 # Project   : Home Assistant
 # Repository: https://github.com/AmoebeLabs/
@@ -426,7 +427,7 @@ cards:
                 # ypos: 42
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.7em;
+                  # - font-size: 2em;
                   # - color: var(--theme-gradient-color-01);
               # # States 2 refers to the third entity in the list, ie index 2
               # - id: 2
@@ -435,7 +436,7 @@ cards:
                 # ypos: 42
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.7em;
+                  # - font-size: 2em;
                   # - color: var(--theme-gradient-color-01);
             # icons:
               # # Icons 0 refers to the second entity in the list, ie index 1
@@ -1214,7 +1215,7 @@ cards:
                 # ypos: 35
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 2.5em;
+                  # - font-size: 3em;
                   # - color: var(--theme-gradient-color-01);
               # # States 1 refers to the second entity in the list, ie index 1
               # - id: 1
@@ -1223,7 +1224,7 @@ cards:
                 # ypos: 35
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 2.5em;
+                  # - font-size: 3em;
                   # - color: var(--theme-gradient-color-02);
 
             # icons:
@@ -1281,7 +1282,7 @@ cards:
                 # xpos: 25
                 # ypos: 50
                 # styles:
-                  # - font-size: 1em;
+                  # - font-size: 1.2em;
                   # - text-anchor: center;
 
               # - id: 1
@@ -1289,7 +1290,7 @@ cards:
                 # xpos: 75
                 # ypos: 50
                 # styles:
-                  # - font-size: 1em;
+                  # - font-size: 1.2em;
                   # - text-anchor: center;
 
             # areas:
@@ -1470,7 +1471,7 @@ cards:
                 # ypos: 40
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.7em;
+                  # - font-size: 2em;
                   # - color: var(--theme-gradient-color-01);
               # # States 1 refers to the second entity in the list, ie index 1
               # - id: 1
@@ -1479,7 +1480,7 @@ cards:
                 # ypos: 40
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.7em;
+                  # - font-size: 2em;
                   # - color: var(--theme-gradient-color-02);
 
               # - id: 2
@@ -1488,7 +1489,7 @@ cards:
                 # ypos: 40
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.7em;
+                  # - font-size: 2em;
                   # - color: var(--theme-gradient-color-01);
               # # States 1 refers to the second entity in the list, ie index 1
               # - id: 3
@@ -1497,7 +1498,7 @@ cards:
                 # ypos: 40
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.7em;
+                  # - font-size: 2em;
                   # - color: var(--theme-gradient-color-02);
 
             # icons:
@@ -1592,7 +1593,7 @@ cards:
                 # xpos: 25
                 # ypos: 52
                 # styles:
-                  # - font-size: 1em;
+                  # - font-size: 1.2em;
                   # - text-anchor: center;
 
               # - id: 1
@@ -1600,7 +1601,7 @@ cards:
                 # xpos: 75
                 # ypos: 52
                 # styles:
-                  # - font-size: 1em;
+                  # - font-size: 1.2em;
                   # - text-anchor: center;
 
             # areas:
@@ -1967,7 +1968,7 @@ cards:
                 # ypos: 9
                 # styles:
                   # - text-anchor: start;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-01);
               # # States 1 refers to the second entity in the list, ie index 1
               # - id: 1
@@ -1976,7 +1977,7 @@ cards:
                 # ypos: 19
                 # styles:
                   # - text-anchor: start;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - color: var(--theme-gradient-color-02);
               # # States 2 refers to the third entity in the list, ie index 2
               # - id: 2
@@ -1985,7 +1986,7 @@ cards:
                 # ypos: 29
                 # styles:
                   # - text-anchor: start;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-03);
 
               # - id: 3
@@ -1994,7 +1995,7 @@ cards:
                 # ypos: 39
                 # styles:
                   # - text-anchor: start;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-04);
 
               # - id: 4
@@ -2003,7 +2004,7 @@ cards:
                 # ypos: 72
                 # styles:
                   # - text-anchor: start;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-05);
 
               # - id: 5
@@ -2012,7 +2013,7 @@ cards:
                 # ypos: 82
                 # styles:
                   # - text-anchor: start;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-06);
 
               # - id: 6
@@ -2021,7 +2022,7 @@ cards:
                 # ypos: 92
                 # styles:
                   # - text-anchor: start;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-07);
 
               # # Temperatures
@@ -2031,7 +2032,7 @@ cards:
                 # ypos: 9
                 # styles:
                   # - text-anchor: end;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-01);
 
               # - id: 8
@@ -2040,7 +2041,7 @@ cards:
                 # ypos: 19
                 # styles:
                   # - text-anchor: end;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-02);
 
               # - id: 9
@@ -2049,7 +2050,7 @@ cards:
                 # ypos: 29
                 # styles:
                   # - text-anchor: end;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-03);
 
               # - id: 10
@@ -2058,7 +2059,7 @@ cards:
                 # ypos: 39
                 # styles:
                   # - text-anchor: end;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-04);
 
               # - id: 11
@@ -2067,7 +2068,7 @@ cards:
                 # ypos: 72
                 # styles:
                   # - text-anchor: end;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-05);
 
               # - id: 12
@@ -2076,7 +2077,7 @@ cards:
                 # ypos: 82
                 # styles:
                   # - text-anchor: end;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-06);
 
               # - id: 13
@@ -2085,7 +2086,7 @@ cards:
                 # ypos: 92
                 # styles:
                   # - text-anchor: end;
-                  # - font-size: 1.2em;
+                  # - font-size: 1.2.4em;
                   # - fill: var(--theme-gradient-color-07);
 
 
@@ -2168,7 +2169,7 @@ cards:
                 # xpos: 50
                 # ypos: 9
                 # styles:
-                  # - font-size: 1.1em;
+                  # - font-size: 1.1.2em;
                   # - text-anchor: center;
 
               # - id: 1
@@ -2176,7 +2177,7 @@ cards:
                 # xpos: 50
                 # ypos: 19
                 # styles:
-                  # - font-size: 1.1em;
+                  # - font-size: 1.1.2em;
                   # - text-anchor: center;
 
               # - id: 2
@@ -2184,7 +2185,7 @@ cards:
                 # xpos: 50
                 # ypos: 29
                 # styles:
-                  # - font-size: 1.1em;
+                  # - font-size: 1.1.2em;
                   # - text-anchor: center;
 
               # - id: 3
@@ -2192,7 +2193,7 @@ cards:
                 # xpos: 50
                 # ypos: 39
                 # styles:
-                  # - font-size: 1.1em;
+                  # - font-size: 1.1.2em;
                   # - text-anchor: center;
 
               # - id: 4
@@ -2200,7 +2201,7 @@ cards:
                 # xpos: 50
                 # ypos: 72
                 # styles:
-                  # - font-size: 1.1em;
+                  # - font-size: 1.1.2em;
                   # - text-anchor: center;
 
               # - id: 5
@@ -2208,7 +2209,7 @@ cards:
                 # xpos: 50
                 # ypos: 82
                 # styles:
-                  # - font-size: 1.1em;
+                  # - font-size: 1.1.2em;
                   # - text-anchor: center;
 
               # - id: 6
@@ -2216,7 +2217,7 @@ cards:
                 # xpos: 50
                 # ypos: 92
                 # styles:
-                  # - font-size: 1.1em;
+                  # - font-size: 1.1.2em;
                   # - text-anchor: center;
 
             # icons:
@@ -2354,7 +2355,7 @@ cards:
                     # # ypos: 60
                     # # styles:
                       # # - text-anchor: center;
-                      # # - font-size: 1.8em;
+                      # # - font-size: 2.1em;
                       # # - color: var(--theme-gradient-color-01);
                 # # icons:
                   # # # Icons 0 refers to the second entity in the list, ie index 1
@@ -2460,7 +2461,7 @@ cards:
                 # ypos: 60
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.8em;
+                  # - font-size: 2.1em;
                   # - color: var(--theme-gradient-color-01);
               # # States 1 refers to the second entity in the list, ie index 1
               # - id: 1
@@ -2469,7 +2470,7 @@ cards:
                 # ypos: 60
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.8em;
+                  # - font-size: 2.1em;
                   # - color: var(--theme-gradient-color-02);
 
               # - id: 2
@@ -2478,7 +2479,7 @@ cards:
                 # ypos: 60
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.8em;
+                  # - font-size: 2.1em;
                   # - color: var(--theme-gradient-color-01);
               # # States 1 refers to the second entity in the list, ie index 1
               # - id: 3
@@ -2487,7 +2488,7 @@ cards:
                 # ypos: 60
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.8em;
+                  # - font-size: 2.1em;
                   # - color: var(--theme-gradient-color-02);
 
             # icons:
@@ -2581,7 +2582,7 @@ cards:
                 # xpos: 50
                 # ypos: 100
                 # styles:
-                  # - font-size: 2em;
+                  # - font-size: 2.4em;
 
           # # Scale set to -10 to +40 degrees celcius            
           # horseshoe_scale:
@@ -2794,7 +2795,7 @@ cards:
                 # ypos: 60
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.7em;
+                  # - font-size: 2em;
                   # - color: var(--theme-gradient-color-01);
               # # States 1 refers to the second entity in the list, ie index 1
               # - id: 1
@@ -2803,7 +2804,7 @@ cards:
                 # ypos: 35
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.7em;
+                  # - font-size: 2em;
                   # - color: var(--theme-gradient-color-02);
 
               # - id: 2
@@ -2812,7 +2813,7 @@ cards:
                 # ypos: 35
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.7em;
+                  # - font-size: 2em;
                   # - color: var(--theme-gradient-color-01);
               # # States 1 refers to the second entity in the list, ie index 1
               # - id: 3
@@ -2821,7 +2822,7 @@ cards:
                 # ypos: 60
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.7em;
+                  # - font-size: 2em;
                   # - color: var(--theme-gradient-color-02);
 
             # icons:
@@ -2938,7 +2939,7 @@ cards:
             # horseshoe: false
             # horseshoe_style: 'lineargradient'
           
-          # debug: true
+          # debug: false
           
           # aspect_ratio: 2/2
           
@@ -2957,7 +2958,7 @@ cards:
                       # xpos: 10
                       # ypos: 10
                       # styles:
-                        # font-size: 1.2em;
+                        # font-size: 1.2.4em;
                     # styles:
                       # fill: red;
                   # right:
@@ -2980,7 +2981,7 @@ cards:
                       # xpos: 10
                       # ypos: 10
                       # styles:
-                        # font-size: 1.2em;
+                        # font-size: 1.2.4em;
                     # styles:
                       # fill: red;
                   # right:
@@ -3064,8 +3065,13 @@ cards:
               icon: mdi:gauge
 
           dimensions: 2/1
-          debug: false
-          
+
+          disable_card: true
+
+          dev:
+            debug: false
+            ts: true
+            
           layout:
             toolsets:
               # ==============================================================================
@@ -3080,7 +3086,7 @@ cards:
                     cx: 50
                     cy: 80
                     styles:
-                      - font-size: 2em;
+                      - font-size: 2.4em;
 
                   - type: 'name'
                     id: 0
@@ -3088,7 +3094,7 @@ cards:
                     cx: 50
                     cy: 95
                     styles:
-                      font-size: 1em;
+                      font-size: 1.2em;
                       text-anchor: center;
 
                   - type: 'segarc'
@@ -3100,6 +3106,10 @@ cards:
                     end_angle: 130
                     width: 5
                     radius: 45
+                    radius_x: 15
+                    radius_y: 45
+                    transform:
+                      rotate: 45
                     scale:
                       min: -20
                       max: 40
@@ -3146,7 +3156,7 @@ cards:
                     cy: 40
                     styles:
                       text-anchor: center;
-                      font-size: 2.5em;
+                      font-size: 3em;
                       fill: var(--theme-gradient-color-01);
 
                   - type: 'icon'
@@ -3218,7 +3228,7 @@ cards:
                     cy: 40
                     styles:
                       text-anchor: center;
-                      font-size: 1.7em;
+                      font-size: 2em;
                       fill: var(--theme-gradient-color-021;
 
                   - type: 'icon'
@@ -3272,7 +3282,7 @@ cards:
                     cy: 40
                     styles:
                       text-anchor: center;
-                      font-size: 1.7em;
+                      font-size: 2em;
                       fill: var(--theme-gradient-color-01);
 
                   - type: 'icon'
@@ -3285,6 +3295,275 @@ cards:
                     styles:
                       color: var(--theme-gradient-color-01);
                       fill: var(--theme-gradient-color-01);
+
+# ==============================================================================================
+
+    - type: horizontal-stack
+      cards:
+        ##- !include card-blank-card.yaml
+
+        # Example 2T::
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            - entity: weather.zoefdehaas
+              attribute: temperature
+              decimals: 1
+              name: '2T: London Central'
+              area: De Maan
+              unit: '°C'
+              icon: mdi:thermometer
+            - entity: weather.zoefdehaas
+              attribute: humidity
+              decimals: 0
+              unit: '%'
+              icon: mdi:water-percent
+            - entity: weather.zoefdehaas
+              attribute: pressure
+              decimals: 0
+              unit: 'hPa'
+              icon: mdi:gauge
+
+          dimensions: 1/1
+          dev:
+            debug: false
+            ts: true
+          
+          layout:
+            toolsets:
+              # ==============================================================================
+              - toolset: temp
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  ##
+                  # - type: 'area'
+                    # id: 0
+                    # entity_index: 0
+                    # cx: 50
+                    # cy: 80
+                    # styles:
+                      # - font-size: 2.4em;
+
+                  ##
+                  - type: 'name'
+                    id: 0
+                    entity_index: 0
+                    cx: 50
+                    cy: 98
+                    styles:
+                      font-size: 1em;
+                      text-anchor: center;
+
+                  ## Temperature
+                  - type: 'segarc'
+                    id: 0
+                    entity_index: 0
+                    cx: 50
+                    cy: 50
+                    start_angle: -130
+                    end_angle: 130
+                    width: 5
+                    radius: 45
+                    radius_x: 12.5
+                    radius_y: 45
+                    scale:
+                      min: -20
+                      max: 40
+                    show:
+                      scale: true
+                      style: 'colorstops'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - '#5e4fa2'
+                          - '#3288bd'
+                          - '#66c2a5'
+                          - '#abdda4'
+                          - '#e6f598'
+                          - '#fee08b'
+                          - '#fdae61'
+                          - '#f46d43'
+                          - '#d53e4f'
+                          - '#9e0142'
+                      colorstops:
+                        gap: 0
+                        colors:
+                          -30: 'white'
+                          -20: '#5e4fa2'
+                          -10: '#3288bd'
+                          0: '#66c2a5'
+                          05: '#abdda4'
+                          10: '#e6f598'
+                          15: '#fee08b'
+                          20: '#fdae61'
+                          25: '#f46d43'
+                          30: '#d53e4f'
+                          35: '#9e0142'
+                    styles:
+                      fill: var(--theme-gradient-color-01);
+                    styles_bg:
+                      fill: var(--primary-background-color);
+
+                  ## Temperature
+                  - type: 'state'
+                    id: 0
+                    entity_index: 0
+                    cx: 50
+                    cy: 87
+                    styles:
+                      text-anchor: center;
+                      font-size: 1.2em;
+                      fill: var(--primary-text-color);
+                      font-weight: 700;
+
+                  ## Temperature
+                  - type: 'icon'
+                    id: 0
+                    entity_index: 0
+                    cx: 50
+                    cy: 50
+                    align: center
+                    icon_size: 15
+                    styles:
+                      fill: var(--primary-text-color);
+                      color: var(--primary-text-color);
+
+              # ==============================================================================
+              - toolset: humi
+                position:
+                  cx: 20
+                  cy: 50
+                tools:
+                  - type: 'segarc'
+                    id: 1
+                    entity_index: 1
+                    cx: 50
+                    cy: 53
+                    start_angle: -130
+                    end_angle: 130
+                    width: 4
+                    radius: 45
+                    radius_x: 12.5
+                    radius_y: 40
+                    scale:
+                      min: 0
+                      max: 100
+                    show:
+                      scale: true
+                      style: 'colorstops'
+                      labelstops: false
+                    segments:
+                      colorstops:
+                        gap: 1
+                        colors:
+                          00: 'var(--theme-gradient-color-02)'
+                          35: 'DarkSeaGreen'
+                          65: 'PowderBlue'
+                      textstops:
+                        gap: 1
+                        font_size: 1.1
+                        direction: 'clockwise' #or 'anticlockwise'
+                        # something to use which background colors?? Use colorstops orso?? or not??
+                        text:
+                          00: 'dry'
+                          35: 'comfy'
+                          65: 'humid'
+                      # <svg>
+                      # <path id="myTextPath" d="M 64,0 A 64,64 0 0 1 -64,0 A 64,64 0 0 1 64,0" transform="translate(200,200)" fill="none" stroke="darkblue" stroke-width="25"/>
+                      #
+                      # <text style="stroke: #000000;" fill="white" stroke-width="0">
+                      #   <textPath xlink:href="#myTextPath"  startOffset="50%" text-anchor="middle"><tspan dy="5">Text along a curved path...</tspan></textPath>
+                      # </text>
+                      #
+                      # </svg>
+                    styles:
+                      fill: var(--theme-gradient-color-02);
+                    styles_bg:
+                      fill: var(--primary-background-color);
+
+                  - type: 'state'
+                    id: 0
+                    entity_index: 1
+                    cx: 50
+                    cy: 87
+                    styles:
+                      text-anchor: center;
+                      font-size: 1.2em;
+                      fill: var(--primary-text-color);
+                      font-weight: 700;
+
+                  - type: 'icon'
+                    id: 0
+                    entity_index: 1
+                    cx: 50
+                    cy: 53
+                    align: center
+                    icon_size: 10
+                    styles:
+                      fill: var(--primary-text-color);
+                      color: var(--primary-text-color);
+
+              # ==============================================================================
+              - toolset: pressure
+                position:
+                  cx: 80
+                  cy: 50
+                tools:
+                  - type: 'segarc'
+                    id: 1
+                    entity_index: 2
+                    cx: 50
+                    cy: 53
+                    start_angle: 130
+                    end_angle: -130
+                    width: 4
+                    radius: 45
+                    radius_x: 12.5
+                    radius_y: 40
+                    scale:
+                      min: 960
+                      max: 1050
+                    show:
+                      scale: true
+                      style: 'colorstops'
+                    segments:
+                      colorstops:
+                        gap: 0
+                        colors:
+                          980: 'lightgrey'
+                          990: 'var(--theme-gradient-color-01)'
+                          1020: 'var(--theme-gradient-color-05)'
+                    styles:
+                      fill: var(--theme-gradient-color-03);
+                    styles_bg:
+                      fill: var(--primary-background-color);
+
+                  - type: 'state'
+                    id: 0
+                    entity_index: 2
+                    cx: 50
+                    cy: 87
+                    styles:
+                      text-anchor: center;
+                      font-size: 1.2em;
+                      fill: var(--primary-text-color);
+                      font-weight: 700;
+
+                  - type: 'icon'
+                    id: 0
+                    entity_index: 2
+                    cx: 50
+                    cy: 53
+                    align: center
+                    icon_size: 10
+                    styles:
+                      fill: var(--primary-text-color);
+                      color: var(--primary-text-color);
 
 
               # # The pressure attribute
@@ -3405,7 +3684,7 @@ cards:
                 # ypos: 42
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.7em;
+                  # - font-size: 2em;
                   # - color: var(--theme-gradient-color-01);
               # # States 2 refers to the third entity in the list, ie index 2
               # - id: 2
@@ -3414,7 +3693,7 @@ cards:
                 # ypos: 42
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.7em;
+                  # - font-size: 2em;
                   # - color: var(--theme-gradient-color-01);
             # icons:
               # # Icons 0 refers to the second entity in the list, ie index 1
@@ -3483,6 +3762,10 @@ cards:
               icon: mdi:thermometer
 
           dimensions: 2/1
+
+          dev:
+            debug: false
+            ts: true
           
           layout:
             toolsets:
@@ -3498,7 +3781,7 @@ cards:
                     cx: 100
                     cy: 98
                     styles:
-                      - font-size: 2em;
+                      - font-size: 2.4em;
 
                   - type: 'name'
                     id: 0
@@ -3506,7 +3789,7 @@ cards:
                     cx: 50
                     cy: 53
                     styles:
-                      font-size: 1em;
+                      font-size: 1.2em;
                       text-anchor: center;
 
                   - type: 'segarc'
@@ -3548,8 +3831,8 @@ cards:
                     cy: 35
                     styles:
                       text-anchor: center;
-                      font-size: 2.5em;
-                      fill: var(--theme-gradient-color-01);
+                      font-size: 3em;
+                      fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 0
@@ -3559,8 +3842,8 @@ cards:
                     align: center
                     icon_size: 15
                     styles:
-                      color: var(--theme-gradient-color-01);
-                      fill: var(--theme-gradient-color-01);
+                      fill: var(--primary-text-color);
+                      color: var(--primary-text-color);
 
                   - type: 'bar'
                     id: 0
@@ -3604,7 +3887,9 @@ cards:
               icon: mdi:thermometer
 
           dimensions: 2/1
-          debug: false
+          dev:
+            debug: false
+            ts: true
           
           layout:
             toolsets:
@@ -3620,7 +3905,7 @@ cards:
                     cx: 100
                     cy: 98
                     styles:
-                      - font-size: 2em;
+                      - font-size: 2.4em;
 
                   - type: 'name'
                     id: 0
@@ -3628,7 +3913,7 @@ cards:
                     cx: 50
                     cy: 53
                     styles:
-                      font-size: 1em;
+                      font-size: 1.2em;
                       text-anchor: center;
 
                   - type: 'segarc'
@@ -3666,8 +3951,8 @@ cards:
                     cy: 40
                     styles:
                       text-anchor: center;
-                      font-size: 1.7em;
-                      fill: var(--theme-gradient-color-01);
+                      font-size: 2em;
+                      fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 0
@@ -3677,8 +3962,8 @@ cards:
                     align: center
                     icon_size: 15
                     styles:
-                      color: var(--theme-gradient-color-01);
-                      fill: var(--theme-gradient-color-01);
+                      fill: var(--primary-text-color);
+                      color: var(--primary-text-color);
 
                   - type: 'bar'
                     id: 0
@@ -3732,8 +4017,8 @@ cards:
                     cy: 40
                     styles:
                       text-anchor: center;
-                      font-size: 1.7em;
-                      fill: var(--theme-gradient-color-02);
+                      font-size: 2em;
+                      fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 1
@@ -3743,8 +4028,8 @@ cards:
                     align: center
                     icon_size: 15
                     styles:
-                      color: var(--theme-gradient-color-02);
-                      fill: var(--theme-gradient-color-02);
+                      fill: var(--primary-text-color);
+                      color: var(--primary-text-color);
 
                   - type: 'bar'
                     id: 1
@@ -3794,6 +4079,10 @@ cards:
               icon: mdi:alarm-light-outline
 
           dimensions: 2/1
+
+          dev:
+            debug: false
+            ts: true
           
           layout:
             toolsets:
@@ -3846,8 +4135,8 @@ cards:
                     cy: 65
                     styles:
                       text-anchor: center;
-                      font-size: 1.8em;
-                      fill: var(--theme-gradient-color-01);
+                      font-size: 2.1em;
+                      fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 0
@@ -3857,8 +4146,8 @@ cards:
                     align: center
                     icon_size: 15
                     styles:
-                      color: var(--theme-gradient-color-01);
-                      fill: var(--theme-gradient-color-01);
+                      fill: var(--primary-text-color);
+                      color: var(--primary-text-color);
 
                   - type: 'bar'
                     id: 0
@@ -3911,8 +4200,8 @@ cards:
                     cy: 65
                     styles:
                       text-anchor: center;
-                      font-size: 1.8em;
-                      fill: var(--theme-gradient-color-03);
+                      font-size: 2.1em;
+                      fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 1
@@ -3922,8 +4211,8 @@ cards:
                     align: center
                     icon_size: 15
                     styles:
-                      color: var(--theme-gradient-color-03);
-                      fill: var(--theme-gradient-color-03);
+                      fill: var(--primary-text-color);
+                      color: var(--primary-text-color);
 
                   - type: 'bar'
                     id: 1
@@ -4034,7 +4323,7 @@ cards:
                 # ypos: 60
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.8em;
+                  # - font-size: 2.1em;
                   # - color: var(--theme-gradient-color-01);
               # # States 1 refers to the second entity in the list, ie index 1
               # - id: 1
@@ -4043,7 +4332,7 @@ cards:
                 # ypos: 60
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.8em;
+                  # - font-size: 2.1em;
                   # - color: var(--theme-gradient-color-02);
 
               # - id: 2
@@ -4052,7 +4341,7 @@ cards:
                 # ypos: 60
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.8em;
+                  # - font-size: 2.1em;
                   # - color: var(--theme-gradient-color-01);
               # # States 1 refers to the second entity in the list, ie index 1
               # - id: 3
@@ -4061,7 +4350,7 @@ cards:
                 # ypos: 60
                 # styles:
                   # - text-anchor: center;
-                  # - font-size: 1.8em;
+                  # - font-size: 2.1em;
                   # - color: var(--theme-gradient-color-02);
 
             # icons:
@@ -4147,7 +4436,7 @@ cards:
                 # xpos: 50
                 # ypos: 100
                 # styles:
-                  # - font-size: 2em;
+                  # - font-size: 2.4em;
 
           # # Scale set to -10 to +40 degrees celcius            
           # horseshoe_scale:
@@ -4201,7 +4490,10 @@ cards:
             - entity: sensor.livingroom_movement_illuminance
               icon: mdi:white-balance-sunny
 
-          debug: false
+          dev:
+            debug: false
+            ts: true
+            performance: true
           
           show:
             # explictly enable the use of the usersvg tool.
@@ -4283,7 +4575,7 @@ cards:
                   # cy: 60
                   # styles:
                     # text-anchor: center;
-                    # font-size: 1.7em;
+                    # font-size: 2em;
                     # color: var(--theme-gradient-color-01);
                     # fill: var(--theme-gradient-color-01);
 
@@ -4338,7 +4630,8 @@ cards:
                 position:
                   cx: 25
                   cy: 50
-                  scale: 1
+                  scale: .9
+                  rotate: -30
                 tools:
                   - type: segarc
                     id: 0
@@ -4385,7 +4678,8 @@ cards:
                 position:
                   cx: 72.50
                   cy: 25
-                  scale: 1
+                  scale: .9
+                  rotate: -5
                 tools:
                   - type: segarc
                     id: 0
@@ -4421,7 +4715,8 @@ cards:
                 position:
                   cx: 127.50
                   cy: 25
-                  scale: 1
+                  scale: .9
+                  rotate: 5
                 tools:
                   - type: segarc
                     id: 0
@@ -4453,7 +4748,8 @@ cards:
                 position:
                   cx: 175
                   cy: 50
-                  scale: 1
+                  scale: .9
+                  rotate: 30
                 tools:
                   - type: segarc
                     id: 0
@@ -4513,7 +4809,10 @@ cards:
             - entity: sensor.livingroom_movement_illuminance
               icon: mdi:white-balance-sunny
 
-          debug: false
+          dev:
+            debug: false
+            ts: true
+            performance: true
           
           show:
             # explictly enable the use of the usersvg tool.
@@ -4571,7 +4870,7 @@ cards:
                   # cy: 60
                   # styles:
                     # text-anchor: center;
-                    # font-size: 1.7em;
+                    # font-size: 2em;
                     # color: var(--theme-gradient-color-01);
 
           layout:
@@ -4786,7 +5085,9 @@ cards:
               attribute: brightness
               
           dimensions: 3/1
-          debug: false
+          dev:
+            debug: false
+            ts: true
               
           layout:
             toolsets:
@@ -4863,7 +5164,7 @@ cards:
                     cx: 5
                     cy: 85
                     styles:
-                      font-size: 1em;
+                      font-size: 1.2em;
                       text-anchor: start;
                   - type: state
                     cx: 5
@@ -4944,7 +5245,7 @@ cards:
                     cx: 5
                     cy: 85
                     styles:
-                      font-size: 1em;
+                      font-size: 1.2em;
                       text-anchor: start;
                   - type: state
                     cx: 5
@@ -5048,7 +5349,7 @@ cards:
                     cx: 5
                     cy: 80
                     styles:
-                      font-size: 1em;
+                      font-size: 1.2em;
                       text-anchor: start;
                   # # STATE
                   # - type: state
@@ -5083,7 +5384,7 @@ cards:
                         stroke: var(--theme-gradient-color-01);
                         stroke-width: 2;
                       handle:
-                        font-size: 1.2em;
+                        font-size: 1.2.4em;
                         font-weight: 700;
                         fill: black;
 
@@ -5250,13 +5551,16 @@ cards:
             - entity: sensor.livingroom_movement_illuminance
               icon: mdi:white-balance-sunny
 
-          debug: false
           card_filter: card--dropshadow-heavy
           show:
             # explictly enable the use of the usersvg tool.
             usersvg : true
           
           dimensions: 1/1
+          dev:
+            debug: false
+            ts: true
+            performance: true
 
           layout:
             toolsets:
@@ -5292,7 +5596,7 @@ cards:
                     styles:
                       stroke: var(--theme-gradient-color-01);
                       fill: var(--theme-gradient-color-01);
-
+                      # fill: linear-gradient(#e66465, #9198e5);
                   # Top part
                   - type: rectex
                     cx: 50
@@ -5343,7 +5647,7 @@ cards:
                     entity_index: 0
                     styles:
                       text-anchor: middle;
-                      font-size: 2em;
+                      font-size: 2.4em;
                       font-weight: 700;
                       fill: black;
                       filter: url(#ds);
@@ -5355,7 +5659,7 @@ cards:
                     styles:
                       stroke: var(--theme-gradient-color-04);
                       stroke: black;
-                      stroke-opacity: 0.5
+                      stroke-opacity: 0.5;
                       stroke-width: 3;
                   - type: icon
                     cx: 75
@@ -5373,7 +5677,7 @@ cards:
                     entity_index: 0
                     styles:
                       text-anchor: middle;
-                      font-size: 1.6em;
+                      font-size: 2em;
                       font-weight: 700;
                       fill: black;
                   - type: bar
@@ -5400,7 +5704,9 @@ cards:
               area: '8T: Livingroom'
               icon: mdi:water-percent
 
-          debug: false
+          dev:
+            debug: false
+            ts: true
           
           show:
             # explictly enable the use of the usersvg tool.
@@ -5461,7 +5767,7 @@ cards:
                     entity_index: 0
                     styles:
                       text-anchor: middle;
-                      font-size: 2em;
+                      font-size: 2.4em;
                       font-weight: 700;
                       fill: black;
                   - type: line
@@ -5490,7 +5796,7 @@ cards:
                     entity_index: 0
                     styles:
                       text-anchor: middle;
-                      font-size: 1.6em;
+                      font-size: 2em;
                       font-weight: 700;
                       fill: black;
                   - type: bar
@@ -5577,7 +5883,7 @@ cards:
                     # entity_index: 0
                     # styles:
                       # text-anchor: middle;
-                      # font-size: 2em;
+                      # font-size: 2.4em;
                       # font-weight: 700;
                       # fill: black;
                   # - type: line
@@ -5633,13 +5939,15 @@ cards:
               icon: mdi:alarm-light-outline
               name: 'Livingroom'
 
-          debug: false
+          dev:
+            debug: false
+            ts: true
           
           show:
             # explictly enable the use of the usersvg tool.
             usersvg : true
           
-          dimensions: 1/1
+          dimensions: 1/4
 
           layout:
             toolsets:
@@ -5648,8 +5956,9 @@ cards:
               - toolset: humi
                 position:
                   cx: 50
-                  cy: 50
+                  cy: 350
                   scale: 1
+                  rotate: 0
                 tools:
                   - type: rectangle
                     cx: 50
@@ -5694,7 +6003,7 @@ cards:
                     entity_index: 0
                     styles:
                       text-anchor: middle;
-                      font-size: 2em;
+                      font-size: 2.4em;
                       font-weight: 700;
                       fill: black;
                   - type: line
@@ -5723,7 +6032,7 @@ cards:
                     entity_index: 0
                     styles:
                       text-anchor: middle;
-                      font-size: 1.6em;
+                      font-size: 2em;
                       font-weight: 700;
                       fill: black;
                   - type: bar
@@ -5741,3 +6050,211 @@ cards:
                       stroke: grey;
                       # stroke: var(--theme-gradient-color-04);
                       stroke-linecap: butt;
+
+############################################################################################
+        #
+    - type: horizontal-stack
+      cards:
+        ##- !include card-blank-card.yaml
+        # Example 22T::
+        #
+        # Some badge horizontal. rect with circle and more...
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            # Temperature
+            - entity: sensor.livingroom_iaq_temperature
+              decimals: 1
+              name: '22T: Livingroom'
+              area: '22T: Livingroom'
+              icon: mdi:thermometer
+            # Humidity
+            - entity: sensor.livingroom_iaq_humidity
+              decimals: 0
+              icon: mdi:water-percent
+            # Presssure
+            - entity: sensor.livingroom_iaq_pressure
+              decimals: 0
+              icon: mdi:gauge
+            # Lux
+            - entity: sensor.livingroom_movement_illuminance
+              decimals: 0
+              icon: mdi:alarm-light-outline
+              name: 'Livingroom'
+
+          dev:
+            debug: false
+            ts: true
+          
+          show:
+            # explictly enable the use of the usersvg tool.
+            usersvg : true
+          
+          dimensions: 4/1
+
+          layout:
+            toolsets:
+
+
+              - toolset: fourcircles
+                position:
+                  cx: 200
+                  cy: 50
+                  scale: 1
+                  rotate: 0
+                tools:
+                  - type: rectangle
+                    cx: 50
+                    cy: 45
+                    width: 350
+                    height: 20
+                    rx: 10
+                    styles:
+                      stroke: var(--theme-gradient-color-01);
+                      stroke-width: 30;
+                      fill: var(--theme-gradient-color-01);
+                      fill: none;
+                      opacity: 0.5;
+
+                  #1
+                  - type: circle
+                    cx: -100
+                    cy: 45
+                    radius: 25
+                    styles:
+                      stroke: var(--theme-gradient-color-01);
+                      stroke-width: 70;
+                      fill: var(--theme-gradient-color-03);
+                      stroke-dasharray: 52;
+                      stroke-dashoffset: 0;
+                      stroke-linecap: round;
+                      paint-order: stroke;
+
+                  - type: state
+                    cx: -100
+                    cy: 50
+                    entity_index: 0
+                    styles:
+                      text-anchor: middle;
+                      font-size: 3em;
+                      font-weight: 700;
+                      # fill: var(--theme-gradient-color-01);
+                      fill: black;
+
+                  # - type: icon
+                    # cx: 30
+                    # cy: 50
+                    # entity_index: 0
+                    # align: center
+                    # icon_size: 30
+                    # styles:
+                      # fill: green;
+                      # color: green;
+
+                  #2
+                  - type: circle
+                    cx: 0
+                    cy: 45
+                    radius: 25
+                    styles:
+                      stroke: var(--theme-gradient-color-01);
+                      stroke-width: 70;
+                      fill: var(--theme-gradient-color-04);
+                      # stroke-dasharray: 36;
+                      # stroke-linecap: square;
+                      # stroke-dasharray: 163;
+                      # stroke-dashoffset: 170;
+                      stroke-dasharray: 52;
+                      stroke-dashoffset: 30;
+                      stroke-linecap: round;
+                      paint-order: stroke;
+
+                  - type: state
+                    cx: 0
+                    cy: 50
+                    entity_index: 1
+                    styles:
+                      text-anchor: middle;
+                      font-size: 3em;
+                      font-weight: 700;
+                      # fill: var(--theme-gradient-color-01);
+                      fill: black;
+
+                  #3
+                  - type: circle
+                    cx: 100
+                    cy: 45
+                    radius: 25
+                    styles:
+                      stroke: var(--theme-gradient-color-01);
+                      stroke-width: 70;
+                      fill: var(--theme-gradient-color-06);
+                      stroke-dasharray: 52;
+                      stroke-dashoffset: 60;
+                      stroke-linecap: round;
+                      paint-order: stroke;
+
+                  - type: state
+                    cx: 100
+                    cy: 50
+                    entity_index: 2
+                    styles:
+                      text-anchor: middle;
+                      font-size: 3em;
+                      font-weight: 700;
+                      # fill: var(--theme-gradient-color-01);
+                      fill: black;
+
+                  #4
+                  - type: circle
+                    cx: 200
+                    cy: 45
+                    radius: 25
+                    styles:
+                      stroke: var(--theme-gradient-color-01);
+                      stroke-width: 70;
+                      fill: grey;
+                      fill: var(--theme-gradient-color-08);
+                      stroke-dasharray: 52;
+                      stroke-dashoffset: 90;
+                      stroke-linecap: round;
+                      paint-order: stroke;
+
+                  - type: state
+                    cx: 200
+                    cy: 50
+                    entity_index: 3
+                    styles:
+                      text-anchor: middle;
+                      font-size: 3em;
+                      font-weight: 700;
+                      # fill: var(--theme-gradient-color-01);
+                      fill: black;
+
+                  - type: name
+                    cx: 50
+                    cy: 95
+                    entity_index: 0
+                    styles:
+                      text-anchor: middle;
+                      font-size: 2em;
+                      font-weight: 700;
+                      fill: var(--primary-text-color);
+
+                  # - type: bar
+                    # id: 2
+                    # orientation: vertical
+                    # entity_index: 0
+                    # cx: 290
+                    # cy: 60
+                    # width: 150
+                    # height: 30
+                    # margin: 1.5
+                    # hours: 24
+                    # barhours: 1
+                    # styles:
+                      # stroke: grey;
+                      # # stroke: var(--theme-gradient-color-04);
+                      # stroke-linecap: butt;
