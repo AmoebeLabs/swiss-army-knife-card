@@ -37,7 +37,22 @@ colorswatch_default:
       - --sak-cs-default-01: 'red'
       - --sak-cs-default-02: 'green'
       - --sak-cs-default-03: 'blue'
-      
+
+# From Pinterest
+# - gainsboro: kind of white / background
+# - slategray: kind of green/gray
+# - darkslategray: almost black for font
+
+colorswatch_android_watch:
+  type: colorswatch
+  colors:
+    light:
+    - --sak-cs-aw-gainsboro: '#e7e7e7'
+    - --sak-cs-aw-slategray: '#5c7886'
+    - --sak-cs-aw-lightgray: '#e7e7e7'
+    - --sak-cs-aw-darkorange: '#f79201'
+    - --sak-cs-aw-darkslategray: '#2e2e2e'
+
 colorswatch_default_gradient_white_orange:
   type: colorswatch
   colors:
@@ -187,8 +202,8 @@ tools_segarc_icon_state:
         styles:
           text-anchor: center;
           font-size: 2em;
-          color: var(--theme-gradient-color-01);
-          fill: var(--theme-gradient-color-01);
+          color: var(--primary-text-color);
+          fill: var(--primary-text-color);
 
 toolset_arc180_sparklinebar24:
   type: toolset
@@ -225,20 +240,28 @@ toolset_arc180_sparklinebar24:
         cy: 50
         start_angle: -90
         end_angle: 90
-        width: 5
+        width: 10
         radius: 45
         radius_x: 45
         radius_y: 45
+        # scale_offset: -20
+        #
+        # Scale settings are not merged using templates. Why??
+        # keep getting the default values set by the segarc...
+        # a separate segarc works with these settings in scale.width etc.
         scale:
-          min: '[[scale_min]]'
+          min: 50
+          # min: '[[scale_min]]'
           max: '[[scale_max]]'
+          width: 5
+          offset: -20
         show:
           scale: '[[show_scale]]'
           style: 'colorstops'
         segments:
           colorstops:
             template:
-              name: '[[colorstops_template]]'
+              name: '[[colorstops_humidity]]'
               variables:
                 - thegap: 0
         styles:
@@ -295,6 +318,7 @@ toolset_light_button:
     tools:
       # Static circle
       - type: circle
+        id: 1
         cx: 50
         cy: 30
         radius: 25
@@ -315,6 +339,7 @@ toolset_light_button:
 
       #Animated circle
       - type: circle
+        id: 2
         cx: 50
         cy: 30
         radius: 25
@@ -356,6 +381,7 @@ toolset_light_button:
       - type: icon
         cx: 50
         cy: 30
+        id: 3
         entity_index: '[[entity_light]]'
         align: center
         icon_size: 36
@@ -376,6 +402,7 @@ toolset_light_button:
       - type: name
         cx: 5
         cy: 75
+        id: 4
         entity_index: '[[entity_light]]'
         styles:
           font-size: 1.8em;
@@ -383,6 +410,7 @@ toolset_light_button:
           text-anchor: start;
       - type: area
         entity_index: 0
+        id: 5
         cx: 5
         cy: 85
         styles:
@@ -391,6 +419,7 @@ toolset_light_button:
       - type: state
         cx: 5
         cy: 95
+        id: 6
         entity_index: '[[entity_light]]'
         animations:
           - state: 'on'
@@ -408,6 +437,7 @@ toolset_light_button:
       - type: state
         cx: 95
         cy: 95
+        id: 7
         custom_fields:
           - brightness: >
               [[[
