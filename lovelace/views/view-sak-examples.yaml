@@ -3079,6 +3079,7 @@ cards:
                 position:
                   cx: 100
                   cy: 50
+                  scale_y: 0.4
                 tools:
                   - type: 'area'
                     id: 0
@@ -3106,7 +3107,7 @@ cards:
                     end_angle: 130
                     width: 5
                     radius: 45
-                    radius_x: 15
+                    radius_x: 45
                     radius_y: 45
                     transform:
                       rotate: 45
@@ -3157,7 +3158,7 @@ cards:
                     styles:
                       text-anchor: center;
                       font-size: 3em;
-                      fill: var(--theme-gradient-color-01);
+                      fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 0
@@ -3167,8 +3168,8 @@ cards:
                     align: center
                     icon_size: 18.5
                     styles:
-                      color: var(--theme-gradient-color-01);
-                      fill: var(--theme-gradient-color-01);
+                      color: var(--primary-text-color);
+                      fill: var(--primary-text-color);
 
               # ==============================================================================
               - toolset: humi
@@ -3229,7 +3230,7 @@ cards:
                     styles:
                       text-anchor: center;
                       font-size: 2em;
-                      fill: var(--theme-gradient-color-021;
+                      fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 0
@@ -3239,8 +3240,8 @@ cards:
                     align: center
                     icon_size: 18.5
                     styles:
-                      color: var(--theme-gradient-color-01);
-                      fill: var(--theme-gradient-color-01);
+                      color: var(--primary-text-color);
+                      fill: var(--primary-text-color));
 
               # ==============================================================================
               - toolset: pressure
@@ -3283,7 +3284,7 @@ cards:
                     styles:
                       text-anchor: center;
                       font-size: 2em;
-                      fill: var(--theme-gradient-color-01);
+                      fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 0
@@ -3293,8 +3294,8 @@ cards:
                     align: center
                     icon_size: 18.5
                     styles:
-                      color: var(--theme-gradient-color-01);
-                      fill: var(--theme-gradient-color-01);
+                      color: var(--primary-text-color);
+                      fill: var(--primary-text-color);
 
 # ==============================================================================================
 
@@ -3799,11 +3800,14 @@ cards:
                     cy: 50
                     start_angle: -90
                     end_angle: 90
-                    width: 5
+                    # was 5, now 10 
+                    width: 10
                     radius: 45
                     scale:
                       min: 0
                       max: 100
+                      width: 5
+                      offset: +10
                     show:
                       scale: true
                       style: 'colorstops'
@@ -3844,6 +3848,7 @@ cards:
                     styles:
                       fill: var(--primary-text-color);
                       color: var(--primary-text-color);
+                      filter: url(#ds1);
 
                   - type: 'bar'
                     id: 0
@@ -4493,7 +4498,7 @@ cards:
           dev:
             debug: false
             ts: true
-            performance: true
+            performance: false
           
           show:
             # explictly enable the use of the usersvg tool.
@@ -4715,7 +4720,8 @@ cards:
                 position:
                   cx: 127.50
                   cy: 25
-                  scale: .9
+                  scale: .7
+                  scale_y: 0.4
                   rotate: 5
                 tools:
                   - type: segarc
@@ -4748,7 +4754,7 @@ cards:
                 position:
                   cx: 175
                   cy: 50
-                  scale: .9
+                  scale: 1
                   rotate: 30
                 tools:
                   - type: segarc
@@ -4812,7 +4818,7 @@ cards:
           dev:
             debug: false
             ts: true
-            performance: true
+            performance: false
           
           show:
             # explictly enable the use of the usersvg tool.
@@ -5560,7 +5566,7 @@ cards:
           dev:
             debug: false
             ts: true
-            performance: true
+            performance: false
 
           layout:
             toolsets:
