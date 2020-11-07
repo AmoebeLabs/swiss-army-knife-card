@@ -159,6 +159,17 @@ tools_segarc_icon_state:
     colorswatches:
       - colorswatch_default_gradient_white_orange
     tools:
+      - type: circle
+        id: 10
+        cx: 50
+        cy: 50
+        radius: 27.5
+        styles:
+          fill: |
+            #efeeee;
+          stroke-width: 0;
+          # filter: url(#nm-1);          
+        
       - type: segarc
         id: 0
         entity_index: '[[entity]]'
@@ -184,7 +195,12 @@ tools_segarc_icon_state:
         styles:
           fill: var(--theme-gradient-color-01);
         styles_bg:
-          fill: var(--primary-background-color);
+          # fill: var(--primary-background-color);
+          # fill: lightgray;
+          # #efeeee
+          fill: |
+            #dedddd;
+          filter: url(#is-1);
 
       - type: icon
         id: 1
@@ -193,6 +209,13 @@ tools_segarc_icon_state:
         cy: 42
         align: center
         icon_size: 15
+        styles:
+          filter: url(#is-1);
+          # fill: lightgray;
+          # color: lightgray;
+          color: darkgray;
+          fill: darkgray;
+
 
       - type: state
         id: 2
@@ -200,10 +223,15 @@ tools_segarc_icon_state:
         cx: 50
         cy: 60
         styles:
-          text-anchor: center;
+          text-anchor: middle;
           font-size: 2em;
-          color: var(--primary-text-color);
-          fill: var(--primary-text-color);
+          color: |
+            #222222;
+          fill: ##222222;
+          fill: |
+            #222222;
+          # color: var(--primary-text-color);
+          # fill: var(--primary-text-color);
 
 toolset_arc180_sparklinebar24:
   type: toolset
@@ -275,7 +303,7 @@ toolset_arc180_sparklinebar24:
         cx: 50
         cy: 40
         styles:
-          text-anchor: center;
+          text-anchor: middle;
           font-size: 3.6em;
           fill: var(--primary-text-color);
 
