@@ -35,8 +35,8 @@ path: sake2
 panel: false
 cards:
 #------------------------------------------------------------------------------
-#- type: vertical-stack
-#  cards:
+- type: vertical-stack
+  cards:
     # - type: horizontal-stack
       # cards:
         # - !include card-blank-card.yaml
@@ -2169,7 +2169,7 @@ cards:
                 # xpos: 50
                 # ypos: 9
                 # styles:
-                  # - font-size: 1.1.2em;
+                  # - font-size: 1.2em;
                   # - text-anchor: center;
 
               # - id: 1
@@ -2177,7 +2177,7 @@ cards:
                 # xpos: 50
                 # ypos: 19
                 # styles:
-                  # - font-size: 1.1.2em;
+                  # - font-size: 1.2em;
                   # - text-anchor: center;
 
               # - id: 2
@@ -2185,7 +2185,7 @@ cards:
                 # xpos: 50
                 # ypos: 29
                 # styles:
-                  # - font-size: 1.1.2em;
+                  # - font-size: 1.2em;
                   # - text-anchor: center;
 
               # - id: 3
@@ -2193,7 +2193,7 @@ cards:
                 # xpos: 50
                 # ypos: 39
                 # styles:
-                  # - font-size: 1.1.2em;
+                  # - font-size: 1.2em;
                   # - text-anchor: center;
 
               # - id: 4
@@ -2201,7 +2201,7 @@ cards:
                 # xpos: 50
                 # ypos: 72
                 # styles:
-                  # - font-size: 1.1.2em;
+                  # - font-size: 1.2em;
                   # - text-anchor: center;
 
               # - id: 5
@@ -2209,7 +2209,7 @@ cards:
                 # xpos: 50
                 # ypos: 82
                 # styles:
-                  # - font-size: 1.1.2em;
+                  # - font-size: 1.2em;
                   # - text-anchor: center;
 
               # - id: 6
@@ -2217,7 +2217,7 @@ cards:
                 # xpos: 50
                 # ypos: 92
                 # styles:
-                  # - font-size: 1.1.2em;
+                  # - font-size: 1.2em;
                   # - text-anchor: center;
 
             # icons:
@@ -3079,7 +3079,7 @@ cards:
                 position:
                   cx: 100
                   cy: 50
-                  scale_y: 0.4
+                  # scale_y: 0.4
                 tools:
                   - type: 'area'
                     id: 0
@@ -3087,7 +3087,7 @@ cards:
                     cx: 50
                     cy: 80
                     styles:
-                      - font-size: 2.4em;
+                      font-size: 2.4em;
 
                   - type: 'name'
                     id: 0
@@ -3149,6 +3149,7 @@ cards:
                       fill: var(--theme-gradient-color-01);
                     styles_bg:
                       fill: var(--primary-background-color);
+                      filter: url(#is-1);
 
                   - type: 'state'
                     id: 0
@@ -3347,7 +3348,7 @@ cards:
                     # cx: 50
                     # cy: 80
                     # styles:
-                      # - font-size: 2.4em;
+                      # font-size: 2.4em;
 
                   ##
                   - type: 'name'
@@ -3782,7 +3783,7 @@ cards:
                     cx: 100
                     cy: 98
                     styles:
-                      - font-size: 2.4em;
+                      font-size: 2.4em;
 
                   - type: 'name'
                     id: 0
@@ -3910,7 +3911,7 @@ cards:
                     cx: 100
                     cy: 98
                     styles:
-                      - font-size: 2.4em;
+                      font-size: 2.4em;
 
                   - type: 'name'
                     id: 0
@@ -4103,7 +4104,7 @@ cards:
                     cx: 100
                     cy: 98
                     styles:
-                      font-size: 1.5em;
+                      font-size: 3em;
 
                   - type: 'segarc'
                     id: 0
@@ -4806,7 +4807,7 @@ cards:
             # CPU
             - entity: sensor.processor_use
               decimals: 0
-              icon: mdi:memory
+              # icon: mdi:memory
             # ...
             - entity: sensor.load_1m
               decimals: 2
@@ -4931,11 +4932,25 @@ cards:
                 position:
                   cx: 25
                   cy: 50
-                  scale: 1
-
+                  scale: .8
                 tools:
-                 - type: icon
-                   id: 1
+                  - type: segarc
+                    id: 0
+                    show:
+                      scale: true
+                      style: 'colorstops'
+                    segments:
+                      colorstops:
+                        gap: 1
+                        # arc can be 'followcolorstop', or 'followvalue'
+                        arc_color: 'followcolorstop'
+                        colors:
+                          00: 'DarkSeaGreen'
+                          70: 'yellow'
+                          80: 'orange'
+                          90: 'red'
+                  - type: icon
+                    id: 1
 
               # ==============================================================================
               - toolset: areatoolset
@@ -4963,7 +4978,7 @@ cards:
                 position:
                   cx: 72.50
                   cy: 25
-                  scale: 1
+                  scale: .8
                 tools:
                   - type: segarc
                     id: 0
@@ -4991,7 +5006,7 @@ cards:
                 position:
                   cx: 127.50
                   cy: 25
-                  scale: 1
+                  scale: .8
                 tools:
                   - type: segarc
                     id: 0
@@ -5025,7 +5040,7 @@ cards:
                 position:
                   cx: 175
                   cy: 50
-                  scale: 1
+                  scale: .8
                 tools:
                   - type: segarc
                     id: 0
@@ -5038,10 +5053,20 @@ cards:
                       colorlist:
                         gap: 1
                         colors:
-                          - 'var(--theme-gradient-color-01)'
-                          - 'var(--theme-gradient-color-02)'
-                          - 'var(--theme-gradient-color-03)'
-                          - 'var(--theme-gradient-color-04)'
+                          # - '#FFF6E3'
+                          - '#FFE9B9'
+                          # - '#FFDA8A'
+                          - '#FFCB5B'
+                          # - '#FFBF37'
+                          - '#ffb414'
+                          # - '#FFAD12'
+                          - '#FFA40E'
+                          # - '#FF9C0B' 
+                          - '#FF8C06' 
+                          # - 'var(--theme-gradient-color-01)'
+                          # - 'var(--theme-gradient-color-02)'
+                          # - 'var(--theme-gradient-color-03)'
+                          # - 'var(--theme-gradient-color-04)'
 
         ##- !include card-blank-card.yaml
 
@@ -5170,7 +5195,7 @@ cards:
                     cx: 5
                     cy: 85
                     styles:
-                      font-size: 1.2em;
+                      font-size: 2.4em;
                       text-anchor: start;
                   - type: state
                     cx: 5
@@ -5355,7 +5380,7 @@ cards:
                     cx: 5
                     cy: 80
                     styles:
-                      font-size: 1.2em;
+                      font-size: 2.4em;
                       text-anchor: start;
                   # # STATE
                   # - type: state
@@ -5390,7 +5415,7 @@ cards:
                         stroke: var(--theme-gradient-color-01);
                         stroke-width: 2;
                       handle:
-                        font-size: 1.2.4em;
+                        font-size: 2.4em;
                         font-weight: 700;
                         fill: black;
 
@@ -6264,3 +6289,130 @@ cards:
                       # stroke: grey;
                       # # stroke: var(--theme-gradient-color-04);
                       # stroke-linecap: butt;
+
+##################################################
+    - type: horizontal-stack
+      cards:
+        ##- !include card-blank-card.yaml
+        # Example 33T::
+        #
+        # Light buttons, new look... Must be on separate circle for filtering globally
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_left_light
+              name: Duo Links
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.livingroom_light_duo_left_light" }
+            - entity: light.livingroom_light_duo_right_light #rechter_lamp_voor
+              area: Woonkamer
+              name: Duo Rechts
+              icon: mdi:floor-lamp-dual #'mdi:grid-large' border-left
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.livingroom_light_duo_right_light" }
+
+          dev:
+            debug: false
+            ts: true
+          
+          show:
+            # explictly enable the use of the usersvg tool.
+            usersvg : true
+          
+          dimensions: 2/1
+
+          layout:
+            toolsets:
+              - toolset: lamp1
+                position:
+                  cx: 50
+                  cy: 50
+                  scale: 1
+                  rotate: 0
+                tools:
+                  - type: circle
+                    cx: 50
+                    cy: 30
+                    radius: 26
+                    # animations:
+                      # - state: 'on'
+                        # styles:
+                          # stroke: darkorange;
+                      # - state: 'off'
+                        # styles:
+                          # stroke: transparent;
+                    styles:
+                      pointer-events: none;
+                      stroke-width: 5;
+                      fill: |
+                        #efeeee;
+                  - type: circle
+                    cx: 50
+                    cy: 30
+                    radius: 23
+                    animations:
+                      - state: 'on'
+                        styles:
+                          fill: darkorange;
+                      - state: 'off'
+                        styles:
+                          fill: lightgray;
+                    styles:
+                      stroke-width: 0;
+                      pointer-events: none;
+
+                  - type: circle
+                    cx: 50
+                    cy: 30
+                    radius: 22
+                    entity_index: 0
+                    # Note, 2020.11.07
+                    # Safari (again) can't handle modifications in the filter url:
+                    # - from none to some filter is ok
+                    # - from some filter to none is ok
+                    # - but from some filter to another filter doesn't change the filter!!!!
+                    # Refreshing page works, but that is not the point...
+                    animations:
+                      - state: 'on'
+                        styles:
+                          filter: url(#filter);
+                          # stroke: darkorange;
+                          fill: |
+                            #efeeee;
+                      - state: 'off'
+                        styles:
+                          # stroke: lightgray;
+                          filter: none;
+                          fill: |
+                            #efeeee;
+                    styles:
+                      stroke-width: 0;
+
+                  - type: icon
+                    cx: 50
+                    cy: 30
+                    entity_index: 0
+                    align: center
+                    icon_size: 36
+                    animations:
+                      - state: 'on'
+                        styles:
+                          color: darkorange;
+                          fill: darkorange;
+                      - state: 'off'
+                        styles:
+                          color: darkgrey;
+                          fill: darkgrey;
+                          opacity: 0.7;
+                    styles:
+                      pointer-events: none;
+                      filter: url(#is-1);
+
