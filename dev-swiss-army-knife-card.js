@@ -18,6 +18,46 @@
 *******************************************************************************
 */
 
+/*
+===========
+https://neumorphism.io/#efeeee
+ 
+Background: light color, off-white...
+- color: #efeeee,
+- intensity 0.2. (higher -> sharper curves. Blur stuff???
+- Distance is default 20 en Blur 2*distance in pixels...
+- Lightsource is from left-top.
+
+Flat:
+-----
+border-radius: 50px;
+background: #efeeee;
+box-shadow:  30px 30px 60px #bfbebe, 
+             -30px -30px 60px #ffffff;
+
+Concave:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #d7d6d6, #ffffff);
+box-shadow:  30px 30px 60px #bfbebe, 
+             -30px -30px 60px #ffffff;
+
+Convex:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #ffffff, #d7d6d6);
+box-shadow:  30px 30px 60px #bfbebe, 
+             -30px -30px 60px #ffffff;
+Pressed:
+-----
+border-radius: 50px;
+background: #efeeee;
+box-shadow: inset 30px 30px 60px #bfbebe, 
+            inset -30px -30px 60px #ffffff;           
+
+
+*/
+
 /*jshint esversion: 9 */
 /*jshint -W033 */
 /*eslint no-undef: "console"*/
@@ -37,8 +77,16 @@ import {
 import 'https://cdn.skypack.dev/@ctrl/tinycolor';
 //++ Consts ++++++++++
 
-const FONT_SIZE = 10;
-const SVG_DEFAULT_DIMENSIONS = 200;
+// Set sizes:
+// If svg size is changed, change the font size accordingly.
+// These two are related ;-)
+// So:
+// - svg 200 -> font 10
+// - svg 400 -> font 20
+// etc...
+const SCALE_DIMENSIONS = 2
+const FONT_SIZE = 10 * SCALE_DIMENSIONS;
+const SVG_DEFAULT_DIMENSIONS = 200 * SCALE_DIMENSIONS;
 const SVG_VIEW_BOX = SVG_DEFAULT_DIMENSIONS;//200;
 //const SVG_VIEW_BOX_HEIGHT = 1 * SVG_DEFAULT_DIMENSIONS; //200
 //const SVG_VIEW_BOX_WIDTH = 2 * SVG_DEFAULT_DIMENSIONS;//400;
@@ -96,7 +144,7 @@ const SVG_VIEW_BOX = SVG_DEFAULT_DIMENSIONS;//200;
 
 class Utils {
 
- /*******************************************************************************
+ /**
   * _calculateValueBetween()
   *
   * Summary.
@@ -587,7 +635,7 @@ class Toolset {
                       scale(${this.transform.scale.x}, ${this.transform.scale.y})
                       "
            style="transform-origin:center;">
-          <svg style="overflow:visible">
+          <svg style="overflow:visible;">
             <g class="toolset_position" transform="translate(${this.svg.cx/this.transform.scale.x}, ${this.svg.cy/this.transform.scale.y})">
               ${this.renderToolset()}
             </g>
@@ -607,7 +655,7 @@ class Toolset {
         <g id="toolset-${this.toolsetId}" class="toolset"
            transform="rotate(${this.transform.rotate.x}) scale(${this.transform.scale.x}, ${this.transform.scale.y})"
            style="transform-origin:center; transform-box:fill-box;">
-          <svg>
+          <svg style="overflow:visible;">
             <g class="toolset_position" transform="translate(${this.svg.cx}, ${this.svg.cy})">
               ${this.renderToolset()}
             </g>
@@ -1510,7 +1558,7 @@ class CircleTool extends BaseTool {
     const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
     return svg`
-      <circle filter="url(#ds)"
+      <circle ""
         cx="${this.svg.cx}"% cy="${this.svg.cy}"% r="${this.svg.radius}"
         style="${configStyleStr}"/>
       `;
@@ -1526,15 +1574,34 @@ class CircleTool extends BaseTool {
   render() {
 
 // We need transform-origin for animations. Works also on Safari. But why not working on safari for rotate etc.???
-//        <g filter="url(#ds)" id="circle-${this.toolId}" class="circle" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
-
+//        <g "" id="circle-${this.toolId}" class="circle" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
 
     return svg`
-      <g filter="url(#ds)" id="circle-${this.toolId}" class="circle" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g "" id="circle-${this.toolId}" class="circle" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
         ${this._renderCircle()}
       </g>
     `;
+
+
+    // testing
+
+    if (!this.config.entity_index) {
+      return svg`
+        <g "" id="circle-${this.toolId}" class="circle" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}>"
+          ${this._renderCircle()}
+        </g>
+      `;
+
+    } else {
+      return svg`
+        <g "" id="circle-${this.toolId}" class="circle" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+          @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+          ${this._renderCircle()}
+        </g>
+      `;
+
+    }
 
   }
 } // END of class
@@ -1622,7 +1689,7 @@ class RectangleTool extends BaseTool {
     const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
     return svg`
-      <rect filter="url(#ds)"
+      <rect ""
         x="${this.svg.x}" y="${this.svg.y}" width="${this.svg.width}" height="${this.svg.height}" rx="${this.svg.rx}"
         style="${configStyleStr}"/>
       `;
@@ -1638,7 +1705,7 @@ class RectangleTool extends BaseTool {
   render() {
 
     return svg`
-      <g filter="url(#ds)" id="rectangle-${this.toolId}" class="rectangle" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
+      <g "" id="rectangle-${this.toolId}" class="rectangle" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
         ${this._renderRectangle()}
       </g>
@@ -1730,11 +1797,11 @@ class RectangleToolEx extends BaseTool {
     const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
     svgItems = svg``;
-    // filter="url(#ds)"
+    // ""
     // filter="url(#card--dropshadow-medium--opaque--sepia90)"
 
     svgItems = svg`
-      <g filter="url(#ds)" id="rectex-${this.toolId}">
+      <g "" id="rectex-${this.toolId}">
         <path  d="
             M ${this.svg.x + this.svg.radiusTopLeft} ${this.svg.y}
             h ${this.svg.width - this.svg.radiusTopLeft - this.svg.radiusTopRight}
@@ -1751,7 +1818,7 @@ class RectangleToolEx extends BaseTool {
       `;
 /*    svgItems = svg`
       <g  id="badge-${this.toolId}">
-        <path filter="url(#ds)" d="
+        <path "" d="
             M ${this.svg.rightXpos} ${this.svg.rightYpos}
             h ${this.svg.rightWidth - this.svg.radius}
             a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} ${this.svg.radius}
@@ -1763,7 +1830,7 @@ class RectangleToolEx extends BaseTool {
             "
             style="${configStyleRightStr}"/>
 
-        <path filter="url(#ds)" d="
+        <path "" d="
             M ${this.svg.leftXpos + this.svg.radius} ${this.svg.leftYpos}
             h ${this.svg.leftWidth - this.svg.radius}
             v ${this.svg.divSize}
@@ -1866,7 +1933,7 @@ class EllipseTool extends BaseTool {
     if (this.dev.debug) console.log('EllipseTool - renderEllipse', this.svg.cx, this.svg.cy, this.svg.radiusx, this.svg.radiusy);
 
     return svg`
-      <ellipse filter="url(#ds)"
+      <ellipse ""
         cx="${this.svg.cx}"% cy="${this.svg.cy}"%
         rx="${this.svg.radiusx}" ry="${this.svg.radiusy}"
         style="${configStyleStr}"/>
@@ -1883,7 +1950,7 @@ class EllipseTool extends BaseTool {
   render() {
 
     return svg`
-      <g filter="url(#ds)" id="ellipse-${this.toolId}" class="ellipse"
+      <g "" id="ellipse-${this.toolId}" class="ellipse"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
         ${this._renderEllipse()}
       </g>
@@ -2263,7 +2330,7 @@ class EntityIconTool extends BaseTool {
     if (this.dev.debug) console.log('renderIcon - xlatex/y values', scale, this.toolsetPos.scale, xlatex, xlatey, this.coords, this.dimensions);
 */
     return svg`
-      <g filter="url(#ds)" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale}) translate(${this.svg.xlateX} ${this.svg.xlateY})"
+      <g "" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale}) translate(${this.svg.xlateX} ${this.svg.xlateY})"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
 
         ${this._renderIcon()}
@@ -2349,7 +2416,7 @@ class BadgeTool extends BaseTool {
 
     svgItems = svg`
       <g  id="badge-${this.toolId}">
-        <path filter="url(#ds)" d="
+        <path "" d="
             M ${this.svg.rightXpos} ${this.svg.rightYpos}
             h ${this.svg.rightWidth - this.svg.radius}
             a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} ${this.svg.radius}
@@ -2361,7 +2428,7 @@ class BadgeTool extends BaseTool {
             "
             style="${configStyleRightStr}"/>
 
-        <path filter="url(#ds)" d="
+        <path "" d="
             M ${this.svg.leftXpos + this.svg.radius} ${this.svg.leftYpos}
             h ${this.svg.leftWidth - this.svg.radius}
             v ${this.svg.divSize}
@@ -3045,7 +3112,7 @@ class HorseshoeTool extends BaseTool {
   render() {
 
     return svg`
-      <g filter="url(#ds)" id="horseshoe-${this.toolId}" class="horseshoe"
+      <g "" id="horseshoe-${this.toolId}" class="horseshoe"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
         ${this._renderHorseShoe()}
       </g>
@@ -3246,7 +3313,7 @@ class SparkleBarChartTool extends BaseTool {
     //if (!this._needsRendering) return;
 
     return svg`
-      <g filter="url(#ds)" id="barchart-${this.toolId}" class="barchart"
+      <g "" id="barchart-${this.toolId}" class="barchart"
          @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
         ${this._renderBars()}
       </g>
@@ -3648,7 +3715,7 @@ class SegmentedArcTool extends BaseTool {
 
     if (this.dev.debug) console.log('SegmentedArcTool RENDERNEW - Render IN');
     return svg`
-      <g filter="url(#ds)" id="arc-${this.toolId}" class="arc">
+      <g "" id="arc-${this.toolId}" class="arc">
         <g >
           ${this._renderSegments()}
           </g>
@@ -4440,8 +4507,16 @@ class devSwissArmyKnifeCard extends LitElement {
     return css`
       :host {
         cursor: pointer;
+        font-size: ${FONT_SIZE}px;
       }
 
+      focus {
+        outline: none;
+      }
+      focus-visible {
+        outline: 3px solid blanchedalmond; /* That'll show 'em */
+      }
+      
       @media (print), (prefers-reduced-motion: reduce) {
         .animated {
           animation-duration: 1ms !important;
@@ -4759,17 +4834,18 @@ class devSwissArmyKnifeCard extends LitElement {
        */
       @media screen and (min-width: 467px) {
         :host {
-        font-size: 10px;
+        font-size: ${FONT_SIZE}px;
         }
       }
       @media screen and (max-width: 466px) {
         :host {
-        font-size: 10px;
+        font-size: ${FONT_SIZE}px;
         }
       }
 
       :host ha-card {
             padding: 0px 0px 0px 0px;
+            background: #efeeee;
       }
 
       .container {
@@ -5986,9 +6062,17 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 // WHY ????????????????????????????????????????????????????
 //              <g id="datatoolset" class="datatoolset" clip-path="url(#clip)">
 
+// #TODO:
+// For all objects to have a filter, and i mean composite objects, filter must be set by parent.
+// In that case all objects are on same level, and don't show shadow's on each other if they are close to eachother.
+// but then it seems sometimes IMPOSSIBle to set a filter on an individual object. WHY????????
+// Not always. path filters do work...
+//
+//               <g id="datatoolset" class="datatoolset" filter="url(#nm-1)">
+
     if (this.dev.ts) {
       return svg`
-              <g id="datatoolset" class="datatoolset">
+              <g id="datatoolset" class="datatoolset" filter="url(#nm-1)">
                 ${this.ts.map(toolset => toolset.render())}
                 ${this._renderUserSvgs()}
               </g>
@@ -6087,9 +6171,146 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
                   <feGaussianBlur stdDeviation="1" />
                 </filter>
 
-                <filter id="ds" y="-50%" x="-50%" width="200%" height="400%">
+                <filter id="ds-1" y="-50%" x="-50%" width="200%" height="400%">
                   <feDropShadow dx="0" dy="1.5" stdDeviation=".3"/>
                 </filter>
+
+                <!-- Neumorphic filter -->
+                <!-- -->
+                <!-- Light Shadow, #FFFFFF at 50%, x:-6, Y:-6, Blur:16 -->
+                <!-- Dark Shadow: #d1cdc7 at 50%, x:6, y:6, Blur:16 -->
+                <!-- Main Background: #efeeee -->
+                <!-- Shape Background: #efeeee -->
+                <!-- Optional Border: #fff at 20% Alpha -->
+                <!-- Dark Shadow was: 0d2750 -->
+                
+                <filter id="is-1" x="-50%" y="-50%" width="200%" height="200%">
+                  <feComponentTransfer in=SourceAlpha>
+                    <feFuncA type="table" tableValues="1 0" />
+                  </feComponentTransfer>
+                  <feGaussianBlur stdDeviation="1"/>
+                  <feOffset dx="2" dy="2" result="offsetblur"/>
+                  <feFlood flood-color="#0d2750" flood-opacity="0.5" result="color"/>
+                  <feComposite in2="offsetblur" operator="in"/>
+                  <feComposite in2="SourceAlpha" operator="in" />
+                  <feMerge>
+                    <feMergeNode in="SourceGraphic" />
+                    <feMergeNode />
+                  </feMerge>
+                </filter>
+
+                <!-- Using feComposite in="offsetblur" operator="in" instead of in2 gives a -->
+                <!-- much larger shadow area, much deeper! WHY?? -->
+                
+                <filter id="nm-2" x="-50%" y="-50%" width="200%" height="200%">
+                  <feComponentTransfer in=SourceAlpha out=transfer>
+                    <feFuncA type="table" tableValues="1 0" />
+                  </feComponentTransfer>
+
+                  <feGaussianBlur input="transfer" stdDeviation="5" result="blurdark"/>
+                  <feOffset input="blurdark" dx="12" dy="12" result="offsetblurdark"/>
+                  <feFlood input="offsetblurdark" flood-color="#d1cdc7" flood-opacity="0.4" result="colordark"/>
+
+                  <feGaussianBlur input="transfer" stdDeviation="5" result="blurlight"/>
+                  <feOffset input="blurlight" dx="-12" dy="-12" result="offsetblurlight"/>
+                  <feFlood input="offsetblurlight" flood-color="white" flood-opacity="0.9" result="colorlight"/>
+
+                  <feComposite in="offsetblurdark" operator="in"/>
+                  <feComposite in="SourceAlpha" operator="in" />
+
+                  <feMerge>
+                    <feMergeNode in="SourceGraphic" />
+                    <feMergeNode />
+                  </feMerge>
+                </filter>
+
+                <filter id="filter-yoksel" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="linearRGB">
+                  <feFlood flood-color="#eeebe7" flood-opacity="0.7" x="0%" y="0%" width="100%" height="100%" result="flood2"/>
+                  <feComposite in="flood2" in2="SourceAlpha" operator="out" x="0%" y="0%" width="100%" height="100%" result="composite5"/>
+                  <feOffset dx="-9" dy="-7" x="0%" y="0%" width="100%" height="100%" in="composite5" result="offset1"/>
+                  <feGaussianBlur stdDeviation="3 10" x="0%" y="0%" width="100%" height="100%" in="offset1" edgeMode="none" result="blur2"/>
+                  <feComposite in="merge3" in2="SourceAlpha" operator="in" x="0%" y="0%" width="100%" height="100%" result="composite7"/>
+                  <feFlood flood-color="#0f0f0f" flood-opacity="1" x="0%" y="0%" width="100%" height="100%" result="flood4"/>
+                  <feComposite in="flood4" in2="SourceAlpha" operator="out" x="0%" y="0%" width="100%" height="100%" result="composite8"/>
+                  <feOffset dx="6" dy="6" x="0%" y="0%" width="100%" height="100%" in="merge3" result="offset2"/>
+                  <feGaussianBlur stdDeviation="3 10" x="0%" y="0%" width="100%" height="100%" in="offset2" edgeMode="none" result="blur3"/>
+                  <feComposite in="blur3" in2="SourceAlpha" operator="in" x="0%" y="0%" width="100%" height="100%" result="composite9"/>
+                  <feMerge x="0%" y="0%" width="100%" height="100%" result="merge3">
+                        <feMergeNode in="SourceGraphic"/>
+                    <feMergeNode in="composite7"/>
+                    <feMergeNode in="composite9"/>
+                    </feMerge>
+                </filter>
+
+                <!-- second try... -->
+                <filter id="filter" x="-50%" y="-50%" width="240%" height="240%">
+                  <feFlood flood-color="#FFFFFF" flood-opacity="0.8" result="flood2"/>
+                  <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
+                  <feOffset dx="-12" dy="-12" in="composite5" result="offset1"/>
+                  <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
+                  <feComposite in="blur2" in2="SourceAlpha" operator="in"  result="composite7"/>
+
+                  <feFlood flood-color="#777777" flood-opacity="0.9" result="flood4"/>
+                  <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
+                  <feOffset dx="6" dy="6" in="composite8" result="offset2"/>
+                  <feGaussianBlur stdDeviation="15" in="offset2" edgeMode="none" result="blur3"/>
+                  <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
+
+                  <feMerge result="merge3">
+                    <feMergeNode in="SourceGraphic"/>
+                    <feMergeNode in="composite7"/>
+                    <feMergeNode in="composite9"/>
+                    </feMerge>
+                </filter>
+
+                <filter id="bold" x="-50%" y="-50%" width="240%" height="240%">
+                  <feFlood flood-color="#FFFFFF" flood-opacity="0.8" result="flood2"/>
+                  <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
+                  <feOffset dx="12" dy="12" in="composite5" result="offset1"/>
+                  <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
+                  <feComposite in="blur2" in2="SourceAlpha" operator="in"  result="composite7"/>
+
+                  <feFlood flood-color="#777777" flood-opacity="0.6" result="flood4"/>
+                  <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
+                  <feOffset dx="-12" dy="-12" in="composite8" result="offset2"/>
+                  <feGaussianBlur stdDeviation="15" in="offset2" edgeMode="none" result="blur3"/>
+                  <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
+
+                  <feMerge result="merge3">
+                    <feMergeNode in="SourceGraphic"/>
+                    <feMergeNode in="composite7"/>
+                    <feMergeNode in="composite9"/>
+                    </feMerge>
+                </filter>
+
+                <filter id="filterss" x="-20%" y="-20%" width="140%" height="140%">
+                  <feFlood flood-color="#eeebe7" flood-opacity="0.9" result="flood2"/>
+                  <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
+                  <feOffset dx="-15" dy="-15" in="composite5" result="offset1"/>
+                  <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
+                  <feComposite in="blur2" in2="SourceAlpha" operator="in" result="composite7"/>
+
+                  <feFlood flood-color="#0f0f0f" flood-opacity="1" result="flood4"/>
+                  <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
+                  <feOffset dx="6" dy="6" in="composite8" result="offset2"/>
+                  <feGaussianBlur stdDeviation="5" in="offset2" edgeMode="none" result="blur3"/>
+                  <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
+
+                  <feMerge result="merge3">
+                    <feMergeNode in="SourceGraphic"/>
+                    <feMergeNode in="composite7"/>
+                    <feMergeNode in="composite9"/>
+                    </feMerge>
+                </filter>
+
+              <filter id="nm-1" x="-50%" y="-50%" width="300%" height="300%">
+                <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="#d1cdc7" flood-opacity="0.5" result="dropShadow"/>
+                <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="#FFFFFF" flood-opacity="1" result="dropShadow1"/>
+                <feMerge result="merge">
+                  <feMergeNode in="dropShadow1"/>
+                  <feMergeNode in="dropShadow"/>
+                </feMerge>
+              </filter>
 
               </defs>
       `;
@@ -6176,96 +6397,109 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     const cardFilter = this.config.card_filter ? this.config.card_filter : 'card--filter-none';
 
     const svgItems = [];
+    
+    // New #TODO:
+    // Put each toolset in a so called render group which its own filter setting.
+    // A toolset registers a render group while being configured/created.
+    // Card loops through all render groups and renders them with given style settings.
+    // Default rendergroup, if none given, is "rg-default"
+    //
+    svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
+                  class="${cardFilter}"
+                  viewBox="0 0 ${this.viewBox.width} ${this.viewBox.height}">
+                  ${this._RenderTools()}`);
+    
+/*    
     switch (this.dimensions) {
       case "1/1": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 200 200'>
+                  viewBox='0 0 200 200'>
                   ${this._RenderTools()}`);
                   break;
       case "2/2": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 400 400'>
+                  viewBox='0 0 400 400'>
                   ${this._RenderTools()}`);
                   break;
       case "3/3": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 600 600'>
+                  viewBox='0 0 600 600'>
                   ${this._RenderTools()}`);
                   break;
       case "4/4": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 800 800'>
+                  viewBox='0 0 800 800'>
                   ${this._RenderTools()}`);
                   break;
       case "2/1": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewbox='0 0 400 200'>
+                  class="${cardFilter}" preserveAspectRatio="xMidYMid slice" overflow="visible"
+                  viewBox="0 0 ${this.viewBox.width} ${this.viewBox.height}">
                   ${this._RenderTools()}`);
                   break;
       case "3/1": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 600 200'>
+                  viewBox='0 0 600 200'>
                   ${this._RenderTools()}`);
                   break;
       case "3/2": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 600 400'>
+                  viewBox='0 0 600 400'>
                   ${this._RenderTools()}`);
                   break;
       case "4/1": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 800 200'>
+                  viewBox='0 0 800 200'>
                   ${this._RenderTools()}`);
                   break;
       case "4/2": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 800 400'>
+                  viewBox='0 0 800 400'>
                   ${this._RenderTools()}`);
                   break;
       case "4/3": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 800 600'>
+                  viewBox='0 0 800 600'>
                   ${this._RenderTools()}`);
                   break;
       case "1/2": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 200 400'>
+                  viewBox='0 0 200 400'>
                   ${this._RenderTools()}`);
                   break;
       case "1/3": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 200 600'>
+                  viewBox='0 0 200 600'>
                   ${this._RenderTools()}`);
                   break;
       case "2/3": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 400 600'>
+                  viewBox='0 0 400 600'>
                   ${this._RenderTools()}`);
                   break;
       case "1/4": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 200 800'>
+                  viewBox='0 0 200 800'>
                   ${this._RenderTools()}`);
                   break;
       case "2/4": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 400 800'>
+                  viewBox='0 0 400 800'>
                   ${this._RenderTools()}`);
                   break;
       case "3/4": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 600 800'>
+                  viewBox='0 0 600 800'>
                   ${this._RenderTools()}`);
                   break;
       default: this.viewBox = {"width": 1000, "height": 1000};
                svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
-                  viewbox='0 0 1000 1000'>
+                  viewBox='0 0 1000 1000'>
                   ${this._RenderTools()}`);
                   console.error("card::render - aspect ratio not defined");
                   break;
     }
-
+*/
     return svg`${svgItems}`;
   }
 
