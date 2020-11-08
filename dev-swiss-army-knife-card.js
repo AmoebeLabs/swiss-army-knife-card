@@ -55,7 +55,193 @@ background: #efeeee;
 box-shadow: inset 30px 30px 60px #bfbebe, 
             inset -30px -30px 60px #ffffff;           
 
+===========
+Like the current cards. darkslategray/wheat. Not background, that is darker.
+https://neumorphism.io/#525f62
 
+Flat:
+-----
+border-radius: 50px;
+background: #525f62;
+box-shadow:  20px 20px 60px #465153, 
+             -20px -20px 60px #5e6d71;
+
+Concave:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #4a5658, #586669);
+box-shadow:  20px 20px 60px #465153, 
+             -20px -20px 60px #5e6d71;
+
+Convex:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #586669, #4a5658);
+box-shadow:  20px 20px 60px #465153, 
+             -20px -20px 60px #5e6d71;
+Pressed:
+-----
+border-radius: 50px;
+background: #525f62;
+box-shadow: inset 20px 20px 60px #465153, 
+            inset -20px -20px 60px #5e6d71;
+
+===========
+Steelblue
+https://neumorphism.io/#438499
+
+Flat:
+-----
+border-radius: 50px;
+background: #438499;
+box-shadow:  20px 20px 40px #397082, 
+             -20px -20px 40px #4d98b0;
+
+Concave:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #3c778a, #488da4);
+box-shadow:  20px 20px 40px #397082, 
+             -20px -20px 40px #4d98b0;
+
+Convex:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #488da4, #3c778a);
+box-shadow:  20px 20px 40px #397082, 
+             -20px -20px 40px #4d98b0;
+Pressed:
+-----
+border-radius: 50px;
+background: #438499;
+box-shadow: inset 20px 20px 40px #397082, 
+            inset -20px -20px 40px #4d98b0;   
+
+===========
+Silver
+https://neumorphism.io/#bec5b8
+
+Flat:
+-----
+border-radius: 50px;
+background: #bec5b8;
+box-shadow:  20px 20px 40px #a2a79c, 
+             -20px -20px 40px #dbe3d4;
+
+Concave:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #abb1a6, #cbd3c5);
+box-shadow:  20px 20px 40px #a2a79c, 
+             -20px -20px 40px #dbe3d4;
+
+Convex:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #cbd3c5, #abb1a6);
+box-shadow:  20px 20px 40px #a2a79c, 
+             -20px -20px 40px #dbe3d4;
+Pressed:
+-----
+border-radius: 50px;
+background: #bec5b8;
+box-shadow: inset 20px 20px 40px #a2a79c, 
+            inset -20px -20px 40px #dbe3d4; 
+
+===========
+Lightsteelblue
+https://neumorphism.io/#bac8d3
+
+Flat:
+-----
+border-radius: 50px;
+background: #bac8d3;
+box-shadow:  20px 20px 40px #9eaab3, 
+             -20px -20px 40px #d6e6f3;
+
+Concave:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #a7b4be, #c7d6e2);
+box-shadow:  20px 20px 40px #9eaab3, 
+             -20px -20px 40px #d6e6f3;
+
+Convex:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #c7d6e2, #a7b4be);
+box-shadow:  20px 20px 40px #9eaab3, 
+             -20px -20px 40px #d6e6f3;
+Pressed:
+-----
+border-radius: 50px;
+background: #bac8d3;
+box-shadow: inset 20px 20px 40px #9eaab3, 
+            inset -20px -20px 40px #d6e6f3; 
+
+===========
+Wheat
+https://neumorphism.io/#e5d7b9
+
+Flat:
+-----
+border-radius: 50px;
+background: #bac8d3;
+box-shadow:  20px 20px 40px #9eaab3, 
+             -20px -20px 40px #d6e6f3;
+
+Concave:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #cec2a7, #f5e6c6);
+box-shadow:  20px 20px 40px #c3b79d, 
+             -20px -20px 40px #fff7d5;
+
+Convex:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #f5e6c6, #cec2a7);
+box-shadow:  20px 20px 40px #c3b79d, 
+             -20px -20px 40px #fff7d5;
+Pressed:
+-----
+border-radius: 50px;
+background: #e5d7b9;
+box-shadow: inset 20px 20px 40px #c3b79d, 
+            inset -20px -20px 40px #fff7d5;
+
+===========
+Lightgray
+https://neumorphism.io/#c8cfd4
+
+Flat:
+-----
+border-radius: 50px;
+background: #c8cfd4;
+box-shadow:  20px 20px 40px #aab0b4, 
+             -20px -20px 40px #e6eef4;
+
+Concave:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #b4babf, #d6dde3);
+box-shadow:  20px 20px 40px #aab0b4, 
+             -20px -20px 40px #e6eef4;
+
+Convex:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #d6dde3, #b4babf);
+box-shadow:  20px 20px 40px #aab0b4, 
+             -20px -20px 40px #e6eef4;
+Pressed:
+-----
+border-radius: 50px;
+background: #c8cfd4;
+box-shadow: inset 20px 20px 40px #aab0b4, 
+            inset -20px -20px 40px #e6eef4;
+
+   
 */
 
 /*jshint esversion: 9 */
@@ -4845,7 +5031,6 @@ class devSwissArmyKnifeCard extends LitElement {
 
       :host ha-card {
             padding: 0px 0px 0px 0px;
-            background: #efeeee;
       }
 
       .container {
@@ -6244,13 +6429,14 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
                 <!-- second try... -->
                 <filter id="filter" x="-50%" y="-50%" width="240%" height="240%">
-                  <feFlood flood-color="#FFFFFF" flood-opacity="0.8" result="flood2"/>
+                  <feFlood flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="0.8" result="flood2"/>
                   <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
                   <feOffset dx="-12" dy="-12" in="composite5" result="offset1"/>
                   <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
                   <feComposite in="blur2" in2="SourceAlpha" operator="in"  result="composite7"/>
 
-                  <feFlood flood-color="#777777" flood-opacity="0.9" result="flood4"/>
+                  <!-- flood-color="#777777" -->
+                  <feFlood flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.9" result="flood4"/>
                   <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
                   <feOffset dx="6" dy="6" in="composite8" result="offset2"/>
                   <feGaussianBlur stdDeviation="15" in="offset2" edgeMode="none" result="blur3"/>
@@ -6303,9 +6489,11 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
                     </feMerge>
                 </filter>
 
+              <!-- flood-color="#d1cdc7" -->
+              <!-- flood-color="#FFFFFF" -->
               <filter id="nm-1" x="-50%" y="-50%" width="300%" height="300%">
-                <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="#d1cdc7" flood-opacity="0.5" result="dropShadow"/>
-                <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="#FFFFFF" flood-opacity="1" result="dropShadow1"/>
+                <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+                <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
                 <feMerge result="merge">
                   <feMergeNode in="dropShadow1"/>
                   <feMergeNode in="dropShadow"/>
