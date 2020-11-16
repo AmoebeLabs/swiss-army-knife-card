@@ -1,0 +1,34 @@
+##
+#
+# Themes.yaml
+#
+  
+# "Hemera" day themes 
+
+Slate:
+  !include slate.yaml
+  
+NM - Gonsboro:
+  !include nm-01-gonsboro.yaml
+NM - Steelblue:
+  !include nm-02-steelblue.yaml
+NM - Dark Steelblue:
+  !include nm-03-dark-steelblue.yaml
+
+  
+Hemera - Orange Blue:
+  !include hemera-01-grey-orange-blue-rounded.yaml
+Hemera - Teal Purple:
+  !include hemera-02-grey-teal-purple-rounded.yaml
+Hemera - Yellow Green:
+  !include hemera-04-grey-yellow-green.yaml
+
+# "Nyx" night themes
+Nyx - Orange Blue:
+  !include nyx-01-black-orange-blue-rounded.yaml
+Nyx - Teal Purple:
+  !include nyx-02-black-teal-purple-rounded.yaml
+Nyx - Darkslategrey - Wheat:
+  !include nyx-05-darkslategrey-wheat.yaml
+  
+
