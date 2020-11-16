@@ -118,6 +118,46 @@ box-shadow: inset 20px 20px 40px #397082,
             inset -20px -20px 40px #4d98b0;   
 
 ===========
+
+Darker Steelblue
+https://neumorphism.io/#1E546B
+
+mdc colors: https://material.io/resources/color/#!/?view.left=1&view.right=0&primary.color=1E546B&secondary.color=FFE082
+Primary - 1e546b
+P — Light - 4f8099
+P — Dark - 002b40
+
+Secondary - ffe082
+S — Light - ffffb3
+S — Dark - caae53
+Flat:
+-----
+border-radius: 50px;
+background: #1E546B;
+box-shadow:  20px 20px 60px #1a475b, 
+             -20px -20px 60px #23617b;
+
+Concave:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #1b4c60, #205a72);
+box-shadow:  20px 20px 60px #1a475b, 
+             -20px -20px 60px #23617b;
+
+Convex:
+-----
+border-radius: 50px;
+background: linear-gradient(145deg, #205a72, #1b4c60);
+box-shadow:  20px 20px 60px #1a475b, 
+             -20px -20px 60px #23617b;
+Pressed:
+-----
+border-radius: 50px;
+background: #1E546B;
+box-shadow: inset 20px 20px 60px #1a475b, 
+            inset -20px -20px 60px #23617b;  
+
+===========
 Silver
 https://neumorphism.io/#bec5b8
 
@@ -661,7 +701,7 @@ class Toolset {
   }
 
  /*******************************************************************************
-  * Toolset::render()
+  * Toolset::renderToolset()
   *
   * Summary.
   *
@@ -815,6 +855,7 @@ class Toolset {
       // Other browsers don't need that, they default to: "svg:not(:root) {overflow: hidden;}"
       //
       // Without this setting, objects are cut-off or become invisible while scaled!
+			
       return svg`
         <g id="toolset-${this.toolsetId}" class="toolset"
            transform="rotate(${this.transform.rotate.x}, ${this.svg.cx}, ${this.svg.cy})
@@ -3321,6 +3362,8 @@ class HorseshoeTool extends BaseTool {
 class SparkleBarChartTool extends BaseTool {
   constructor (argCard, argConfig, argPos) {
 
+//       styles: { "stroke": 'var(--primary-color);',
+
     const DEFAULT_BARCHART_CONFIG = {
       cx: 50,
       cy: 50,
@@ -3331,7 +3374,7 @@ class SparkleBarChartTool extends BaseTool {
       barhours: 1,
       type: 'vertical',
       color: 'var(--primary-color)',
-      styles: { "stroke": 'var(--primary-color);',
+      styles: { 
                 "stroke-linecap": 'round;',
                 "stroke-linejoin": 'round;',
       },
@@ -3347,7 +3390,7 @@ class SparkleBarChartTool extends BaseTool {
     if (argConfig.styles) this.config.styles = {...argConfig.styles};
     this.config.styles = {...DEFAULT_BARCHART_CONFIG.styles, ...this.config.styles};
 
-    if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+    //if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
     this.config.show = {...DEFAULT_BARCHART_CONFIG.show, ...this.config.show};
 
     // Calculate real dimensions...
@@ -3361,6 +3404,18 @@ class SparkleBarChartTool extends BaseTool {
     this._bars = []; //new Array(this.hours).fill({});
     this._scale = {};
     this._needsRendering = false;
+
+    // Get colorstops and make a key/value store...
+    this.colorStops = {};
+    if (this.config.colorstops) {
+      Object.keys(this.config.colorstops).forEach((key) => {
+        this.colorStops[key] = this.config.colorstops[key];
+      });
+    }
+
+		if (this.config.show.style == 'colorstop') {
+		  this.sortedColorStops = Object.keys(this.config.colorstops).map(n => Number(n)).sort((a, b) => a - b);
+		}
 
     if (this.dev.debug) console.log('SparkleBarChart constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -3383,6 +3438,13 @@ class SparkleBarChartTool extends BaseTool {
     this._scale.min = min;
     this._scale.max = max;
     this._scale.size = (max - min);
+
+    // 2020.11.05
+		// Add 5% to the size of the scale and adjust the minimum value displayed.
+		// So every bar is displayed, instead of the min value having a bar length of zero!
+		this._scale.size = (max - min) * 1.05;
+		this._scale.min = max - this._scale.size;
+
   }
 
  /*******************************************************************************
@@ -3420,6 +3482,14 @@ class SparkleBarChartTool extends BaseTool {
   computeBars({ _bars } = this) {
 
     this.computeMinMax();
+
+		if (this.config.show.style === 'minmaxgradient') {
+			this.colorStopsMinMax = {};
+			this.colorStopsMinMax = {[this._scale.min.toString()]: this.config.minmaxgradient.min,
+															 [this._scale.max.toString()]: this.config.minmaxgradient.max};
+			//this.colorStopsMinMax = {[this._scale.max.toString()]: this.config.minmaxgradient.max};
+			// console.log("computebnars, minmaxgradient", this.colorStopsMinMax);
+		}
 
     // VERTICAL
     if (this.config.orientation == 'vertical') {
@@ -3469,11 +3539,29 @@ class SparkleBarChartTool extends BaseTool {
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
+		
     this._bars.forEach((item, index) => {
       if (this.dev.debug) console.log('_renderBars - bars', item, index);
+
+			// Color the bar (stroke color of line) depending on fixedcolor/colorstop for starters
+			var stroke = '';
+			switch (this.config.show.style) {
+				case 'fixedcolor':
+					stroke = this.config.color;
+					break;
+				case 'colorstop':
+				case 'colorstopgradient':
+					stroke = this._card._calculateColor(this._series[index], this.colorStops, (this.config.show.style === 'colorstopgradient'));
+					break;
+				case 'minmaxgradient':
+					stroke = this._card._calculateColor(this._series[index], this.colorStopsMinMax, true);
+					console.log("_renderbars, minmaxgradient", this._series[index], this.colorStopsMinMax);
+					break;
+			}
+
       svgItems.push(svg`
         <line id="line-segment-${this.toolId}-${index}" class="line__segment"
-                  style="${configStyleStr}"
+                  style="${configStyleStr}" stroke="${stroke}"
                   x1="${this._bars[index].x1}"
                   x2="${this._bars[index].x2}"
                   y1="${this._bars[index].y1}"
@@ -4610,6 +4698,8 @@ class devSwissArmyKnifeCard extends LitElement {
     this.toolsets = [];
     this.tools = [];
 
+		this.colorCache = [];
+		
     // For history query interval updates.
     this.stateChanged = true;
     this.updating = false;
@@ -4629,8 +4719,17 @@ class devSwissArmyKnifeCard extends LitElement {
     //
     // Detection from: http://jsfiddle.net/jlubean/dL5cLjxt/
     //
+    // this.isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
+    // this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+		// See: https://javascriptio.com/view/10924/detect-if-device-is-ios
+		// After iOS 13 you should detect iOS devices like this, since iPad will not be detected as iOS devices
+		// by old ways (due to new "desktop" options, enabled by default)
+
     this.isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
-    this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+		this.iOS = (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+								(navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
+								!window.MSStream;
 
     // Get Lovelace panel.
     // - Used for color calculations
@@ -5437,6 +5536,10 @@ class devSwissArmyKnifeCard extends LitElement {
       return;
     }
 
+    // #TODO:
+    // Why not 'make' this record using the aspectratio by splitting the / ??
+    // Then it is x/y = x * SVG_DEFAULT_DIMENSIONS, y * SVG_DEFAULT_DIMENSIONS
+/*
     const aspectRatios = new Map([
       ["1/1", {"width": 1 * SVG_DEFAULT_DIMENSIONS, "height": 1 * SVG_DEFAULT_DIMENSIONS}],
       ["2/2", {"width": 2 * SVG_DEFAULT_DIMENSIONS, "height": 2 * SVG_DEFAULT_DIMENSIONS}],
@@ -5486,12 +5589,17 @@ class devSwissArmyKnifeCard extends LitElement {
       ["5/6", {"width": 5 * SVG_DEFAULT_DIMENSIONS, "height": 6 * SVG_DEFAULT_DIMENSIONS}],
 
     ]);
-
+*/
     this.dimensions = "1/1";
 
     if (config.dimensions) this.dimensions = config.dimensions;
-    this.viewBox = aspectRatios.get(this.dimensions);
+    // this.viewBox = aspectRatios.get(this.dimensions);
 
+    var ar = config.dimensions.trim().split("/");
+    if (!this.viewBox) this.viewBox = {};
+    console.log("AR = ", ar, config.dimensions, this.viewBox);
+    this.viewBox.width = ar[0] * SVG_DEFAULT_DIMENSIONS;
+    this.viewBox.height= ar[1] * SVG_DEFAULT_DIMENSIONS;
 
     if (!config.entities) {
       throw Error('card::setConfig - No entities defined');
@@ -6900,7 +7008,8 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
   */
 
   _calculateColor(argState, argStops, argIsGradient) {
-    const sortedStops = Object.keys(argStops).map(n => Number(n)).sort((a, b) => a - b);
+    console.log("calculateColor", argState, argStops, argIsGradient);
+		const sortedStops = Object.keys(argStops).map(n => Number(n)).sort((a, b) => a - b);
     let start, end, val;
     const l = sortedStops.length;
 
@@ -7307,8 +7416,10 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
     //this.coords = this._calcPoints(coords);
     this.coords = coords;
-    this.min = Math.min(...this.coords.map(item => Math.min(...item.map(item2 => (item2.state)))));
-    this.max = Math.max(...this.coords.map(item => Math.max(...item.map(item2 => (item2.state)))));
+		// #TODO @2020.11.15:
+		// Nothing is using these calculated min/max values?!?!?!?!?!?!
+    //this.min = Math.min(...this.coords.map(item => Math.min(...item.map(item2 => (item2.state)))));
+    //this.max = Math.max(...this.coords.map(item => Math.max(...item.map(item2 => (item2.state)))));
 
     var theData = [];
     theData = [];
