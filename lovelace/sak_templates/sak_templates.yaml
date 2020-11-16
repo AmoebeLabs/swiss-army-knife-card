@@ -197,7 +197,8 @@ tools_segarc_icon_state:
           # fill: var(--primary-background-color);
           # fill: lightgray;
           # #efeeee
-          fill: var(--secondary-background-color);
+          # fill: var(--secondary-background-color);
+          fill: var(--cs-theme-default-darken-15);
             #dedddd;
           filter: url(#is-1);
 
@@ -210,10 +211,14 @@ tools_segarc_icon_state:
         icon_size: 15
         styles:
           filter: url(#is-1);
-          # fill: lightgray;
-          # color: lightgray;
-          color: var(--cs-theme-default-icon-primary, --primary-text-color);
-          fill: var(--cs-theme-default-icon-primary, --primary-text-color);
+          fill: lightgray;
+          color: lightgray;
+          # color: var(--primary-text-color);
+          # fill: var(--primary-text-color);
+          # opacity: 0.8;
+          
+          # color: var(--cs-theme-default-icon-primary, --primary-text-color);
+          # fill: var(--cs-theme-default-icon-primary, --primary-text-color);
 
 
       - type: state
@@ -289,7 +294,8 @@ toolset_arc180_sparklinebar24:
         styles:
           fill: var(--theme-gradient-color-01);
         styles_bg:
-          fill: var(--secondary-background-color);
+          # fill: var(--secondary-background-color);
+          fill: var(--cs-theme-default-darken-15);
           filter: url(#is-1);
 
       - type: 'state'
@@ -525,8 +531,10 @@ toolset_light_button_nm:
       # Surface 
       - type: circle
         cx: 50
-        cy: 35
-        radius: 28
+        # cy: 35
+        cy: 40
+        # radius: 28
+        radius: 31
         styles:
           pointer-events: none;
           stroke-width: 5;
@@ -535,15 +543,22 @@ toolset_light_button_nm:
       # Activation ring
       - type: circle
         cx: 50
-        cy: 35
-        radius: 25
+        # cy: 35
+        cy: 40
+        # radius: 25
+        radius: 28
         animations:
           - state: 'on'
             styles:
-              fill: darkorange;
+              # fill: darkorange;
+              fill: var(--cs-orange-lighten-20);
           - state: 'off'
             styles:
-              fill: var(--secondary-background-color);
+              # fill: var(--secondary-background-color);
+              # fill: var(--cs-theme-default-darken-15);
+              # color: var(--primary-text-color);
+              fill: var(--primary-text-color);
+              opacity: 0.7;
         styles:
           stroke-width: 0;
           pointer-events: none;
@@ -551,8 +566,10 @@ toolset_light_button_nm:
       # Actual "button"
       - type: circle
         cx: 50
-        cy: 35
-        radius: 24
+        # cy: 35
+        cy: 40
+        # radius: 24
+        radius: 27
         entity_index: '[[entity_light]]'
         # Note, 2020.11.07
         # Safari (again) can't handle modifications in the filter url:
@@ -577,19 +594,33 @@ toolset_light_button_nm:
       # Light/Switch icon
       - type: icon
         cx: 50
-        cy: 35
+        # cy: 35
+        cy: 40
         entity_index: '[[entity_light]]'
         align: center
-        icon_size: 36
+        # icon_size: 36
+        icon_size: 39
         animations:
           - state: 'on'
             styles:
-              color: darkorange;
-              fill: darkorange;
+              # color: darkorange;
+              # fill: darkorange;
+              color: var(--cs-orange-lighten-20);
+              fill: var(--cs-orange-lighten-20);
+
+              # color: var(--accent-color);
+              # fill: var(--accent-color);
+              opacity: 1;
+
           - state: 'off'
             styles:
-              color: var(--secondary-background-color);
-              fill: var(--secondary-background-color);
+              # color: var(--secondary-background-color);
+              # fill: var(--secondary-background-color);
+              # color: var(--cs-theme-default-darken-15);
+              # fill: var(--cs-theme-default-darken-15);
+              # opacity: 0.7;
+              color: var(--primary-text-color);
+              fill: var(--primary-text-color);
               opacity: 0.7;
         styles:
           pointer-events: none;
@@ -687,3 +718,93 @@ toolset_light_button_nm:
         styles:
           font-size: 1.8em;
           text-anchor: end;
+
+##########################
+toolset_sensor_history:
+  type: toolset
+  defaults: 
+    - entity: 0
+    - icon_color: var(--cs-orange-lighten-30);
+    - bar_color_min: var(--cs-orange-lighten-10)
+    - bar_color_max: var(--cs-orange-darken-30)
+
+  toolset:
+    position:
+      cx: 50
+      cy: 50
+      scale: 1
+    tools:
+      - type: rectex
+        cx: 50
+        cy: 50
+        width: 90
+        height: 90
+        radius:
+          top_left: 0
+          top_right: 50
+          bottom_right: 0
+          bottom_left: 10
+        styles:
+          stroke: var(--primary-background-color);
+          fill: var(--primary-background-color);
+
+      # state
+      - type: state
+        cx: 10
+        cy: 30
+        entity_index: '[[entity]]'
+        styles:
+          text-anchor: start;
+          font-size: 3.5em;
+          font-weight: 700;
+
+      # circle for icon
+      - type: circle
+        cx: 85
+        cy: 15
+        radius: 10
+        styles:
+          fill: var(--primary-background-color);
+      # icon
+      - type: icon
+        cx: 85
+        cy: 15
+        entity_index: '[[entity]]'
+        align: center
+        icon_size: 20
+        styles:
+          fill: '[[icon_color]]'
+          color: '[[icon_color]]'
+          filter: url(#is-1);
+
+      # name
+      - type: name
+        cx: 50
+        cy: 50
+        entity_index: '[[entity]]'
+        styles:
+          text-anchor: middle;
+          font-size: 2em;
+          font-weight: 400;
+
+      # bar
+      - type: bar
+        id: 2
+        orientation: vertical
+        entity_index: '[[entity]]'
+        cx: 50
+        cy: 77.5
+        width: 85
+        height: 30
+        margin: 1
+        hours: 24
+        barhours: 1
+        show:
+          style: 'minmaxgradient'
+        minmaxgradient:
+          min: '[[bar_color_min]]'
+          max: '[[bar_color_max]]'
+        styles:
+          # stroke: '[[bar_color]]'
+          # stroke-opacity: 0.5;
+          stroke-linecap: butt;
