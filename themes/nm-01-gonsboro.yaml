@@ -42,7 +42,10 @@
   # Shadow only on lowerside: theme-card-box-shadow: '0px 6px 6px -6px rgba(0, 0, 0, 0.4)'
   #
   # theme-card-box-shadow: '3px 6px 9px 1px rgba(0, 0, 0, 0.4)'
-  ha-card-box-shadow: '6px 6px 12px var(--cs-theme-shadow-darker), -6px -6px 12px var(--cs-theme-shadow-lighter)'
+  # ha-card-box-shadow: '6px 6px 12px var(--cs-theme-shadow-darker), -3px -3px 12px var(--cs-theme-shadow-lighter)'
+
+  # Make it an inset shadow. Looks very nice combined with the neumorphic design!!!!
+  ha-card-box-shadow: 'inset 3px 3px 6px var(--cs-theme-shadow-darker), inset -3px -3px 6px var(--cs-theme-shadow-lighter)'
   theme-card-box-shadow: 'var(--shadow-elevation-2dp_-_box-shadow)'
 
   # Define global ha-homekit alike border radius 
@@ -124,6 +127,8 @@
   cs-theme-default-accent-40: '#FFFFFF'
   cs-theme-default-accent-70: '#FFFFFF'
   
+  # cs-theme-default-darken-15: '#e3e1e1'
+  cs-theme-default-darken-15: '#d6d4d4'
   cs-theme-default-lighten-05: '#FEFEFE'
 
   cs-orange-lighten-50: '#FFF3E0'
@@ -404,8 +409,8 @@
 
   # Nav Menu
   # Nav Menu background is listbox-background-color. A bit lighter than the primary background
-  paper-listbox-color: 'var(--cs-theme-default-background-secondary)'
-  paper-listbox-background-color: 'var(--cs-theme-default-background-secondary)'
+  paper-listbox-color: 'var(--primary-text-color)'
+  paper-listbox-background-color: 'var(--cs-theme-default-background-primary)'
   paper-grey-50: 'var(--primary-text-color)'
   paper-grey-200: 'var(--cs-theme-default-background-secondary)'
 
@@ -481,14 +486,14 @@
   lumo-body-text-color: 'var(--light-primary-color)'
 
   #Calendar/Date-Picker Background
-  lumo-base-color: 'var(--cs-grey-darken-40)'
+  lumo-base-color: 'var(--primary-background-color)'
 
   #Month/Year header
   lumo-header-text-color: 'var(--lumo-body-text-color)'
 
   #DayOfWeek Header
   lumo-tertiary-text-color: 'var(--lumo-body-text-color)'
-  lumo-shade: 'var(--cs-theme-default-darken-40)'
+  lumo-shade: 'var(--cs-theme-default-darken-10)'
   lumo-shade-90pct: 'rgba(31, 41, 43, .9)'
   lumo-shade-80pct: 'rgba(31, 41, 43, .8)'
   lumo-shade-70pct: 'rgba(31, 41, 43, .7)'
@@ -499,13 +504,13 @@
   lumo-shade-20pct: 'rgba(31, 41, 43, .2)'
   lumo-shade-10pct: 'rgba(31, 41, 43, .1)'
   lumo-shade-5pct: 'rgba(31, 41, 43, .05)'
-  lumo-tint-5pct: 'var(--cs-theme-default-darken-40)'
+  lumo-tint-5pct: 'var(--cs-theme-default-darken-10)'
   
     # fix for device configuration screen
   card-background-color: "var(--paper-card-background-color)"
   # Fix for Person Device Chooser - thanks to vajonam!
   material-background-color: "var(--paper-listbox-background-color)"
-  material-secondary-background-color: '#222222'
+  material-secondary-background-color: 'var(--secondary-background-color)' #'#222222'
   material-body-text-color: '#FFFFFF'
   # simple-thermostat buttons
   st-mode-background: 'var(--primary-background-color)'
