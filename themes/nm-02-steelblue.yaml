@@ -157,6 +157,7 @@
   cs-theme-default-accent-70: '#29BCFF'
   
   cs-theme-default-lighten-05: '#E8F0F3'
+  cs-theme-default-darken-15: '#3b7587'
 
   cs-orange-lighten-50: '#FFF3E0'
   cs-orange-lighten-40: '#FFE0B2'
