@@ -1,0 +1,39 @@
+default:
+  - cx: 50
+  - cy: 50
+  - area: 'Home'
+  - icon: 'mdi:water-percent'
+
+card:
+  type: 'custom:dev-swiss-army-knife-card'
+
+  entities: 
+    - entity: '[[entity]]'
+      name: '[[name]]'
+      icon: '[[icon]]'
+      area: '[[area]]'
+      tap_action:
+        action: call-service
+        service: light.toggle
+        service_data: { "entity_id" : "[[entity]]" }
+        haptic: light
+
+    - entity: '[[entity]]'
+      attribute: brightness
+      unit_of_measurement: "%"
+
+  dimensions: 1/1
+  dev:
+    debug: false
+    ts: true
+  
+  layout:
+    toolsets:
+      # ==============================================================================
+      # Using Neumorphic ligth button design
+      - toolset: light-button
+        template:
+          name: toolset_light_button_nm
+        position:
+          cx: '[[cx]]'
+          cy: '[[cy]]'
