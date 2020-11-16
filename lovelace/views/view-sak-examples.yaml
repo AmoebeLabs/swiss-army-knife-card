@@ -38,267 +38,6 @@ cards:
 - type: vertical-stack
   cards:
 
-    - type: horizontal-stack
-      cards:
-        ##- !include card-blank-card.yaml
-
-        # Example 1T::
-        #
-        #######################################################################
-
-        - type: 'custom:dev-swiss-army-knife-card'
-          entities:
-            - entity: weather.zoefdehaas
-              attribute: temperature
-              decimals: 1
-              name: '1T: Darksky Weather'
-              area: De Maan
-              unit: '°C'
-              icon: mdi:thermometer
-            - entity: weather.zoefdehaas
-              attribute: humidity
-              decimals: 0
-              unit: '%'
-              icon: mdi:water-percent
-            - entity: weather.zoefdehaas
-              attribute: pressure
-              decimals: 0
-              unit: 'hPa'
-              icon: mdi:gauge
-
-          dimensions: 2/1
-
-          disable_card: true
-
-          dev:
-            debug: false
-            ts: true
-            
-          layout:
-            toolsets:
-              # ==============================================================================
-              - toolset: temp
-                position:
-                  cx: 100
-                  cy: 50
-                  # scale_y: 0.4
-                tools:
-                  - type: 'area'
-                    id: 0
-                    entity_index: 0
-                    cx: 50
-                    cy: 80
-                    styles:
-                      font-size: 2.4em;
-
-                  - type: 'name'
-                    id: 0
-                    entity_index: 0
-                    cx: 50
-                    cy: 95
-                    styles:
-                      font-size: 1.2em;
-                      text-anchor: center;
-
-                  - type: 'segarc'
-                    id: 0
-                    entity_index: 0
-                    cx: 50
-                    cy: 50
-                    start_angle: -130
-                    end_angle: 130
-                    width: 5
-                    radius: 45
-                    radius_x: 45
-                    radius_y: 45
-                    transform:
-                      rotate: 45
-                    scale:
-                      min: -20
-                      max: 40
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                    segments:
-                      colorlist:
-                        gap: 1
-                        colors:
-                          - '#5e4fa2'
-                          - '#3288bd'
-                          - '#66c2a5'
-                          - '#abdda4'
-                          - '#e6f598'
-                          - '#fee08b'
-                          - '#fdae61'
-                          - '#f46d43'
-                          - '#d53e4f'
-                          - '#9e0142'
-                      colorstops:
-                        gap: 0
-                        colors:
-                          -30: 'white'
-                          -20: '#5e4fa2'
-                          -10: '#3288bd'
-                          0: '#66c2a5'
-                          05: '#abdda4'
-                          10: '#e6f598'
-                          15: '#fee08b'
-                          20: '#fdae61'
-                          25: '#f46d43'
-                          30: '#d53e4f'
-                          35: '#9e0142'
-                    styles:
-                      fill: var(--theme-gradient-color-01);
-                    styles_bg:
-                      fill: var(--primary-background-color);
-                      filter: url(#is-1);
-
-                  - type: 'state'
-                    id: 0
-                    entity_index: 0
-                    cx: 50
-                    cy: 40
-                    styles:
-                      text-anchor: center;
-                      font-size: 3em;
-                      fill: var(--primary-text-color);
-
-                  - type: 'icon'
-                    id: 0
-                    entity_index: 0
-                    cx: 50
-                    cy: 60
-                    align: center
-                    icon_size: 18.5
-                    styles:
-                      color: var(--primary-text-color);
-                      fill: var(--primary-text-color);
-
-              # ==============================================================================
-              - toolset: humi
-                position:
-                  cx: 50
-                  cy: 50
-                tools:
-                  - type: 'segarc'
-                    id: 1
-                    entity_index: 1
-                    cx: 50
-                    cy: 50
-                    start_angle: -130
-                    end_angle: 20
-                    width: 5
-                    radius: 45
-                    scale:
-                      min: 0
-                      max: 100
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                      labelstops: false
-                    segments:
-                      colorstops:
-                        gap: 1
-                        colors:
-                          00: 'var(--theme-gradient-color-02)'
-                          35: 'DarkSeaGreen'
-                          65: 'PowderBlue'
-                      textstops:
-                        gap: 1
-                        font_size: 1.1
-                        direction: 'clockwise' #or 'anticlockwise'
-                        # something to use which background colors?? Use colorstops orso?? or not??
-                        text:
-                          00: 'dry'
-                          35: 'comfy'
-                          65: 'humid'
-                      # <svg>
-                      # <path id="myTextPath" d="M 64,0 A 64,64 0 0 1 -64,0 A 64,64 0 0 1 64,0" transform="translate(200,200)" fill="none" stroke="darkblue" stroke-width="25"/>
-                      #
-                      # <text style="stroke: #000000;" fill="white" stroke-width="0">
-                      #   <textPath xlink:href="#myTextPath"  startOffset="50%" text-anchor="middle"><tspan dy="5">Text along a curved path...</tspan></textPath>
-                      # </text>
-                      #
-                      # </svg>
-                    styles:
-                      fill: var(--theme-gradient-color-02);
-                    styles_bg:
-                      fill: var(--primary-background-color);
-
-                  - type: 'state'
-                    id: 0
-                    entity_index: 1
-                    cx: 35
-                    cy: 40
-                    styles:
-                      text-anchor: center;
-                      font-size: 2em;
-                      fill: var(--primary-text-color);
-
-                  - type: 'icon'
-                    id: 0
-                    entity_index: 1
-                    cx: 35
-                    cy: 60
-                    align: center
-                    icon_size: 18.5
-                    styles:
-                      color: var(--primary-text-color);
-                      fill: var(--primary-text-color));
-
-              # ==============================================================================
-              - toolset: pressure
-                position:
-                  cx: 150
-                  cy: 50
-                tools:
-                  - type: 'segarc'
-                    id: 1
-                    entity_index: 2
-                    cx: 50
-                    cy: 50
-                    start_angle: 130
-                    end_angle: -20
-                    width: 5
-                    radius: 45
-                    scale:
-                      min: 930
-                      max: 1050
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                    segments:
-                      colorstops:
-                        gap: 0
-                        colors:
-                          980: 'lightgrey'
-                          990: 'var(--theme-gradient-color-01)'
-                          1020: 'var(--theme-gradient-color-05)'
-                    styles:
-                      fill: var(--theme-gradient-color-03);
-                    styles_bg:
-                      fill: var(--primary-background-color);
-
-                  - type: 'state'
-                    id: 0
-                    entity_index: 2
-                    cx: 65
-                    cy: 40
-                    styles:
-                      text-anchor: center;
-                      font-size: 2em;
-                      fill: var(--primary-text-color);
-
-                  - type: 'icon'
-                    id: 0
-                    entity_index: 2
-                    cx: 65
-                    cy: 60
-                    align: center
-                    icon_size: 18.5
-                    styles:
-                      color: var(--primary-text-color);
-                      fill: var(--primary-text-color);
 
 # ==============================================================================================
 
@@ -679,7 +418,7 @@ cards:
                     styles:
                       fill: var(--primary-text-color);
                       color: var(--primary-text-color);
-                      filter: url(#ds1);
+                      filter: url(#ds-1);
 
                   - type: 'bar'
                     id: 0
@@ -759,11 +498,13 @@ cards:
                     cy: 50
                     start_angle: -90
                     end_angle: 0
-                    width: 5
+                    width: 10
                     radius: 45
                     scale:
                       min: 0
                       max: 100
+                      width: 2
+                      offset: -8
                     show:
                       scale: true
                       style: colorstops
@@ -774,11 +515,12 @@ cards:
                         template:
                           name: colorstops_humidity
                           variables:
-                            - thegap: 0
+                            - thegap: 1
                     styles:
                       fill: var(--theme-gradient-color-01);
                     styles_bg:
                       fill: var(--primary-background-color);
+                      filter: url(#is-1);
 
                   - type: 'state'
                     id: 0
@@ -825,17 +567,19 @@ cards:
                     cy: 50
                     start_angle: 90
                     end_angle: 0
-                    width: 5
+                    width: 10
                     radius: 45
                     scale:
                       min: 15
                       max: 25
+                      width: 2
+                      offset: -8
                     show:
                       scale: true
                       style: 'colorstops'
                     segments:
                       colorstops:
-                        gap: 0
+                        gap: 1
                         colors:
                           17: 'PowderBlue'
                           19: 'var(--theme-gradient-color-01)'
@@ -845,6 +589,7 @@ cards:
                       fill: var(--theme-gradient-color-02);
                     styles_bg:
                       fill: var(--primary-background-color);
+                      filter: url(#is-1);
 
                   - type: 'state'
                     id: 1
@@ -1264,362 +1009,9 @@ cards:
 
         ##- !include card-blank-card.yaml
 
-    - type: horizontal-stack
-      cards:
+    # - type: horizontal-stack
+      # cards:
         ##- !include card-blank-card.yaml
-        # Example 10T::
-        #
-        # Circle with system cpu monitoring. NIce for easy CPU changes in graph
-        #
-        #######################################################################
-
-        - type: 'custom:dev-swiss-army-knife-card'
-          entities:
-            # Memory
-            - entity: sensor.memory_use_percent
-              decimals: 0
-              name: 'NUC'
-              area: '10T: NUC J3455 Running Docker Swarm'
-              icon: mdi:memory
-            # Disk
-            - entity: sensor.disk_use_percent
-              decimals: 0
-              icon: mdi:harddisk
-            # CPU
-            - entity: sensor.processor_use
-              decimals: 0
-              # icon: mdi:memory
-            # ...
-            - entity: sensor.load_1m
-              decimals: 2
-              unit: '1m'
-            - entity: sensor.load_5m
-              decimals: 2
-              unit: '5m'
-
-            # Disk
-            - entity: sensor.disk_use
-              name: 'Used:'
-              decimals: 0
-              icon: mdi:harddisk
-            - entity: sensor.disk_free
-              name: 'Free:'
-              decimals: 0
-              icon: mdi:harddisk
-
-            # Memory
-            - entity: sensor.memory_use
-              name: 'Used:'
-              decimals: 0
-              icon: mdi:memory
-            - entity: sensor.memory_free
-              name: 'Free:'
-              decimals: 0
-              icon: mdi:memory
-
-
-          dev:
-            debug: false
-            ts: true
-            performance: false
-          
-          show:
-            # explictly enable the use of the usersvg tool.
-            usersvg : true
-          
-          dimensions: 2/1
-
-
-          layout:
-            toolsets:
-              # ==============================================================================
-
-              # ==============================================================================
-              - toolset: memory-free-used
-                position:
-                  cx: 40
-                  cy: 65
-                tools:
-                  - type: rectex
-                    id: 0
-                    cx: 50
-                    cy: 50
-                    width: 60
-                    height: 20
-                    radius:
-                      all: 2
-                  # inconsistent: tool has no separate position:, toolset has...
-                  # Used
-                  - type: name
-                    id: 1
-                    cx: 25
-                    cy: 47
-                    entity_index: 7
-                    styles:
-                      font-size: 1.0em;
-                      text-anchor: start;
-                  - type: state
-                    id: 2
-                    cx: 62
-                    cy: 47
-                    entity_index: 7
-                    styles:
-                      font-size: 1.2em;
-                      font-weight: 700;
-                      text-anchor: end;
-
-                  # Free
-                  - type: name
-                    id: 3
-                    cx: 25
-                    cy: 57
-                    entity_index: 8
-                    styles:
-                      font-size: 1.0em;
-                      text-anchor: start;
-                  - type: state
-                    id: 4
-                    cx: 62
-                    cy: 57
-                    entity_index: 8
-                    styles:
-                      font-size: 1.2em;
-                      font-weight: 700;
-                      text-anchor: end;
-              - toolset: memory
-                template:
-                  name: tools_segarc_icon_state
-                  variables:
-                    - entity: 0
-                    - show_scale: false
-                position:
-                  cx: 72.5
-                  cy: 65
-                  scale: .7
-                tools:
-                  - type: segarc
-                    id: 0
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                    segments:
-                      colorstops:
-                        gap: 1
-                        # arc can be 'followcolorstop', or 'followvalue'
-                        arc_color: 'followcolorstop'
-                        colors:
-                          00: 'DarkSeaGreen'
-                          70: 'yellow'
-                          80: 'orange'
-                          90: 'red'
-                  - type: icon
-                    id: 1
-
-              # ==============================================================================
-              - toolset: areatoolset
-                position:
-                  cx: 100
-                  cy: 95
-                  scale: 1
-                tools:
-                  # Areas 0 refers to the first entity in the list, ie index 0
-                  - type: area
-                    id: 0
-                    entity_index: 0
-                    cx: 50
-                    cy: 50
-                    styles:
-                      font-size: 2em;
-              
-              # ==============================================================================
-              - toolset: disc-free-used
-                position:
-                  cx: 40
-                  cy: 25
-                tools:
-                  - type: rectex
-                    id: 0
-                    cx: 50
-                    cy: 50
-                    width: 60
-                    height: 20
-                    radius:
-                      all: 2
-                  # inconsistent: tool has no separate position:, toolset has...
-                  # Used
-                  - type: name
-                    id: 1
-                    cx: 25
-                    cy: 47
-                    entity_index: 5
-                    styles:
-                      font-size: 1.0em;
-                      text-anchor: start;
-                  - type: state
-                    id: 2
-                    cx: 62
-                    cy: 47
-                    entity_index: 5
-                    styles:
-                      font-size: 1.2em;
-                      font-weight: 700;
-                      text-anchor: end;
-
-                  # Free
-                  - type: name
-                    id: 3
-                    cx: 25
-                    cy: 57
-                    entity_index: 6
-                    styles:
-                      font-size: 1.0em;
-                      text-anchor: start;
-                  - type: state
-                    id: 4
-                    cx: 62
-                    cy: 57
-                    entity_index: 6
-                    styles:
-                      font-size: 1.2em;
-                      font-weight: 700;
-                      text-anchor: end;
-                    
-              - toolset: disc
-                template:
-                  name: tools_segarc_icon_state
-                  variables:
-                    - entity: 1
-                    - show_scale: true
-                position:
-                  cx: 72.50
-                  cy: 25
-                  scale: .7
-                tools:
-                  - type: segarc
-                    id: 0
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                    segments:
-                      colorstops:
-                        gap: 1
-                        # arc can be 'followcolorstop', or 'followvalue'
-                        arc_color: 'followcolorstop'
-                        colors:
-                          00: 'DarkSeaGreen'
-                          70: 'yellow'
-                          80: 'orange'
-                          90: 'red'
-
-              # ==============================================================================
-              - toolset: cpu
-                template:
-                  name: tools_segarc_icon_state
-                  variables:
-                    - entity: 2
-                    - show_scale: true
-                position:
-                  cx: 127.50
-                  cy: 45
-                  scale: 1
-                tools:
-                  - type: segarc
-                    id: 0
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                    segments:
-                      colorstops:
-                        gap: 1
-                        # arc can be 'followcolorstop', or 'followvalue'
-                        arc_color: 'followcolorstop'
-                        colors:
-                          00: '#FFF6E3'
-                          10: '#FFE9B9'
-                          15: '#FFDA8A'
-                          20: '#FFCB5B'
-                          22.5: '#FFBF37'
-                          25: '#ffb414'
-                          60: '#FFAD12'
-                          70: '#FFA40E'
-                          80: '#FF9C0B' 
-                          90: '#FF8C06' 
-
-              # ==============================================================================
-              - toolset: load1m
-                template:
-                  name: tools_segarc_icon_state
-                  variables:
-                    - entity: 3
-                    - show_scale: false
-                position:
-                  cx: 170
-                  cy: 25
-                  scale: .7
-                tools:
-                  - type: segarc
-                    id: 0
-                    show:
-                      style: 'colorlist'
-                    scale:
-                      min: 0
-                      max: 2
-                    segments:
-                      colorlist:
-                        gap: 1
-                        colors:
-                          # - '#FFF6E3'
-                          - '#FFE9B9'
-                          # - '#FFDA8A'
-                          - '#FFCB5B'
-                          # - '#FFBF37'
-                          - '#ffb414'
-                          # - '#FFAD12'
-                          - '#FFA40E'
-                          # - '#FF9C0B' 
-                          - '#FF8C06' 
-                          # - 'var(--theme-gradient-color-01)'
-                          # - 'var(--theme-gradient-color-02)'
-                          # - 'var(--theme-gradient-color-03)'
-                          # - 'var(--theme-gradient-color-04)'
-
-              # ==============================================================================
-              - toolset: load1m
-                template:
-                  name: tools_segarc_icon_state
-                  variables:
-                    - entity: 4
-                    - show_scale: false
-                position:
-                  cx: 170
-                  cy: 65
-                  scale: .7
-                tools:
-                  - type: segarc
-                    id: 0
-                    show:
-                      style: 'colorlist'
-                    scale:
-                      min: 0
-                      max: 2
-                    segments:
-                      colorlist:
-                        gap: 1
-                        colors:
-                          # - '#FFF6E3'
-                          - '#FFE9B9'
-                          # - '#FFDA8A'
-                          - '#FFCB5B'
-                          # - '#FFBF37'
-                          - '#ffb414'
-                          # - '#FFAD12'
-                          - '#FFA40E'
-                          # - '#FF9C0B' 
-                          - '#FF8C06' 
-                          # - 'var(--theme-gradient-color-01)'
-                          # - 'var(--theme-gradient-color-02)'
-                          # - 'var(--theme-gradient-color-03)'
-                          # - 'var(--theme-gradient-color-04)'
 
         ##- !include card-blank-card.yaml
 
@@ -2680,8 +2072,6 @@ cards:
 
           layout:
             toolsets:
-
-
               - toolset: fourcircles
                 position:
                   cx: 200
@@ -2696,9 +2086,10 @@ cards:
                     height: 20
                     rx: 10
                     styles:
-                      stroke: var(--theme-gradient-color-01);
+                      # stroke: var(--theme-gradient-color-01);
+                      stroke: var(--primary-background-color);
                       stroke-width: 30;
-                      fill: var(--theme-gradient-color-01);
+                      # fill: var(--theme-gradient-color-01);
                       fill: none;
                       opacity: 0.5;
 
@@ -2708,9 +2099,14 @@ cards:
                     cy: 45
                     radius: 25
                     styles:
-                      stroke: var(--theme-gradient-color-01);
+                      # stroke: var(--theme-gradient-color-01);
+                      stroke: var(--primary-background-color);
+                      stroke: DarkSeaGreen;
+                      stroke: DarkOliveGreen;
                       stroke-width: 70;
-                      fill: var(--theme-gradient-color-03);
+                      # fill: var(--theme-gradient-color-03);
+                      fill: lightgray;
+                      fill: var(--primary-background-color);
                       stroke-dasharray: 52;
                       stroke-dashoffset: 0;
                       stroke-linecap: round;
@@ -2725,7 +2121,9 @@ cards:
                       font-size: 3em;
                       font-weight: 700;
                       # fill: var(--theme-gradient-color-01);
-                      fill: black;
+                      fill: DarkOliveGreen;
+                      opacity: 1;
+                      filter: url(#is-1);
 
                   # - type: icon
                     # cx: 30
@@ -2959,3 +2357,4 @@ cards:
                       pointer-events: none;
                       filter: url(#is-1);
 
+#######
