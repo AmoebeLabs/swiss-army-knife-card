@@ -520,6 +520,8 @@ class Toolset {
       "segarc": SegmentedArcTool,
       "state": EntityStateTool,
       "slider": RangeSliderTool,
+			"usersvg": UserSvgTool,
+
     }
 
     this.config.tools.map(toolConfig => {
@@ -955,6 +957,9 @@ class BaseTool {
       if (!this.animationStyle || !item.reuse) this.animationStyle = {};
       //this.animationStyle = Object.assign(this.animationStyle, ...item.styles);
       this.animationStyle = {...this.animationStyle, ...item.styles};
+			
+			// Can this work?????????????????
+			this.item = item;
     });
 
     return true;
@@ -1430,7 +1435,7 @@ class RangeSliderTool extends BaseTool {
             <circle cx="${this.svg.x}" cy="${this.svg.y}" r="1" fill="none" pointer-events="none"/>
 
             <text text-anchor="middle" transform="translate(0,${this.svg.handle.height/4})" pointer-events="none" >
-            <textPath startOffset="${startOffset}%" text-anchor="middle" dominant-baseline="hanging" style="${configStyleStrHandle}" href="#label-${this.toolId}" pointer-events="none">
+            <textPath startOffset="${startOffset}%" text-anchor="middle" alignment-baseline="middle" style="${configStyleStrHandle}" href="#label-${this.toolId}" pointer-events="none">
             50
             </textPath>
           </g>
@@ -1484,7 +1489,8 @@ class LineTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_LINE_CONFIG = {
-        type: 'vertical',
+        orientation: 'vertical',
+				length: '10',
         styles: {
           "stroke-linecap": 'round;',
           "stroke": 'var(--primary-text-color);',
@@ -1697,6 +1703,139 @@ class CircleTool extends BaseTool {
 } // END of class
 
  /*******************************************************************************
+  * UserSvgTool class, UserSvgTool::constructor
+  *
+  * Summary.
+  *
+  */
+
+class UserSvgTool extends BaseTool {
+  constructor(argCard, argConfig, argPos) {
+
+    const DEFAULT_USERSVG_CONFIG = {
+        cx: 50,
+        cy: 50,
+				height: 50,
+				width: 50,
+    }
+
+    super(argCard, argConfig, argPos);
+
+    this.config = {...DEFAULT_USERSVG_CONFIG};
+    this.config = {...this.config, ...argConfig};
+
+    if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    this.config.styles = {...DEFAULT_USERSVG_CONFIG.styles, ...this.config.styles};
+
+    if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+    this.config.show = {...DEFAULT_USERSVG_CONFIG.show, ...this.config.show};
+
+    this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
+
+		// Check for external svg images. These are defined as <defs> to be used as a reference using <use>.
+		// This makes animations possible by setting the image, which is implemented as a reference using <use href(#id in defs)>
+		
+		if (this.config.images) {
+			this.image = this.config.images[0]["face1"];
+		}
+
+    this.images = {};
+		this.images = Object.assign({}, ...this.config.images);
+
+		this.item = {};
+		this.item.image = "face1";
+		console.log("usersvg, images, image", this.images, this.item);
+		
+		
+    if (this.dev.debug) console.log('UserSvgTool constructor coords, dimensions', this.svg, this.config);
+  }
+
+ /*******************************************************************************
+  * UserSvgTool::value()
+  *
+  * Summary.
+  * Receive new state data for the entity this usersvg is linked to. Called from set hass;
+  *
+  */
+  set value(state) {
+    var changed = super.value = state;
+
+    return changed;
+  }
+
+ /*******************************************************************************
+  * UserSvgTool::_renderUserSvg()
+  *
+  * Summary.
+  * Renders the usersvg using precalculated coordinates and dimensions.
+  * Only the runtime style is calculated before rendering the usersvg
+  *
+  */
+
+  _renderUserSvg() {
+
+    // Get configuration styles as the default styles
+    let configStyle = {...this.config.styles};
+
+    // Get the runtime styles, caused by states & animation settings
+    //let stateStyle = {};
+    //if (this._card.animations.circles[this.config.animation_id])
+    //  stateStyle = Object.assign(stateStyle, this._card.animations.circles[this.config.animation_id]);
+
+    // Merge the two, where the runtime styles may overwrite the statically configured styles
+    //configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
+    configStyle = { ...configStyle, ...this.animationStyle};
+
+    // Convert javascript records to plain text, without "{}" and "," between the styles.
+    const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+
+		// let svgItems = [];
+		// if (this.config.images) {
+			// this.config.images.map((item, index) ==> {
+				// svgItems.push(#HIERO
+			// });
+		// }
+
+		console.log("renderusersvg, images, image", this.images, this.item);
+		return svg`
+			<svg x="${this.svg.x}" y="${this.svg.y}">
+				<image href="${this.images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
+			</svg>
+			`;
+
+		return svg`
+			<svg x="${this.svg.x}" y="${this.svg.y}">
+				<image href="/local/images/ic-face-1.svg" height="${this.svg.height}" width="${this.svg.width}"/>
+			</svg>
+			`;
+				
+    return svg`
+      <svg height="100px" width="100px"
+        x="${this.svg.cx}"% y="${this.svg.cy}"%
+					<use href="${this.images[this.image]}"></use>
+				</svg>
+      `;
+  }
+ /*******************************************************************************
+  * UserSvgTool::render()
+  *
+  * Summary.
+  * The render() function for this object.
+  *
+  */
+  render() {
+
+    return svg`
+      <g "" id="circle-${this.toolId}" class="circle" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        ${this._renderUserSvg()}
+      </g>
+    `;
+
+  }
+} // END of class
+
+ /*******************************************************************************
   * RectangleTool class
   *
   * Summary.
@@ -1861,6 +2000,16 @@ class RectangleToolEx extends BaseTool {
                               this.config.radius.bottom_right || this.config.radius.right || this.config.radius.bottom || radius))) || 0;
 
     if (this.dev.debug) console.log('RectangleToolEx constructor coords, dimensions', this.toolId, this.svg, this.config);
+  }
+
+ /*******************************************************************************
+  * RectangleToolEx::value()
+  *
+  */
+  set value(state) {
+    var changed = super.value = state;
+
+    return changed;
   }
 
  /*******************************************************************************
@@ -2161,7 +2310,7 @@ class EntityIconTool extends BaseTool {
       this.svg.ypx = this.svg.cy;//(y * this._card.viewBox.height);
 
       if (/*true &&*/ ((this._card.isSafari) || (this._card.iOS))) {
-        //correction = 1; // #HIERO #WIP
+        //correction = 1; // 
         this.svg.iconSize = this.svg.iconSize * correction;
         this.svg.iconPixels = this.svg.iconPixels * correction;
 
@@ -2523,7 +2672,8 @@ class EntityStateTool extends BaseTool {
       "font-size": '2em;',
       "color": 'var(--primary-text-color);',
       "opacity": '1.0;',
-      "text-anchor": 'middle;'
+      "text-anchor": 'middle;',
+      "alignment-baseline": 'central;',
     }
 
     const UOM_STYLES = {
@@ -2631,7 +2781,6 @@ class EntityNameTool extends BaseTool {
     // - mathematical (text below baseline, but upperpart not)
     // - text-top (above baseline)
     const DEFAULT_NAME_CONFIG = {
-      "dominant-baseline": 'hanging;'
     }
 
     super(argCard, argConfig, argPos);
@@ -2665,7 +2814,8 @@ class EntityNameTool extends BaseTool {
       "font-size": '1.5em;',
       "fill": 'var(--primary-text-color);',
       "opacity": '1.0;',
-      "text-anchor": 'middle;'
+      "text-anchor": 'middle;',
+      "alignment-baseline": 'central;',
     }
 
     // Get configuration styles as the default styles
@@ -2757,7 +2907,8 @@ class EntityAreaTool extends BaseTool {
       "font-size": '1em;',
       "fill": 'var(--primary-text-color);',
       "opacity": '1.0;',
-      "text-anchor": 'middle;'
+      "text-anchor": 'middle;',
+      "alignment-baseline": 'central;',
     }
 
     // Get configuration styles as the default styles
@@ -3302,6 +3453,7 @@ class SparklineBarChartTool extends BaseTool {
 					stroke = this.config.color;
 					break;
 				case 'colorstop':
+				case 'colorstops':
 				case 'colorstopgradient':
 					stroke = this._card._calculateColor(this._series[index], this.colorStops, (this.config.show.style === 'colorstopgradient'));
 					break;
@@ -5347,6 +5499,7 @@ class devSwissArmyKnifeCard extends LitElement {
       "segarc": SegmentedArcTool,
       "state": EntityStateTool,
       "slider": RangeSliderTool,
+			"usersvg": UserSvgTool,
     }
 
     // #TODO 2020.10.14
@@ -6458,7 +6611,7 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
   */
 
   _calculateColor(argState, argStops, argIsGradient) {
-    console.log("calculateColor", argState, argStops, argIsGradient);
+    // console.log("calculateColor", argState, argStops, argIsGradient);
 		const sortedStops = Object.keys(argStops).map(n => Number(n)).sort((a, b) => a - b);
     let start, end, val;
     const l = sortedStops.length;
@@ -6638,7 +6791,7 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     if (end) url += `&end_time=${end.toISOString()}`;
     if (skipInitialState) url += '&skip_initial_state';
 
-    console.log('fetchRecent - call is', entityId, start, end, skipInitialState, url);
+    // console.log('fetchRecent - call is', entityId, start, end, skipInitialState, url);
     return this._hass.callApi('GET', url);
   }
 
