@@ -306,16 +306,10 @@ import 'https://cdn.skypack.dev/@ctrl/tinycolor';
 // Set sizes:
 // If svg size is changed, change the font size accordingly.
 // These two are related ;-)
-// So:
-// - svg 200 -> font 10
-// - svg 400 -> font 20
-// etc...
 const SCALE_DIMENSIONS = 2
 const FONT_SIZE = 10 * SCALE_DIMENSIONS;
 const SVG_DEFAULT_DIMENSIONS = 200 * SCALE_DIMENSIONS;
 const SVG_VIEW_BOX = SVG_DEFAULT_DIMENSIONS;//200;
-//const SVG_VIEW_BOX_HEIGHT = 1 * SVG_DEFAULT_DIMENSIONS; //200
-//const SVG_VIEW_BOX_WIDTH = 2 * SVG_DEFAULT_DIMENSIONS;//400;
 
 //--
 
@@ -424,35 +418,6 @@ class Templates {
   * - The defaults defined in the template itself, which are defined in the argToolsetTemplate
   *
   */
-  static replaceVariables(argVariables, argToolsetTemplate) {
-
-    if (!argVariables && !argToolsetTemplate.defaults) {
-      return argToolsetTemplate.tools;
-    }
-    let variableArray = argVariables?.slice(0) ?? [];
-
-    if (argToolsetTemplate.defaults) {
-      variableArray = variableArray.concat(argToolsetTemplate.defaults);
-    }
-    let jsonConfig = JSON.stringify(argToolsetTemplate.tools);
-    variableArray.forEach(variable => {
-      const key = Object.keys(variable)[0];
-      const value = Object.values(variable)[0];
-      if (typeof value === 'number' || typeof value === 'boolean') {
-        const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
-        jsonConfig = jsonConfig.replace(rxp2, value);
-      }
-      if (typeof value === 'object') {
-        const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
-        const valueString = JSON.stringify(value);
-        jsonConfig = jsonConfig.replace(rxp2, valueString);
-      } else {
-        const rxp = new RegExp(`\\[\\[${key}\\]\\]`, 'gm');
-        jsonConfig = jsonConfig.replace(rxp, value);
-      }
-    });
-    return JSON.parse(jsonConfig);
-  }
 
   static replaceVariables2(argVariables, argTemplate) {
 
@@ -463,7 +428,6 @@ class Templates {
 
     if (argTemplate.defaults) {
       variableArray = variableArray.concat(argTemplate.defaults);
-      //console.log('template', argTemplate.defaults, variableArray);
     }
 
     let jsonConfig = JSON.stringify(argTemplate[argTemplate.type]);
@@ -506,22 +470,13 @@ class Toolset {
     // The tool is positioned relative to this origin. A tool is always relative
     // to a 200x200 default svg viewport. A (50,50) position of the tool
     // centers the tool on the absolute position of the GROUP!
-    //this.toolsetPos = argPos;
     this.config = argConfig;
     this.tools=[];
-
-    // Calculate real positions depending on aspectRatio and position...
-//    this.coords = {};
-    // Positions are ALWAYS centered!
 
     // Get SVG coordinates.
     this.svg = {};
     this.svg.cx = Utils.calculateSvgCoordinate(argConfig.position.cx, SVG_DEFAULT_DIMENSIONS/2);
     this.svg.cy = Utils.calculateSvgCoordinate(argConfig.position.cy, SVG_DEFAULT_DIMENSIONS/2);
-
-    //this.dimensions = {};
-    //this.svg.height = argConfig.height ? Utils.calculateSvgDimension(argConfig.height) : 0;
-    //this.svg.width = argConfig.width ? Utils.calculateSvgDimension(argConfig.width) : 0;
 
     this.svg.x = (this.svg.cx) - (SVG_DEFAULT_DIMENSIONS / 2);
     this.svg.y = (this.svg.cy) - (SVG_DEFAULT_DIMENSIONS / 2);
@@ -548,20 +503,12 @@ class Toolset {
     this.transform.rotate.x = this.config.position.rotate_x || this.config.position.rotate || 0;
     this.transform.rotate.y = this.config.position.rotate_y || this.config.position.rotate || 0;
 
-/*
-    let scalex = this.svg.cx * this.toolsetPos.scale;
-    let scaley = this.svg.cy * this.toolsetPos.scale;
-    let diffx = this.svg.cx - scalex;
-    let diffy = this.svg.cy - scaley;
-    this.svg.xlateX = diffx / this.toolsetPos.scale;
-    this.svg.xlateY = diffy / this.toolsetPos.scale;
-*/
     if (this.dev.debug) console.log("Toolset::constructor config/svg", this.toolsetId, this.config, this.svg);
 
     const toolsNew = {
       "area": EntityAreaTool,
       "badge": BadgeTool,
-      "bar": SparkleBarChartTool,
+      "bar": SparklineBarChartTool,
       "circle": CircleTool,
       "ellipse": EllipseTool,
       "horseshoe": HorseshoeTool,
@@ -578,11 +525,6 @@ class Toolset {
     this.config.tools.map(toolConfig => {
       var argConfig = {...toolConfig};
 
-/*
-      var argPos = { cx: this.config.position.cx / 100 * SVG_DEFAULT_DIMENSIONS,
-                     cy: this.config.position.cy / 100 * SVG_DEFAULT_DIMENSIONS,
-                     scale: this.config.position.scale ? this.config.position.scale : 1 };
-*/
       var argPos = { cx: 0 / 100 * SVG_DEFAULT_DIMENSIONS,
                      cy: 0 / 100 * SVG_DEFAULT_DIMENSIONS,
                      scale: this.config.position.scale ? this.config.position.scale : 1 };
@@ -594,7 +536,6 @@ class Toolset {
       const newTool = new toolsNew[toolConfig.type](this._card, argConfig, argPos);
       this.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
 
-      //argToolset.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
     });
 
     if (this.dev.performance) console.timeEnd("--> "+ this.toolsetId + " PERFORMANCE Toolset::constructor");
@@ -914,10 +855,6 @@ class BaseTool {
     // centers the tool on the absolute position of the GROUP!
     this.toolsetPos = argPos;
 
-    // Calculate real positions depending on aspectRatio and position...
-//    this.coords = {};
-    // Positions are ALWAYS centered!
-
     // Get SVG coordinates.
     this.svg = {};
     this.svg.cx = Utils.calculateSvgCoordinate(argConfig.cx, this.toolsetPos.cx);
@@ -932,19 +869,6 @@ class BaseTool {
 
     this.svg.x = (this.svg.cx) - (this.svg.width / 2);
     this.svg.y = (this.svg.cy) - (this.svg.height / 2);
-
-
-    // Group scaling experiment. Calc translate values for SVG using the toolset scale value
-/*
-    let scalex = this.svg.cx * this.toolsetPos.scale;
-    let scaley = this.svg.cy * this.toolsetPos.scale;
-    let diffx = this.svg.cx - scalex;
-    let diffy = this.svg.cy - scaley;
-    this.svg.xlateX = diffx / this.toolsetPos.scale;
-    this.svg.xlateY = diffy / this.toolsetPos.scale;
-*/
-    //console.timeEnd("--> "+ this.toolId + " PERFORMANCE BaseTool::constructor");
-
   }
 
  /*******************************************************************************
@@ -1277,9 +1201,6 @@ class RangeSliderTool extends BaseTool {
    *
    */
    curvedPath(argX, argY, argDeform, argPopout) {
-    //let def = 5;//deformation
-    //let Y = 20;
-    //let X = mouse position
 
     if (this.dev.debug) console.log("SLIDER - curvedPath, args", argX, argY, argDeform, argPopout);
     const offset = this.svg.y1;
@@ -1327,7 +1248,6 @@ class RangeSliderTool extends BaseTool {
     let E = this.interpolatePoint(D, F, 1, 2);
     E.r = 1;
 
-    //console.log("SLIDER - curvedPath values A=", A, this.svg.x2, "B=", B, "C=", C);
     // Draw the horizontal start slider, then the 3 Q curves, and the rest of the horizontal slider.
     return `M${S},${U} L${A.cx},${A.cy}
                 Q${B.cx},${B.cy} ${C.cx},${C.cy}
@@ -1516,43 +1436,6 @@ class RangeSliderTool extends BaseTool {
           </g>
         </g>
       `);
-/*
-    toRender.push(svg`
-        <g id="poep" >
-          <rect x="0" y="100" width="100" height="80" style="fill: none" pointer-events="all"/>
-
-          <path d="M0,200 L150,200" stroke="grey" stroke-width="10" pointer-events="none" stroke-linecap="round"/>
-          <g id="_2" pointer-events="none">
-            <path id="label" transform="translate(100,220) scale(5)" d="M 0 0 h 30 v 20 h -30 v -20" style="fill: white; stroke: grey; stroke-width:2"/>
-
-            <circle cy="${this.svg.y + 20}" r="2" fill="white" pointer-events="none"/>
-
-            <text text-anchor="middle" transform="translate(0,10)" pointer-events="none" >
-            <textPath startOffset="50%" dominant-baseline="hanging" fill="black" font-size="2em" font-weight="700" xlink:href="#label" pointer-events="none">
-            50
-            </textPath>
-          </g>
-        </g>
-      `);
-*/
-/*
-    toRender.push(svg`
-        <g id="poep" >
-          <rect x="0" y="100" width="100" height="80"style="fill: none" pointer-events="all"/>
-          <path d="M0,200 L150,200" stroke="grey" stroke-width="10" pointer-events="none" stroke-linecap="round"/>
-          <g id="_2" pointer-events="none">
-            <path id="label" transform="translate(100,220) scale(5)" d="M0.89,-1.79 Q0,0 -0.89,-1.79L-1.10,-2.21 Q-2,-4 -4,-4L-5,-4 Q-7,-4 -7,-6L-7,-10 Q-7,-12 -5,-12L5,-12 Q7,-12 7,-10L7,-6 Q7,-4 5,-4L4,-4 Q2,-4 1.1,-2.21Z" />
-
-            <circle cy="${this.svg.y + 20}" r="2" fill="white" pointer-events="none"/>
-
-            <text text-anchor="middle" transform="translate(0,10)" pointer-events="none" >
-            <textPath startOffset="53.5%" dominant-baseline="hanging" fill="white" font-size="2em" xlink:href="#label" pointer-events="none">
-            50
-            </textPath>
-          </g>
-        </g>
-      `);
-*/
     return toRender;
   }
 
@@ -1810,26 +1693,6 @@ class CircleTool extends BaseTool {
       </g>
     `;
 
-
-    // testing
-
-    if (!this.config.entity_index) {
-      return svg`
-        <g "" id="circle-${this.toolId}" class="circle" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}>"
-          ${this._renderCircle()}
-        </g>
-      `;
-
-    } else {
-      return svg`
-        <g "" id="circle-${this.toolId}" class="circle" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
-          @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
-          ${this._renderCircle()}
-        </g>
-      `;
-
-    }
-
   }
 } // END of class
 
@@ -2043,37 +1906,6 @@ class RectangleToolEx extends BaseTool {
             style="${configStyleStr}"/>
       </g>
       `;
-/*    svgItems = svg`
-      <g  id="badge-${this.toolId}">
-        <path "" d="
-            M ${this.svg.rightXpos} ${this.svg.rightYpos}
-            h ${this.svg.rightWidth - this.svg.radius}
-            a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} ${this.svg.radius}
-            v ${this.svg.height - 2 * this.svg.radius}
-            a ${this.svg.radius} ${this.svg.radius} 0 0 1 -${this.svg.radius} ${this.svg.radius}
-            h -${this.svg.rightWidth - this.svg.radius}
-            v -${this.svg.height - 2 * this.svg.radius}
-            z
-            "
-            style="${configStyleRightStr}"/>
-
-        <path "" d="
-            M ${this.svg.leftXpos + this.svg.radius} ${this.svg.leftYpos}
-            h ${this.svg.leftWidth - this.svg.radius}
-            v ${this.svg.divSize}
-            l ${this.svg.arrowSize} ${this.svg.arrowSize}
-            l -${this.svg.arrowSize} ${this.svg.arrowSize}
-            l 0 ${this.svg.divSize}
-            h -${this.svg.leftWidth - this.svg.radius}
-            a -${this.svg.radius} -${this.svg.radius} 0 0 1 -${this.svg.radius} -${this.svg.radius}
-            v -${this.svg.height - 2 * this.svg.radius}
-            a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} -${this.svg.radius}
-            "
-            style="${configStyleLeftStr}"/>
-      </g>
-      `;
-*/
-
     return svg`${svgItems}`;
   }
 
@@ -2458,51 +2290,6 @@ class EntityIconTool extends BaseTool {
         `;
     }
 
-  // Check for foreignObject set to 0 height in first run on iOS etc.
-/*
-      } else {
-        return svg`
-          <foreignObject width="${this.svg.iconPixels}px" height="${this.svg.iconPixels}px" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="visible">
-            <body>
-              <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
-                  style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-                  <ha-icon icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}";></ha-icon>
-              </div>
-            </body>
-          </foreignObject>
-          `;
-      }
-*/
-
-//  Was in ha-icon icon style="${configStyleStr}"
-
-/* Remove rectangle around icon...
-    } else {
-      return svg`
-        <rect width="${this.svg.iconSize}em" height="${this.svg.iconSize}em" x="${this.svg.xpx}" y="${this.svg.ypx}"
-        style="stroke-width:2;stroke:${this.alternateColor};fill:none"></rect>
-        <foreignObject width="${this.svg.iconSize}em" height="${this.svg.iconSize}em" x="${this.svg.xpx}" y="${this.svg.ypx}">
-          <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
-                style="line-height:${this.svg.iconSize}em;border-style:solid;border-width:0;border-color:${this.alternateColor};">
-            <ha-icon icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}"></ha-icon>
-          </div>
-        </foreignObject>
-        `;
-    }
-*/
-/*
-    return svg`
-    <g @click=${e => this.handlePopup(e, this._card.entities[this.config.entity_index])}>
-      <foreignObject width="${this.svg.iconSize}em" height="${this.svg.iconSize}em" x="${this.svg.xpx}" y="${this.svg.ypx}">
-        <body>
-          <div class="icon">
-            <ha-icon .icon=${icon} style="${configStyleStr}";></ha-icon>
-          </div>
-        </body>
-      </foreignObject>
-      <g>
-      `;
-*/
   }
 
   firstUpdated(changedProperties) {
@@ -2546,16 +2333,6 @@ class EntityIconTool extends BaseTool {
     // And for chrome: the shift in pixels should also be scaled. Not done yet. Icon is displayd lower
     // then should be, ie not centered...
 
-/*
-    let scalex = this.svg.cx * this.toolsetPos.scale;
-    let scaley = this.svg.cy * this.toolsetPos.scale;
-    let diffx = this.svg.cx - scalex;
-    let diffy = this.svg.cy - scaley;
-    let xlatex = diffx / this.toolsetPos.scale;
-    let xlatey = diffy / this.toolsetPos.scale;
-    let scale = this.toolsetPos.scale;
-    if (this.dev.debug) console.log('renderIcon - xlatex/y values', scale, this.toolsetPos.scale, xlatex, xlatey, this.coords, this.dimensions);
-*/
     return svg`
       <g "" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale}) translate(${this.svg.xlateX} ${this.svg.xlateY})"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
@@ -2713,8 +2490,6 @@ class EntityStateTool extends BaseTool {
     this.config = {...DEFAULT_STATE_CONFIG};
     this.config = {...this.config, ...argConfig};
 
-//    this._stateValue = 0;
-//    this._stateValuePrev = 0;
     this._stateValueIsDirty = false;
 
     if (argConfig.styles) this.config.styles = {...argConfig.styles};
@@ -3303,31 +3078,6 @@ class HorseshoeTool extends BaseTool {
         ${this._renderTickMarks()}
       </g>
     `;
-
-/*
-
-  return svg`
-      <g id="horseshoe__svg__group" class="horseshoe__svg__group">
-        <circle id="horseshoe__scale" class="horseshoe__scale" cx="50%" cy="50%" r="45%"
-          fill="${this.fill || 'rgba(0, 0, 0, 0)'}"
-          stroke="${this.config.horseshoe_scale.color || '#000000'}"
-          stroke-dasharray="408.4070449,180"
-          stroke-width="${this.config.horseshoe_scale.width || 6}"
-          stroke-linecap="square"
-          transform="rotate(-220 100 100)"/>
-
-        <circle id="horseshoe__state__value" class="horseshoe__state__value" cx="50%" cy="50%" r="45%"
-          fill="${this.config.fill || 'rgba(0, 0, 0, 0)'}"
-          stroke="url('#horseshoe__gradient-${this.cardId}')"
-          stroke-dasharray="${this.dashArray}"
-          stroke-width="${this.config.horseshoe_state.width || 12}"
-          stroke-linecap="square"
-          transform="rotate(-220 100 100)"/>
-
-        ${this._renderTickMarks()}
-      </g>
-    `;
-*/
   }
  /*******************************************************************************
   * HorseshoeTool::render()
@@ -3359,7 +3109,7 @@ class HorseshoeTool extends BaseTool {
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-class SparkleBarChartTool extends BaseTool {
+class SparklineBarChartTool extends BaseTool {
   constructor (argCard, argConfig, argPos) {
 
 //       styles: { "stroke": 'var(--primary-color);',
@@ -3421,7 +3171,7 @@ class SparkleBarChartTool extends BaseTool {
   }
 
  /*******************************************************************************
-  * SparkleBarChartTool::computeMinMax()
+  * SparklineBarChartTool::computeMinMax()
   *
   * Summary.
   * Compute min/max values of bars to scale them to the maximum amount.
@@ -3448,7 +3198,7 @@ class SparkleBarChartTool extends BaseTool {
   }
 
  /*******************************************************************************
-  * SparkleBarChartTool::set series
+  * SparklineBarChartTool::set series
   *
   * Summary.
   * Sets the timeseries for the barchart tool. Is an array of states.
@@ -3473,7 +3223,7 @@ class SparkleBarChartTool extends BaseTool {
   }
 
  /*******************************************************************************
-  * SparkleBarChartTool::computeBars()
+  * SparklineBarChartTool::computeBars()
   *
   * Summary.
   * Compute start and end of bars for easy rendering.
@@ -3487,8 +3237,6 @@ class SparkleBarChartTool extends BaseTool {
 			this.colorStopsMinMax = {};
 			this.colorStopsMinMax = {[this._scale.min.toString()]: this.config.minmaxgradient.min,
 															 [this._scale.max.toString()]: this.config.minmaxgradient.max};
-			//this.colorStopsMinMax = {[this._scale.max.toString()]: this.config.minmaxgradient.max};
-			// console.log("computebnars, minmaxgradient", this.colorStopsMinMax);
 		}
 
     // VERTICAL
@@ -3514,12 +3262,12 @@ class SparkleBarChartTool extends BaseTool {
         _bars[index].x2 = _bars[index].x1 + this._bars[index].length;
       });
     } else {
-      if (this.dev.debug) console.log("SparkleBarChartTool - unknown barchart orientation (horizontal or vertical)");
+      if (this.dev.debug) console.log("SparklineBarChartTool - unknown barchart orientation (horizontal or vertical)");
     }
   }
 
  /*******************************************************************************
-  * SparkleBarChartTool::_renderBars()
+  * SparklineBarChartTool::_renderBars()
   *
   * Summary.
   * Render all the bars. Number of bars depend on hours and barhours settings.
@@ -3543,7 +3291,11 @@ class SparkleBarChartTool extends BaseTool {
     this._bars.forEach((item, index) => {
       if (this.dev.debug) console.log('_renderBars - bars', item, index);
 
-			// Color the bar (stroke color of line) depending on fixedcolor/colorstop for starters
+			// Color the bar (stroke color of line) depending on given show.style config
+			// #WIP:
+			// Should become consistent with segarc, so
+			// fixedcolor --> fixedcolor: color: value: ...
+			// colorstop --> colorstop:...
 			var stroke = '';
 			switch (this.config.show.style) {
 				case 'fixedcolor':
@@ -3555,7 +3307,6 @@ class SparkleBarChartTool extends BaseTool {
 					break;
 				case 'minmaxgradient':
 					stroke = this._card._calculateColor(this._series[index], this.colorStopsMinMax, true);
-					console.log("_renderbars, minmaxgradient", this._series[index], this.colorStopsMinMax);
 					break;
 			}
 
@@ -3576,7 +3327,7 @@ class SparkleBarChartTool extends BaseTool {
   }
 
  /*******************************************************************************
-  * SparkleBarChartTool::render()
+  * SparklineBarChartTool::render()
   *
   * Summary.
   * The actual render() function called by the card for each tool.
@@ -4678,20 +4429,6 @@ class devSwissArmyKnifeCard extends LitElement {
     this.viewBoxSize = SVG_VIEW_BOX;
     this.viewBox = {"width": SVG_VIEW_BOX, "height": SVG_VIEW_BOX};
 
-/*    this.animations = {};
-    this.animations.lines = {};
-    this.animations.vlines = {};
-    this.animations.hlines = {};
-    this.animations.circles = {};
-    this.animations.rectangles = {};
-    this.animations.icons = {};
-    this.animations.names = {};
-    this.animations.areas = {};
-    this.animations.states = {};
-
-    this.vbars = [];
-    this.rects = [];
-*/
     // Create the lists for the toolsets and the tools
     // - toolsets contain a list of toolsets with tools
     // - tools contain the full list of tools!
@@ -5536,60 +5273,6 @@ class devSwissArmyKnifeCard extends LitElement {
       return;
     }
 
-    // #TODO:
-    // Why not 'make' this record using the aspectratio by splitting the / ??
-    // Then it is x/y = x * SVG_DEFAULT_DIMENSIONS, y * SVG_DEFAULT_DIMENSIONS
-/*
-    const aspectRatios = new Map([
-      ["1/1", {"width": 1 * SVG_DEFAULT_DIMENSIONS, "height": 1 * SVG_DEFAULT_DIMENSIONS}],
-      ["2/2", {"width": 2 * SVG_DEFAULT_DIMENSIONS, "height": 2 * SVG_DEFAULT_DIMENSIONS}],
-      ["3/3", {"width": 3 * SVG_DEFAULT_DIMENSIONS, "height": 3 * SVG_DEFAULT_DIMENSIONS}],
-      ["4/4", {"width": 4 * SVG_DEFAULT_DIMENSIONS, "height": 4 * SVG_DEFAULT_DIMENSIONS}],
-      ["5/5", {"width": 5 * SVG_DEFAULT_DIMENSIONS, "height": 5 * SVG_DEFAULT_DIMENSIONS}],
-      ["6/6", {"width": 6 * SVG_DEFAULT_DIMENSIONS, "height": 6 * SVG_DEFAULT_DIMENSIONS}],
-
-      ["2/1", {"width": 2 * SVG_DEFAULT_DIMENSIONS, "height": 1 * SVG_DEFAULT_DIMENSIONS}],
-
-      ["3/1", {"width": 3 * SVG_DEFAULT_DIMENSIONS, "height": 1 * SVG_DEFAULT_DIMENSIONS}],
-      ["3/2", {"width": 3 * SVG_DEFAULT_DIMENSIONS, "height": 2 * SVG_DEFAULT_DIMENSIONS}],
-
-      ["4/1", {"width": 4 * SVG_DEFAULT_DIMENSIONS, "height": 1 * SVG_DEFAULT_DIMENSIONS}],
-      ["4/2", {"width": 4 * SVG_DEFAULT_DIMENSIONS, "height": 2 * SVG_DEFAULT_DIMENSIONS}],
-      ["4/3", {"width": 4 * SVG_DEFAULT_DIMENSIONS, "height": 3 * SVG_DEFAULT_DIMENSIONS}],
-
-      ["5/1", {"width": 5 * SVG_DEFAULT_DIMENSIONS, "height": 1 * SVG_DEFAULT_DIMENSIONS}],
-      ["5/2", {"width": 5 * SVG_DEFAULT_DIMENSIONS, "height": 2 * SVG_DEFAULT_DIMENSIONS}],
-      ["5/3", {"width": 5 * SVG_DEFAULT_DIMENSIONS, "height": 3 * SVG_DEFAULT_DIMENSIONS}],
-      ["5/4", {"width": 5 * SVG_DEFAULT_DIMENSIONS, "height": 4 * SVG_DEFAULT_DIMENSIONS}],
-
-      ["6/1", {"width": 6 * SVG_DEFAULT_DIMENSIONS, "height": 1 * SVG_DEFAULT_DIMENSIONS}],
-      ["6/2", {"width": 6 * SVG_DEFAULT_DIMENSIONS, "height": 2 * SVG_DEFAULT_DIMENSIONS}],
-      ["6/3", {"width": 6 * SVG_DEFAULT_DIMENSIONS, "height": 3 * SVG_DEFAULT_DIMENSIONS}],
-      ["6/4", {"width": 6 * SVG_DEFAULT_DIMENSIONS, "height": 4 * SVG_DEFAULT_DIMENSIONS}],
-      ["6/5", {"width": 6 * SVG_DEFAULT_DIMENSIONS, "height": 5 * SVG_DEFAULT_DIMENSIONS}],
-
-      ["1/2", {"width": 1 * SVG_DEFAULT_DIMENSIONS, "height": 2 * SVG_DEFAULT_DIMENSIONS}],
-
-      ["1/3", {"width": 1 * SVG_DEFAULT_DIMENSIONS, "height": 3 * SVG_DEFAULT_DIMENSIONS}],
-      ["2/3", {"width": 2 * SVG_DEFAULT_DIMENSIONS, "height": 3 * SVG_DEFAULT_DIMENSIONS}],
-
-      ["1/4", {"width": 1 * SVG_DEFAULT_DIMENSIONS, "height": 4 * SVG_DEFAULT_DIMENSIONS}],
-      ["2/4", {"width": 2 * SVG_DEFAULT_DIMENSIONS, "height": 4 * SVG_DEFAULT_DIMENSIONS}],
-      ["3/4", {"width": 3 * SVG_DEFAULT_DIMENSIONS, "height": 4 * SVG_DEFAULT_DIMENSIONS}],
-
-      ["1/5", {"width": 1 * SVG_DEFAULT_DIMENSIONS, "height": 5 * SVG_DEFAULT_DIMENSIONS}],
-      ["2/5", {"width": 2 * SVG_DEFAULT_DIMENSIONS, "height": 5 * SVG_DEFAULT_DIMENSIONS}],
-      ["3/5", {"width": 3 * SVG_DEFAULT_DIMENSIONS, "height": 5 * SVG_DEFAULT_DIMENSIONS}],
-      ["4/5", {"width": 4 * SVG_DEFAULT_DIMENSIONS, "height": 5 * SVG_DEFAULT_DIMENSIONS}],
-
-      ["1/6", {"width": 1 * SVG_DEFAULT_DIMENSIONS, "height": 6 * SVG_DEFAULT_DIMENSIONS}],
-      ["2/6", {"width": 2 * SVG_DEFAULT_DIMENSIONS, "height": 6 * SVG_DEFAULT_DIMENSIONS}],
-      ["3/6", {"width": 3 * SVG_DEFAULT_DIMENSIONS, "height": 6 * SVG_DEFAULT_DIMENSIONS}],
-      ["4/6", {"width": 4 * SVG_DEFAULT_DIMENSIONS, "height": 6 * SVG_DEFAULT_DIMENSIONS}],
-      ["5/6", {"width": 5 * SVG_DEFAULT_DIMENSIONS, "height": 6 * SVG_DEFAULT_DIMENSIONS}],
-
-    ]);
-*/
     this.dimensions = "1/1";
 
     if (config.dimensions) this.dimensions = config.dimensions;
@@ -5652,7 +5335,7 @@ class devSwissArmyKnifeCard extends LitElement {
     const toolsNew = {
       "area": EntityAreaTool,
       "badge": BadgeTool,
-      "bar": SparkleBarChartTool,
+      "bar": SparklineBarChartTool,
       "circle": CircleTool,
       "ellipse": EllipseTool,
       "horseshoe": HorseshoeTool,
@@ -6043,69 +5726,6 @@ class devSwissArmyKnifeCard extends LitElement {
       }
     }
 
-    // ICON TEST #HERE
-    //
-    // 2020.10.22 Can't get into the shadowRoot of the icons.lock/flash elements... No childnodes, nothing.
-//  temp2.shadowRoot.querySelectorAll("*")[0].path
-// "M7,2V13H10V22L17,10H13L17,2H7Z"
-/*
-    this.icons = {};
-    this.icons.lock = this.shadowRoot.getElementById("lock");
-    this.icons.flash = this.shadowRoot.getElementById("flash");
-    console.log("ICON TESTING 1", this.icons.lock);
-
-    var nodelist = this.icons.flash.shadowRoot.querySelectorAll("*");
-    var pathh = this.shadowRoot.getElementById("flash").shadowRoot.querySelectorAll("*")[0]?.path
-    console.log("ICON TESTING pathh", pathh);
-
-    var hasvgicon = nodeList[0]
-    var svgPath = this.shadowRoot.getElementById("lock").shadowRoot.querySelector("ha-svg-icon")?.path;
-    console.log("ICON TESTING", svgPath);
-
-    var testPath = this.shadowRoot.getElementById("lock").shadowRoot.querySelector("svg")?.path;
-    console.log("ICON TESTING testpath", testPath, this.shadowRoot.getElementById("lock").shadowRoot);
-
-    var nextpath = this.shadowRoot.getElementById("lock").shadowRoot.querySelector("path");
-    console.log("ICON TESTING nextpath", nextpath);
-
-    var mypath = this.shadowRoot.querySelector("ha-icon")?.shadowRoot.querySelector("svg");
-    console.log("ICON TESTING mypath", mypath);
-
-    var shadow = this.icons.lock.shadowRoot;
-    console.log("ICON TESTING 2", shadow);
-    var hsi = this.icons.lock.shadowRoot.querySelector("ha-svg-icon");
-    var svg = this.icons.lock.shadowRoot.querySelector("svg");
-    console.log("ICON TESTING 3", hsi, svg);
-
-    var classname = shadow?.getElementsByClassName("ha-svg-icon");
-    console.log("ICON TESTING 4", classname);
-*/
-/*
-    this.icons.lock.svg = this.icons.lock.shadowRoot.querySelector("*");
-    var ele = {};
-    var childNodes = [];
-    //var ele = array.from(this.icons.lock.shadowRoot.querySelectorAll());
-    //var childNodes = Array.from(this.icons.flash.shadowRoot.childNodes);
-    var classname = {};
-    //classname = this.icons.lock.shadowRoot.getElementsByClassName("ha-svg-icon");
-
-    this.icons.lock.shadow = this.shadowRoot.getElementById("lock").shadowRoot;
-    this.icons.lock.svg = this.shadowRoot.getElementById("lock").shadowRoot.shadowRoot;
-
-    console.log("ICON TESTING", this.icons.lock, this.icons.flash, this.icons.lock.shadowRoot, this.icons.lock.shadow, this.icons.lock.svg, ele, childNodes, classname);
-*/
-/*
-    if (this.tools[4].type == "slider") {
-      this.tools[4].tool.firstUpdated(changedProperties);
-    }
-    if (this.tools[5]?.type == "slider") {
-      this.tools[5].tool.firstUpdated(changedProperties);
-    }
-*/
-    // Force rerender after first update.
-    // Seems to be required to render the icons correctly on iOS / Safari devices.
-    // #TODO, check requestupdates stuff
-    //this.requestUpdate();
   }
 
 
@@ -6182,41 +5802,6 @@ class devSwissArmyKnifeCard extends LitElement {
     this._reRender = false;
     this._reRenderCounter = 0;
 
-//    var pathh = this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path
-//    if (this.dev.debug) console.log("render ICON TESTING pathh", this.cardId, new Date().getSeconds().toString() + '.'+ new Date().getMilliseconds().toString(), pathh, this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*"));
-
-//    if (!pathh) {
-//      if (true || !this.iconInterval) {
-//        this.iconInterval = true;
-//        setTimeout(
-//            () => this.requestUpdate(),
-//            100);
-/*        this.iconInterval = setInterval(
-            () => this.requestUpdate(),
-            1000);
-*/
-//        if (this.dev.debug) console.log("render icon testing, setting interval", this.iconInterval);
-//      }
-//    } else {
-/*
-      clearInterval(this.interval);
-      if (this.dev.debug) console.log("render icon testing, clearing interval", this.iconInterval);
-      if (this.iconInterval) {
-        clearInterval(this.interval);
-        this.iconInterval = null;
-      }
-*/
-//      if (this.dev.debug) console.log("render icon testing, clearing interval", this.iconInterval);
-//      this.iconInterval = false;
-//    }
-
-/*
-    this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path);
-
-    var flash = this.shadowRoot.getElementById("flash")?.shadowRoot;
-    if (flash) {flash.onload = this.iconOnLoad(); }
-*/
-
     var myHtml;
 
     if (this.config.disable_card) {
@@ -6248,47 +5833,6 @@ class devSwissArmyKnifeCard extends LitElement {
     if (this.dev.performance) console.timeEnd("--> "+ this.cardId + " PERFORMANCE card::render");
 
     return myHtml;
-
-/*
-    return html`
-      <ha-card>
-        <div class="container" id="container">
-            <div class="icon">
-                <ha-icon id="flash" icon="mdi:flash"></ha-icon>
-                <ha-icon id="lockk" icon="mdi:lock-outline"></ha-icon>
-                <ha-svg-icon icon="mdi:lock-outline" id="lock">
-                  <svg preserveAspectRatio="xMidYMid meet" focusable="false" viewBox="0 0 24 24">
-                    <g>
-                    <path d="M12,17C10.89,17 10,16.1 10,15C10,13.89 10.89,13 12,13A2,2 0 0,1 14,15A2,2 0 0,1 12,17M18,20V10H6V20H18M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V10C4,8.89 4.89,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"></path>
-                    </g>
-                  </svg>
-                </ha-svg-icon>
-            </div>
-
-          ${this._renderSvg()}
-        </div>
-      </ha-card>
-    `;
-*/
-
-    // #TODO The svg style part must move to rendering horseshoetool I guess
-
-/*    return html`
-      <ha-card
-      >
-        <div class="container" id="container">
-          ${this._renderSvg()}
-        </div>
-
-      <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
-        <linearGradient gradientTransform="rotate(0)" id="horseshoe__gradient-${this.cardId}" x1="${this.angleCoords.x1}", y1="${this.angleCoords.y1}", x2="${this.angleCoords.x2}" y2="${this.angleCoords.y2}">
-          <stop offset="${this.color1_offset}" stop-color="${this.color1}" />
-          <stop offset="100%" stop-color="${this.color0}" />
-        </linearGradient>
-      </svg>
-      </ha-card>
-    `;
-*/
   }
 
 /*      <ha-card
@@ -6686,8 +6230,6 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
   *
   */
   _renderSvg() {
-    // For some reason, using a var/const for the viewboxsize doesn't work.
-    // Even if the Chrome inspector shows 200 200. So hardcode for now!
     const { viewBoxSize, } = this;
 
     const cardFilter = this.config.card_filter ? this.config.card_filter : 'card--filter-none';
@@ -6704,98 +6246,7 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
                   class="${cardFilter}"
                   viewBox="0 0 ${this.viewBox.width} ${this.viewBox.height}">
                   ${this._RenderTools()}`);
-    
-/*    
-    switch (this.dimensions) {
-      case "1/1": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 200 200'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "2/2": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 400 400'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "3/3": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 600 600'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "4/4": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 800 800'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "2/1": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}" preserveAspectRatio="xMidYMid slice" overflow="visible"
-                  viewBox="0 0 ${this.viewBox.width} ${this.viewBox.height}">
-                  ${this._RenderTools()}`);
-                  break;
-      case "3/1": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 600 200'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "3/2": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 600 400'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "4/1": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 800 200'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "4/2": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 800 400'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "4/3": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 800 600'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "1/2": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 200 400'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "1/3": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 200 600'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "2/3": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 400 600'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "1/4": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 200 800'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "2/4": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 400 800'>
-                  ${this._RenderTools()}`);
-                  break;
-      case "3/4": svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 600 800'>
-                  ${this._RenderTools()}`);
-                  break;
-      default: this.viewBox = {"width": 1000, "height": 1000};
-               svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox='0 0 1000 1000'>
-                  ${this._RenderTools()}`);
-                  console.error("card::render - aspect ratio not defined");
-                  break;
-    }
-*/
+
     return svg`${svgItems}`;
   }
 
@@ -6810,7 +6261,6 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     } = this.config.layout; // was this.config.layout
 
     if (this.dev.debug) console.log('debug - _renderUserSvgs IN', this.config);
-    //if (!svgs) return;
     if (!this.config.svgs) return;
 
     if (this.dev.debug) console.log('debug - _renderUserSvgs IN2');
@@ -7242,50 +6692,6 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     });
     if (this.dev.debug) console.log('card::updateData, entityList from tools', entityList);
 
-/*
-    if (this.vbars.length > 0) {
-      this.vbars.map((item, i) => {
-        const end = new Date();
-        const start = new Date();
-        start.setHours(end.getHours() - item.config.hours);
-        const attr = this.config.entities[item.config.entity_index].attribute ? this.config.entities[item.config.entity_index].attribute : null;
-
-        entityList[j] = ({"entityIndex": item.config.entity_index, "entityId": this.entities[item.config.entity_index].entity_id, "attrId": attr, "start": start, "end": end, "type": "vbars", "idx": i});
-        j++;
-      });
-    }
-*/
-    // if (this.config.layout.vbars) {
-      // this.config.layout.vbars.map((item, i) => {
-        // const end = new Date();
-        // const start = new Date();
-        // start.setHours(end.getHours() - this.vbars[i].config.hours);
-        // const attr = this.config.entities[item.entity_index].attribute ? this.config.entities[item.entity_index].attribute : null;
-
-        // entityList[j] = ({"entityIndex": item.entity_index, "entityId": this.entities[item.entity_index].entity_id, "attrId": attr, "start": start, "end": end, "type": "vbars", "idx": i});
-        // j++;
-      // });
-    // }
-
-/*
-    if (this.config.layout.hbars) {
-      this.config.layout.hbars.map((item, i) => {
-        const end = new Date();
-        const start = new Date();
-        start.setHours(end.getHours() - this.hbars[i].config.hours);
-        const attr = this.config.entities[item.entity_index].attribute ? this.config.entities[item.entity_index].attribute : null;
-
-        entityList[j] = ({"entityIndex": item.entity_index, "entityId": this.entities[item.entity_index].entity_id, "attrId": attr, "start": start, "end": end, "type": "hbars", "idx": i});
-        j++;
-      });
-    }
-*/
-    // const end = new Date();
-    // const start = new Date();
-    // start.setHours(end.getHours() - 24);
-
-    //const entity = this.entities[3];
-
     try {
 //      const promise = this.config.layout.vbars.map((item, i) => this.updateEntity(item, entity, i, start, end));
       const promise = entityList.map((item, i) => this.updateEntity(item, i, item.start, item.end));
@@ -7436,15 +6842,6 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
         this.tools[entity.idx].tool.series = [...theData];
       }
     }
-
-    // now push data into object...
-//    if (entity.type == 'hbars') {
-//      this.hbars[entity.idx].data = [...theData];
-//    }
-
-//    if (entity.type == "vbars") {
-//      this.vbars[entity.idx].data = [...theData];
-//    }
 
     // Request a rerender of the card after receiving new data
     this.requestUpdate();
