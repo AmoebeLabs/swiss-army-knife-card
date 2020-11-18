@@ -1744,7 +1744,7 @@ class UserSvgTool extends BaseTool {
 
 		this.item = {};
 		this.item.image = "face1";
-		console.log("usersvg, images, image", this.images, this.item);
+		// console.log("usersvg, images, image", this.images, this.item);
 		
 		
     if (this.dev.debug) console.log('UserSvgTool constructor coords, dimensions', this.svg, this.config);
@@ -1796,25 +1796,25 @@ class UserSvgTool extends BaseTool {
 			// });
 		// }
 
-		console.log("renderusersvg, images, image", this.images, this.item);
+		// console.log("renderusersvg, images, image", this.images, this.item);
 		return svg`
 			<svg x="${this.svg.x}" y="${this.svg.y}">
 				<image href="${this.images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
 			</svg>
 			`;
 
-		return svg`
-			<svg x="${this.svg.x}" y="${this.svg.y}">
-				<image href="/local/images/ic-face-1.svg" height="${this.svg.height}" width="${this.svg.width}"/>
-			</svg>
-			`;
+		// return svg`
+			// <svg x="${this.svg.x}" y="${this.svg.y}">
+				// <image href="/local/images/ic-face-1.svg" height="${this.svg.height}" width="${this.svg.width}"/>
+			// </svg>
+			// `;
 				
-    return svg`
-      <svg height="100px" width="100px"
-        x="${this.svg.cx}"% y="${this.svg.cy}"%
-					<use href="${this.images[this.image]}"></use>
-				</svg>
-      `;
+    // return svg`
+      // <svg height="100px" width="100px"
+        // x="${this.svg.cx}"% y="${this.svg.cy}"%
+					// <use href="${this.images[this.image]}"></use>
+				// </svg>
+      // `;
   }
  /*******************************************************************************
   * UserSvgTool::render()
@@ -3702,7 +3702,7 @@ class SegmentedArcTool extends BaseTool {
     // COLORSTOPS
     else if (this.config.show.style == 'colorstops') {
       // Get colorstops, remove outliers and make a key/value store...
-      console.log("colorstops", this.toolId, this.config.segments, this.config.segments.colorstops, this.config.segments.colorstops.colors);
+      // console.log("colorstops", this.toolId, this.config.segments, this.config.segments.colorstops, this.config.segments.colorstops.colors);
 
       this._segments.colorStops = {};
       Object.keys(this.config.segments.colorstops.colors).forEach((key) => {
@@ -3791,7 +3791,7 @@ class SegmentedArcTool extends BaseTool {
 
     // testing. use below two lines and sckip the calculation of the segmentAngles. Those are done above with different calculation...
     this.skipOriginal = ((this.config.show.style == 'colorstops') || (this.config.show.style == 'colorlist'));
-
+		
     // Set scale to new value. Never changes of course!!
     if (this.skipOriginal) {
       if (this.config.isScale) this._stateValuePrev = this._stateValue;
@@ -5374,22 +5374,22 @@ class devSwissArmyKnifeCard extends LitElement {
       }
     } else {
 
-      if (this.tools) {
-        this.tools.map((item, index) => {
-          if (true || item.type == "segarc") {
-            if (this.dev.debug) console.log('set hass - SegmentedArcTool found', item, index);
-            if ((item.tool.config.hasOwnProperty('entity_index')))
-            {
-              if (this.dev.debug) console.log('set hass - SegmentedArcTool set value', typeof item.tool.value);
+      // if (this.tools) {
+        // this.tools.map((item, index) => {
+          // if (true || item.type == "segarc") {
+            // if (this.dev.debug) console.log('set hass - SegmentedArcTool found', item, index);
+            // if ((item.tool.config.hasOwnProperty('entity_index')))
+            // {
+              // if (this.dev.debug) console.log('set hass - SegmentedArcTool set value', typeof item.tool.value);
 
-              item.tool.value = this.attributesStr[item.tool.config.entity_index]
-                                                  ? this.attributesStr[item.tool.config.entity_index]
-                                                  : this.entitiesStr[item.tool.config.entity_index];
-            }
+              // item.tool.value = this.attributesStr[item.tool.config.entity_index]
+                                                  // ? this.attributesStr[item.tool.config.entity_index]
+                                                  // : this.entitiesStr[item.tool.config.entity_index];
+            // }
 
-          }
-        });
-      }
+          // }
+        // });
+      // }
     }
 
     // For now, always force update to render the card if any of the states or attributes have changed...
@@ -5432,7 +5432,7 @@ class devSwissArmyKnifeCard extends LitElement {
 
     var ar = config.dimensions.trim().split("/");
     if (!this.viewBox) this.viewBox = {};
-    console.log("AR = ", ar, config.dimensions, this.viewBox);
+    // console.log("AR = ", ar, config.dimensions, this.viewBox);
     this.viewBox.width = ar[0] * SVG_DEFAULT_DIMENSIONS;
     this.viewBox.height= ar[1] * SVG_DEFAULT_DIMENSIONS;
 
@@ -5484,23 +5484,23 @@ class devSwissArmyKnifeCard extends LitElement {
     // NEW for ts processing
     this.toolset = [];
 
-    const toolsNew = {
-      "area": EntityAreaTool,
-      "badge": BadgeTool,
-      "bar": SparklineBarChartTool,
-      "circle": CircleTool,
-      "ellipse": EllipseTool,
-      "horseshoe": HorseshoeTool,
-      "icon": EntityIconTool,
-      "line": LineTool,
-      "name": EntityNameTool,
-      "rectangle": RectangleTool,
-      "rectex": RectangleToolEx,
-      "segarc": SegmentedArcTool,
-      "state": EntityStateTool,
-      "slider": RangeSliderTool,
-			"usersvg": UserSvgTool,
-    }
+    // const toolsNew = {
+      // "area": EntityAreaTool,
+      // "badge": BadgeTool,
+      // "bar": SparklineBarChartTool,
+      // "circle": CircleTool,
+      // "ellipse": EllipseTool,
+      // "horseshoe": HorseshoeTool,
+      // "icon": EntityIconTool,
+      // "line": LineTool,
+      // "name": EntityNameTool,
+      // "rectangle": RectangleTool,
+      // "rectex": RectangleToolEx,
+      // "segarc": SegmentedArcTool,
+      // "state": EntityStateTool,
+      // "slider": RangeSliderTool,
+			// "usersvg": UserSvgTool,
+    // }
 
     // #TODO 2020.10.14
     // - Merge templates into the toolsets (formerly groups) and tools (formerly tools)
@@ -5571,20 +5571,20 @@ class devSwissArmyKnifeCard extends LitElement {
             // #TODO: does this work???????????????????
 
             if (false) {
-            var newCfg1 = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
-            var newCfg2 = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
-            console.log("newCfg,mergeDeep) NOT", newCfg1, " yes--> Used ", newCfg2);
-            toolsetCfg = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
-            //toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
+            // var newCfg1 = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
+            // var newCfg2 = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
+            // console.log("newCfg,mergeDeep) NOT", newCfg1, " yes--> Used ", newCfg2);
+            // toolsetCfg = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
+            // //toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
 
 
-            // #TODO: merge not here, but later, after replacement of toolid in next loop.
-            // Merge everything, then replace the toolset tools with the template tools??
-            // Then we would merge everything, except the tools. That will be merged by Id below!!!!!
+            // // #TODO: merge not here, but later, after replacement of toolid in next loop.
+            // // Merge everything, then replace the toolset tools with the template tools??
+            // // Then we would merge everything, except the tools. That will be merged by Id below!!!!!
 
-            // Template overwrites default configuration.
-            toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
-            toolsetCfg.tools = toolsetCfgFromTemplate.tools;
+            // // Template overwrites default configuration.
+            // toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
+            // toolsetCfg.tools = toolsetCfgFromTemplate.tools;
 
             } else {
             }
@@ -5637,130 +5637,130 @@ class devSwissArmyKnifeCard extends LitElement {
         const newToolset = new Toolset(this, toolsetCfg);
 
         this.ts.push(newToolset);
-        this.tools.push(newToolset);
+        //this.tools.push(newToolset);
       } else {
 // =================================================================================== OLD
-        var toolsetCfgFromTemplate = null;
+        // var toolsetCfgFromTemplate = null;
 
-        if (toolsetCfg.template) {
-          console.log("got toolsetCfg template", this.cardId, toolsetCfg, toolidx);
+        // if (toolsetCfg.template) {
+          // console.log("got toolsetCfg template", this.cardId, toolsetCfg, toolidx);
 
-          if (this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]) {
-            console.log("got toolsetCfg template found", this.cardId, toolsetCfg, toolidx);
+          // if (this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]) {
+            // console.log("got toolsetCfg template found", this.cardId, toolsetCfg, toolidx);
 
-            toolsetCfgFromTemplate = Templates.replaceVariables2(toolsetCfg.template.variables, this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]);
-            console.log("got toolsetCfg replaced vars", this.cardId, toolsetCfgFromTemplate);
-            toolsetCfgFromTemplate.position = this.config.layout.toolsets[toolidx].position ? this.config.layout.toolsets[toolidx].position : toolsetCfgFromTemplate.position;
-            console.log("got toolsetCfg replaced vars2", this.cardId, toolsetCfgFromTemplate);
-            //this.config.layout.toolsets[toolidx].position = toolsetCfgFromTemplate.position;
-            //this.config.layout.toolsets[toolidx].tools = [...toolsetCfgFromTemplate.tools];
+            // toolsetCfgFromTemplate = Templates.replaceVariables2(toolsetCfg.template.variables, this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]);
+            // console.log("got toolsetCfg replaced vars", this.cardId, toolsetCfgFromTemplate);
+            // toolsetCfgFromTemplate.position = this.config.layout.toolsets[toolidx].position ? this.config.layout.toolsets[toolidx].position : toolsetCfgFromTemplate.position;
+            // console.log("got toolsetCfg replaced vars2", this.cardId, toolsetCfgFromTemplate);
+            // //this.config.layout.toolsets[toolidx].position = toolsetCfgFromTemplate.position;
+            // //this.config.layout.toolsets[toolidx].tools = [...toolsetCfgFromTemplate.tools];
 
-            toolList = toolsetCfgFromTemplate.tools;
+            // toolList = toolsetCfgFromTemplate.tools;
 
 
-            var found = false;
-            var toolAdd = [];
-            var atIndex = null;
+            // var found = false;
+            // var toolAdd = [];
+            // var atIndex = null;
 
-            // Check for empty tool list. This can be if template is used. Tools come from template, not from config...
-            if (toolsetCfg.tools) {
-              toolsetCfg.tools.map((tool, index) => {
-                toolList.map((toolT, indexT) => {
-                  if (tool.id == toolT.id) {
-                    toolList[indexT] = {...toolList[indexT], ...tool};
-                    found = true;
-    //                atIndex = indexT;
-                    console.log("got toolsetCfg toolid", tool, index, toolT, indexT, tool);
-                  }
-                });
-                if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
-              });
-            }
-            //toolList = toolList.concat(toolsetCfg.tools);
+            // // Check for empty tool list. This can be if template is used. Tools come from template, not from config...
+            // if (toolsetCfg.tools) {
+              // toolsetCfg.tools.map((tool, index) => {
+                // toolList.map((toolT, indexT) => {
+                  // if (tool.id == toolT.id) {
+                    // toolList[indexT] = {...toolList[indexT], ...tool};
+                    // found = true;
+    // //                atIndex = indexT;
+                    // console.log("got toolsetCfg toolid", tool, index, toolT, indexT, tool);
+                  // }
+                // });
+                // if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
+              // });
+            // }
+            // //toolList = toolList.concat(toolsetCfg.tools);
 
-            toolList = toolList.concat(toolAdd);
-            if (this.dev.debug) console.log('Step 2: templating, toolconfig', toolList);
+            // toolList = toolList.concat(toolAdd);
+            // if (this.dev.debug) console.log('Step 2: templating, toolconfig', toolList);
 
-            console.log('toolsetCfg ENDRESULT before', toolList, this.config.layout.toolsets[toolidx]);
-            if (this.config.layout.toolsets[toolidx].tools) this.config.layout.toolsets[toolidx].tools = [...toolList, ...this.config.layout.toolsets[toolidx].tools];
-            console.log('toolsetCfg ENDRESULT after', toolList, this.config.layout.toolsets[toolidx]);
+            // console.log('toolsetCfg ENDRESULT before', toolList, this.config.layout.toolsets[toolidx]);
+            // if (this.config.layout.toolsets[toolidx].tools) this.config.layout.toolsets[toolidx].tools = [...toolList, ...this.config.layout.toolsets[toolidx].tools];
+            // console.log('toolsetCfg ENDRESULT after', toolList, this.config.layout.toolsets[toolidx]);
 
-          }
-        } else {
-          // We don't have a template to run, get list of tools and use that...
-          toolList = toolsetCfg.tools;
-        }
+          // }
+        // } else {
+          // // We don't have a template to run, get list of tools and use that...
+          // toolList = toolsetCfg.tools;
+        // }
 
-        console.log("got toolsetCfg", this.cardId, toolList);
+        // console.log("got toolsetCfg", this.cardId, toolList);
 
-        // Oke. NOw we have a toolsetCfg. Check if this one references a template
-        // and replace with given variables of current toolsetCfg.
+        // // Oke. NOw we have a toolsetCfg. Check if this one references a template
+        // // and replace with given variables of current toolsetCfg.
 
-  /*
-        if (toolsetCfg.template) {
-          if (this.dev.debug) console.log('toolconfig, template defined in toolsetCfg', toolsetCfg.template, this.config.templates);
-          if (this.dev.debug) console.log('toolconfig, index template name', this.config.templates[this.kvTemplates[toolsetCfg.template]]);
+  // /*
+        // if (toolsetCfg.template) {
+          // if (this.dev.debug) console.log('toolconfig, template defined in toolsetCfg', toolsetCfg.template, this.config.templates);
+          // if (this.dev.debug) console.log('toolconfig, index template name', this.config.templates[this.kvTemplates[toolsetCfg.template]]);
 
-          if (this.config.templates[this.kvTemplates[toolsetCfg.template]]) {
-            if (this.dev.debug) console.log('toolconfig, template found in templates', toolsetCfg.template);
-            // Step 1: get template variables replaced by template defaults and given variables in toolset.
-            toolList = Templates.replaceVariables(toolsetCfg.variables, this.config.templates[this.kvTemplates[toolsetCfg.template]]);
-            if (this.dev.debug) console.log('Step 1: toolconfig, replacing template vars', toolList);
-            if (this.dev.debug) console.log('Step 1b: toolconfig, check toolsetCfg.tools', toolsetCfg);
+          // if (this.config.templates[this.kvTemplates[toolsetCfg.template]]) {
+            // if (this.dev.debug) console.log('toolconfig, template found in templates', toolsetCfg.template);
+            // // Step 1: get template variables replaced by template defaults and given variables in toolset.
+            // toolList = Templates.replaceVariables(toolsetCfg.variables, this.config.templates[this.kvTemplates[toolsetCfg.template]]);
+            // if (this.dev.debug) console.log('Step 1: toolconfig, replacing template vars', toolList);
+            // if (this.dev.debug) console.log('Step 1b: toolconfig, check toolsetCfg.tools', toolsetCfg);
 
-            // Step 2: merge toolConfig with rest of toolsetCfg configuration.
-            //         So you can override the template, or extend the template!
+            // // Step 2: merge toolConfig with rest of toolsetCfg configuration.
+            // //         So you can override the template, or extend the template!
 
-            // More difficult than expected.
-            // We have to merge the tool definitions. This is an array, and we have to match the tools of course to merge them, and add new...
-            // HOW?
+            // // More difficult than expected.
+            // // We have to merge the tool definitions. This is an array, and we have to match the tools of course to merge them, and add new...
+            // // HOW?
 
-            // We merge on tool id!!!!
-            // Merge two lists based on this id. If not found, concat, otherwise merge the tool values...
+            // // We merge on tool id!!!!
+            // // Merge two lists based on this id. If not found, concat, otherwise merge the tool values...
 
-            var found = false;
-            var toolAdd = [];
-            var atIndex = null;
-            toolsetCfg.tools.map((tool, index) => {
-              toolList.map((toolT, indexT) => {
-                if (tool.id == toolT.id) {
-                  toolList[indexT] = {...toolList[indexT], ...tool};
-                  found = true;
-  //                atIndex = indexT;
-                }
-              });
-              if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
-            });
-            //toolList = toolList.concat(toolsetCfg.tools);
+            // var found = false;
+            // var toolAdd = [];
+            // var atIndex = null;
+            // toolsetCfg.tools.map((tool, index) => {
+              // toolList.map((toolT, indexT) => {
+                // if (tool.id == toolT.id) {
+                  // toolList[indexT] = {...toolList[indexT], ...tool};
+                  // found = true;
+  // //                atIndex = indexT;
+                // }
+              // });
+              // if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
+            // });
+            // //toolList = toolList.concat(toolsetCfg.tools);
 
-            toolList = toolList.concat(toolAdd);
-            if (this.dev.debug) console.log('Step 2: templating, toolconfig', toolList);
-          }
-        } else {
-          // We don't have a template to run, get list of tools and use that...
-          toolList = toolsetCfg.tools;
-        }
-        if (this.dev.debug) console.log('Step 3: outside test, toolconfig list', toolList);
-  */
-        toolList.map(toolConfig => {
-  //      toolsetCfg.tools?.map(toolConfig => {
-          // create toolsetCfg and push to this.toolsets list
+            // toolList = toolList.concat(toolAdd);
+            // if (this.dev.debug) console.log('Step 2: templating, toolconfig', toolList);
+          // }
+        // } else {
+          // // We don't have a template to run, get list of tools and use that...
+          // toolList = toolsetCfg.tools;
+        // }
+        // if (this.dev.debug) console.log('Step 3: outside test, toolconfig list', toolList);
+  // */
+        // toolList.map(toolConfig => {
+  // //      toolsetCfg.tools?.map(toolConfig => {
+          // // create toolsetCfg and push to this.toolsets list
 
-          // Use argPos for now. Should pass the toolsetCfg config to the tool
-          // #TODO
-          var argConfig = {...toolConfig};
+          // // Use argPos for now. Should pass the toolsetCfg config to the tool
+          // // #TODO
+          // var argConfig = {...toolConfig};
 
-          var argPos = { cx: toolsetCfg.position.cx / 100 * SVG_DEFAULT_DIMENSIONS,
-                         cy: toolsetCfg.position.cy / 100 * SVG_DEFAULT_DIMENSIONS,
-                         scale: toolsetCfg.position.scale ? toolsetCfg.position.scale : 1 };
-          const newTool = new toolsNew[toolConfig.type](this, argConfig, argPos);
-          this.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
+          // var argPos = { cx: toolsetCfg.position.cx / 100 * SVG_DEFAULT_DIMENSIONS,
+                         // cy: toolsetCfg.position.cy / 100 * SVG_DEFAULT_DIMENSIONS,
+                         // scale: toolsetCfg.position.scale ? toolsetCfg.position.scale : 1 };
+          // const newTool = new toolsNew[toolConfig.type](this, argConfig, argPos);
+          // this.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
 
-          argToolset.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
+          // argToolset.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
 
-        });
-        this.toolsets.push(argToolset);
-      }
+        // });
+        // this.toolsets.push(argToolset);
+      } // end of else
     });
     if (this.dev.debug) console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
   // Template test. 2020.09.30
@@ -5851,33 +5851,33 @@ class devSwissArmyKnifeCard extends LitElement {
       }
     } else {
 
-      if (this.tools) {
-        this.tools.map((item, index) => {
+      // if (this.tools) {
+        // this.tools.map((item, index) => {
 
-          //console.log("firstupdated, calling item/index", item, index);
-          if (item.type == "segarc") {
-            if (this.dev.debug) console.log('firstUpdated - calling SegmentedArcTool firstUpdated');
-            item.tool.firstUpdated(changedProperties);
-            //this.tools[index].firstUpdated(changedProperties);
-          }
+          // //console.log("firstupdated, calling item/index", item, index);
+          // if (item.type == "segarc") {
+            // if (this.dev.debug) console.log('firstUpdated - calling SegmentedArcTool firstUpdated');
+            // item.tool.firstUpdated(changedProperties);
+            // //this.tools[index].firstUpdated(changedProperties);
+          // }
 
-          if (item.type == "slider") {
-            if (this.dev.debug) console.log('firstUpdated - calling Slider firstUpdated');
-            item.tool.firstUpdated(changedProperties);
-            //this.tools[index].firstUpdated(changedProperties);
-          }
+          // if (item.type == "slider") {
+            // if (this.dev.debug) console.log('firstUpdated - calling Slider firstUpdated');
+            // item.tool.firstUpdated(changedProperties);
+            // //this.tools[index].firstUpdated(changedProperties);
+          // }
 
-          if (item.type == "icon") {
-            if (this.dev.debug) console.log('firstUpdated - calling Icon firstUpdated');
-            item.tool.firstUpdated(changedProperties);
-            //console.log("called firstupdated on icon tool");
-            //this.tools[index].firstUpdated(changedProperties);
-          }
+          // if (item.type == "icon") {
+            // if (this.dev.debug) console.log('firstUpdated - calling Icon firstUpdated');
+            // item.tool.firstUpdated(changedProperties);
+            // //console.log("called firstupdated on icon tool");
+            // //this.tools[index].firstUpdated(changedProperties);
+          // }
 
 
-        });
-      }
-    }
+        // });
+      // }
+    } // end of else
 
   }
 
@@ -6060,11 +6060,12 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 //
 //               <g id="datatoolset" class="datatoolset" filter="url(#nm-1)">
 
+//                ${this._renderUserSvgs()}
+
     if (this.dev.ts) {
       return svg`
               <g id="datatoolset" class="datatoolset" filter="url(#nm-1)">
                 ${this.ts.map(toolset => toolset.render())}
-                ${this._renderUserSvgs()}
               </g>
 
 
@@ -6310,48 +6311,48 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
     } else {
 
-      return svg`
-              <g id="datatoolset" class="datatoolset">
-                ${this.tools.map(tool => tool.tool.render())}
-                ${this._renderUserSvgs()}
-              </g>
+      // return svg`
+              // <g id="datatoolset" class="datatoolset">
+                // ${this.tools.map(tool => tool.tool.render())}
+                // ${this._renderUserSvgs()}
+              // </g>
 
 
-              <defs>
-                <rect id="cliprect" width="100%" height="100%" fill="none" stroke="none" rx="3" />
-                <clipPath id="clip">
-                  <use xlink:href="#cliprect"/>
-                </clipPath>
+              // <defs>
+                // <rect id="cliprect" width="100%" height="100%" fill="none" stroke="none" rx="3" />
+                // <clipPath id="clip">
+                  // <use xlink:href="#cliprect"/>
+                // </clipPath>
 
-                <marker viewBox="0 0 200 200" id="markerCircle" markerWidth="8" markerHeight="8" refX="5" refY="5">
-                    <circle cx="5" cy="5" r="3" style="stroke: none; fill:currentColor;"/>
-                </marker>
+                // <marker viewBox="0 0 200 200" id="markerCircle" markerWidth="8" markerHeight="8" refX="5" refY="5">
+                    // <circle cx="5" cy="5" r="3" style="stroke: none; fill:currentColor;"/>
+                // </marker>
 
-                <marker viewBox="0 0 200 200" id="markerArrow" markerWidth="13" markerHeight="13" refX="2" refY="6"
-                       orient="auto">
-                    <path d="M2,2 L2,11 L10,6 L2,2" style="fill: currentColor;" />
-                </marker>
+                // <marker viewBox="0 0 200 200" id="markerArrow" markerWidth="13" markerHeight="13" refX="2" refY="6"
+                       // orient="auto">
+                    // <path d="M2,2 L2,11 L10,6 L2,2" style="fill: currentColor;" />
+                // </marker>
 
-                <filter id="ds2" width="10" height="10">
-                  <feDropShadow dx="2" dy="3" stdDeviation="0.5"/>
-                </filter>
+                // <filter id="ds2" width="10" height="10">
+                  // <feDropShadow dx="2" dy="3" stdDeviation="0.5"/>
+                // </filter>
 
-                <filter id="ds3" x="0" y="0" width="200%" height="200%">
-                  <feOffset result="offOut" in="SourceAlpha" dx="20" dy="20" />
-                  <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
-                  <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
-                </filter>
+                // <filter id="ds3" x="0" y="0" width="200%" height="200%">
+                  // <feOffset result="offOut" in="SourceAlpha" dx="20" dy="20" />
+                  // <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
+                  // <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+                // </filter>
 
-                <filter id="ds4" x="0" y="0" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="1" />
-                </filter>
+                // <filter id="ds4" x="0" y="0" width="200%" height="200%">
+                  // <feGaussianBlur stdDeviation="1" />
+                // </filter>
 
-                <filter id="ds" width="200%" height="200%">
-                  <feDropShadow dx="0" dy="1.5" stdDeviation=".3"/>
-                </filter>
+                // <filter id="ds" width="200%" height="200%">
+                  // <feDropShadow dx="0" dy="1.5" stdDeviation=".3"/>
+                // </filter>
 
-              </defs>
-      `;
+              // </defs>
+      // `;
     }
   }
 
@@ -6832,17 +6833,17 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     // Quick hack to block updates if entrylist is empty
     this.stateChanged = false;
 
-    this.tools.map((item, i) => {
-      if (item.type == "bar") {
-        const end = new Date();
-        const start = new Date();
-        start.setHours(end.getHours() - item.tool.config.hours);
-        const attr = this.config.entities[item.tool.config.entity_index].attribute ? this.config.entities[item.tool.config.entity_index].attribute : null;
+    // this.tools.map((item, i) => {
+      // if (item.type == "bar") {
+        // const end = new Date();
+        // const start = new Date();
+        // start.setHours(end.getHours() - item.tool.config.hours);
+        // const attr = this.config.entities[item.tool.config.entity_index].attribute ? this.config.entities[item.tool.config.entity_index].attribute : null;
 
-        entityList[j] = ({"entityIndex": item.tool.config.entity_index, "entityId": this.entities[item.tool.config.entity_index].entity_id, "attrId": attr, "start": start, "end": end, "type": "bar", "idx": i});
-        j++;
-      }
-    });
+        // entityList[j] = ({"entityIndex": item.tool.config.entity_index, "entityId": this.entities[item.tool.config.entity_index].entity_id, "attrId": attr, "start": start, "end": end, "type": "bar", "idx": i});
+        // j++;
+      // }
+    // });
     if (this.dev.debug) console.log('card::updateData, entityList from tools', entityList);
 
     try {
@@ -6921,8 +6922,8 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
         hours = this.ts[entity.tsidx].tools[entity.idx].tool.config.hours;
         barhours = this.ts[entity.tsidx].tools[entity.idx].tool.config.barhours;
       } else {
-        hours = this.tools[entity.idx].tool.config.hours;
-        barhours = this.tools[entity.idx].tool.config.barhours;
+        // hours = this.tools[entity.idx].tool.config.hours;
+        // barhours = this.tools[entity.idx].tool.config.barhours;
       }
     }
 
@@ -6991,9 +6992,9 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
         this.ts[entity.tsidx].tools[entity.idx].tool.series = [...theData];
       }
     } else {
-      if (entity.type == 'bar') {
-        this.tools[entity.idx].tool.series = [...theData];
-      }
+      // if (entity.type == 'bar') {
+        // this.tools[entity.idx].tool.series = [...theData];
+      // }
     }
 
     // Request a rerender of the card after receiving new data
