@@ -225,7 +225,7 @@ tools_segarc_icon_state:
         id: 2
         entity_index: '[[entity]]'
         cx: 50
-        cy: 60
+        cy: 56
         styles:
           text-anchor: middle;
           font-size: 2em;
@@ -751,7 +751,7 @@ toolset_sensor_history:
       # state
       - type: state
         cx: 10
-        cy: 30
+        cy: 20
         entity_index: '[[entity]]'
         styles:
           text-anchor: start;
@@ -780,11 +780,11 @@ toolset_sensor_history:
       # name
       - type: name
         cx: 50
-        cy: 50
+        cy: 45
         entity_index: '[[entity]]'
         styles:
           text-anchor: middle;
-          font-size: 2em;
+          font-size: 2.2em;
           font-weight: 400;
 
       # bar
