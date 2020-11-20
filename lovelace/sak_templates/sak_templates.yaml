@@ -165,9 +165,10 @@ tools_segarc_icon_state:
         cy: 50
         radius: 27.5
         styles:
-          fill: var(--primary-background-color);
-          stroke-width: 0;
-          # filter: url(#nm-1);          
+          circle:
+            fill: var(--primary-background-color);
+            stroke-width: 0;
+            # filter: url(#nm-1);          
         
       - type: segarc
         id: 0
@@ -192,15 +193,16 @@ tools_segarc_icon_state:
         animation:
           duration: 5
         styles:
-          fill: var(--theme-gradient-color-01);
-        styles_bg:
-          # fill: var(--primary-background-color);
-          # fill: lightgray;
-          # #efeeee
-          # fill: var(--secondary-background-color);
-          fill: var(--cs-theme-default-darken-15);
-            #dedddd;
-          filter: url(#is-1);
+          foreground:
+            fill: var(--theme-gradient-color-01);
+          background:
+            # fill: var(--primary-background-color);
+            # fill: lightgray;
+            # #efeeee
+            # fill: var(--secondary-background-color);
+            fill: var(--cs-theme-default-darken-15);
+              #dedddd;
+            filter: url(#is-1);
 
       - type: icon
         id: 1
@@ -210,15 +212,16 @@ tools_segarc_icon_state:
         align: center
         icon_size: 15
         styles:
-          filter: url(#is-1);
-          fill: lightgray;
-          color: lightgray;
-          # color: var(--primary-text-color);
-          # fill: var(--primary-text-color);
-          # opacity: 0.8;
-          
-          # color: var(--cs-theme-default-icon-primary, --primary-text-color);
-          # fill: var(--cs-theme-default-icon-primary, --primary-text-color);
+          icon:
+            filter: url(#is-1);
+            fill: lightgray;
+            color: lightgray;
+            # color: var(--primary-text-color);
+            # fill: var(--primary-text-color);
+            # opacity: 0.8;
+            
+            # color: var(--cs-theme-default-icon-primary, --primary-text-color);
+            # fill: var(--cs-theme-default-icon-primary, --primary-text-color);
 
 
       - type: state
@@ -227,10 +230,11 @@ tools_segarc_icon_state:
         cx: 50
         cy: 56
         styles:
-          text-anchor: middle;
-          font-size: 2em;
-          color: var(--primary-text-color);
-          fill: var(--primary-text-color);
+          state:
+            text-anchor: middle;
+            font-size: 2em;
+            color: var(--primary-text-color);
+            fill: var(--primary-text-color);
 
 toolset_arc180_sparklinebar24:
   type: toolset
@@ -257,8 +261,9 @@ toolset_arc180_sparklinebar24:
         cx: 50
         cy: 65
         styles:
-          font-size: 1.8em;
-          text-anchor: middle;
+          name:
+            font-size: 1.8em;
+            text-anchor: middle;
 
       - type: 'segarc'
         id: 2
@@ -292,11 +297,12 @@ toolset_arc180_sparklinebar24:
               variables:
                 - thegap: 0
         styles:
-          fill: var(--theme-gradient-color-01);
-        styles_bg:
-          # fill: var(--secondary-background-color);
-          fill: var(--cs-theme-default-darken-15);
-          filter: url(#is-1);
+          foreground:
+            fill: var(--theme-gradient-color-01);
+          background:
+            # fill: var(--secondary-background-color);
+            fill: var(--cs-theme-default-darken-15);
+            filter: url(#is-1);
 
       - type: 'state'
         id: 3
@@ -304,9 +310,10 @@ toolset_arc180_sparklinebar24:
         cx: 50
         cy: 40
         styles:
-          text-anchor: middle;
-          font-size: 3.6em;
-          fill: var(--primary-text-color);
+          state:
+            text-anchor: middle;
+            font-size: 3.6em;
+            fill: var(--primary-text-color);
 
       - type: 'icon'
         id: 4
@@ -316,8 +323,9 @@ toolset_arc180_sparklinebar24:
         align: center
         icon_size: 15
         styles:
-          color: var(--primary-text-color);
-          fill: var(--primary-text-color);
+          icon:
+            color: var(--primary-text-color);
+            fill: var(--primary-text-color);
 
       - type: 'bar'
         id: 5
@@ -330,8 +338,9 @@ toolset_arc180_sparklinebar24:
         hours: 24
         barhours: 1
         styles:
-          stroke: grey;
-          stroke-linecap: butt;
+          bar:
+            stroke: grey;
+            stroke-linecap: butt;
 
 #######################
 
@@ -356,15 +365,15 @@ toolset_light_button:
         animations:
           - state: 'on'
             styles:
-              opacity: 0;
-          - state: 'off'
-            styles:
+              circle:
+                opacity: 0;
         styles:
-          fill-opacity: 0.1;
-          fill: black;
-          stroke-width: 5;
-          stroke: var(--theme-gradient-color-01);
-          stroke-opacity: 0.9;
+          circle:
+            fill-opacity: 0.1;
+            fill: black;
+            stroke-width: 5;
+            stroke: var(--theme-gradient-color-01);
+            stroke-opacity: 0.9;
 
       #Animated circle
       - type: circle
@@ -376,36 +385,39 @@ toolset_light_button:
         animations:
           - state: 'on'
             styles:
-              opacity: 1;
-              stroke-opacity: 1;
-              stroke-width: 5;
-              stroke: var(--theme-gradient-color-01);
-              fill: var(--theme-gradient-color-06);
-              fill-opacity: 0.9;
-              # transform-origin: top;
-              animation: jello 1s ease-in-out both;
-              # animation: pulse 1s ease-in-out both;
-              # animation: tada 1s ease-in-out both;
-              # animation: rubberBand 1s ease-in-out both;
+              circle:
+                opacity: 1;
+                stroke-opacity: 1;
+                stroke-width: 5;
+                stroke: var(--theme-gradient-color-01);
+                fill: var(--theme-gradient-color-06);
+                fill-opacity: 0.9;
+                # transform-origin: top;
+                animation: jello 1s ease-in-out both;
+                # animation: pulse 1s ease-in-out both;
+                # animation: tada 1s ease-in-out both;
+                # animation: rubberBand 1s ease-in-out both;
           - state: 'off'
             reuse: true
             styles:
-              opacity: 1;
-              animation: zoomOut 1s ease-out both;
-              transform-origin: inherit;
-              # stroke-width: 5;
-              # stroke: var(--theme-gradient-color-01);
-              # stroke-opacity: 1;
-              # fill-opacity: 0.9;
-              # fill: black;
+              circle:
+                opacity: 1;
+                animation: zoomOut 1s ease-out both;
+                transform-origin: inherit;
+                # stroke-width: 5;
+                # stroke: var(--theme-gradient-color-01);
+                # stroke-opacity: 1;
+                # fill-opacity: 0.9;
+                # fill: black;
         styles:
-          opacity: 0;
-          # fill-opacity: 0.1;
-          # fill: black;
-          # fill: none;
-          # stroke-width: 5;
-          # stroke: var(--theme-gradient-color-01);
-          # stroke-opacity: 0.9;
+          circle:
+            opacity: 0;
+            # fill-opacity: 0.1;
+            # fill: black;
+            # fill: none;
+            # stroke-width: 5;
+            # stroke: var(--theme-gradient-color-01);
+            # stroke-opacity: 0.9;
         
       - type: icon
         cx: 50
@@ -417,16 +429,19 @@ toolset_light_button:
         animations:
           - state: 'on'
             styles:
-              fill: var(--theme-gradient-color-01);
-              color: var(--theme-gradient-color-01);
-              fill-opacity: 0.9;
+              icon:
+                fill: var(--theme-gradient-color-01);
+                color: var(--theme-gradient-color-01);
+                fill-opacity: 0.9;
           - state: 'off'
             styles:
-              fill: var(--theme-gradient-color-01);
-              color: var(--theme-gradient-color-01);
-              fill-opacity: 0.7;
+              icon:
+                fill: var(--theme-gradient-color-01);
+                color: var(--theme-gradient-color-01);
+                fill-opacity: 0.7;
         styles:
-          pointer-events: none;
+          icon:
+            pointer-events: none;
 
       - type: name
         cx: 5
@@ -434,17 +449,19 @@ toolset_light_button:
         id: 4
         entity_index: '[[entity_light]]'
         styles:
-          font-size: 1.8em;
-          font-weight: 700;
-          text-anchor: start;
+          name:
+            font-size: 1.8em;
+            font-weight: 700;
+            text-anchor: start;
       - type: area
         entity_index: 0
         id: 5
         cx: 5
         cy: 85
         styles:
-          font-size: 1.2em;
-          text-anchor: start;
+          area:
+            font-size: 1.2em;
+            text-anchor: start;
       - type: state
         cx: 5
         cy: 95
@@ -453,16 +470,19 @@ toolset_light_button:
         animations:
           - state: 'on'
             styles:
-              fill: var(--theme-gradient-color-08);
-              opacity: 0.9;
+              state:
+                fill: var(--theme-gradient-color-08);
+                opacity: 0.9;
           - state: 'off'
             reuse: true
             styles:
-              fill: var(--theme-gradient-color-01);
-              opacity: 0.7;
+              state:
+                fill: var(--theme-gradient-color-01);
+                opacity: 0.7;
         styles:
-          font-size: 1.8em;
-          text-anchor: start;
+          state:
+            font-size: 1.8em;
+            text-anchor: start;
       - type: state
         cx: 95
         cy: 95
@@ -502,17 +522,20 @@ toolset_light_button:
           - state: 'on'
             entity_index: '[[entity_light]]'
             styles:
-              fill: var(--theme-gradient-color-08);
-              opacity: 0.9;
+              state:
+                fill: var(--theme-gradient-color-08);
+                opacity: 0.9;
           - state: 'off'
             entity_index: '[[entity_light]]'
             reuse: true
             styles:
-              fill: var(--theme-gradient-color-01);
-              opacity: 0.7;
+              state:
+                fill: var(--theme-gradient-color-01);
+                opacity: 0.7;
         styles:
-          font-size: 1.8em;
-          text-anchor: end;
+          state:
+            font-size: 1.8em;
+            text-anchor: end;
 
 ###############################################
 
@@ -536,9 +559,10 @@ toolset_light_button_nm:
         # radius: 28
         radius: 31
         styles:
-          pointer-events: none;
-          stroke-width: 5;
-          fill: var(--primary-background-color);
+          circle:
+            pointer-events: none;
+            stroke-width: 5;
+            fill: var(--primary-background-color);
 
       # Activation ring
       - type: circle
@@ -550,18 +574,21 @@ toolset_light_button_nm:
         animations:
           - state: 'on'
             styles:
-              # fill: darkorange;
-              fill: var(--cs-orange-lighten-20);
+              circle:
+                # fill: darkorange;
+                fill: var(--cs-orange-lighten-20);
           - state: 'off'
             styles:
-              # fill: var(--secondary-background-color);
-              # fill: var(--cs-theme-default-darken-15);
-              # color: var(--primary-text-color);
-              fill: var(--primary-text-color);
-              opacity: 0.7;
+              circle:
+                # fill: var(--secondary-background-color);
+                # fill: var(--cs-theme-default-darken-15);
+                # color: var(--primary-text-color);
+                fill: var(--primary-text-color);
+                opacity: 0.7;
         styles:
-          stroke-width: 0;
-          pointer-events: none;
+          circle:
+            stroke-width: 0;
+            pointer-events: none;
 
       # Actual "button"
       - type: circle
@@ -582,14 +609,17 @@ toolset_light_button_nm:
         animations:
           - state: 'on'
             styles:
-              filter: url(#filter);
+              circle:
+                filter: url(#filter);
           - state: 'off'
             styles:
-              # stroke: lightgray;
-              filter: none;
+              circle:
+                # stroke: lightgray;
+                filter: none;
         styles:
-          stroke-width: 0;
-          fill: var(--primary-background-color);
+          circle:
+            stroke-width: 0;
+            fill: var(--primary-background-color);
 
       # Light/Switch icon
       - type: icon
@@ -603,28 +633,31 @@ toolset_light_button_nm:
         animations:
           - state: 'on'
             styles:
-              # color: darkorange;
-              # fill: darkorange;
-              color: var(--cs-orange-lighten-20);
-              fill: var(--cs-orange-lighten-20);
+              icon:
+                # color: darkorange;
+                # fill: darkorange;
+                color: var(--cs-orange-lighten-20);
+                fill: var(--cs-orange-lighten-20);
 
-              # color: var(--accent-color);
-              # fill: var(--accent-color);
-              opacity: 1;
+                # color: var(--accent-color);
+                # fill: var(--accent-color);
+                opacity: 1;
 
           - state: 'off'
             styles:
-              # color: var(--secondary-background-color);
-              # fill: var(--secondary-background-color);
-              # color: var(--cs-theme-default-darken-15);
-              # fill: var(--cs-theme-default-darken-15);
-              # opacity: 0.7;
-              color: var(--primary-text-color);
-              fill: var(--primary-text-color);
-              opacity: 0.7;
+              icon:
+                # color: var(--secondary-background-color);
+                # fill: var(--secondary-background-color);
+                # color: var(--cs-theme-default-darken-15);
+                # fill: var(--cs-theme-default-darken-15);
+                # opacity: 0.7;
+                color: var(--primary-text-color);
+                fill: var(--primary-text-color);
+                opacity: 0.7;
         styles:
-          pointer-events: none;
-          filter: url(#is-1);
+          icon:
+            pointer-events: none;
+            filter: url(#is-1);
 
       # Name of entity
       - type: name
@@ -633,9 +666,10 @@ toolset_light_button_nm:
         id: 4
         entity_index: '[[entity_light]]'
         styles:
-          font-size: 1.8em;
-          font-weight: 700;
-          text-anchor: start;
+          name:
+            font-size: 1.8em;
+            font-weight: 700;
+            text-anchor: start;
 
       # Area of entity
       - type: area
@@ -644,8 +678,9 @@ toolset_light_button_nm:
         cx: 5
         cy: 95
         styles:
-          font-size: 2.4em;
-          text-anchor: start;
+          area:
+            font-size: 2.4em;
+            text-anchor: start;
 
       # # State of entity
       # - type: state
@@ -707,17 +742,20 @@ toolset_light_button_nm:
           - state: 'on'
             entity_index: '[[entity_light]]'
             styles:
-              fill: var(--theme-gradient-color-08);
-              opacity: 0.9;
+              state:
+                fill: var(--theme-gradient-color-08);
+                opacity: 0.9;
           - state: 'off'
             entity_index: '[[entity_light]]'
             reuse: true
             styles:
-              fill: var(--theme-gradient-color-01);
-              opacity: 0.7;
+              state:
+                fill: var(--theme-gradient-color-01);
+                opacity: 0.7;
         styles:
-          font-size: 1.8em;
-          text-anchor: end;
+          state:
+            font-size: 1.8em;
+            text-anchor: end;
 
 ##########################
 toolset_sensor_history:
@@ -745,8 +783,9 @@ toolset_sensor_history:
           bottom_right: 0
           bottom_left: 10
         styles:
-          stroke: var(--primary-background-color);
-          fill: var(--primary-background-color);
+          rectex:
+            stroke: var(--primary-background-color);
+            fill: var(--primary-background-color);
 
       # state
       - type: state
@@ -754,9 +793,10 @@ toolset_sensor_history:
         cy: 20
         entity_index: '[[entity]]'
         styles:
-          text-anchor: start;
-          font-size: 3.5em;
-          font-weight: 700;
+          state:
+            text-anchor: start;
+            font-size: 3.5em;
+            font-weight: 700;
 
       # circle for icon
       - type: circle
@@ -764,7 +804,8 @@ toolset_sensor_history:
         cy: 15
         radius: 10
         styles:
-          fill: var(--primary-background-color);
+          circle:
+            fill: var(--primary-background-color);
       # icon
       - type: icon
         cx: 85
@@ -773,9 +814,10 @@ toolset_sensor_history:
         align: center
         icon_size: 20
         styles:
-          fill: '[[icon_color]]'
-          color: '[[icon_color]]'
-          filter: url(#is-1);
+          icon:
+            fill: '[[icon_color]]'
+            color: '[[icon_color]]'
+            filter: url(#is-1);
 
       # name
       - type: name
@@ -783,9 +825,10 @@ toolset_sensor_history:
         cy: 45
         entity_index: '[[entity]]'
         styles:
-          text-anchor: middle;
-          font-size: 2.2em;
-          font-weight: 400;
+          name:
+            text-anchor: middle;
+            font-size: 2.2em;
+            font-weight: 400;
 
       # bar
       - type: bar
@@ -805,6 +848,7 @@ toolset_sensor_history:
           min: '[[bar_color_min]]'
           max: '[[bar_color_max]]'
         styles:
-          # stroke: '[[bar_color]]'
-          # stroke-opacity: 0.5;
-          stroke-linecap: butt;
+          bar:
+            # stroke: '[[bar_color]]'
+            # stroke-opacity: 0.5;
+            stroke-linecap: round;
