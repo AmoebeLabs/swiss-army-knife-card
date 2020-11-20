@@ -1,0 +1,425 @@
+title: Servers
+path: servers
+cards:
+  - type: vertical-stack
+    cards:
+    - type: custom:decluttering-card
+      template: button_quick_menu_generic
+      variables:
+        - lb_name: Verlichting
+        - lb_icon: lightbulb
+        - lb_path: lights
+
+    - type: custom:decluttering-card
+      template: divider_template
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: '### Servers'
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: '#### Domotica'
+        - font_color: var(--secondary-text-color)
+
+    - type: horizontal-stack
+      cards:
+        # Example 10T::
+        #
+        # Circle with system cpu monitoring. NIce for easy CPU changes in graph
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            # Memory
+            - entity: sensor.memory_use_percent
+              decimals: 0
+              name: 'NUC'
+              area: 'Hestia'
+              icon: mdi:memory
+            # Disk
+            - entity: sensor.disk_use_percent
+              decimals: 0
+              icon: mdi:harddisk
+            # CPU
+            - entity: sensor.processor_use
+              decimals: 0
+              # icon: mdi:memory
+            # System Load
+            - entity: sensor.load_1m
+              decimals: 2
+              unit: '1m'
+            - entity: sensor.load_5m
+              decimals: 2
+              unit: '5m'
+            - entity: sensor.load_15m
+              decimals: 2
+              unit: '15m'
+
+            # Disk
+            - entity: sensor.disk_use
+              name: 'Used:'
+              decimals: 0
+              icon: mdi:harddisk
+            - entity: sensor.disk_free
+              name: 'Free:'
+              decimals: 0
+              icon: mdi:harddisk
+
+            # Memory
+            - entity: sensor.memory_use
+              name: 'Used:'
+              decimals: 0
+              icon: mdi:memory
+            - entity: sensor.memory_free
+              name: 'Free:'
+              decimals: 0
+              icon: mdi:memory
+
+
+          dev:
+            debug: false
+            ts: true
+            performance: false
+          
+          show:
+            # explictly enable the use of the usersvg tool.
+            usersvg : true
+          
+          dimensions: 2/1
+
+
+          layout:
+            toolsets:
+              # ==============================================================================
+
+              # ==============================================================================
+              - toolset: memory-free-used
+                position:
+                  cx: 35
+                  cy: 74
+                tools:
+                  - type: rectex
+                    id: 0
+                    cx: 50
+                    cy: 50
+                    width: 60
+                    height: 20
+                    radius:
+                      all: 2
+                  # inconsistent: tool has no separate position:, toolset has...
+                  # Used
+                  - type: name
+                    id: 1
+                    cx: 25
+                    cy: 45
+                    entity_index: 8
+                    styles:
+                      name:
+                        font-size: 1.0em;
+                        text-anchor: start;
+                  - type: state
+                    id: 2
+                    cx: 63
+                    cy: 45
+                    entity_index: 8
+                    styles:
+                      state:
+                        font-size: 1.2em;
+                        font-weight: 700;
+                        text-anchor: end;
+
+                  # Free
+                  - type: name
+                    id: 3
+                    cx: 25
+                    cy: 55
+                    entity_index: 9
+                    styles:
+                      name:
+                        font-size: 1.0em;
+                        text-anchor: start;
+                  - type: state
+                    id: 4
+                    cx: 63
+                    cy: 55
+                    entity_index: 9
+                    styles:
+                      state:
+                        font-size: 1.2em;
+                        font-weight: 700;
+                        text-anchor: end;
+
+              - toolset: memory
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 0
+                    - show_scale: false
+                position:
+                  cx: 72.5
+                  cy: 74
+                  scale: .8
+                tools:
+                  - type: segarc
+                    id: 0
+                    show:
+                      scale: true
+                      style: 'colorstops'
+                    segments:
+                      colorstops:
+                        gap: 1
+                        # arc can be 'followcolorstop', or 'followvalue'
+                        arc_color: 'followcolorstop'
+                        colors:
+                          00: 'DarkSeaGreen'
+                          70: 'yellow'
+                          80: 'orange'
+                          90: 'red'
+                  - type: icon
+                    id: 1
+
+              # ==============================================================================
+              - toolset: areatoolset
+                position:
+                  cx: 195
+                  cy: 95
+                  scale: 1
+                tools:
+                  # Areas 0 refers to the first entity in the list, ie index 0
+                  - type: area
+                    id: 0
+                    entity_index: 0
+                    cx: 50
+                    cy: 50
+                    styles:
+                      area:
+                        font-size: 2em;
+                        text-anchor: end;
+              
+              # ==============================================================================
+              - toolset: disc-free-used
+                position:
+                  cx: 35
+                  cy: 26
+                tools:
+                  - type: rectex
+                    id: 0
+                    cx: 50
+                    cy: 50
+                    width: 60
+                    height: 20
+                    radius:
+                      all: 2
+                  # inconsistent: tool has no separate position:, toolset has...
+                  # Used
+                  - type: name
+                    id: 1
+                    cx: 25
+                    cy: 45
+                    entity_index: 6
+                    styles:
+                      name:
+                        font-size: 1.0em;
+                        text-anchor: start;
+                  - type: state
+                    id: 2
+                    cx: 63
+                    cy: 45
+                    entity_index: 6
+                    styles:
+                      state:
+                        font-size: 1.2em;
+                        font-weight: 700;
+                        text-anchor: end;
+
+                  # Free
+                  - type: name
+                    id: 3
+                    cx: 25
+                    cy: 55
+                    entity_index: 7
+                    styles:
+                      name:
+                        font-size: 1.0em;
+                        text-anchor: start;
+                  - type: state
+                    id: 4
+                    cx: 63
+                    cy: 55
+                    entity_index: 7
+                    styles:
+                      state:
+                        font-size: 1.2em;
+                        font-weight: 700;
+                        text-anchor: end;
+                    
+              - toolset: disc
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 1
+                    - show_scale: true
+                position:
+                  cx: 72.5
+                  cy: 26
+                  scale: .8
+                tools:
+                  - type: segarc
+                    id: 0
+                    show:
+                      scale: true
+                      style: 'colorstops'
+                    segments:
+                      colorstops:
+                        gap: 1
+                        # arc can be 'followcolorstop', or 'followvalue'
+                        arc_color: 'followcolorstop'
+                        colors:
+                          00: 'DarkSeaGreen'
+                          70: 'yellow'
+                          80: 'orange'
+                          90: 'red'
+
+              # ==============================================================================
+              - toolset: cpu
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 2
+                    - show_scale: true
+                position:
+                  cx: 127.50
+                  cy: 50
+                  scale: 1
+                tools:
+                  - type: segarc
+                    id: 0
+                    show:
+                      scale: true
+                      style: 'colorstops'
+                    segments:
+                      colorstops:
+                        gap: 1
+                        # arc can be 'followcolorstop', or 'followvalue'
+                        arc_color: 'followcolorstop'
+                        colors:
+                          00: '#FFF6E3'
+                          10: '#FFE9B9'
+                          15: '#FFDA8A'
+                          20: '#FFCB5B'
+                          22.5: '#FFBF37'
+                          25: '#ffb414'
+                          60: '#FFAD12'
+                          70: '#FFA40E'
+                          80: '#FF9C0B' 
+                          90: '#FF8C06' 
+
+              # ==============================================================================
+              - toolset: load1m
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 3
+                    - show_scale: false
+                position:
+                  cx: 165
+                  cy: 22.5
+                  scale: .7
+                tools:
+                  - type: segarc
+                    id: 0
+                    show:
+                      style: 'colorlist'
+                    scale:
+                      min: 0
+                      max: 2
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          # - '#FFF6E3'
+                          - '#FFE9B9'
+                          # - '#FFDA8A'
+                          - '#FFCB5B'
+                          # - '#FFBF37'
+                          - '#ffb414'
+                          # - '#FFAD12'
+                          - '#FFA40E'
+                          # - '#FF9C0B' 
+                          - '#FF8C06' 
+                          # - 'var(--theme-gradient-color-01)'
+                          # - 'var(--theme-gradient-color-02)'
+                          # - 'var(--theme-gradient-color-03)'
+                          # - 'var(--theme-gradient-color-04)'
+
+              # ==============================================================================
+              - toolset: load5m
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 4
+                    - show_scale: false
+                position:
+                  cx: 171
+                  cy: 58
+                  scale: .6
+                tools:
+                  - type: segarc
+                    id: 0
+                    show:
+                      style: 'colorlist'
+                    scale:
+                      min: 0
+                      max: 2
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          # - '#FFF6E3'
+                          - '#FFE9B9'
+                          # - '#FFDA8A'
+                          - '#FFCB5B'
+                          # - '#FFBF37'
+                          - '#ffb414'
+                          # - '#FFAD12'
+                          - '#FFA40E'
+                          # - '#FF9C0B' 
+                          - '#FF8C06' 
+
+              # ==============================================================================
+              - toolset: load15m
+                template:
+                  name: tools_segarc_icon_state
+                  variables:
+                    - entity: 5
+                    - show_scale: false
+                position:
+                  cx: 152.5
+                  cy: 82.5
+                  scale: .5
+                tools:
+                  - type: segarc
+                    id: 0
+                    show:
+                      style: 'colorlist'
+                    scale:
+                      min: 0
+                      max: 2
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          # - '#FFF6E3'
+                          - '#FFE9B9'
+                          # - '#FFDA8A'
+                          - '#FFCB5B'
+                          # - '#FFBF37'
+                          - '#ffb414'
+                          # - '#FFAD12'
+                          - '#FFA40E'
+                          # - '#FF9C0B' 
+                          - '#FF8C06' 
