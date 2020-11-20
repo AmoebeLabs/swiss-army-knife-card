@@ -96,7 +96,7 @@
               - toolset: title
                 position:
                   cx: 10
-                  cy: 15
+                  cy: 18
                 tools:
                   # Area
                   - type: area
@@ -105,9 +105,10 @@
                     cy: 50
                     entity_index: 0
                     styles:
-                      font-size: 6em;
-                      font-weight: 400;
-                      text-anchor: start;
+                      area:
+                        font-size: 6em;
+                        font-weight: 400;
+                        text-anchor: start;
 
               - toolset: weather-type
                 position:
@@ -121,8 +122,9 @@
                     cy: 50
                     radius: 17
                     styles:
-                      opacity: 1;
-                      fill: var(--primary-background-color);
+                      circle:
+                        opacity: 1;
+                        fill: var(--primary-background-color);
 
                   # Inset circle
                   - type: 'circle'
@@ -131,9 +133,10 @@
                     cy: 50
                     radius: 12
                     styles:
-                      opacity: 1;
-                      fill: white;
-                      filter: url(#is-1);
+                      circle:
+                        opacity: 1;
+                        fill: white;
+                        filter: url(#is-1);
 
                   - type: 'usersvg'
                     id: 2
@@ -207,7 +210,8 @@
                     entity_index: 3
                     icon_size: 20
                     styles:
-                      filter: url(#is-1);
+                      icon:
+                        filter: url(#is-1);
                       
                   - type: state
                     id: 3
@@ -215,9 +219,10 @@
                     cy: 20
                     entity_index: 3
                     styles:
-                      font-size: 3em;
-                      font-weight: 400;
-                      text-anchor: end;
+                      state:
+                        font-size: 3em;
+                        font-weight: 400;
+                        text-anchor: end;
 
               - toolset: weather-humidity
                 position:
@@ -241,7 +246,8 @@
                     entity_index: 4
                     icon_size: 20
                     styles:
-                      filter: url(#is-1);
+                      icon:
+                        filter: url(#is-1);
 
                   - type: state
                     id: 3
@@ -249,9 +255,10 @@
                     cy: 20
                     entity_index: 4
                     styles:
-                      font-size: 3em;
-                      font-weight: 400;
-                      text-anchor: end;
+                      state:
+                        font-size: 3em;
+                        font-weight: 400;
+                        text-anchor: end;
 
               - toolset: weather-pressure
                 position:
@@ -275,7 +282,8 @@
                     entity_index: 5
                     icon_size: 20
                     styles:
-                      filter: url(#is-1);
+                      icon:
+                        filter: url(#is-1);
 
                   - type: state
                     id: 3
@@ -283,9 +291,10 @@
                     cy: 20
                     entity_index: 5
                     styles:
-                      font-size: 3em;
-                      font-weight: 400;
-                      text-anchor: end;
+                      state:
+                        font-size: 3em;
+                        font-weight: 400;
+                        text-anchor: end;
 
               - toolset: weather-wind
                 position:
@@ -309,7 +318,8 @@
                     entity_index: 6
                     icon_size: 20
                     styles:
-                      filter: url(#is-1);
+                      icon:
+                        filter: url(#is-1);
 
                   - type: state
                     id: 3
@@ -317,9 +327,10 @@
                     cy: 20
                     entity_index: 6
                     styles:
-                      font-size: 3em;
-                      font-weight: 400;
-                      text-anchor: end;
+                      state:
+                        font-size: 3em;
+                        font-weight: 400;
+                        text-anchor: end;
               
               # ==============================================================================
               - toolset: airvisual
@@ -341,50 +352,60 @@
                       - state: '50'
                         operator: <=
                         styles:
-                          fill: >
-                            #A8E05F;
+                          rectex:
+                            fill: >
+                              #A8E05F;
                       - state: '100'
                         operator: <=
                         styles:
-                          fill: >
-                            #FDD74B;
+                          rectex:
+                            fill: >
+                              #FDD74B;
                       - state: '150'
                         operator: <=
                         styles:
-                          fill: >
-                            #FE9B57;
+                          rectex:
+                            fill: >
+                              #FE9B57;
                       - state: '200'
                         operator: <=
                         styles:
-                          fill: >
-                            #FE6A69;
+                          rectex:
+                            fill: >
+                              #FE6A69;
                       - state: '300'
                         operator: <=
                         styles:
-                          fill: >
-                            #A97ABC;
+                          rectex:
+                            fill: >
+                              #A97ABC;
                       - state: '9999'
                         operator: <=
                         styles:
-                          fill: >
-                            #A87383;
+                          rectex:
+                            fill: >
+                              #A87383;
                     styles:
-                      stroke: var(--primary-background-color);
-                      stroke-width: 1em;
-                      opacity: 1;
-                      fill: >
-                        #A8E05F;
+                      rectex:
+                        stroke: var(--primary-background-color);
+                        stroke-width: 1em;
+                        opacity: 1;
+                        fill: >
+                          #A8E05F;
                   # State / AQI
                   - type: 'state'
                     id: 6
                     cx: 126
                     cy: 60
                     entity_index: 0
+                    show:
+                      uom: above
                     styles:
-                      font-size: 5.8em;
-                      font-weight: 700;
-                      text-anchor: end;
-                      alignment-baseline: central;
+                      state:
+                        font-size: 5.8em;
+                        font-weight: 700;
+                        text-anchor: middle;
+                        alignment-baseline: central;
 
                   # State / main pollutant
                   - type: 'state'
@@ -392,14 +413,6 @@
                     cx: 87.5
                     cy: 95
                     entity_index: 2
-                    show:
-                      units: default, none, below
-                      # en dan 
-                      # styles:
-                      #   state:
-                      #     ...
-                      #   units:
-                      #     ...
                     text_before: 'text before state'
                     text_after: 'text after state'
                     text:
@@ -410,10 +423,11 @@
                         content: 'text after state'
                         position: below
                     styles:
-                      font-size: 2.5em;
-                      font-weight: 500;
-                      text-anchor: middle;
-                      alignment-baseline: central;
+                      state:
+                        font-size: 2.5em;
+                        font-weight: 500;
+                        text-anchor: middle;
+                        alignment-baseline: central;
 
                   # State / pollutant level
                   - type: 'state'
@@ -422,10 +436,11 @@
                     cy: 25
                     entity_index: 1
                     styles:
-                      font-size: 2.5em;
-                      font-weight: 500;
-                      text-anchor: middle;
-                      alignment-baseline: central;
+                      state:
+                        font-size: 2.5em;
+                        font-weight: 500;
+                        text-anchor: middle;
+                        alignment-baseline: central;
                       
                   # Surface circle
                   - type: 'circle'
@@ -434,8 +449,9 @@
                     cy: 60
                     radius: 45
                     styles:
-                      opacity: 1;
-                      fill: var(--primary-background-color);
+                      circle:
+                        opacity: 1;
+                        fill: var(--primary-background-color);
 
                   - type: 'circle'
                     id: 1
@@ -448,35 +464,42 @@
                       - state: '50'
                         operator: <=
                         styles:
-                          fill: >
-                            #A8E05F;
+                          circle:
+                            fill: >
+                              #A8E05F;
                       - state: '100'
                         operator: <=
                         styles:
-                          fill: >
-                            #FDD74B;
+                          circle:
+                            fill: >
+                              #FDD74B;
                       - state: '150'
                         operator: <=
                         styles:
-                          fill: >
-                            #FE9B57;
+                          circle:
+                            fill: >
+                              #FE9B57;
                       - state: '200'
                         operator: <=
                         styles:
-                          fill: >
-                            #FE6A69;
+                          circle:
+                            fill: >
+                              #FE6A69;
                       - state: '300'
                         operator: <=
                         styles:
-                          fill: >
-                            #A97ABC;
+                          circle:
+                            fill: >
+                              #A97ABC;
                       - state: '9999'
                         operator: <=
                         styles:
-                          fill: >
-                            #A87383;
+                          circle:
+                            fill: >
+                              #A87383;
                     styles:
-                      opacity: 1;
+                      circle:
+                        opacity: 1;
                     
 
                   - type: 'usersvg'
@@ -515,7 +538,8 @@
                         image: face6
 
                     styles:
-                      opacity: 1;
+                      usersvg:
+                        opacity: 1;
 
                   # bar
                   - type: bar
@@ -550,7 +574,8 @@
                     #   label_min:
                     #   label_max:
                     styles:
-                      stroke-linecap: round;
+                      bar:
+                        stroke-linecap: round;
 
     - type: horizontal-stack
       cards:
@@ -603,7 +628,8 @@
                     cx: 50
                     cy: 80
                     styles:
-                      font-size: 2.4em;
+                      area:
+                        font-size: 2.4em;
 
                   - type: 'name'
                     id: 0
@@ -611,8 +637,9 @@
                     cx: 50
                     cy: 95
                     styles:
-                      font-size: 1.2em;
-                      text-anchor: center;
+                      name:
+                        font-size: 1.2em;
+                        text-anchor: center;
 
                   - type: 'segarc'
                     id: 0
@@ -662,11 +689,12 @@
                           30: '#d53e4f'
                           35: '#9e0142'
                     styles:
-                      fill: var(--theme-gradient-color-01);
-                    styles_bg:
-                      # fill: var(--primary-background-color);
-                      fill: var(--cs-theme-default-darken-15);
-                      filter: url(#is-1);
+                      foreground:
+                        fill: var(--theme-gradient-color-01);
+                      background:
+                        # fill: var(--primary-background-color);
+                        fill: var(--cs-theme-default-darken-15);
+                        filter: url(#is-1);
 
                   - type: 'state'
                     id: 0
@@ -674,9 +702,10 @@
                     cx: 50
                     cy: 40
                     styles:
-                      text-anchor: center;
-                      font-size: 3em;
-                      fill: var(--primary-text-color);
+                      state:
+                        text-anchor: center;
+                        font-size: 3em;
+                        fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 0
@@ -686,8 +715,9 @@
                     align: center
                     icon_size: 18.5
                     styles:
-                      color: var(--primary-text-color);
-                      fill: var(--primary-text-color);
+                      icon:
+                        color: var(--primary-text-color);
+                        fill: var(--primary-text-color);
 
               # ==============================================================================
               - toolset: humi
@@ -736,10 +766,11 @@
                       #
                       # </svg>
                     styles:
-                      fill: var(--theme-gradient-color-02);
-                    styles_bg:
-                      fill: var(--cs-theme-default-darken-15);
-                      filter: url(#is-1);
+                      foreground:
+                        fill: var(--theme-gradient-color-02);
+                      background:
+                        fill: var(--cs-theme-default-darken-15);
+                        filter: url(#is-1);
 
                   - type: 'state'
                     id: 0
@@ -747,9 +778,10 @@
                     cx: 35
                     cy: 40
                     styles:
-                      text-anchor: center;
-                      font-size: 2em;
-                      fill: var(--primary-text-color);
+                      state:
+                        text-anchor: center;
+                        font-size: 2em;
+                        fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 0
@@ -759,8 +791,9 @@
                     align: center
                     icon_size: 18.5
                     styles:
-                      color: var(--primary-text-color);
-                      fill: var(--primary-text-color));
+                      icon:
+                        color: var(--primary-text-color);
+                        fill: var(--primary-text-color));
 
               # ==============================================================================
               - toolset: pressure
@@ -791,10 +824,11 @@
                           990: 'var(--theme-gradient-color-01)'
                           1020: 'var(--theme-gradient-color-05)'
                     styles:
-                      fill: var(--theme-gradient-color-03);
-                    styles_bg:
-                      fill: var(--cs-theme-default-darken-15);
-                      filter: url(#is-1);
+                      foreground:
+                        fill: var(--theme-gradient-color-03);
+                      background:
+                        fill: var(--cs-theme-default-darken-15);
+                        filter: url(#is-1);
 
                   - type: 'state'
                     id: 0
@@ -802,9 +836,10 @@
                     cx: 65
                     cy: 40
                     styles:
-                      text-anchor: center;
-                      font-size: 2em;
-                      fill: var(--primary-text-color);
+                      state:
+                        text-anchor: center;
+                        font-size: 2em;
+                        fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 0
@@ -814,8 +849,9 @@
                     align: center
                     icon_size: 18.5
                     styles:
-                      color: var(--primary-text-color);
-                      fill: var(--primary-text-color);
+                      icon:
+                        color: var(--primary-text-color);
+                        fill: var(--primary-text-color);
 
 #################################################################################
 
@@ -877,8 +913,9 @@
                       bottom_right: 0
                       bottom_left: 50
                     styles:
-                      stroke: var(--primary-background-color);
-                      fill: var(--primary-background-color);
+                      rectex:
+                        stroke: var(--primary-background-color);
+                        fill: var(--primary-background-color);
 
                   # state
                   - type: state
@@ -886,9 +923,10 @@
                     cy: 30
                     entity_index: 0
                     styles:
-                      text-anchor: start;
-                      font-size: 3.5em;
-                      font-weight: 700;
+                      state:
+                        text-anchor: start;
+                        font-size: 3.5em;
+                        font-weight: 700;
 
                   # circle for icon
                   - type: circle
@@ -896,7 +934,8 @@
                     cy: 15
                     radius: 10
                     styles:
-                      fill: var(--primary-background-color);
+                      circle:
+                        fill: var(--primary-background-color);
                   # icon
                   - type: icon
                     cx: 85
@@ -905,10 +944,11 @@
                     align: center
                     icon_size: 20
                     styles:
-                      fill: var(--cs-orange-lighten-30);
-                      color: var(--cs-orange-lighten-30);
-                      # opacity: 0.5;
-                      filter: url(#is-1);
+                      icon:
+                        fill: var(--cs-orange-lighten-30);
+                        color: var(--cs-orange-lighten-30);
+                        # opacity: 0.5;
+                        filter: url(#is-1);
 
                   # name
                   - type: name
@@ -916,9 +956,10 @@
                     cy: 50
                     entity_index: 0
                     styles:
-                      text-anchor: middle;
-                      font-size: 2em;
-                      font-weight: 400;
+                      name:
+                        text-anchor: middle;
+                        font-size: 2em;
+                        font-weight: 400;
 
                   # bar
                   - type: bar
@@ -933,9 +974,10 @@
                     hours: 24
                     barhours: 1
                     styles:
-                      stroke: var(--primary-text-color);
-                      stroke-opacity: 0.5;
-                      stroke-linecap: butt;
+                      bar:
+                        stroke: var(--primary-text-color);
+                        stroke-opacity: 0.5;
+                        stroke-linecap: butt;
 
 
 #########################
@@ -956,8 +998,9 @@
                       bottom_right: 0
                       bottom_left: 50
                     styles:
-                      stroke: var(--primary-background-color);
-                      fill: var(--primary-background-color);
+                      rectex:
+                        stroke: var(--primary-background-color);
+                        fill: var(--primary-background-color);
 
                   # state
                   - type: state
@@ -965,9 +1008,10 @@
                     cy: 30
                     entity_index: 1
                     styles:
-                      text-anchor: start;
-                      font-size: 3.5em;
-                      font-weight: 700;
+                      state:
+                        text-anchor: start;
+                        font-size: 3.5em;
+                        font-weight: 700;
 
                   # circle for icon
                   - type: circle
@@ -975,7 +1019,8 @@
                     cy: 15
                     radius: 10
                     styles:
-                      fill: var(--primary-background-color);
+                      circle:
+                        fill: var(--primary-background-color);
                   # icon
                   - type: icon
                     cx: 85
@@ -984,10 +1029,11 @@
                     align: center
                     icon_size: 20
                     styles:
-                      fill: var(--cs-orange-lighten-30);
-                      color: var(--cs-orange-lighten-30);
-                      # opacity: 0.5;
-                      filter: url(#is-1);
+                      icon:
+                        fill: var(--cs-orange-lighten-30);
+                        color: var(--cs-orange-lighten-30);
+                        # opacity: 0.5;
+                        filter: url(#is-1);
 
                   # name
                   - type: name
@@ -995,9 +1041,10 @@
                     cy: 50
                     entity_index: 1
                     styles:
-                      text-anchor: middle;
-                      font-size: 2em;
-                      font-weight: 400;
+                      name:
+                        text-anchor: middle;
+                        font-size: 2em;
+                        font-weight: 400;
 
                   # bar
                   - type: bar
@@ -1012,9 +1059,10 @@
                     hours: 24
                     barhours: 1
                     styles:
-                      stroke: var(--primary-text-color);
-                      stroke-opacity: 0.5;
-                      stroke-linecap: butt;
+                      bar:
+                        stroke: var(--primary-text-color);
+                        stroke-opacity: 0.5;
+                        stroke-linecap: butt;
 
 #################
               - toolset: pressure
@@ -1034,9 +1082,10 @@
                       bottom_right: 0
                       bottom_left: 50
                     styles:
-                      stroke: var(--primary-background-color);
-                      fill: var(--primary-background-color);
-                      overflow: hidden;
+                      rectex:
+                        stroke: var(--primary-background-color);
+                        fill: var(--primary-background-color);
+                        overflow: hidden;
 
                   # state
                   - type: state
@@ -1044,9 +1093,10 @@
                     cy: 30
                     entity_index: 2
                     styles:
-                      text-anchor: start;
-                      font-size: 3.5em;
-                      font-weight: 700;
+                      state:
+                        text-anchor: start;
+                        font-size: 3.5em;
+                        font-weight: 700;
 
                   # circle for icon
                   - type: circle
@@ -1054,7 +1104,8 @@
                     cy: 15
                     radius: 10
                     styles:
-                      fill: var(--primary-background-color);
+                      circle:
+                        fill: var(--primary-background-color);
                   # icon
                   - type: icon
                     cx: 85
@@ -1063,9 +1114,10 @@
                     align: center
                     icon_size: 20
                     styles:
-                      fill: var(--cs-orange-lighten-30);
-                      color: var(--cs-orange-lighten-30);
-                      filter: url(#is-1);
+                      icon:
+                        fill: var(--cs-orange-lighten-30);
+                        color: var(--cs-orange-lighten-30);
+                        filter: url(#is-1);
 
                   # name
                   - type: name
@@ -1073,9 +1125,10 @@
                     cy: 50
                     entity_index: 2
                     styles:
-                      text-anchor: middle;
-                      font-size: 2em;
-                      font-weight: 400;
+                      name:
+                        text-anchor: middle;
+                        font-size: 2em;
+                        font-weight: 400;
 
                   # bar
                   - type: bar
@@ -1090,9 +1143,10 @@
                     hours: 24
                     barhours: 1
                     styles:
-                      stroke: var(--primary-text-color);
-                      stroke-opacity: 0.5;
-                      stroke-linecap: butt;
+                      bar:
+                        stroke: var(--primary-text-color);
+                        stroke-opacity: 0.5;
+                        stroke-linecap: butt;
 
 #################################################################################
 - type: vertical-stack
