@@ -2203,7 +2203,7 @@ class BadgeTool extends BaseTool {
 class EntityStateTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
     const DEFAULT_STATE_CONFIG = {
-      show: { units: 'default' }
+      show: { uom: 'default' }
     }
     super(argCard, argConfig, argPos);
 
@@ -2228,7 +2228,124 @@ class EntityStateTool extends BaseTool {
     return changed;
   }
 
+  _renderState() {
+
+    // compute some styling elements if configured for this state item
+    const STATE_STYLES = {
+      "font-size": '2em;',
+      "color": 'var(--primary-text-color);',
+      "opacity": '1.0;',
+      "text-anchor": 'middle;',
+      "alignment-baseline": 'central;',
+    }
+
+    // Get configuration styles as the default styles
+    // Make state style global, because _renderUom() depends on it...
+
+    if (!this.configStyle) this.configStyle = {...STATE_STYLES};
+    // if (this.config.styles.state) this.configStyle = {...this.configStyle, ...this.config.styles.state};
+    if (this.config.styles) this.configStyle = {...this.configStyle, ...this.config.styles};
+    this.configStyle = { ...this.configStyle, ...this.animationStyle};
+
+    // Convert javascript records to plain text, without "{}" and "," between the styles.
+    const configStyleStr = JSON.stringify(this.configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+
+    return svg`
+      <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}"
+        style="${configStyleStr}">
+        ${this._stateValue}</tspan>
+    `;
+  }
+  
+  _renderUom() {
+
+    // compute some styling elements if configured for this state item
+    const UOM_STYLES = {
+      "opacity": '0.7;',
+    }
+
+    if (this.config.show.uom === 'none') {
+      return svg``;
+    } else {
+      // Get configuration styles as the default styles
+      let configStyle = {...this.configStyle, ...UOM_STYLES};
+      // if (this.config.styles.uom) configStyle = {...configStyle, ...this.config.styles.uom};
+      if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
+      configStyle = { ...configStyle, ...this.animationStyle};
+
+      // Convert javascript records to plain text, without "{}" and "," between the styles.
+      const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+
+      var fsuomStr = configStyle["font-size"];
+
+      var fsuomValue = 0.5;
+      var fsuomType = 'em;'
+      const fsuomSplit = fsuomStr.match(/\D+|\d*\.?\d+/g);
+      if (fsuomSplit.length == 2) {
+        fsuomValue = Number(fsuomSplit[0]) * .6;
+        fsuomType = fsuomSplit[1];
+      }
+      else console.error('Cannot determine font-size for state/unit', fsuomStr);
+
+      fsuomStr = { "font-size": fsuomValue + fsuomType};
+
+      let uomStyle = {...configStyle, ...UOM_STYLES, ...fsuomStr};
+      const uomStyleStr = JSON.stringify(uomStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+
+      const uom = this._card._buildUom(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+
+      // Check for location of uom. Default = next to state, below = below state ;-)
+      if (this.config.show.uom === 'default') {
+        return svg`
+          <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
+            style="${uomStyleStr}">
+            ${uom}</tspan>
+        `;
+      } else if (this.config.show.uom === 'below') {
+        return svg`
+          <tspan class="state__uom" x="${this.svg.x}" dy="1.5em"
+            style="${uomStyleStr}">
+            ${uom}</tspan>
+        `;
+      } else if (this.config.show.uom === 'above') {
+        return svg`
+          <tspan class="state__uom" x="${this.svg.x}" dy="-1.5em"
+            style="${uomStyleStr}">
+            ${uom}</tspan>
+        `;
+
+      } else {
+        return svg``
+      }
+    }
+  }
+  
   render() {
+
+    if (true || (this._card._computeDomain(this._card.entities[this.config.entity_index].entity_id) == 'sensor')) {
+      return svg`
+        <text @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])}>
+          ${this._renderState()}
+          ${this._renderUom()}
+        </text>
+      `;
+    } else {
+      // Not a sensor. Might be any other domain. Unit can only be specified using the units: in the configuration.
+      // Still check for using an attribute value for the domain...
+      return svg`
+        <text @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])}>
+          <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}" dx="${dx}em" dy="${dy}em"
+            style="${configStyleStr}">
+            ${state}</tspan>
+          <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
+            style="${uomStyleStr}">
+            ${uom}</tspan>
+        </text>
+      `;
+    }
+  } // render()
+  
+  renderOld() {
 
     // compute x,y or dx,dy positions. Spec none if not specified.
     //const x = item.cx ? item.cx : '';
