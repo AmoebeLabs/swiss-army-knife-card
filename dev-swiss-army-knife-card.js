@@ -254,7 +254,7 @@ class Toolset {
       "segarc": SegmentedArcTool,
       "state": EntityStateTool,
       "slider": RangeSliderTool,
-			"usersvg": UserSvgTool,
+      "usersvg": UserSvgTool,
 
     }
 
@@ -403,9 +403,9 @@ class Toolset {
   *
   * The order of transformations are done from the childs perspective!!
   * So, the child (tools) gets positioned FIRST, and then scaled/rotated.
-	*
-	* See comments for different render paths for Apple/Safar and any other browser...
-	*
+  *
+  * See comments for different render paths for Apple/Safar and any other browser...
+  *
   */
 
   render() {
@@ -437,7 +437,7 @@ class Toolset {
       // Other browsers don't need that, they default to: "svg:not(:root) {overflow: hidden;}"
       //
       // Without this setting, objects are cut-off or become invisible while scaled!
-			
+      
       return svg`
         <g id="toolset-${this.toolsetId}" class="toolset"
            transform="rotate(${this.transform.rotate.x}, ${this.svg.cx}, ${this.svg.cy})
@@ -596,12 +596,12 @@ class BaseTool {
       if (!this.animationStyle || !item.reuse) this.animationStyle = {};
       //this.animationStyle = Object.assign(this.animationStyle, ...item.styles);
       this.animationStyle = {...this.animationStyle, ...item.styles};
-			
-			// Can this work?????????????????
-			// #TODO:
-			// Store activeAnimation. Should be renamed, and used for more purposes, as via this method
-			// you can override any value from within an animation, not just the css style settings.
-			this.item = item;
+      
+      // Can this work?????????????????
+      // #TODO:
+      // Store activeAnimation. Should be renamed, and used for more purposes, as via this method
+      // you can override any value from within an animation, not just the css style settings.
+      this.item = item;
     });
 
     return true;
@@ -1127,7 +1127,7 @@ class LineTool extends BaseTool {
 
     const DEFAULT_LINE_CONFIG = {
         orientation: 'vertical',
-				length: '10',
+        length: '10',
         styles: {
           "stroke-linecap": 'round;',
           "stroke": 'var(--primary-text-color);',
@@ -1337,8 +1337,8 @@ class UserSvgTool extends BaseTool {
     const DEFAULT_USERSVG_CONFIG = {
         cx: 50,
         cy: 50,
-				height: 50,
-				width: 50,
+        height: 50,
+        width: 50,
     }
 
     super(argCard, argConfig, argPos);
@@ -1355,13 +1355,13 @@ class UserSvgTool extends BaseTool {
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.images = {};
-		this.images = Object.assign({}, ...this.config.images);
+    this.images = Object.assign({}, ...this.config.images);
 
-		// #TODO:
-		// Select first key in k/v store. HOw??
-		this.item = {};
-		this.item.image = "face1";
-		
+    // #TODO:
+    // Select first key in k/v store. HOw??
+    this.item = {};
+    this.item.image = "face1";
+    
     if (this.dev.debug) console.log('UserSvgTool constructor coords, dimensions', this.svg, this.config);
   }
 
@@ -1399,8 +1399,8 @@ class UserSvgTool extends BaseTool {
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
-		// #TODO:
-		// This is only rendering an external svg. Also be able to render inline yaml svg stuff
+    // #TODO:
+    // This is only rendering an external svg. Also be able to render inline yaml svg stuff
 
     // const svgItems = this.config.svgs.map(item => {
 
@@ -1413,12 +1413,12 @@ class UserSvgTool extends BaseTool {
       // `;
     // })
 
-		
-		return svg`
-			<svg x="${this.svg.x}" y="${this.svg.y}">
-				<image href="${this.images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
-			</svg>
-			`;
+    
+    return svg`
+      <svg x="${this.svg.x}" y="${this.svg.y}">
+        <image href="${this.images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
+      </svg>
+      `;
   }
  /*******************************************************************************
   * UserSvgTool::render()
@@ -2203,7 +2203,7 @@ class BadgeTool extends BaseTool {
 class EntityStateTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
     const DEFAULT_STATE_CONFIG = {
-			show: { units: 'default' }
+      show: { units: 'default' }
     }
     super(argCard, argConfig, argPos);
 
@@ -2392,8 +2392,8 @@ class EntityNameTool extends BaseTool {
     const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
     // #TODO:
-		// Why is build* in card, and not in class????
-		const name = this._card._buildName(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+    // Why is build* in card, and not in class????
+    const name = this._card._buildName(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
     return svg`
         <text>
@@ -2869,9 +2869,9 @@ class SparklineBarChartTool extends BaseTool {
       });
     }
 
-		if (this.config.show.style == 'colorstop') {
-		  this.sortedColorStops = Object.keys(this.config.colorstops).map(n => Number(n)).sort((a, b) => a - b);
-		}
+    if (this.config.show.style == 'colorstop') {
+      this.sortedColorStops = Object.keys(this.config.colorstops).map(n => Number(n)).sort((a, b) => a - b);
+    }
 
     if (this.dev.debug) console.log('SparkleBarChart constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -2896,10 +2896,10 @@ class SparklineBarChartTool extends BaseTool {
     this._scale.size = (max - min);
 
     // 2020.11.05
-		// Add 5% to the size of the scale and adjust the minimum value displayed.
-		// So every bar is displayed, instead of the min value having a bar length of zero!
-		this._scale.size = (max - min) * 1.05;
-		this._scale.min = max - this._scale.size;
+    // Add 5% to the size of the scale and adjust the minimum value displayed.
+    // So every bar is displayed, instead of the min value having a bar length of zero!
+    this._scale.size = (max - min) * 1.05;
+    this._scale.min = max - this._scale.size;
 
   }
 
@@ -2939,11 +2939,11 @@ class SparklineBarChartTool extends BaseTool {
 
     this.computeMinMax();
 
-		if (this.config.show.style === 'minmaxgradient') {
-			this.colorStopsMinMax = {};
-			this.colorStopsMinMax = {[this._scale.min.toString()]: this.config.minmaxgradient.min,
-															 [this._scale.max.toString()]: this.config.minmaxgradient.max};
-		}
+    if (this.config.show.style === 'minmaxgradient') {
+      this.colorStopsMinMax = {};
+      this.colorStopsMinMax = {[this._scale.min.toString()]: this.config.minmaxgradient.min,
+                               [this._scale.max.toString()]: this.config.minmaxgradient.max};
+    }
 
     // VERTICAL
     if (this.config.orientation == 'vertical') {
@@ -2993,24 +2993,24 @@ class SparklineBarChartTool extends BaseTool {
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
-		
+    
     this._bars.forEach((item, index) => {
       if (this.dev.debug) console.log('_renderBars - bars', item, index);
 
-			var stroke = '';
-			switch (this.config.show.style) {
-				case 'fixedcolor':
-					stroke = this.config.color;
-					break;
-				case 'colorstop':
-				case 'colorstops':
-				case 'colorstopgradient':
-					stroke = this._card._calculateColor(this._series[index], this.colorStops, (this.config.show.style === 'colorstopgradient'));
-					break;
-				case 'minmaxgradient':
-					stroke = this._card._calculateColor(this._series[index], this.colorStopsMinMax, true);
-					break;
-			}
+      var stroke = '';
+      switch (this.config.show.style) {
+        case 'fixedcolor':
+          stroke = this.config.color;
+          break;
+        case 'colorstop':
+        case 'colorstops':
+        case 'colorstopgradient':
+          stroke = this._card._calculateColor(this._series[index], this.colorStops, (this.config.show.style === 'colorstopgradient'));
+          break;
+        case 'minmaxgradient':
+          stroke = this._card._calculateColor(this._series[index], this.colorStopsMinMax, true);
+          break;
+      }
 
       svgItems.push(svg`
         <line id="line-segment-${this.toolId}-${index}" class="line__segment"
@@ -3341,7 +3341,7 @@ class SegmentedArcTool extends BaseTool {
 
     // testing. use below two lines and sckip the calculation of the segmentAngles. Those are done above with different calculation...
     this.skipOriginal = ((this.config.show.style == 'colorstops') || (this.config.show.style == 'colorlist'));
-		
+    
     // Set scale to new value. Never changes of course!!
     if (this.skipOriginal) {
       if (this.config.isScale) this._stateValuePrev = this._stateValue;
@@ -4120,8 +4120,8 @@ class devSwissArmyKnifeCard extends LitElement {
     this.toolsets = [];
     this.tools = [];
 
-		this.colorCache = [];
-		
+    this.colorCache = [];
+    
     // For history query interval updates.
     this.stateChanged = true;
     this.updating = false;
@@ -4131,7 +4131,6 @@ class devSwissArmyKnifeCard extends LitElement {
     this.dev = {};
     this.dev.debug = false;
     this.dev.performance = false;
-    this.dev.ts = true;
 
     this.configIsSet = false;
 
@@ -4144,14 +4143,14 @@ class devSwissArmyKnifeCard extends LitElement {
     // this.isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
     // this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-		// See: https://javascriptio.com/view/10924/detect-if-device-is-ios
-		// After iOS 13 you should detect iOS devices like this, since iPad will not be detected as iOS devices
-		// by old ways (due to new "desktop" options, enabled by default)
+    // See: https://javascriptio.com/view/10924/detect-if-device-is-ios
+    // After iOS 13 you should detect iOS devices like this, since iPad will not be detected as iOS devices
+    // by old ways (due to new "desktop" options, enabled by default)
 
     this.isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
-		this.iOS = (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
-								(navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
-								!window.MSStream;
+    this.iOS = (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
+                !window.MSStream;
 
     // Get Lovelace panel.
     // - Used for color calculations
@@ -4862,13 +4861,10 @@ class devSwissArmyKnifeCard extends LitElement {
       return;
     }
 
-    if (this.dev.ts) {
-      if (this.ts) {
-        this.ts.map((item, index) => {
-          item.updateValues();
-        });
-      }
-    } else {
+    if (this.ts) {
+      this.ts.map((item, index) => {
+        item.updateValues();
+      });
     }
 
     // For now, always force update to render the card if any of the states or attributes have changed...
@@ -5007,100 +5003,97 @@ class devSwissArmyKnifeCard extends LitElement {
         }
     }
 */
-      if (this.dev.ts) {
-        var toolsetCfgFromTemplate = null;
+      var toolsetCfgFromTemplate = null;
 
-        if (!this.ts) this.ts = [];
+      if (!this.ts) this.ts = [];
 
-        if (toolsetCfg.template) {
-          if (this.dev.debug) console.log("card::setConfig - got toolsetCfg template", this.cardId, toolsetCfg, toolidx);
+      if (toolsetCfg.template) {
+        if (this.dev.debug) console.log("card::setConfig - got toolsetCfg template", this.cardId, toolsetCfg, toolidx);
 
-          if (this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]) {
-            if (this.dev.debug) console.log("card::setConfig - got toolsetCfg template found", this.cardId, toolsetCfg, toolidx);
+        if (this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]) {
+          if (this.dev.debug) console.log("card::setConfig - got toolsetCfg template found", this.cardId, toolsetCfg, toolidx);
 
-            toolsetCfgFromTemplate = Templates.replaceVariables2(toolsetCfg.template.variables, this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]);
-            if (this.dev.debug) console.log("card::setConfig - got toolsetCfg replaced vars", this.cardId, toolsetCfgFromTemplate);
-            toolsetCfgFromTemplate.position = this.config.layout.toolsets[toolidx].position ? this.config.layout.toolsets[toolidx].position : toolsetCfgFromTemplate.position;
-            if (this.dev.debug) console.log("card::setConfig - got toolsetCfg replaced vars2", this.cardId, toolsetCfgFromTemplate);
-            //this.config.layout.toolsets[toolidx].position = toolsetCfgFromTemplate.position;
-            //this.config.layout.toolsets[toolidx].tools = [...toolsetCfgFromTemplate.tools];
+          toolsetCfgFromTemplate = Templates.replaceVariables2(toolsetCfg.template.variables, this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]);
+          if (this.dev.debug) console.log("card::setConfig - got toolsetCfg replaced vars", this.cardId, toolsetCfgFromTemplate);
+          toolsetCfgFromTemplate.position = this.config.layout.toolsets[toolidx].position ? this.config.layout.toolsets[toolidx].position : toolsetCfgFromTemplate.position;
+          if (this.dev.debug) console.log("card::setConfig - got toolsetCfg replaced vars2", this.cardId, toolsetCfgFromTemplate);
+          //this.config.layout.toolsets[toolidx].position = toolsetCfgFromTemplate.position;
+          //this.config.layout.toolsets[toolidx].tools = [...toolsetCfgFromTemplate.tools];
 
-            toolList = toolsetCfgFromTemplate.tools;
+          toolList = toolsetCfgFromTemplate.tools;
 
-            // testing.. --> crashes. No deep merge/clone done!!!!!!
-            //toolsetCfg = {...toolsetCfg, ...toolsetCfgFromTemplate};
-            // #TODO: does this work???????????????????
+          // testing.. --> crashes. No deep merge/clone done!!!!!!
+          //toolsetCfg = {...toolsetCfg, ...toolsetCfgFromTemplate};
+          // #TODO: does this work???????????????????
 
-            if (false) {
-            // var newCfg1 = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
-            // var newCfg2 = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
-            // console.log("newCfg,mergeDeep) NOT", newCfg1, " yes--> Used ", newCfg2);
-            // toolsetCfg = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
-            // //toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
+          if (false) {
+          // var newCfg1 = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
+          // var newCfg2 = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
+          // console.log("newCfg,mergeDeep) NOT", newCfg1, " yes--> Used ", newCfg2);
+          // toolsetCfg = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
+          // //toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
 
 
-            // // #TODO: merge not here, but later, after replacement of toolid in next loop.
-            // // Merge everything, then replace the toolset tools with the template tools??
-            // // Then we would merge everything, except the tools. That will be merged by Id below!!!!!
+          // // #TODO: merge not here, but later, after replacement of toolid in next loop.
+          // // Merge everything, then replace the toolset tools with the template tools??
+          // // Then we would merge everything, except the tools. That will be merged by Id below!!!!!
 
-            // // Template overwrites default configuration.
-            // toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
-            // toolsetCfg.tools = toolsetCfgFromTemplate.tools;
+          // // Template overwrites default configuration.
+          // toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
+          // toolsetCfg.tools = toolsetCfgFromTemplate.tools;
 
-            } else {
-            }
-
-            var found = false;
-            var toolAdd = [];
-            var atIndex = null;
-
-            // Check for empty tool list. This can be if template is used. Tools come from template, not from config...
-            if (toolsetCfg.tools) {
-              toolsetCfg.tools.map((tool, index) => {
-                toolList.map((toolT, indexT) => {
-                  if (tool.id == toolT.id) {
-                    toolList[indexT] = {...toolList[indexT], ...tool};
-                    // #TODO
-                    // No deep cloning/merging is done??
-                    //toolList[indexT].scale = {...toolList[indexT].scale, ...tool.scale};
-                    found = true;
-    //                atIndex = indexT;
-                    if (this.dev.debug) console.log("card::setConfig - got toolsetCfg toolid", tool, index, toolT, indexT, tool);
-                  }
-                });
-                if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
-              });
-            }
-            //toolList = toolList.concat(toolsetCfg.tools);
-
-            toolList = toolList.concat(toolAdd);
-            if (this.dev.debug) console.log('card::setConfig - Step 2: templating, toolconfig', toolList);
-
-            if (this.dev.debug) console.log('card::setConfigtool - toolsetCfg ENDRESULT before', toolList, this.config.layout.toolsets[toolidx]);
-            if (this.config.layout.toolsets[toolidx].tools) this.config.layout.toolsets[toolidx].tools = [...toolList, ...this.config.layout.toolsets[toolidx].tools];
-            if (this.dev.debug) console.log('card::setConfig - toolsetCfg ENDRESULT after', toolList, this.config.layout.toolsets[toolidx]);
-
-            // #TODO:
-            // does not help. So wht is the prblem with the scale. i dont'knowl.
-
-            this.config.layout.toolsets[toolidx].scale = {...this.config.layout.toolsets[toolidx].scale, ...toolsetCfgFromTemplate.scale};
-            toolsetCfg.scale = {...toolsetCfg.scale, ...toolsetCfgFromTemplate.scale};
-
-            console.log("did apply template, so what is the scale", toolsetCfg, toolsetCfgFromTemplate);
+          } else {
           }
-        } else {
-          // We don't have a template to run, get list of tools and use that...
-          toolList = toolsetCfg.tools;
+
+          var found = false;
+          var toolAdd = [];
+          var atIndex = null;
+
+          // Check for empty tool list. This can be if template is used. Tools come from template, not from config...
+          if (toolsetCfg.tools) {
+            toolsetCfg.tools.map((tool, index) => {
+              toolList.map((toolT, indexT) => {
+                if (tool.id == toolT.id) {
+                  toolList[indexT] = {...toolList[indexT], ...tool};
+                  // #TODO
+                  // No deep cloning/merging is done??
+                  //toolList[indexT].scale = {...toolList[indexT].scale, ...tool.scale};
+                  found = true;
+  //                atIndex = indexT;
+                  if (this.dev.debug) console.log("card::setConfig - got toolsetCfg toolid", tool, index, toolT, indexT, tool);
+                }
+              });
+              if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
+            });
+          }
+          //toolList = toolList.concat(toolsetCfg.tools);
+
+          toolList = toolList.concat(toolAdd);
+          if (this.dev.debug) console.log('card::setConfig - Step 2: templating, toolconfig', toolList);
+
+          if (this.dev.debug) console.log('card::setConfigtool - toolsetCfg ENDRESULT before', toolList, this.config.layout.toolsets[toolidx]);
+          if (this.config.layout.toolsets[toolidx].tools) this.config.layout.toolsets[toolidx].tools = [...toolList, ...this.config.layout.toolsets[toolidx].tools];
+          if (this.dev.debug) console.log('card::setConfig - toolsetCfg ENDRESULT after', toolList, this.config.layout.toolsets[toolidx]);
+
+          // #TODO:
+          // does not help. So wht is the prblem with the scale. i dont'knowl.
+
+          this.config.layout.toolsets[toolidx].scale = {...this.config.layout.toolsets[toolidx].scale, ...toolsetCfgFromTemplate.scale};
+          toolsetCfg.scale = {...toolsetCfg.scale, ...toolsetCfgFromTemplate.scale};
+
+          console.log("did apply template, so what is the scale", toolsetCfg, toolsetCfgFromTemplate);
         }
-
-        // Create and push
-        toolsetCfg.tools = toolList;
-        const newToolset = new Toolset(this, toolsetCfg);
-
-        this.ts.push(newToolset);
-        //this.tools.push(newToolset);
       } else {
-      } // end of else
+        // We don't have a template to run, get list of tools and use that...
+        toolList = toolsetCfg.tools;
+      }
+
+      // Create and push
+      toolsetCfg.tools = toolList;
+      const newToolset = new Toolset(this, toolsetCfg);
+
+      this.ts.push(newToolset);
+      //this.tools.push(newToolset);
     });
     if (this.dev.debug) console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
     if (this.dev.debug) console.log('debug - setConfig', this.cardId, this.config);
@@ -5170,15 +5163,11 @@ class devSwissArmyKnifeCard extends LitElement {
 
     if (this.dev.debug) console.log('*****Event - firstUpdated', this.cardId, new Date().getTime());
 
-    if (this.config.dev.ts) {
-      if (this.ts) {
-        this.ts.map((item, index) => {
-          item.firstUpdated(changedProperties);
-        });
-      }
-    } else {
-    } // end of else
-
+    if (this.ts) {
+      this.ts.map((item, index) => {
+        item.firstUpdated(changedProperties);
+      });
+    }
   }
 
 
@@ -5362,255 +5351,251 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
 //                ${this._renderUserSvgs()}
 
-    if (this.dev.ts) {
-      return svg`
-              <g id="datatoolset" class="datatoolset" filter="url(#nm-1)">
-                ${this.ts.map(toolset => toolset.render())}
-              </g>
+    return svg`
+            <g id="datatoolset" class="datatoolset" filter="url(#nm-1)">
+              ${this.ts.map(toolset => toolset.render())}
+            </g>
 
 
-              <defs>
-              <!-- SVG inner shadow on rgba fill: https://codepen.io/salsita/pen/qBbmYMw -->
+            <defs>
+            <!-- SVG inner shadow on rgba fill: https://codepen.io/salsita/pen/qBbmYMw -->
 
-                <!-- Damien Jurado Poster Rebound: https://codepen.io/dylanbaumann/pen/wevMwB -->
-                <filter id="is1" x="-50%" y="-50%" width="400%" height="400%">
-                  <feComponentTransfer in=SourceAlpha>
-                    <feFuncA type="table" tableValues="1 0" />
-                  </feComponentTransfer>
-                  <feGaussianBlur stdDeviation="1"/>
-                  <feOffset dx="0" dy="1" result="offsetblur"/>
-                  <feFlood flood-color="rgba(0, 0, 0, 0.3)" result="color"/>
-                  <feComposite in2="offsetblur" operator="in"/>
-                  <feComposite in2="SourceAlpha" operator="in" />
-                  <feMerge>
-                    <feMergeNode in="SourceGraphic" />
-                    <feMergeNode />
-                  </feMerge>
-                </filter>
-
-                <!-- SVG Inset Shadow: https://codepen.io/mattrosno/pen/zxpNwd -->
-                <filter id="is2">
-                  <!-- Shadow Offset -->
-                  <feOffset
-                    dx='1'
-                    dy='1'
-                  />
-
-                  <!-- Shadow Blur -->
-                  <feGaussianBlur
-                    stdDeviation='0.5'
-                    result='offset-blur'
-                  />
-
-                  <!-- Invert the drop shadow
-                       to create an inner shadow -->
-                  <feComposite
-                    operator='out'
-                    in='SourceGraphic'
-                    in2='offset-blur'
-                    result='inverse'
-                  />
-
-                  <!-- Color & Opacity -->
-                  <feFlood
-                    flood-color='black'
-                    flood-opacity='0.4'
-                    result='color'
-                  />
-
-                  <!-- Clip color inside shadow -->
-                  <feComposite
-                    operator='in'
-                    in='color'
-                    in2='inverse'
-                    result='shadow'
-                  />
-
-                  <!-- Put shadow over original object -->
-                  <feComposite
-                    operator='over'
-                    in='shadow'
-                    in2='SourceGraphic'
-                  />
-                </filter>
-
-                <rect id="cliprect" width="100%" height="100%" fill="none" stroke="none" rx="3" />
-                <clipPath id="clip">
-                  <use xlink:href="#cliprect"/>
-                </clipPath>
-
-                <marker viewBox="0 0 200 200" id="markerCircle" markerWidth="8" markerHeight="8" refX="5" refY="5">
-                    <circle cx="5" cy="5" r="3" style="stroke: none; fill:currentColor;"/>
-                </marker>
-
-                <marker viewBox="0 0 200 200" id="markerArrow" markerWidth="13" markerHeight="13" refX="2" refY="6"
-                       orient="auto">
-                    <path d="M2,2 L2,11 L10,6 L2,2" style="fill: currentColor;" />
-                </marker>
-
-                <filter id="ds2" width="10" height="10">
-                  <feDropShadow dx="2" dy="3" stdDeviation="0.5"/>
-                </filter>
-
-                <filter id="ds3" x="0" y="0" width="200%" height="200%">
-                  <feOffset result="offOut" in="SourceAlpha" dx="20" dy="20" />
-                  <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
-                  <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
-                </filter>
-
-                <filter id="ds4" x="0" y="0" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="1" />
-                </filter>
-
-                <filter id="ds-1" y="-50%" x="-50%" width="200%" height="400%">
-                  <feDropShadow dx="0" dy="1.5" stdDeviation=".3"/>
-                </filter>
-
-                <!-- Neumorphic filter -->
-                <!-- -->
-                <!-- Light Shadow, #FFFFFF at 50%, x:-6, Y:-6, Blur:16 -->
-                <!-- Dark Shadow: #d1cdc7 at 50%, x:6, y:6, Blur:16 -->
-                <!-- Main Background: #efeeee -->
-                <!-- Shape Background: #efeeee -->
-                <!-- Optional Border: #fff at 20% Alpha -->
-                <!-- Dark Shadow was: 0d2750 -->
-                
-                <filter id="is-1" x="-50%" y="-50%" width="200%" height="200%">
-                  <feComponentTransfer in=SourceAlpha>
-                    <feFuncA type="table" tableValues="1 0" />
-                  </feComponentTransfer>
-                  <feGaussianBlur stdDeviation="1"/>
-                  <feOffset dx="2" dy="2" result="offsetblur"/>
-                  <feFlood flood-color="#0d2750" flood-opacity="0.5" result="color"/>
-                  <feComposite in2="offsetblur" operator="in"/>
-                  <feComposite in2="SourceAlpha" operator="in" />
-                  <feMerge>
-                    <feMergeNode in="SourceGraphic" />
-                    <feMergeNode />
-                  </feMerge>
-                </filter>
-
-                <!-- Using feComposite in="offsetblur" operator="in" instead of in2 gives a -->
-                <!-- much larger shadow area, much deeper! WHY?? -->
-                
-                <filter id="nm-2" x="-50%" y="-50%" width="200%" height="200%">
-                  <feComponentTransfer in=SourceAlpha out=transfer>
-                    <feFuncA type="table" tableValues="1 0" />
-                  </feComponentTransfer>
-
-                  <feGaussianBlur input="transfer" stdDeviation="5" result="blurdark"/>
-                  <feOffset input="blurdark" dx="12" dy="12" result="offsetblurdark"/>
-                  <feFlood input="offsetblurdark" flood-color="#d1cdc7" flood-opacity="0.4" result="colordark"/>
-
-                  <feGaussianBlur input="transfer" stdDeviation="5" result="blurlight"/>
-                  <feOffset input="blurlight" dx="-12" dy="-12" result="offsetblurlight"/>
-                  <feFlood input="offsetblurlight" flood-color="white" flood-opacity="0.9" result="colorlight"/>
-
-                  <feComposite in="offsetblurdark" operator="in"/>
-                  <feComposite in="SourceAlpha" operator="in" />
-
-                  <feMerge>
-                    <feMergeNode in="SourceGraphic" />
-                    <feMergeNode />
-                  </feMerge>
-                </filter>
-
-                <filter id="filter-yoksel" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="linearRGB">
-                  <feFlood flood-color="#eeebe7" flood-opacity="0.7" x="0%" y="0%" width="100%" height="100%" result="flood2"/>
-                  <feComposite in="flood2" in2="SourceAlpha" operator="out" x="0%" y="0%" width="100%" height="100%" result="composite5"/>
-                  <feOffset dx="-9" dy="-7" x="0%" y="0%" width="100%" height="100%" in="composite5" result="offset1"/>
-                  <feGaussianBlur stdDeviation="3 10" x="0%" y="0%" width="100%" height="100%" in="offset1" edgeMode="none" result="blur2"/>
-                  <feComposite in="merge3" in2="SourceAlpha" operator="in" x="0%" y="0%" width="100%" height="100%" result="composite7"/>
-                  <feFlood flood-color="#0f0f0f" flood-opacity="1" x="0%" y="0%" width="100%" height="100%" result="flood4"/>
-                  <feComposite in="flood4" in2="SourceAlpha" operator="out" x="0%" y="0%" width="100%" height="100%" result="composite8"/>
-                  <feOffset dx="6" dy="6" x="0%" y="0%" width="100%" height="100%" in="merge3" result="offset2"/>
-                  <feGaussianBlur stdDeviation="3 10" x="0%" y="0%" width="100%" height="100%" in="offset2" edgeMode="none" result="blur3"/>
-                  <feComposite in="blur3" in2="SourceAlpha" operator="in" x="0%" y="0%" width="100%" height="100%" result="composite9"/>
-                  <feMerge x="0%" y="0%" width="100%" height="100%" result="merge3">
-                        <feMergeNode in="SourceGraphic"/>
-                    <feMergeNode in="composite7"/>
-                    <feMergeNode in="composite9"/>
-                    </feMerge>
-                </filter>
-
-                <!-- second try... -->
-                <filter id="filter" x="-50%" y="-50%" width="240%" height="240%">
-                  <feFlood flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="0.8" result="flood2"/>
-                  <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
-                  <feOffset dx="-12" dy="-12" in="composite5" result="offset1"/>
-                  <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
-                  <feComposite in="blur2" in2="SourceAlpha" operator="in"  result="composite7"/>
-
-                  <!-- flood-color="#777777" -->
-                  <feFlood flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.9" result="flood4"/>
-                  <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
-                  <feOffset dx="6" dy="6" in="composite8" result="offset2"/>
-                  <feGaussianBlur stdDeviation="15" in="offset2" edgeMode="none" result="blur3"/>
-                  <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
-
-                  <feMerge result="merge3">
-                    <feMergeNode in="SourceGraphic"/>
-                    <feMergeNode in="composite7"/>
-                    <feMergeNode in="composite9"/>
-                    </feMerge>
-                </filter>
-
-                <filter id="bold" x="-50%" y="-50%" width="240%" height="240%">
-                  <feFlood flood-color="#FFFFFF" flood-opacity="0.8" result="flood2"/>
-                  <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
-                  <feOffset dx="12" dy="12" in="composite5" result="offset1"/>
-                  <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
-                  <feComposite in="blur2" in2="SourceAlpha" operator="in"  result="composite7"/>
-
-                  <feFlood flood-color="#777777" flood-opacity="0.6" result="flood4"/>
-                  <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
-                  <feOffset dx="-12" dy="-12" in="composite8" result="offset2"/>
-                  <feGaussianBlur stdDeviation="15" in="offset2" edgeMode="none" result="blur3"/>
-                  <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
-
-                  <feMerge result="merge3">
-                    <feMergeNode in="SourceGraphic"/>
-                    <feMergeNode in="composite7"/>
-                    <feMergeNode in="composite9"/>
-                    </feMerge>
-                </filter>
-
-                <filter id="filterss" x="-20%" y="-20%" width="140%" height="140%">
-                  <feFlood flood-color="#eeebe7" flood-opacity="0.9" result="flood2"/>
-                  <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
-                  <feOffset dx="-15" dy="-15" in="composite5" result="offset1"/>
-                  <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
-                  <feComposite in="blur2" in2="SourceAlpha" operator="in" result="composite7"/>
-
-                  <feFlood flood-color="#0f0f0f" flood-opacity="1" result="flood4"/>
-                  <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
-                  <feOffset dx="6" dy="6" in="composite8" result="offset2"/>
-                  <feGaussianBlur stdDeviation="5" in="offset2" edgeMode="none" result="blur3"/>
-                  <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
-
-                  <feMerge result="merge3">
-                    <feMergeNode in="SourceGraphic"/>
-                    <feMergeNode in="composite7"/>
-                    <feMergeNode in="composite9"/>
-                    </feMerge>
-                </filter>
-
-              <!-- flood-color="#d1cdc7" -->
-              <!-- flood-color="#FFFFFF" -->
-              <filter id="nm-1" x="-50%" y="-50%" width="300%" height="300%">
-                <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
-                <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-                <feMerge result="merge">
-                  <feMergeNode in="dropShadow1"/>
-                  <feMergeNode in="dropShadow"/>
+              <!-- Damien Jurado Poster Rebound: https://codepen.io/dylanbaumann/pen/wevMwB -->
+              <filter id="is1" x="-50%" y="-50%" width="400%" height="400%">
+                <feComponentTransfer in=SourceAlpha>
+                  <feFuncA type="table" tableValues="1 0" />
+                </feComponentTransfer>
+                <feGaussianBlur stdDeviation="1"/>
+                <feOffset dx="0" dy="1" result="offsetblur"/>
+                <feFlood flood-color="rgba(0, 0, 0, 0.3)" result="color"/>
+                <feComposite in2="offsetblur" operator="in"/>
+                <feComposite in2="SourceAlpha" operator="in" />
+                <feMerge>
+                  <feMergeNode in="SourceGraphic" />
+                  <feMergeNode />
                 </feMerge>
               </filter>
 
-              </defs>
-      `;
+              <!-- SVG Inset Shadow: https://codepen.io/mattrosno/pen/zxpNwd -->
+              <filter id="is2">
+                <!-- Shadow Offset -->
+                <feOffset
+                  dx='1'
+                  dy='1'
+                />
 
-    } else {
-    }
+                <!-- Shadow Blur -->
+                <feGaussianBlur
+                  stdDeviation='0.5'
+                  result='offset-blur'
+                />
+
+                <!-- Invert the drop shadow
+                     to create an inner shadow -->
+                <feComposite
+                  operator='out'
+                  in='SourceGraphic'
+                  in2='offset-blur'
+                  result='inverse'
+                />
+
+                <!-- Color & Opacity -->
+                <feFlood
+                  flood-color='black'
+                  flood-opacity='0.4'
+                  result='color'
+                />
+
+                <!-- Clip color inside shadow -->
+                <feComposite
+                  operator='in'
+                  in='color'
+                  in2='inverse'
+                  result='shadow'
+                />
+
+                <!-- Put shadow over original object -->
+                <feComposite
+                  operator='over'
+                  in='shadow'
+                  in2='SourceGraphic'
+                />
+              </filter>
+
+              <rect id="cliprect" width="100%" height="100%" fill="none" stroke="none" rx="3" />
+              <clipPath id="clip">
+                <use xlink:href="#cliprect"/>
+              </clipPath>
+
+              <marker viewBox="0 0 200 200" id="markerCircle" markerWidth="8" markerHeight="8" refX="5" refY="5">
+                  <circle cx="5" cy="5" r="3" style="stroke: none; fill:currentColor;"/>
+              </marker>
+
+              <marker viewBox="0 0 200 200" id="markerArrow" markerWidth="13" markerHeight="13" refX="2" refY="6"
+                     orient="auto">
+                  <path d="M2,2 L2,11 L10,6 L2,2" style="fill: currentColor;" />
+              </marker>
+
+              <filter id="ds2" width="10" height="10">
+                <feDropShadow dx="2" dy="3" stdDeviation="0.5"/>
+              </filter>
+
+              <filter id="ds3" x="0" y="0" width="200%" height="200%">
+                <feOffset result="offOut" in="SourceAlpha" dx="20" dy="20" />
+                <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
+                <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+              </filter>
+
+              <filter id="ds4" x="0" y="0" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="1" />
+              </filter>
+
+              <filter id="ds-1" y="-50%" x="-50%" width="200%" height="400%">
+                <feDropShadow dx="0" dy="1.5" stdDeviation=".3"/>
+              </filter>
+
+              <!-- Neumorphic filter -->
+              <!-- -->
+              <!-- Light Shadow, #FFFFFF at 50%, x:-6, Y:-6, Blur:16 -->
+              <!-- Dark Shadow: #d1cdc7 at 50%, x:6, y:6, Blur:16 -->
+              <!-- Main Background: #efeeee -->
+              <!-- Shape Background: #efeeee -->
+              <!-- Optional Border: #fff at 20% Alpha -->
+              <!-- Dark Shadow was: 0d2750 -->
+              
+              <filter id="is-1" x="-50%" y="-50%" width="200%" height="200%">
+                <feComponentTransfer in=SourceAlpha>
+                  <feFuncA type="table" tableValues="1 0" />
+                </feComponentTransfer>
+                <feGaussianBlur stdDeviation="1"/>
+                <feOffset dx="2" dy="2" result="offsetblur"/>
+                <feFlood flood-color="#0d2750" flood-opacity="0.5" result="color"/>
+                <feComposite in2="offsetblur" operator="in"/>
+                <feComposite in2="SourceAlpha" operator="in" />
+                <feMerge>
+                  <feMergeNode in="SourceGraphic" />
+                  <feMergeNode />
+                </feMerge>
+              </filter>
+
+              <!-- Using feComposite in="offsetblur" operator="in" instead of in2 gives a -->
+              <!-- much larger shadow area, much deeper! WHY?? -->
+              
+              <filter id="nm-2" x="-50%" y="-50%" width="200%" height="200%">
+                <feComponentTransfer in=SourceAlpha out=transfer>
+                  <feFuncA type="table" tableValues="1 0" />
+                </feComponentTransfer>
+
+                <feGaussianBlur input="transfer" stdDeviation="5" result="blurdark"/>
+                <feOffset input="blurdark" dx="12" dy="12" result="offsetblurdark"/>
+                <feFlood input="offsetblurdark" flood-color="#d1cdc7" flood-opacity="0.4" result="colordark"/>
+
+                <feGaussianBlur input="transfer" stdDeviation="5" result="blurlight"/>
+                <feOffset input="blurlight" dx="-12" dy="-12" result="offsetblurlight"/>
+                <feFlood input="offsetblurlight" flood-color="white" flood-opacity="0.9" result="colorlight"/>
+
+                <feComposite in="offsetblurdark" operator="in"/>
+                <feComposite in="SourceAlpha" operator="in" />
+
+                <feMerge>
+                  <feMergeNode in="SourceGraphic" />
+                  <feMergeNode />
+                </feMerge>
+              </filter>
+
+              <filter id="filter-yoksel" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="linearRGB">
+                <feFlood flood-color="#eeebe7" flood-opacity="0.7" x="0%" y="0%" width="100%" height="100%" result="flood2"/>
+                <feComposite in="flood2" in2="SourceAlpha" operator="out" x="0%" y="0%" width="100%" height="100%" result="composite5"/>
+                <feOffset dx="-9" dy="-7" x="0%" y="0%" width="100%" height="100%" in="composite5" result="offset1"/>
+                <feGaussianBlur stdDeviation="3 10" x="0%" y="0%" width="100%" height="100%" in="offset1" edgeMode="none" result="blur2"/>
+                <feComposite in="merge3" in2="SourceAlpha" operator="in" x="0%" y="0%" width="100%" height="100%" result="composite7"/>
+                <feFlood flood-color="#0f0f0f" flood-opacity="1" x="0%" y="0%" width="100%" height="100%" result="flood4"/>
+                <feComposite in="flood4" in2="SourceAlpha" operator="out" x="0%" y="0%" width="100%" height="100%" result="composite8"/>
+                <feOffset dx="6" dy="6" x="0%" y="0%" width="100%" height="100%" in="merge3" result="offset2"/>
+                <feGaussianBlur stdDeviation="3 10" x="0%" y="0%" width="100%" height="100%" in="offset2" edgeMode="none" result="blur3"/>
+                <feComposite in="blur3" in2="SourceAlpha" operator="in" x="0%" y="0%" width="100%" height="100%" result="composite9"/>
+                <feMerge x="0%" y="0%" width="100%" height="100%" result="merge3">
+                      <feMergeNode in="SourceGraphic"/>
+                  <feMergeNode in="composite7"/>
+                  <feMergeNode in="composite9"/>
+                  </feMerge>
+              </filter>
+
+              <!-- second try... -->
+              <filter id="filter" x="-50%" y="-50%" width="240%" height="240%">
+                <feFlood flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="0.8" result="flood2"/>
+                <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
+                <feOffset dx="-12" dy="-12" in="composite5" result="offset1"/>
+                <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
+                <feComposite in="blur2" in2="SourceAlpha" operator="in"  result="composite7"/>
+
+                <!-- flood-color="#777777" -->
+                <feFlood flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.9" result="flood4"/>
+                <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
+                <feOffset dx="6" dy="6" in="composite8" result="offset2"/>
+                <feGaussianBlur stdDeviation="15" in="offset2" edgeMode="none" result="blur3"/>
+                <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
+
+                <feMerge result="merge3">
+                  <feMergeNode in="SourceGraphic"/>
+                  <feMergeNode in="composite7"/>
+                  <feMergeNode in="composite9"/>
+                  </feMerge>
+              </filter>
+
+              <filter id="bold" x="-50%" y="-50%" width="240%" height="240%">
+                <feFlood flood-color="#FFFFFF" flood-opacity="0.8" result="flood2"/>
+                <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
+                <feOffset dx="12" dy="12" in="composite5" result="offset1"/>
+                <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
+                <feComposite in="blur2" in2="SourceAlpha" operator="in"  result="composite7"/>
+
+                <feFlood flood-color="#777777" flood-opacity="0.6" result="flood4"/>
+                <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
+                <feOffset dx="-12" dy="-12" in="composite8" result="offset2"/>
+                <feGaussianBlur stdDeviation="15" in="offset2" edgeMode="none" result="blur3"/>
+                <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
+
+                <feMerge result="merge3">
+                  <feMergeNode in="SourceGraphic"/>
+                  <feMergeNode in="composite7"/>
+                  <feMergeNode in="composite9"/>
+                  </feMerge>
+              </filter>
+
+              <filter id="filterss" x="-20%" y="-20%" width="140%" height="140%">
+                <feFlood flood-color="#eeebe7" flood-opacity="0.9" result="flood2"/>
+                <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
+                <feOffset dx="-15" dy="-15" in="composite5" result="offset1"/>
+                <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
+                <feComposite in="blur2" in2="SourceAlpha" operator="in" result="composite7"/>
+
+                <feFlood flood-color="#0f0f0f" flood-opacity="1" result="flood4"/>
+                <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
+                <feOffset dx="6" dy="6" in="composite8" result="offset2"/>
+                <feGaussianBlur stdDeviation="5" in="offset2" edgeMode="none" result="blur3"/>
+                <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
+
+                <feMerge result="merge3">
+                  <feMergeNode in="SourceGraphic"/>
+                  <feMergeNode in="composite7"/>
+                  <feMergeNode in="composite9"/>
+                  </feMerge>
+              </filter>
+
+            <!-- flood-color="#d1cdc7" -->
+            <!-- flood-color="#FFFFFF" -->
+            <filter id="nm-1" x="-50%" y="-50%" width="300%" height="300%">
+              <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+              <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+              <feMerge result="merge">
+                <feMergeNode in="dropShadow1"/>
+                <feMergeNode in="dropShadow"/>
+              </feMerge>
+            </filter>
+
+            </defs>
+    `;
   }
 
 
@@ -5762,10 +5747,10 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
   * Summary.
   * Builds the Icon specification name.
   *
-	* #TODO:
-	* Add animation state for icon?? So icon can be changed by animation.
-	* In that case svg icon should be fetched too again. Check for cache/value??
-	* entityAnimation.icon orso...
+  * #TODO:
+  * Add animation state for icon?? So icon can be changed by animation.
+  * In that case svg icon should be fetched too again. Check for cache/value??
+  * entityAnimation.icon orso...
   */
   _buildIcon(entityState, entityConfig) {
     return (
@@ -5839,15 +5824,15 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
   * _calculateColor()
   *
   * Summary.
-	*
-	* #TODO:
-	* replace by TinyColor library? Is that possible/feasable??
+  *
+  * #TODO:
+  * replace by TinyColor library? Is that possible/feasable??
   *
   */
 
   _calculateColor(argState, argStops, argIsGradient) {
     // console.log("calculateColor", argState, argStops, argIsGradient);
-		const sortedStops = Object.keys(argStops).map(n => Number(n)).sort((a, b) => a - b);
+    const sortedStops = Object.keys(argStops).map(n => Number(n)).sort((a, b) => a - b);
     let start, end, val;
     const l = sortedStops.length;
 
@@ -6045,21 +6030,19 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     // Lookup in this.tools for bars, or better tools that need history...
     // get that entity_index for that object
     // add to list...
-    if (this.dev.ts) {
-      this.ts.map((toolset, k) => {
-        toolset.tools.map((item, i) => {
-          if (item.type == "bar") {
-            const end = new Date();
-            const start = new Date();
-            start.setHours(end.getHours() - item.tool.config.hours);
-            const attr = this.config.entities[item.tool.config.entity_index].attribute ? this.config.entities[item.tool.config.entity_index].attribute : null;
+    this.ts.map((toolset, k) => {
+      toolset.tools.map((item, i) => {
+        if (item.type == "bar") {
+          const end = new Date();
+          const start = new Date();
+          start.setHours(end.getHours() - item.tool.config.hours);
+          const attr = this.config.entities[item.tool.config.entity_index].attribute ? this.config.entities[item.tool.config.entity_index].attribute : null;
 
-            entityList[j] = ({"tsidx": k, "entityIndex": item.tool.config.entity_index, "entityId": this.entities[item.tool.config.entity_index].entity_id, "attrId": attr, "start": start, "end": end, "type": "bar", "idx": i});
-            j++;
-          }
-        });
+          entityList[j] = ({"tsidx": k, "entityIndex": item.tool.config.entity_index, "entityId": this.entities[item.tool.config.entity_index].entity_id, "attrId": attr, "start": start, "end": end, "type": "bar", "idx": i});
+          j++;
+        }
       });
-    }
+    });
 
     if (this.dev.debug) console.log("card::updateData - LENGTH", this.cardId, entityList.length, entityList);
 
@@ -6149,11 +6132,8 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     if (entity.type == 'bar') {
       if (this.dev.debug) console.log('entity.type == bar', entity);
 
-      if (this.dev.ts) {
-        hours = this.ts[entity.tsidx].tools[entity.idx].tool.config.hours;
-        barhours = this.ts[entity.tsidx].tools[entity.idx].tool.config.barhours;
-      } else {
-      }
+      hours = this.ts[entity.tsidx].tools[entity.idx].tool.config.hours;
+      barhours = this.ts[entity.tsidx].tools[entity.idx].tool.config.barhours;
     }
 
     if (entity.type == 'hbars') {
@@ -6205,8 +6185,8 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
     //this.coords = this._calcPoints(coords);
     this.coords = coords;
-		// #TODO @2020.11.15:
-		// Nothing is using these calculated min/max values?!?!?!?!?!?!
+    // #TODO @2020.11.15:
+    // Nothing is using these calculated min/max values?!?!?!?!?!?!
     //this.min = Math.min(...this.coords.map(item => Math.min(...item.map(item2 => (item2.state)))));
     //this.max = Math.max(...this.coords.map(item => Math.max(...item.map(item2 => (item2.state)))));
 
@@ -6216,16 +6196,12 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     theData = coords.map(item => getAvg(item, 'state'));
 
     // now push data into object...
-    if (this.dev.ts) {
-      if (entity.type == 'bar') {
-        this.ts[entity.tsidx].tools[entity.idx].tool.series = [...theData];
-      }
-    } else {
+    if (entity.type == 'bar') {
+      this.ts[entity.tsidx].tools[entity.idx].tool.series = [...theData];
     }
 
     // Request a rerender of the card after receiving new data
     this.requestUpdate();
-
   }
 
   getCardSize() {
