@@ -19,11 +19,14 @@ card:
       area: '[[area]]'
 
   dimensions: 1/1
+  dev:
+    debug: false
+    ts: true
   
   layout:
     toolsets:
       # ==============================================================================
-      - toolset: humi
+      - toolset: humi-dt
         position:
           cx: '[[cx]]'
           cy: '[[cy]]'
@@ -34,20 +37,22 @@ card:
             cx: 50
             cy: 98
             styles:
-              font-size: 2em;
-              text-anchor: middle;
+              area:
+                font-size: 2em;
+                text-anchor: middle;
 
           - type: 'name'
-            id: 0
+            id: 1
             entity_index: 0
             cx: 50
             cy: 53
             styles:
-              font-size: 1em;
-              text-anchor: middle;
+              name:
+                font-size: 1.2em;
+                text-anchor: middle;
 
           - type: 'segarc'
-            id: 0
+            id: 2
             entity_index: 0
             cx: 49
             cy: 50
@@ -58,6 +63,8 @@ card:
             scale:
               min: '[[scale_min]]'
               max: '[[scale_max]]'
+              width: 15
+              offset: -15
             show:
               scale: true
               style: 'colorstops'
@@ -74,33 +81,36 @@ card:
                   variables:
                     - thegap: 0
             styles:
-              fill: var(--theme-gradient-color-01);
-            styles_bg:
-              fill: var(--primary-background-color);
+              foreground:
+                fill: var(--theme-gradient-color-01);
+              background:
+                fill: var(--primary-background-color);
 
           - type: 'state'
-            id: 0
+            id: 3
             entity_index: 0
             cx: 50
             cy: 35
             styles:
-              text-anchor: center;
-              font-size: 2.5em;
-              fill: var(--theme-gradient-color-01);
+              state:
+                text-anchor: center;
+                font-size: 3em;
+                fill: var(--theme-gradient-color-01);
 
           - type: 'icon'
-            id: 0
+            id: 4
             entity_index: 0
             cx: 10
             cy: 10
             align: center
             icon_size: 15
             styles:
-              color: var(--theme-gradient-color-01);
-              fill: var(--theme-gradient-color-01);
+              icon:
+                color: var(--theme-gradient-color-01);
+                fill: var(--theme-gradient-color-01);
 
           - type: 'bar'
-            id: 0
+            id: 5
             orientation: vertical
             entity_index: 0
             cx: 50
@@ -110,5 +120,6 @@ card:
             hours: 24
             barhours: 1
             styles:
-              stroke: var(--theme-gradient-color-01);
-              stroke-linecap: butt;
+              bar:
+                stroke: var(--theme-gradient-color-01);
+                stroke-linecap: butt;
