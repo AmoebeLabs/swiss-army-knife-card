@@ -98,8 +98,9 @@ cards:
                     cx: 50
                     cy: 98
                     styles:
-                      font-size: 1em;
-                      text-anchor: center;
+                      name:
+                        font-size: 1em;
+                        text-anchor: center;
 
                   ## Temperature
                   - type: 'segarc'
@@ -148,9 +149,10 @@ cards:
                           30: '#d53e4f'
                           35: '#9e0142'
                     styles:
-                      fill: var(--theme-gradient-color-01);
-                    styles_bg:
-                      fill: var(--primary-background-color);
+                      foreground:
+                        fill: var(--theme-gradient-color-01);
+                      background:
+                        fill: var(--primary-background-color);
 
                   ## Temperature
                   - type: 'state'
@@ -159,10 +161,11 @@ cards:
                     cx: 50
                     cy: 87
                     styles:
-                      text-anchor: center;
-                      font-size: 1.2em;
-                      fill: var(--primary-text-color);
-                      font-weight: 700;
+                      state:
+                        text-anchor: center;
+                        font-size: 1.2em;
+                        fill: var(--primary-text-color);
+                        font-weight: 700;
 
                   ## Temperature
                   - type: 'icon'
@@ -173,8 +176,9 @@ cards:
                     align: center
                     icon_size: 15
                     styles:
-                      fill: var(--primary-text-color);
-                      color: var(--primary-text-color);
+                      icon:
+                        fill: var(--primary-text-color);
+                        color: var(--primary-text-color);
 
               # ==============================================================================
               - toolset: humi
@@ -225,9 +229,10 @@ cards:
                       #
                       # </svg>
                     styles:
-                      fill: var(--theme-gradient-color-02);
-                    styles_bg:
-                      fill: var(--primary-background-color);
+                      foreground:
+                        fill: var(--theme-gradient-color-02);
+                      background:
+                        fill: var(--primary-background-color);
 
                   - type: 'state'
                     id: 0
@@ -235,10 +240,11 @@ cards:
                     cx: 50
                     cy: 87
                     styles:
-                      text-anchor: center;
-                      font-size: 1.2em;
-                      fill: var(--primary-text-color);
-                      font-weight: 700;
+                      state:
+                        text-anchor: center;
+                        font-size: 1.2em;
+                        fill: var(--primary-text-color);
+                        font-weight: 700;
 
                   - type: 'icon'
                     id: 0
@@ -248,8 +254,9 @@ cards:
                     align: center
                     icon_size: 10
                     styles:
-                      fill: var(--primary-text-color);
-                      color: var(--primary-text-color);
+                      icon:
+                        fill: var(--primary-text-color);
+                        color: var(--primary-text-color);
 
               # ==============================================================================
               - toolset: pressure
@@ -282,9 +289,10 @@ cards:
                           990: 'var(--theme-gradient-color-01)'
                           1020: 'var(--theme-gradient-color-05)'
                     styles:
-                      fill: var(--theme-gradient-color-03);
-                    styles_bg:
-                      fill: var(--primary-background-color);
+                      foreground:
+                        fill: var(--theme-gradient-color-03);
+                      background:
+                        fill: var(--primary-background-color);
 
                   - type: 'state'
                     id: 0
@@ -292,10 +300,11 @@ cards:
                     cx: 50
                     cy: 87
                     styles:
-                      text-anchor: center;
-                      font-size: 1.2em;
-                      fill: var(--primary-text-color);
-                      font-weight: 700;
+                      state:
+                        text-anchor: center;
+                        font-size: 1.2em;
+                        fill: var(--primary-text-color);
+                        font-weight: 700;
 
                   - type: 'icon'
                     id: 0
@@ -305,8 +314,9 @@ cards:
                     align: center
                     icon_size: 10
                     styles:
-                      fill: var(--primary-text-color);
-                      color: var(--primary-text-color);
+                      icon:
+                        fill: var(--primary-text-color);
+                        color: var(--primary-text-color);
 
     - type: horizontal-stack
       cards:
@@ -352,7 +362,8 @@ cards:
                     cx: 50
                     cy: 98
                     styles:
-                      font-size: 1.2em;
+                      area:
+                        font-size: 1.2em;
 
                   - type: 'name'
                     id: 0
@@ -360,8 +371,9 @@ cards:
                     cx: 50
                     cy: 53
                     styles:
-                      font-size: 1.2em;
-                      text-anchor: center;
+                      name:
+                        font-size: 1.2em;
+                        text-anchor: center;
 
                   - type: 'segarc'
                     id: 0
@@ -394,9 +406,10 @@ cards:
                           variables:
                             - thegap: 0
                     styles:
-                      fill: darkgrey;
-                    styles_bg:
-                      fill: var(--primary-background-color);
+                      foreground:
+                        fill: darkgrey;
+                      background:
+                        fill: var(--primary-background-color);
 
                   - type: 'state'
                     id: 0
@@ -404,9 +417,10 @@ cards:
                     cx: 50
                     cy: 35
                     styles:
-                      text-anchor: center;
-                      font-size: 3em;
-                      fill: var(--primary-text-color);
+                      state:
+                        text-anchor: center;
+                        font-size: 3em;
+                        fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 0
@@ -416,9 +430,10 @@ cards:
                     align: center
                     icon_size: 15
                     styles:
-                      fill: var(--primary-text-color);
-                      color: var(--primary-text-color);
-                      filter: url(#ds-1);
+                      icon:
+                        fill: var(--primary-text-color);
+                        color: var(--primary-text-color);
+                        filter: url(#ds-1);
 
                   - type: 'bar'
                     id: 0
@@ -431,8 +446,9 @@ cards:
                     hours: 24
                     barhours: 1
                     styles:
-                      stroke: grey;
-                      stroke-linecap: butt;
+                      bar:
+                        stroke: grey;
+                        stroke-linecap: butt;
 
 
         ##- !include card-blank-card.yaml
@@ -480,7 +496,8 @@ cards:
                     cx: 50
                     cy: 98
                     styles:
-                      font-size: 1.2em;
+                      area:
+                        font-size: 1.2em;
 
                   - type: 'name'
                     id: 0
@@ -488,8 +505,9 @@ cards:
                     cx: 50
                     cy: 53
                     styles:
-                      font-size: 1.2em;
-                      text-anchor: center;
+                      name:
+                        font-size: 1.2em;
+                        text-anchor: center;
 
                   - type: 'segarc'
                     id: 0
@@ -517,10 +535,11 @@ cards:
                           variables:
                             - thegap: 1
                     styles:
-                      fill: var(--theme-gradient-color-01);
-                    styles_bg:
-                      fill: var(--primary-background-color);
-                      filter: url(#is-1);
+                      foreground:
+                        fill: var(--theme-gradient-color-01);
+                      background:
+                        fill: var(--primary-background-color);
+                        filter: url(#is-1);
 
                   - type: 'state'
                     id: 0
@@ -528,9 +547,10 @@ cards:
                     cx: 36
                     cy: 40
                     styles:
-                      text-anchor: center;
-                      font-size: 2em;
-                      fill: var(--primary-text-color);
+                      state:
+                        text-anchor: center;
+                        font-size: 2em;
+                        fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 0
@@ -540,8 +560,9 @@ cards:
                     align: center
                     icon_size: 15
                     styles:
-                      fill: var(--primary-text-color);
-                      color: var(--primary-text-color);
+                      icon:
+                        fill: var(--primary-text-color);
+                        color: var(--primary-text-color);
 
                   - type: 'bar'
                     id: 0
@@ -554,8 +575,9 @@ cards:
                     hours: 24
                     barhours: 2
                     styles:
-                      stroke: grey;
-                      stroke-linecap: butt;
+                      bar:
+                        stroke: grey;
+                        stroke-linecap: butt;
 
 
                   # ------------------------------------------------------
@@ -586,10 +608,11 @@ cards:
                           21: 'var(--theme-gradient-color-04)'
 
                     styles:
-                      fill: var(--theme-gradient-color-02);
-                    styles_bg:
-                      fill: var(--primary-background-color);
-                      filter: url(#is-1);
+                      foreground:
+                        fill: var(--theme-gradient-color-02);
+                      background:
+                        fill: var(--primary-background-color);
+                        filter: url(#is-1);
 
                   - type: 'state'
                     id: 1
@@ -597,9 +620,10 @@ cards:
                     cx: 64
                     cy: 40
                     styles:
-                      text-anchor: center;
-                      font-size: 2em;
-                      fill: var(--primary-text-color);
+                      state:
+                        text-anchor: center;
+                        font-size: 2em;
+                        fill: var(--primary-text-color);
 
                   - type: 'icon'
                     id: 1
@@ -609,8 +633,9 @@ cards:
                     align: center
                     icon_size: 15
                     styles:
-                      fill: var(--primary-text-color);
-                      color: var(--primary-text-color);
+                      icon:
+                        fill: var(--primary-text-color);
+                        color: var(--primary-text-color);
 
                   - type: 'bar'
                     id: 1
@@ -623,8 +648,9 @@ cards:
                     hours: 24
                     barhours: 2
                     styles:
-                      stroke: darkgrey;
-                      stroke-linecap: butt;
+                      bar:
+                        stroke: darkgrey;
+                        stroke-linecap: butt;
         ##- !include card-blank-card.yaml
 
 
@@ -898,7 +924,8 @@ cards:
                     cx: 50
                     cy: 50
                     styles:
-                      font-size: 1.5em;
+                      area:
+                        font-size: 1.5em;
               
               # ==============================================================================
               - toolset: temp
@@ -935,7 +962,8 @@ cards:
                           # 21: 'var(--theme-gradient-color-04)'
                   - id: 2
                     styles:
-                      font-size: 1.4em;
+                      state:
+                        font-size: 1.4em;
 
               # ==============================================================================
               - toolset: pressure
@@ -968,7 +996,8 @@ cards:
                           1020: 'var(--theme-gradient-color-05)'
                   - id: 2
                     styles:
-                      font-size: 1.4em;
+                      state:
+                        font-size: 1.4em;
                   
 
               # ==============================================================================
@@ -1570,9 +1599,10 @@ cards:
                       top: 5
                       bottom: 10
                     styles:
-                      stroke: var(--theme-gradient-color-01);
-                      fill: var(--theme-gradient-color-01);
-                      # fill: linear-gradient(#e66465, #9198e5);
+                      rectex:
+                        stroke: var(--theme-gradient-color-01);
+                        fill: var(--theme-gradient-color-01);
+                        # fill: linear-gradient(#e66465, #9198e5);
                   # Top part
                   - type: rectex
                     cx: 50
@@ -1584,9 +1614,10 @@ cards:
                       top: 5
                       bottom: 0
                     styles:
-                      stroke: var(--theme-gradient-color-03);
-                      fill: var(--theme-gradient-color-03);
-                      # filter: url(#ds3);
+                      rectex:
+                        stroke: var(--theme-gradient-color-03);
+                        fill: var(--theme-gradient-color-03);
+                        # filter: url(#ds3);
                   # background badge
                   - type: rectex
                     cx: 50
@@ -1600,8 +1631,9 @@ cards:
                       top_right: 20
                       bottom_left: 20
                     styles:
-                      stroke: var(--theme-gradient-color-01);
-                      fill: var(--theme-gradient-color-01);
+                      rectex:
+                        stroke: var(--theme-gradient-color-01);
+                        fill: var(--theme-gradient-color-01);
                   # text badge 
                   - type: rectex
                     cx: 50
@@ -1613,30 +1645,33 @@ cards:
                       top: 5
                       bottom: 0
                     styles:
-                      stroke: var(--theme-gradient-color-02);
-                      fill: var(--theme-gradient-color-02);
-                      # filter: url(#ds);
+                      rectex:
+                        stroke: var(--theme-gradient-color-02);
+                        fill: var(--theme-gradient-color-02);
+                        # filter: url(#ds);
 
                   - type: state
                     cx: 35
                     cy: 22
                     entity_index: 0
                     styles:
-                      text-anchor: middle;
-                      font-size: 2.4em;
-                      font-weight: 700;
-                      fill: black;
-                      filter: url(#ds);
+                      state:
+                        text-anchor: middle;
+                        font-size: 2.4em;
+                        font-weight: 700;
+                        fill: black;
+                        filter: url(#ds);
                   - type: line
                     cx: 60
                     cy: 18
                     length: 10
                     orientation: vertical
                     styles:
-                      stroke: var(--theme-gradient-color-04);
-                      stroke: black;
-                      stroke-opacity: 0.5;
-                      stroke-width: 3;
+                      line:
+                        stroke: var(--theme-gradient-color-04);
+                        stroke: black;
+                        stroke-opacity: 0.5;
+                        stroke-width: 3;
                   - type: icon
                     cx: 75
                     cy: 17.5
@@ -1644,18 +1679,20 @@ cards:
                     align: center
                     icon_size: 12
                     styles:
-                      fill: black;
-                      color: black;
+                      icon:
+                        fill: black;
+                        color: black;
 
                   - type: name
                     cx: 50
                     cy: 50
                     entity_index: 0
                     styles:
-                      text-anchor: middle;
-                      font-size: 2em;
-                      font-weight: 700;
-                      fill: black;
+                      name:
+                        text-anchor: middle;
+                        font-size: 2em;
+                        font-weight: 700;
+                        fill: black;
                   - type: bar
                     id: 2
                     orientation: vertical
@@ -1668,8 +1705,9 @@ cards:
                     hours: 24
                     barhours: 2
                     styles:
-                      stroke: grey;
-                      stroke-linecap: butt;
+                      bar:
+                        stroke: grey;
+                        stroke-linecap: butt;
 
         - type: 'custom:dev-swiss-army-knife-card'
           entities:
@@ -1707,8 +1745,9 @@ cards:
                     height: 100
                     rx: 2
                     styles:
-                      stroke: var(--theme-gradient-color-01);
-                      fill: var(--theme-gradient-color-01);
+                      rectangle:
+                        stroke: var(--theme-gradient-color-01);
+                        fill: var(--theme-gradient-color-01);
 
                   - type: rectangle
                     cx: 50
@@ -1717,8 +1756,9 @@ cards:
                     height: 40
                     rx: 2
                     styles:
-                      stroke: var(--theme-gradient-color-03);
-                      fill: var(--theme-gradient-color-03);
+                      rectangle:
+                        stroke: var(--theme-gradient-color-03);
+                        fill: var(--theme-gradient-color-03);
                   - type: rectangle
                     cx: 50
                     cy: 50
@@ -1726,8 +1766,9 @@ cards:
                     height: 80
                     rx: 2
                     styles:
-                      stroke: var(--theme-gradient-color-01);
-                      fill: var(--theme-gradient-color-01);
+                      rectangle:
+                        stroke: var(--theme-gradient-color-01);
+                        fill: var(--theme-gradient-color-01);
                   - type: rectangle
                     cx: 50
                     cy: 18
@@ -1735,27 +1776,30 @@ cards:
                     height: 16
                     rx: 0
                     styles:
-                      stroke: var(--theme-gradient-color-02);
-                      fill: var(--theme-gradient-color-02);
+                      rectangle:
+                        stroke: var(--theme-gradient-color-02);
+                        fill: var(--theme-gradient-color-02);
                   - type: state
                     cx: 35
                     cy: 22
                     entity_index: 0
                     styles:
-                      text-anchor: middle;
-                      font-size: 2.4em;
-                      font-weight: 700;
-                      fill: black;
+                      state:
+                        text-anchor: middle;
+                        font-size: 2.4em;
+                        font-weight: 700;
+                        fill: black;
                   - type: line
                     cx: 60
                     cy: 18
                     length: 10
                     orientation: vertical
                     styles:
-                      stroke: var(--theme-gradient-color-04);
-                      stroke: black;
-                      stroke-opacity: 0.5
-                      stroke-width: 3;
+                      line:
+                        stroke: var(--theme-gradient-color-04);
+                        stroke: black;
+                        stroke-opacity: 0.5
+                        stroke-width: 3;
                   - type: icon
                     cx: 75
                     cy: 17.5
@@ -1763,18 +1807,20 @@ cards:
                     align: center
                     icon_size: 12
                     styles:
-                      fill: black;
-                      color: black;
+                      icon:
+                        fill: black;
+                        color: black;
 
                   - type: name
                     cx: 50
                     cy: 50
                     entity_index: 0
                     styles:
-                      text-anchor: middle;
-                      font-size: 2em;
-                      font-weight: 700;
-                      fill: black;
+                      name:
+                        text-anchor: middle;
+                        font-size: 2em;
+                        font-weight: 700;
+                        fill: black;
                   - type: bar
                     id: 2
                     orientation: vertical
@@ -1787,8 +1833,9 @@ cards:
                     hours: 24
                     barhours: 2
                     styles:
-                      stroke: grey;
-                      stroke-linecap: butt;
+                      bar:
+                        stroke: grey;
+                        stroke-linecap: butt;
 
         # - type: 'custom:dev-swiss-army-knife-card'
           # entities:
@@ -1943,8 +1990,9 @@ cards:
                     height: 100
                     rx: 2
                     styles:
-                      stroke: var(--theme-gradient-color-01);
-                      fill: var(--theme-gradient-color-01);
+                      rectangle:
+                        stroke: var(--theme-gradient-color-01);
+                        fill: var(--theme-gradient-color-01);
 
                   - type: rectangle
                     cx: 50
@@ -1953,8 +2001,9 @@ cards:
                     height: 40
                     rx: 2
                     styles:
-                      stroke: var(--theme-gradient-color-03);
-                      fill: var(--theme-gradient-color-03);
+                      rectangle:
+                        stroke: var(--theme-gradient-color-03);
+                        fill: var(--theme-gradient-color-03);
                   - type: rectangle
                     cx: 50
                     cy: 50
@@ -1962,8 +2011,9 @@ cards:
                     height: 80
                     rx: 2
                     styles:
-                      stroke: var(--theme-gradient-color-01);
-                      fill: var(--theme-gradient-color-01);
+                      rectangle:
+                        stroke: var(--theme-gradient-color-01);
+                        fill: var(--theme-gradient-color-01);
                   - type: rectangle
                     cx: 50
                     cy: 18
@@ -1971,27 +2021,30 @@ cards:
                     height: 16
                     rx: 0
                     styles:
-                      stroke: var(--theme-gradient-color-02);
-                      fill: var(--theme-gradient-color-02);
+                      rectangle:
+                        stroke: var(--theme-gradient-color-02);
+                        fill: var(--theme-gradient-color-02);
                   - type: state
                     cx: 35
                     cy: 22
                     entity_index: 0
                     styles:
-                      text-anchor: middle;
-                      font-size: 2.4em;
-                      font-weight: 700;
-                      fill: black;
+                      state:
+                        text-anchor: middle;
+                        font-size: 2.4em;
+                        font-weight: 700;
+                        fill: black;
                   - type: line
                     cx: 60
                     cy: 18
                     length: 10
                     orientation: vertical
                     styles:
-                      stroke: var(--theme-gradient-color-04);
-                      stroke: black;
-                      stroke-opacity: 0.5
-                      stroke-width: 3;
+                      line:
+                        stroke: var(--theme-gradient-color-04);
+                        stroke: black;
+                        stroke-opacity: 0.5
+                        stroke-width: 3;
                   - type: icon
                     cx: 75
                     cy: 17.5
@@ -1999,18 +2052,20 @@ cards:
                     align: center
                     icon_size: 12
                     styles:
-                      fill: black;
-                      color: black;
+                      icon:
+                        fill: black;
+                        color: black;
 
                   - type: name
                     cx: 50
                     cy: 50
                     entity_index: 0
                     styles:
-                      text-anchor: middle;
-                      font-size: 2em;
-                      font-weight: 700;
-                      fill: black;
+                      name:
+                        text-anchor: middle;
+                        font-size: 2em;
+                        font-weight: 700;
+                        fill: black;
                   - type: bar
                     id: 2
                     orientation: vertical
@@ -2023,9 +2078,10 @@ cards:
                     hours: 24
                     barhours: 2
                     styles:
-                      stroke: grey;
-                      # stroke: var(--theme-gradient-color-04);
-                      stroke-linecap: butt;
+                      bar:
+                        stroke: grey;
+                        # stroke: var(--theme-gradient-color-04);
+                        stroke-linecap: butt;
 
 ############################################################################################
         #
@@ -2086,12 +2142,13 @@ cards:
                     height: 20
                     rx: 10
                     styles:
-                      # stroke: var(--theme-gradient-color-01);
-                      stroke: var(--primary-background-color);
-                      stroke-width: 30;
-                      # fill: var(--theme-gradient-color-01);
-                      fill: none;
-                      opacity: 0.5;
+                      rectangle:
+                        # stroke: var(--theme-gradient-color-01);
+                        stroke: var(--primary-background-color);
+                        stroke-width: 30;
+                        # fill: var(--theme-gradient-color-01);
+                        fill: none;
+                        opacity: 0.5;
 
                   #1
                   - type: circle
@@ -2099,31 +2156,33 @@ cards:
                     cy: 45
                     radius: 25
                     styles:
-                      # stroke: var(--theme-gradient-color-01);
-                      stroke: var(--primary-background-color);
-                      stroke: DarkSeaGreen;
-                      stroke: DarkOliveGreen;
-                      stroke-width: 70;
-                      # fill: var(--theme-gradient-color-03);
-                      fill: lightgray;
-                      fill: var(--primary-background-color);
-                      stroke-dasharray: 52;
-                      stroke-dashoffset: 0;
-                      stroke-linecap: round;
-                      paint-order: stroke;
+                      circle:
+                        # stroke: var(--theme-gradient-color-01);
+                        stroke: var(--primary-background-color);
+                        stroke: DarkSeaGreen;
+                        stroke: DarkOliveGreen;
+                        stroke-width: 70;
+                        # fill: var(--theme-gradient-color-03);
+                        fill: lightgray;
+                        fill: var(--primary-background-color);
+                        stroke-dasharray: 52;
+                        stroke-dashoffset: 0;
+                        stroke-linecap: round;
+                        paint-order: stroke;
 
                   - type: state
                     cx: -100
                     cy: 50
                     entity_index: 0
                     styles:
-                      text-anchor: middle;
-                      font-size: 3em;
-                      font-weight: 700;
-                      # fill: var(--theme-gradient-color-01);
-                      fill: DarkOliveGreen;
-                      opacity: 1;
-                      filter: url(#is-1);
+                      state:
+                        text-anchor: middle;
+                        font-size: 3em;
+                        font-weight: 700;
+                        # fill: var(--theme-gradient-color-01);
+                        fill: DarkOliveGreen;
+                        opacity: 1;
+                        filter: url(#is-1);
 
                   # - type: icon
                     # cx: 30
@@ -2141,28 +2200,30 @@ cards:
                     cy: 45
                     radius: 25
                     styles:
-                      stroke: var(--theme-gradient-color-01);
-                      stroke-width: 70;
-                      fill: var(--theme-gradient-color-04);
-                      # stroke-dasharray: 36;
-                      # stroke-linecap: square;
-                      # stroke-dasharray: 163;
-                      # stroke-dashoffset: 170;
-                      stroke-dasharray: 52;
-                      stroke-dashoffset: 30;
-                      stroke-linecap: round;
-                      paint-order: stroke;
+                      circle:
+                        stroke: var(--theme-gradient-color-01);
+                        stroke-width: 70;
+                        fill: var(--theme-gradient-color-04);
+                        # stroke-dasharray: 36;
+                        # stroke-linecap: square;
+                        # stroke-dasharray: 163;
+                        # stroke-dashoffset: 170;
+                        stroke-dasharray: 52;
+                        stroke-dashoffset: 30;
+                        stroke-linecap: round;
+                        paint-order: stroke;
 
                   - type: state
                     cx: 0
                     cy: 50
                     entity_index: 1
                     styles:
-                      text-anchor: middle;
-                      font-size: 3em;
-                      font-weight: 700;
-                      # fill: var(--theme-gradient-color-01);
-                      fill: black;
+                      state:
+                        text-anchor: middle;
+                        font-size: 3em;
+                        font-weight: 700;
+                        # fill: var(--theme-gradient-color-01);
+                        fill: black;
 
                   #3
                   - type: circle
@@ -2170,24 +2231,26 @@ cards:
                     cy: 45
                     radius: 25
                     styles:
-                      stroke: var(--theme-gradient-color-01);
-                      stroke-width: 70;
-                      fill: var(--theme-gradient-color-06);
-                      stroke-dasharray: 52;
-                      stroke-dashoffset: 60;
-                      stroke-linecap: round;
-                      paint-order: stroke;
+                      circle:
+                        stroke: var(--theme-gradient-color-01);
+                        stroke-width: 70;
+                        fill: var(--theme-gradient-color-06);
+                        stroke-dasharray: 52;
+                        stroke-dashoffset: 60;
+                        stroke-linecap: round;
+                        paint-order: stroke;
 
                   - type: state
                     cx: 100
                     cy: 50
                     entity_index: 2
                     styles:
-                      text-anchor: middle;
-                      font-size: 3em;
-                      font-weight: 700;
-                      # fill: var(--theme-gradient-color-01);
-                      fill: black;
+                      state:
+                        text-anchor: middle;
+                        font-size: 3em;
+                        font-weight: 700;
+                        # fill: var(--theme-gradient-color-01);
+                        fill: black;
 
                   #4
                   - type: circle
@@ -2195,35 +2258,38 @@ cards:
                     cy: 45
                     radius: 25
                     styles:
-                      stroke: var(--theme-gradient-color-01);
-                      stroke-width: 70;
-                      fill: grey;
-                      fill: var(--theme-gradient-color-08);
-                      stroke-dasharray: 52;
-                      stroke-dashoffset: 90;
-                      stroke-linecap: round;
-                      paint-order: stroke;
+                      circle:
+                        stroke: var(--theme-gradient-color-01);
+                        stroke-width: 70;
+                        fill: grey;
+                        fill: var(--theme-gradient-color-08);
+                        stroke-dasharray: 52;
+                        stroke-dashoffset: 90;
+                        stroke-linecap: round;
+                        paint-order: stroke;
 
                   - type: state
                     cx: 200
                     cy: 50
                     entity_index: 3
                     styles:
-                      text-anchor: middle;
-                      font-size: 3em;
-                      font-weight: 700;
-                      # fill: var(--theme-gradient-color-01);
-                      fill: black;
+                      state:
+                        text-anchor: middle;
+                        font-size: 3em;
+                        font-weight: 700;
+                        # fill: var(--theme-gradient-color-01);
+                        fill: black;
 
                   - type: name
                     cx: 50
                     cy: 95
                     entity_index: 0
                     styles:
-                      text-anchor: middle;
-                      font-size: 2em;
-                      font-weight: 700;
-                      fill: var(--primary-text-color);
+                      name:
+                        text-anchor: middle;
+                        font-size: 2em;
+                        font-weight: 700;
+                        fill: var(--primary-text-color);
 
                   # - type: bar
                     # id: 2
@@ -2294,9 +2360,10 @@ cards:
                     cy: 30
                     radius: 26
                     styles:
-                      pointer-events: none;
-                      stroke-width: 5;
-                      fill: var(--primary-background-color);
+                      circle:
+                        pointer-events: none;
+                        stroke-width: 5;
+                        fill: var(--primary-background-color);
                   - type: circle
                     cx: 50
                     cy: 30
@@ -2304,13 +2371,16 @@ cards:
                     animations:
                       - state: 'on'
                         styles:
-                          fill: darkorange;
+                          circle:
+                            fill: darkorange;
                       - state: 'off'
                         styles:
-                          fill: lightgray;
+                          circle:
+                            fill: lightgray;
                     styles:
-                      stroke-width: 0;
-                      pointer-events: none;
+                      circle:
+                        stroke-width: 0;
+                        pointer-events: none;
 
                   - type: circle
                     cx: 50
@@ -2328,14 +2398,17 @@ cards:
                     animations:
                       - state: 'on'
                         styles:
-                          filter: url(#filter);
+                          circle:
+                            filter: url(#filter);
                       - state: 'off'
                         styles:
-                          # stroke: lightgray;
-                          filter: none;
+                          circle:
+                            # stroke: lightgray;
+                            filter: none;
                     styles:
-                      stroke-width: 0;
-                      fill: var(--primary-background-color);
+                      circle:
+                        stroke-width: 0;
+                        fill: var(--primary-background-color);
 
                   - type: icon
                     cx: 50
@@ -2346,15 +2419,18 @@ cards:
                     animations:
                       - state: 'on'
                         styles:
-                          color: darkorange;
-                          fill: darkorange;
+                          icon:
+                            color: darkorange;
+                            fill: darkorange;
                       - state: 'off'
                         styles:
-                          color: darkgrey;
-                          fill: darkgrey;
-                          opacity: 0.7;
+                          icon:
+                            color: darkgrey;
+                            fill: darkgrey;
+                            opacity: 0.7;
                     styles:
-                      pointer-events: none;
-                      filter: url(#is-1);
+                      icon:
+                        pointer-events: none;
+                        filter: url(#is-1);
 
 #######
