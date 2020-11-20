@@ -1603,14 +1603,17 @@ class RectangleToolEx extends BaseTool {
     }
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_RECTANGLEEX_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_RECTANGLEEX_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_RECTANGLEEX_CONFIG.styles, ...this.config.styles};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_RECTANGLEEX_CONFIG.styles, ...this.config.styles, ...argConfig.styles};
+    // this.config.styles.rectex = {...DEFAULT_RECTANGLEEX_CONFIG.styles.rectex, ...this.config.styles.rectex, ...argConfig.styles?.rectex};
 
-    if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    this.config.show = {...DEFAULT_RECTANGLEEX_CONFIG.show, ...this.config.show};
+    // //if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+    // this.config.show = {...DEFAULT_RECTANGLEEX_CONFIG.show, ...this.config.show};
+    
+    this.config = Merge.mergeDeep(DEFAULT_RECTANGLEEX_CONFIG, argConfig);
 
     // #TODO:
     // Verify max radius, or just let it go, and let the user handle that right value.
@@ -1660,9 +1663,11 @@ class RectangleToolEx extends BaseTool {
     var svgItems = [];
 
     // Get configuration styles as the default styles
-    let configStyle = {...this.config.styles};
+    // let configStyle = {...this.config.styles};
 
-    configStyle = {...configStyle, ...this.animationStyle};
+    // configStyle = {...configStyle, ...this.animationStyle};
+    
+    let configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
 
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(configStyle.rectex).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
@@ -1730,14 +1735,16 @@ class EllipseTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_ELLIPSE_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_ELLIPSE_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_ELLIPSE_CONFIG.styles, ...this.config.styles};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_ELLIPSE_CONFIG.styles, ...this.config.styles};
 
-    if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    this.config.show = {...DEFAULT_ELLIPSE_CONFIG.show, ...this.config.show};
+    // if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+    // this.config.show = {...DEFAULT_ELLIPSE_CONFIG.show, ...this.config.show};
+
+    this.config = Merge.mergeDeep(DEFAULT_ELLIPSE_CONFIG, argConfig);
 
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
@@ -1758,12 +1765,14 @@ class EllipseTool extends BaseTool {
 
   _renderEllipse() {
 
-    // Get configuration styles as the default styles
-    let configStyle = {...this.config.styles};
+    // // Get configuration styles as the default styles
+    // let configStyle = {...this.config.styles};
 
-    // Get the runtime styles, caused by states & animation settings
-    // Merge the two, where the runtime styles may overwrite the statically configured styles
-    configStyle = { ...configStyle, ...this.animationStyle};
+    // // Get the runtime styles, caused by states & animation settings
+    // // Merge the two, where the runtime styles may overwrite the statically configured styles
+    // configStyle = { ...configStyle, ...this.animationStyle};
+
+    let configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
 
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(configStyle.ellipse).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
