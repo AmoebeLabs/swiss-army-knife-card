@@ -18,272 +18,6 @@
 *******************************************************************************
 */
 
-/*
-===========
-https://neumorphism.io/#efeeee
- 
-Background: light color, off-white...
-- color: #efeeee,
-- intensity 0.2. (higher -> sharper curves. Blur stuff???
-- Distance is default 20 en Blur 2*distance in pixels...
-- Lightsource is from left-top.
-
-Flat:
------
-border-radius: 50px;
-background: #efeeee;
-box-shadow:  30px 30px 60px #bfbebe, 
-             -30px -30px 60px #ffffff;
-
-Concave:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #d7d6d6, #ffffff);
-box-shadow:  30px 30px 60px #bfbebe, 
-             -30px -30px 60px #ffffff;
-
-Convex:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #ffffff, #d7d6d6);
-box-shadow:  30px 30px 60px #bfbebe, 
-             -30px -30px 60px #ffffff;
-Pressed:
------
-border-radius: 50px;
-background: #efeeee;
-box-shadow: inset 30px 30px 60px #bfbebe, 
-            inset -30px -30px 60px #ffffff;           
-
-===========
-Like the current cards. darkslategray/wheat. Not background, that is darker.
-https://neumorphism.io/#525f62
-
-Flat:
------
-border-radius: 50px;
-background: #525f62;
-box-shadow:  20px 20px 60px #465153, 
-             -20px -20px 60px #5e6d71;
-
-Concave:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #4a5658, #586669);
-box-shadow:  20px 20px 60px #465153, 
-             -20px -20px 60px #5e6d71;
-
-Convex:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #586669, #4a5658);
-box-shadow:  20px 20px 60px #465153, 
-             -20px -20px 60px #5e6d71;
-Pressed:
------
-border-radius: 50px;
-background: #525f62;
-box-shadow: inset 20px 20px 60px #465153, 
-            inset -20px -20px 60px #5e6d71;
-
-===========
-Steelblue
-https://neumorphism.io/#438499
-
-Flat:
------
-border-radius: 50px;
-background: #438499;
-box-shadow:  20px 20px 40px #397082, 
-             -20px -20px 40px #4d98b0;
-
-Concave:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #3c778a, #488da4);
-box-shadow:  20px 20px 40px #397082, 
-             -20px -20px 40px #4d98b0;
-
-Convex:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #488da4, #3c778a);
-box-shadow:  20px 20px 40px #397082, 
-             -20px -20px 40px #4d98b0;
-Pressed:
------
-border-radius: 50px;
-background: #438499;
-box-shadow: inset 20px 20px 40px #397082, 
-            inset -20px -20px 40px #4d98b0;   
-
-===========
-
-Darker Steelblue
-https://neumorphism.io/#1E546B
-
-mdc colors: https://material.io/resources/color/#!/?view.left=1&view.right=0&primary.color=1E546B&secondary.color=FFE082
-Primary - 1e546b
-P — Light - 4f8099
-P — Dark - 002b40
-
-Secondary - ffe082
-S — Light - ffffb3
-S — Dark - caae53
-Flat:
------
-border-radius: 50px;
-background: #1E546B;
-box-shadow:  20px 20px 60px #1a475b, 
-             -20px -20px 60px #23617b;
-
-Concave:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #1b4c60, #205a72);
-box-shadow:  20px 20px 60px #1a475b, 
-             -20px -20px 60px #23617b;
-
-Convex:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #205a72, #1b4c60);
-box-shadow:  20px 20px 60px #1a475b, 
-             -20px -20px 60px #23617b;
-Pressed:
------
-border-radius: 50px;
-background: #1E546B;
-box-shadow: inset 20px 20px 60px #1a475b, 
-            inset -20px -20px 60px #23617b;  
-
-===========
-Silver
-https://neumorphism.io/#bec5b8
-
-Flat:
------
-border-radius: 50px;
-background: #bec5b8;
-box-shadow:  20px 20px 40px #a2a79c, 
-             -20px -20px 40px #dbe3d4;
-
-Concave:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #abb1a6, #cbd3c5);
-box-shadow:  20px 20px 40px #a2a79c, 
-             -20px -20px 40px #dbe3d4;
-
-Convex:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #cbd3c5, #abb1a6);
-box-shadow:  20px 20px 40px #a2a79c, 
-             -20px -20px 40px #dbe3d4;
-Pressed:
------
-border-radius: 50px;
-background: #bec5b8;
-box-shadow: inset 20px 20px 40px #a2a79c, 
-            inset -20px -20px 40px #dbe3d4; 
-
-===========
-Lightsteelblue
-https://neumorphism.io/#bac8d3
-
-Flat:
------
-border-radius: 50px;
-background: #bac8d3;
-box-shadow:  20px 20px 40px #9eaab3, 
-             -20px -20px 40px #d6e6f3;
-
-Concave:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #a7b4be, #c7d6e2);
-box-shadow:  20px 20px 40px #9eaab3, 
-             -20px -20px 40px #d6e6f3;
-
-Convex:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #c7d6e2, #a7b4be);
-box-shadow:  20px 20px 40px #9eaab3, 
-             -20px -20px 40px #d6e6f3;
-Pressed:
------
-border-radius: 50px;
-background: #bac8d3;
-box-shadow: inset 20px 20px 40px #9eaab3, 
-            inset -20px -20px 40px #d6e6f3; 
-
-===========
-Wheat
-https://neumorphism.io/#e5d7b9
-
-Flat:
------
-border-radius: 50px;
-background: #bac8d3;
-box-shadow:  20px 20px 40px #9eaab3, 
-             -20px -20px 40px #d6e6f3;
-
-Concave:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #cec2a7, #f5e6c6);
-box-shadow:  20px 20px 40px #c3b79d, 
-             -20px -20px 40px #fff7d5;
-
-Convex:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #f5e6c6, #cec2a7);
-box-shadow:  20px 20px 40px #c3b79d, 
-             -20px -20px 40px #fff7d5;
-Pressed:
------
-border-radius: 50px;
-background: #e5d7b9;
-box-shadow: inset 20px 20px 40px #c3b79d, 
-            inset -20px -20px 40px #fff7d5;
-
-===========
-Lightgray
-https://neumorphism.io/#c8cfd4
-
-Flat:
------
-border-radius: 50px;
-background: #c8cfd4;
-box-shadow:  20px 20px 40px #aab0b4, 
-             -20px -20px 40px #e6eef4;
-
-Concave:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #b4babf, #d6dde3);
-box-shadow:  20px 20px 40px #aab0b4, 
-             -20px -20px 40px #e6eef4;
-
-Convex:
------
-border-radius: 50px;
-background: linear-gradient(145deg, #d6dde3, #b4babf);
-box-shadow:  20px 20px 40px #aab0b4, 
-             -20px -20px 40px #e6eef4;
-Pressed:
------
-border-radius: 50px;
-background: #c8cfd4;
-box-shadow: inset 20px 20px 40px #aab0b4, 
-            inset -20px -20px 40px #e6eef4;
-
-   
-*/
-
 /*jshint esversion: 9 */
 /*jshint -W033 */
 /*eslint no-undef: "console"*/
@@ -611,20 +345,16 @@ class Toolset {
         if (item.type == "segarc") {
           if (this.dev.debug) console.log('Toolset::firstUpdated - calling SegmentedArcTool firstUpdated');
           item.tool.firstUpdated(changedProperties);
-          //this.tools[index].firstUpdated(changedProperties);
         }
 
         if (item.type == "slider") {
           if (this.dev.debug) console.log('Toolset::firstUpdated - calling Slider firstUpdated');
           item.tool.firstUpdated(changedProperties);
-          //this.tools[index].firstUpdated(changedProperties);
         }
 
         if (item.type == "icon") {
           if (this.dev.debug) console.log('Toolset::firstUpdated - calling Icon firstUpdated');
           item.tool.firstUpdated(changedProperties);
-          //console.log("called firstupdated on icon tool");
-          //this.tools[index].firstUpdated(changedProperties);
         }
       });
     }
@@ -673,95 +403,12 @@ class Toolset {
   *
   * The order of transformations are done from the childs perspective!!
   * So, the child (tools) gets positioned FIRST, and then scaled/rotated.
+	*
+	* See comments for different render paths for Apple/Safar and any other browser...
+	*
   */
-//          transform="scale(${this.transform.scale.x}) rotate(${this.transform.rotate}deg)"
-//        <svg x="${this.svg.x}" y="${this.svg.y}">
-
-  // translate 0,0:
-  // ipad: right top is on center of card. rest is on the left...
-  // chrome: rotated perfectly in center...
-  // ipad needs translate 100,-100 at end.
-  // ipad needs translate 100,0 at begin (before scale and rotate)
-  // wow. Chrome also shows the right scale/rotate when translate(100,0) is at start of transform!!!!
-  //
-  // No transform-origin="center" anymore. Safari can't handle this??????
-  // Pff. translate is for both scale and rotate. Safari handles this different???????
-  // With only scale(), translate =(14,14) for both!! NO, translate depends on scale????????
-  //
-  // Hint: transform-origin not working on safari. Use positions on rotate!!!!
-  // https://stackoverflow.com/questions/57732067/css-transform-origin-not-working-for-svg-in-safari
-
-  // translate (28,28)
-  //
-  // ${100 * this.transform.scale.x}, ${100 * this.transform.scale.x}
-  // scale-0.7 translate 28,28. HOw is calculation. 200px size 200/0.7 * 10 ?????
-  // NOpe. has also to do with the angle... sigh........
-  //
-  // scale 0.5 --> translate 50 50 ??? Rotate keeps working with these values. 30/45/90 degrees are all centered on both devices!!
-
-  //          transform="translate(50,50) scale(${this.transform.scale.x}) rotate(${this.transform.rotate.x}, 100, 100)"
-  // scale 0.5 translate 100,100
-  // scale 0.7 translate 45 45 ???
-  // snap er geen reet van (nog)...
-  // scale 0.9 translate 10 10. 90% -> 180 pixels. 20 over. iedere kant de helft, dus 10 10
-  // scale 0.7, 70% -> 140 pixels. 60 over. iedere kant 30, + helft? dan 45. Huh??
-  // scale 0.4. 40% -> 80 pixels. 120 over. iedere kant 60. KOmt nu uit op 150 150 ??? Blijft onduidelijk hoor. 60/0.4 = 150. Toeval???
-  //
-  // denk dat scale nog moet meewerken in ruimte die over is om te compenseren. met 90% is 10 10 toevallig goed. moet dan 11 11 zijn natuurlijk...
-  //
-  // dus: pix = scale * 200. Dan pix = 200 - pix. pix = pix/2. pix = pix/scale.
-  // pix = .4 * 200 = 80. pix = 200-80=120. pix=120/2 = 60. pix = 60/.4 = 150
-
 
   render() {
-
-/*(
-    this.transform.rotate.x = 0;
-    this.transform.scale.x = this.transform.scale.y = 0.70;
-
-    this.xlate = 0;
-    this.xlate = this.transform.scale.x * SVG_DEFAULT_DIMENSIONS ;
-    this.xlate = SVG_DEFAULT_DIMENSIONS - this.xlate;
-    this.xlate = this.xlate / 2;
-    this.xlate = this.xlate / this.transform.scale.x;
-
-    this.xlatex = 0;
-    this.xlatex = this.transform.scale.x * this._card.viewBox.width ;
-    this.xlatex = this._card.viewBox.width - this.xlatex;
-    this.xlatex = this.xlatex / 2;
-    this.xlatex = this.xlatex / this.transform.scale.x;
-
-    this.xlatey = 0;
-    this.xlatey = this.transform.scale.y * this._card.viewBox.height ;
-    this.xlatey = this._card.viewBox.height - this.xlatey;
-    this.xlatey = this.xlatey / 2
-    this.xlatey = this.xlatey / this.transform.scale.y;
-
-    this.xlatex = this.svg.cx - (50/2);
-    this.transform.rotate.x = 45;
-
-    this.xlatex = this.xlatey = 0;
-*/
-    // voorbeeld
-    // vierkant 20x30 op positie 100,40
-    // scale 2 betekent vierkant 40,60 op positie 200,80. Die moet dus -100,-40 terug
-    //
-    // vierkant 20x30 op positie 100,40
-    // scale 0.7 betekent vierkant 14,21 op positie 70,28. Die moet 30,12 terug.
-    //
-    // hoe kome je nu op die berekening?? Heeft niks met breedte/hoogte te maken blijkt.
-    // scale gaat ook  niet vanuit middelpunt, maar vanuit linkerbovenkant.
-    // scale gaat niet goed samen met rotate. wat gebeurt er dan afhankelijk van de hoek?? Moet je dan x en y wijzigen met sin/cos ofzo??
-
-//    if (this.dev.debug) console.log("Toolset::render, xlate, x, y", this.xlate, this.xlatex, this.xlatey);
-//        <g transform="translate(${this.svg.x}, ${this.svg.y})">
-//          <g class="grp" transform="translate(${this.svg.x}, ${this.svg.y})">
-//         transform="rotate(${this.transform.rotate.x}, ${200/2}, ${200/2}) scale(${this.transform.scale.x}) translate(${xlate},${xlate})"
-
-//         transform="rotate(${this.transform.rotate.x}, ${this.svg.cx}, ${this.svg.cy}) scale(${this.transform.scale.x}) translate(${this.xlatex},${this.xlatey})"
-
-//         transform="rotate(${this.transform.rotate.x}) scale(${this.transform.scale.x}) translate(${this.xlatex},${this.xlatey})"
-
 
     // Again, Apple proves that their browser just doens't follow the standards like other browsers.
     // Although some things seem to work, a combination of scale/rotate and Safari goes berserk.
@@ -785,14 +432,6 @@ class Toolset {
       //
       // Note: rotate is done around the defined center (cx,cy) of the toolsets position!
       //
-//           style="transform-origin:center; transform-box:fill-box;">
-
-/*           transform="
-                      translate(-${this.svg.cx},-${this.svg.cy}) scale(${this.transform.scale.x}) translate(${this.svg.cx/this.transform.scale.x},${this.svg.cy/this.transform.scale.y})
-                      rotate(${this.transform.rotate.x}, ${this.svg.cx}, ${this.svg.cy})
-                      "
-           style="transform-origin:center;">
-*/
       // NTS:
       // Safari NEEDS the overflow:visible on the <svg> element, as it defaults to "svg:{overflow: hidden;}".
       // Other browsers don't need that, they default to: "svg:not(:root) {overflow: hidden;}"
@@ -959,6 +598,9 @@ class BaseTool {
       this.animationStyle = {...this.animationStyle, ...item.styles};
 			
 			// Can this work?????????????????
+			// #TODO:
+			// Store activeAnimation. Should be renamed, and used for more purposes, as via this method
+			// you can override any value from within an animation, not just the css style settings.
 			this.item = item;
     });
 
@@ -977,7 +619,6 @@ class BaseTool {
 
 class RangeSliderTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
-
 
     const DEFAULT_SLIDER_CONFIG = {
         orientation: 'horizontal',
@@ -1168,8 +809,6 @@ class RangeSliderTool extends BaseTool {
     //this.inputElement.value = Math.round(m.x);
   }
 
-
-
   /*
   * oMousePosSVG
   *
@@ -1184,8 +823,6 @@ class RangeSliderTool extends BaseTool {
     var p = p.matrixTransform(ctm);
     return p;
   }
-
-
 
   // HELPERS
 
@@ -1556,20 +1193,13 @@ class LineTool extends BaseTool {
     let configStyle = {...this.config.styles};
 
     // Get the runtime styles, caused by states & animation settings
-/*
-    let stateStyle = {};
-    if (this._card.animations.lines[this.config.animation_id])
-      stateStyle = Object.assign(stateStyle, this._card.animations.lines[this.config.animation_id]);
-*/
-
     // Merge the two, where the runtime styles may overwrite the statically configured styles
-    //configStyle = { ...configStyle, ...stateStyle};
     configStyle = { ...configStyle, ...this.animationStyle};
 
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
-    if (this.dev.debug) console.log('_renderLine POEP', this.config.orientation, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
+    if (this.dev.debug) console.log('_renderLine', this.config.orientation, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
     return svg`
       <line
         x1="${this.svg.x1}"
@@ -1662,12 +1292,7 @@ class CircleTool extends BaseTool {
     let configStyle = {...this.config.styles};
 
     // Get the runtime styles, caused by states & animation settings
-    //let stateStyle = {};
-    //if (this._card.animations.circles[this.config.animation_id])
-    //  stateStyle = Object.assign(stateStyle, this._card.animations.circles[this.config.animation_id]);
-
     // Merge the two, where the runtime styles may overwrite the statically configured styles
-    //configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
     configStyle = { ...configStyle, ...this.animationStyle};
 
     // Convert javascript records to plain text, without "{}" and "," between the styles.
@@ -1688,9 +1313,6 @@ class CircleTool extends BaseTool {
   *
   */
   render() {
-
-// We need transform-origin for animations. Works also on Safari. But why not working on safari for rotate etc.???
-//        <g "" id="circle-${this.toolId}" class="circle" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
 
     return svg`
       <g "" id="circle-${this.toolId}" class="circle" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
@@ -1732,20 +1354,13 @@ class UserSvgTool extends BaseTool {
 
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
-		// Check for external svg images. These are defined as <defs> to be used as a reference using <use>.
-		// This makes animations possible by setting the image, which is implemented as a reference using <use href(#id in defs)>
-		
-		if (this.config.images) {
-			this.image = this.config.images[0]["face1"];
-		}
-
     this.images = {};
 		this.images = Object.assign({}, ...this.config.images);
 
+		// #TODO:
+		// Select first key in k/v store. HOw??
 		this.item = {};
 		this.item.image = "face1";
-		// console.log("usersvg, images, image", this.images, this.item);
-		
 		
     if (this.dev.debug) console.log('UserSvgTool constructor coords, dimensions', this.svg, this.config);
   }
@@ -1778,43 +1393,32 @@ class UserSvgTool extends BaseTool {
     let configStyle = {...this.config.styles};
 
     // Get the runtime styles, caused by states & animation settings
-    //let stateStyle = {};
-    //if (this._card.animations.circles[this.config.animation_id])
-    //  stateStyle = Object.assign(stateStyle, this._card.animations.circles[this.config.animation_id]);
-
     // Merge the two, where the runtime styles may overwrite the statically configured styles
-    //configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
     configStyle = { ...configStyle, ...this.animationStyle};
 
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
-		// let svgItems = [];
-		// if (this.config.images) {
-			// this.config.images.map((item, index) ==> {
-				// svgItems.push(#HIERO
-			// });
-		// }
+		// #TODO:
+		// This is only rendering an external svg. Also be able to render inline yaml svg stuff
 
-		// console.log("renderusersvg, images, image", this.images, this.item);
+    // const svgItems = this.config.svgs.map(item => {
+
+      // return svg`
+        // <g>
+          // <line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2" />
+          // <path d="m 0 0 h 50 v 10 l 5 5 l -5 5 l 0 10 h -50 z " stroke-width="2" stroke="#fff" fill="#aaa"/>
+          // ${unsafeSVG(item.data)}
+        // </g>
+      // `;
+    // })
+
+		
 		return svg`
 			<svg x="${this.svg.x}" y="${this.svg.y}">
 				<image href="${this.images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
 			</svg>
 			`;
-
-		// return svg`
-			// <svg x="${this.svg.x}" y="${this.svg.y}">
-				// <image href="/local/images/ic-face-1.svg" height="${this.svg.height}" width="${this.svg.width}"/>
-			// </svg>
-			// `;
-				
-    // return svg`
-      // <svg height="100px" width="100px"
-        // x="${this.svg.cx}"% y="${this.svg.cy}"%
-					// <use href="${this.images[this.image]}"></use>
-				// </svg>
-      // `;
   }
  /*******************************************************************************
   * UserSvgTool::render()
@@ -1906,12 +1510,7 @@ class RectangleTool extends BaseTool {
     let configStyle = {...this.config.styles};
 
     // Get the runtime styles, caused by states & animation settings
-    //let stateStyle = {};
-    //if (this._card.animations.circles[this.config.animation_id])
-    //  stateStyle = Object.assign(stateStyle, this._card.animations.circles[this.config.animation_id]);
-
     // Merge the two, where the runtime styles may overwrite the statically configured styles
-    //configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
     configStyle = { ...configStyle, ...this.animationStyle};
 
     // Convert javascript records to plain text, without "{}" and "," between the styles.
@@ -2035,9 +1634,7 @@ class RectangleToolEx extends BaseTool {
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
-    svgItems = svg``;
-    // ""
-    // filter="url(#card--dropshadow-medium--opaque--sepia90)"
+//    svgItems = svg``;
 
     svgItems = svg`
       <g "" id="rectex-${this.toolId}">
@@ -2128,12 +1725,7 @@ class EllipseTool extends BaseTool {
     let configStyle = {...this.config.styles};
 
     // Get the runtime styles, caused by states & animation settings
-    //let stateStyle = {};
-    //if (this._card.animations.circles[this.config.animation_id])
-    //  stateStyle = Object.assign(stateStyle, this._card.animations.circles[this.config.animation_id]);
-
     // Merge the two, where the runtime styles may overwrite the statically configured styles
-    //configStyle = { ...configStyle, ...stateStyle};
     configStyle = { ...configStyle, ...this.animationStyle};
 
     // Convert javascript records to plain text, without "{}" and "," between the styles.
@@ -2460,28 +2052,6 @@ class EntityIconTool extends BaseTool {
   * from hass is coming in.
   */
   render() {
-
-    // this.viewbox contains the size of the viewbox.
-    // svg translate uses hard values relative to the viewbox, not percentages
-    // We have to recalculate x and y given viewbox dimensions and scale percentage
-    // .5 scale is 50x and 100y on 2/1 grid for example
-    // .5 * 200 = 100. and then 200/400 = 0.5. Thus 0.5 * 100 = 50
-    // .5 * 200 = 100. and then 200/200 = 1. Thus 1 * 100 = 100
-    //
-    // Working calculation:
-    // coords = 50, 90
-    // scalex = 50 * scale
-    // diffx = 50 - scalex
-    // xlatex = diffx / scale
-    //
-    // same for xlatey!
-    //
-    // #TODO:
-    // Rendering icon for Safari should take scale in account. Currently size is in pixels, so the
-    // original is shown.
-    // And for chrome: the shift in pixels should also be scaled. Not done yet. Icon is displayd lower
-    // then should be, ie not centered...
-
     return svg`
       <g "" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale}) translate(${this.svg.xlateX} ${this.svg.xlateY})"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
@@ -2633,6 +2203,7 @@ class BadgeTool extends BaseTool {
 class EntityStateTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
     const DEFAULT_STATE_CONFIG = {
+			show: { units: 'default' }
     }
     super(argCard, argConfig, argPos);
 
@@ -2644,8 +2215,8 @@ class EntityStateTool extends BaseTool {
     if (argConfig.styles) this.config.styles = {...argConfig.styles};
     this.config.styles = {...DEFAULT_STATE_CONFIG.styles, ...this.config.styles};
 
-    if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    this.config.show = {...DEFAULT_STATE_CONFIG.show, ...this.config.show};
+    //if (argConfig.show) this.config.show = {...argConfig.show};
+    this.config.show = {...DEFAULT_STATE_CONFIG.show, ...argConfig.show};
 
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -2773,13 +2344,6 @@ class EntityStateTool extends BaseTool {
 class EntityNameTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
-    // See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/dominant-baseline
-    // Can be:
-    // - auto (above baseline)
-    // - middle (centered in y pos)
-    // - hanging (fully below baseline)
-    // - mathematical (text below baseline, but upperpart not)
-    // - text-top (above baseline)
     const DEFAULT_NAME_CONFIG = {
     }
 
@@ -2792,8 +2356,6 @@ class EntityNameTool extends BaseTool {
     this.config.styles = {...DEFAULT_NAME_CONFIG.styles, ...this.config.styles};
 
     this._name = {};
-
-    // Text is rendered in its own context. No need for SVG coordinates.
 
     if (this.dev.debug) console.log('EntityName constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -2810,6 +2372,7 @@ class EntityNameTool extends BaseTool {
   _renderEntityName() {
 
     // compute some styling elements if configured for this name item
+    // See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/alignment-baseline
     const ENTITY_NAME_STYLES = {
       "font-size": '1.5em;',
       "fill": 'var(--primary-text-color);',
@@ -2820,7 +2383,6 @@ class EntityNameTool extends BaseTool {
 
     // Get configuration styles as the default styles
     let configStyle = {...ENTITY_NAME_STYLES};
-    //if (item.styles) configStyle = Object.assign(configStyle, ...item.styles);
     if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
 
     // Merge the two, where the runtime styles may overwrite the statically configured styles
@@ -2829,7 +2391,9 @@ class EntityNameTool extends BaseTool {
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
-    const name = this._card._buildName(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+    // #TODO:
+		// Why is build* in card, and not in class????
+		const name = this._card._buildName(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
     return svg`
         <text>
@@ -3178,12 +2742,6 @@ class HorseshoeTool extends BaseTool {
                 cy="${this.svg.cy - Math.cos(angle)*this.svg.radius_ticks}" r="${radius}"
                 fill="${stroke}">
       `;
-/*
-        <circle cx="${50 + 50 - Math.sin(angle)*this.TICKMARKS_RADIUS_SIZE}"
-                cy="${50 + 50 - Math.cos(angle)*this.TICKMARKS_RADIUS_SIZE}" r="${radius}"
-                fill="${stroke}">
-      `;
-*/
     }
     return svg`${scaleItems}`;
   }
@@ -3263,8 +2821,6 @@ class HorseshoeTool extends BaseTool {
 class SparklineBarChartTool extends BaseTool {
   constructor (argCard, argConfig, argPos) {
 
-//       styles: { "stroke": 'var(--primary-color);',
-
     const DEFAULT_BARCHART_CONFIG = {
       cx: 50,
       cy: 50,
@@ -3291,7 +2847,6 @@ class SparklineBarChartTool extends BaseTool {
     if (argConfig.styles) this.config.styles = {...argConfig.styles};
     this.config.styles = {...DEFAULT_BARCHART_CONFIG.styles, ...this.config.styles};
 
-    //if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
     this.config.show = {...DEFAULT_BARCHART_CONFIG.show, ...this.config.show};
 
     // Calculate real dimensions...
@@ -3442,11 +2997,6 @@ class SparklineBarChartTool extends BaseTool {
     this._bars.forEach((item, index) => {
       if (this.dev.debug) console.log('_renderBars - bars', item, index);
 
-			// Color the bar (stroke color of line) depending on given show.style config
-			// #WIP:
-			// Should become consistent with segarc, so
-			// fixedcolor --> fixedcolor: color: value: ...
-			// colorstop --> colorstop:...
 			var stroke = '';
 			switch (this.config.show.style) {
 				case 'fixedcolor':
@@ -3995,20 +3545,6 @@ class SegmentedArcTool extends BaseTool {
 
         var tween = {};
 
-/*
-With a very short animation duration, and small segments, only first segment is drawn.
-It seems progress = 1 (ready), but runningAngle is 10.8 and frameAngle is 25.2, two segments ahead...
-segment 1 - drawn, segment2 - not, segment3 - not. After new value, drawing starts at segment3...
-
-{fromAngle: 0, toAngle: 25.200000000000003, runningAngle: 0, duration: 10, startTime: null}
-duration: 10
-frameAngle: 25.200000000000003
-fromAngle: 0
-progress: 1
-runningAngle: 10.800000999999998
-startTime: null
-toAngle: 25.200000000000003
-*/
         function animateSegmentsNEW(timestamp, thisTool){
 
             const easeOut = progress =>
@@ -4528,9 +4064,6 @@ toAngle: 25.200000000000003
    * start = 10, end = 30, clockwise -> size is 20
    * start = 10, end = 30, anticlockwise -> size is (360 - 20) = 340
    *
-   * NTS:
-   * using in*** for arguments? Much clearer while reading the code
-   * and the config thing should go to. Leftover from example...
    *
    */
   buildArcPath(argStartAngle, argEndAngle, argClockwise, argRadiusX, argRadiusY, argWidth) {
@@ -5329,43 +4862,6 @@ class devSwissArmyKnifeCard extends LitElement {
       return;
     }
 
-    // Check for animations linked to an entity or attribute.
-    // Set the dynamic animation depending on the state.
-    // If the card is rendered, the render() functions will take this dynamic animation into account.
-    //
-    // #TODO: Determine animation only if specific state or attribute has changed...
-
-
-    // TODO for SAK:
-    // Push animation to object. Let object handle the animation change and request a render.
-    // Or has the isDirty flag, which is fetched from here.
-    //
-    // - if animation state is entity state
-    //    - push or start animation for object/tool using animation id and entity index of some kind.
-    //      must be connected somehow. is tat only via animation_index ???
-    //    - this.tools[].animate(item (= animation, yes??))
-    //
-    // -  maybe tool.configureAnimation(animation);
-    //  - tool.data = state;
-    //  ==> tool will check for animation itself!
-    //
-    //  Then everything in one place. Much easier to maintain and check!!!!!
-    //  - new tool(argCard, argPos);
-    //  - tool.setConfig(argLayout);
-    //  - tool.setAnimation(argAnimation);
-    //  - tool.setValue(argValue / argState);
-    //  - tool.setSeries(argSeries); // for history data bar charts
-    //
-
-    // NOTE:
-    // Tool knows via this.config if entity_index and animation_index are specified.
-    // So one can check this for EVERY object, and consequently push data into the tool.
-    //
-    // how is history done??? ie series data. Now only for barcharts, fixed.
-    // if tool.needsSeries() then entityid = tool.entityId; -> fetch history from hass
-    // if history received --> tool.setSeries(history);
-    //
-
     if (this.dev.ts) {
       if (this.ts) {
         this.ts.map((item, index) => {
@@ -5373,23 +4869,6 @@ class devSwissArmyKnifeCard extends LitElement {
         });
       }
     } else {
-
-      // if (this.tools) {
-        // this.tools.map((item, index) => {
-          // if (true || item.type == "segarc") {
-            // if (this.dev.debug) console.log('set hass - SegmentedArcTool found', item, index);
-            // if ((item.tool.config.hasOwnProperty('entity_index')))
-            // {
-              // if (this.dev.debug) console.log('set hass - SegmentedArcTool set value', typeof item.tool.value);
-
-              // item.tool.value = this.attributesStr[item.tool.config.entity_index]
-                                                  // ? this.attributesStr[item.tool.config.entity_index]
-                                                  // : this.entitiesStr[item.tool.config.entity_index];
-            // }
-
-          // }
-        // });
-      // }
     }
 
     // For now, always force update to render the card if any of the states or attributes have changed...
@@ -5483,24 +4962,6 @@ class devSwissArmyKnifeCard extends LitElement {
 
     // NEW for ts processing
     this.toolset = [];
-
-    // const toolsNew = {
-      // "area": EntityAreaTool,
-      // "badge": BadgeTool,
-      // "bar": SparklineBarChartTool,
-      // "circle": CircleTool,
-      // "ellipse": EllipseTool,
-      // "horseshoe": HorseshoeTool,
-      // "icon": EntityIconTool,
-      // "line": LineTool,
-      // "name": EntityNameTool,
-      // "rectangle": RectangleTool,
-      // "rectex": RectangleToolEx,
-      // "segarc": SegmentedArcTool,
-      // "state": EntityStateTool,
-      // "slider": RangeSliderTool,
-			// "usersvg": UserSvgTool,
-    // }
 
     // #TODO 2020.10.14
     // - Merge templates into the toolsets (formerly groups) and tools (formerly tools)
@@ -5639,140 +5100,9 @@ class devSwissArmyKnifeCard extends LitElement {
         this.ts.push(newToolset);
         //this.tools.push(newToolset);
       } else {
-// =================================================================================== OLD
-        // var toolsetCfgFromTemplate = null;
-
-        // if (toolsetCfg.template) {
-          // console.log("got toolsetCfg template", this.cardId, toolsetCfg, toolidx);
-
-          // if (this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]) {
-            // console.log("got toolsetCfg template found", this.cardId, toolsetCfg, toolidx);
-
-            // toolsetCfgFromTemplate = Templates.replaceVariables2(toolsetCfg.template.variables, this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]);
-            // console.log("got toolsetCfg replaced vars", this.cardId, toolsetCfgFromTemplate);
-            // toolsetCfgFromTemplate.position = this.config.layout.toolsets[toolidx].position ? this.config.layout.toolsets[toolidx].position : toolsetCfgFromTemplate.position;
-            // console.log("got toolsetCfg replaced vars2", this.cardId, toolsetCfgFromTemplate);
-            // //this.config.layout.toolsets[toolidx].position = toolsetCfgFromTemplate.position;
-            // //this.config.layout.toolsets[toolidx].tools = [...toolsetCfgFromTemplate.tools];
-
-            // toolList = toolsetCfgFromTemplate.tools;
-
-
-            // var found = false;
-            // var toolAdd = [];
-            // var atIndex = null;
-
-            // // Check for empty tool list. This can be if template is used. Tools come from template, not from config...
-            // if (toolsetCfg.tools) {
-              // toolsetCfg.tools.map((tool, index) => {
-                // toolList.map((toolT, indexT) => {
-                  // if (tool.id == toolT.id) {
-                    // toolList[indexT] = {...toolList[indexT], ...tool};
-                    // found = true;
-    // //                atIndex = indexT;
-                    // console.log("got toolsetCfg toolid", tool, index, toolT, indexT, tool);
-                  // }
-                // });
-                // if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
-              // });
-            // }
-            // //toolList = toolList.concat(toolsetCfg.tools);
-
-            // toolList = toolList.concat(toolAdd);
-            // if (this.dev.debug) console.log('Step 2: templating, toolconfig', toolList);
-
-            // console.log('toolsetCfg ENDRESULT before', toolList, this.config.layout.toolsets[toolidx]);
-            // if (this.config.layout.toolsets[toolidx].tools) this.config.layout.toolsets[toolidx].tools = [...toolList, ...this.config.layout.toolsets[toolidx].tools];
-            // console.log('toolsetCfg ENDRESULT after', toolList, this.config.layout.toolsets[toolidx]);
-
-          // }
-        // } else {
-          // // We don't have a template to run, get list of tools and use that...
-          // toolList = toolsetCfg.tools;
-        // }
-
-        // console.log("got toolsetCfg", this.cardId, toolList);
-
-        // // Oke. NOw we have a toolsetCfg. Check if this one references a template
-        // // and replace with given variables of current toolsetCfg.
-
-  // /*
-        // if (toolsetCfg.template) {
-          // if (this.dev.debug) console.log('toolconfig, template defined in toolsetCfg', toolsetCfg.template, this.config.templates);
-          // if (this.dev.debug) console.log('toolconfig, index template name', this.config.templates[this.kvTemplates[toolsetCfg.template]]);
-
-          // if (this.config.templates[this.kvTemplates[toolsetCfg.template]]) {
-            // if (this.dev.debug) console.log('toolconfig, template found in templates', toolsetCfg.template);
-            // // Step 1: get template variables replaced by template defaults and given variables in toolset.
-            // toolList = Templates.replaceVariables(toolsetCfg.variables, this.config.templates[this.kvTemplates[toolsetCfg.template]]);
-            // if (this.dev.debug) console.log('Step 1: toolconfig, replacing template vars', toolList);
-            // if (this.dev.debug) console.log('Step 1b: toolconfig, check toolsetCfg.tools', toolsetCfg);
-
-            // // Step 2: merge toolConfig with rest of toolsetCfg configuration.
-            // //         So you can override the template, or extend the template!
-
-            // // More difficult than expected.
-            // // We have to merge the tool definitions. This is an array, and we have to match the tools of course to merge them, and add new...
-            // // HOW?
-
-            // // We merge on tool id!!!!
-            // // Merge two lists based on this id. If not found, concat, otherwise merge the tool values...
-
-            // var found = false;
-            // var toolAdd = [];
-            // var atIndex = null;
-            // toolsetCfg.tools.map((tool, index) => {
-              // toolList.map((toolT, indexT) => {
-                // if (tool.id == toolT.id) {
-                  // toolList[indexT] = {...toolList[indexT], ...tool};
-                  // found = true;
-  // //                atIndex = indexT;
-                // }
-              // });
-              // if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
-            // });
-            // //toolList = toolList.concat(toolsetCfg.tools);
-
-            // toolList = toolList.concat(toolAdd);
-            // if (this.dev.debug) console.log('Step 2: templating, toolconfig', toolList);
-          // }
-        // } else {
-          // // We don't have a template to run, get list of tools and use that...
-          // toolList = toolsetCfg.tools;
-        // }
-        // if (this.dev.debug) console.log('Step 3: outside test, toolconfig list', toolList);
-  // */
-        // toolList.map(toolConfig => {
-  // //      toolsetCfg.tools?.map(toolConfig => {
-          // // create toolsetCfg and push to this.toolsets list
-
-          // // Use argPos for now. Should pass the toolsetCfg config to the tool
-          // // #TODO
-          // var argConfig = {...toolConfig};
-
-          // var argPos = { cx: toolsetCfg.position.cx / 100 * SVG_DEFAULT_DIMENSIONS,
-                         // cy: toolsetCfg.position.cy / 100 * SVG_DEFAULT_DIMENSIONS,
-                         // scale: toolsetCfg.position.scale ? toolsetCfg.position.scale : 1 };
-          // const newTool = new toolsNew[toolConfig.type](this, argConfig, argPos);
-          // this.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
-
-          // argToolset.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
-
-        // });
-        // this.toolsets.push(argToolset);
       } // end of else
     });
     if (this.dev.debug) console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
-  // Template test. 2020.09.30
-  // Seems to work...
-/*
-  if (this.config.templates) {
-    if (this.config.toolsets) {
-      let tools = Templates.replaceVariables(this.config.toolsets[1].variables, this.config.templates[0]);
-      if (this.dev.debug) console.log('template, tools are: ', tools);
-    }
-  }
-*/
     if (this.dev.debug) console.log('debug - setConfig', this.cardId, this.config);
     if (this.dev.performance) console.timeEnd("--> " + this.cardId + " PERFORMANCE card::setConfig");
 
@@ -5806,9 +5136,6 @@ class devSwissArmyKnifeCard extends LitElement {
       }
 //    }
     if (this.dev.debug) console.log('ConnectedCallback', this.cardId);
-
-    //var pathh = this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path
-    //console.log("connectedcallback ICON TESTING pathh", pathh, this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*"));
 
     //this.requestUpdate();
     if (this.dev.performance) console.timeEnd("--> " + this.cardId + " PERFORMANCE card::connectedCallback");
@@ -5850,33 +5177,6 @@ class devSwissArmyKnifeCard extends LitElement {
         });
       }
     } else {
-
-      // if (this.tools) {
-        // this.tools.map((item, index) => {
-
-          // //console.log("firstupdated, calling item/index", item, index);
-          // if (item.type == "segarc") {
-            // if (this.dev.debug) console.log('firstUpdated - calling SegmentedArcTool firstUpdated');
-            // item.tool.firstUpdated(changedProperties);
-            // //this.tools[index].firstUpdated(changedProperties);
-          // }
-
-          // if (item.type == "slider") {
-            // if (this.dev.debug) console.log('firstUpdated - calling Slider firstUpdated');
-            // item.tool.firstUpdated(changedProperties);
-            // //this.tools[index].firstUpdated(changedProperties);
-          // }
-
-          // if (item.type == "icon") {
-            // if (this.dev.debug) console.log('firstUpdated - calling Icon firstUpdated');
-            // item.tool.firstUpdated(changedProperties);
-            // //console.log("called firstupdated on icon tool");
-            // //this.tools[index].firstUpdated(changedProperties);
-          // }
-
-
-        // });
-      // }
     } // end of else
 
   }
@@ -6310,49 +5610,6 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
       `;
 
     } else {
-
-      // return svg`
-              // <g id="datatoolset" class="datatoolset">
-                // ${this.tools.map(tool => tool.tool.render())}
-                // ${this._renderUserSvgs()}
-              // </g>
-
-
-              // <defs>
-                // <rect id="cliprect" width="100%" height="100%" fill="none" stroke="none" rx="3" />
-                // <clipPath id="clip">
-                  // <use xlink:href="#cliprect"/>
-                // </clipPath>
-
-                // <marker viewBox="0 0 200 200" id="markerCircle" markerWidth="8" markerHeight="8" refX="5" refY="5">
-                    // <circle cx="5" cy="5" r="3" style="stroke: none; fill:currentColor;"/>
-                // </marker>
-
-                // <marker viewBox="0 0 200 200" id="markerArrow" markerWidth="13" markerHeight="13" refX="2" refY="6"
-                       // orient="auto">
-                    // <path d="M2,2 L2,11 L10,6 L2,2" style="fill: currentColor;" />
-                // </marker>
-
-                // <filter id="ds2" width="10" height="10">
-                  // <feDropShadow dx="2" dy="3" stdDeviation="0.5"/>
-                // </filter>
-
-                // <filter id="ds3" x="0" y="0" width="200%" height="200%">
-                  // <feOffset result="offOut" in="SourceAlpha" dx="20" dy="20" />
-                  // <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
-                  // <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
-                // </filter>
-
-                // <filter id="ds4" x="0" y="0" width="200%" height="200%">
-                  // <feGaussianBlur stdDeviation="1" />
-                // </filter>
-
-                // <filter id="ds" width="200%" height="200%">
-                  // <feDropShadow dx="0" dy="1.5" stdDeviation=".3"/>
-                // </filter>
-
-              // </defs>
-      // `;
     }
   }
 
@@ -6404,36 +5661,6 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     return svg`${svgItems}`;
   }
 
-
-  _renderUserSvg(item) {
-    return svg`${unsafeSVG(item.data)}`;
-  }
-
-  _renderUserSvgs() {
-    const {
-      layout,
-    } = this.config.layout; // was this.config.layout
-
-    if (this.dev.debug) console.log('debug - _renderUserSvgs IN', this.config);
-    if (!this.config.svgs) return;
-
-    if (this.dev.debug) console.log('debug - _renderUserSvgs IN2');
-
-    const svgItems = this.config.svgs.map(item => {
-
-      return svg`
-        <g>
-          <line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2" />
-          <path d="m 0 0 h 50 v 10 l 5 5 l -5 5 l 0 10 h -50 z " stroke-width="2" stroke="#fff" fill="#aaa"/>
-          ${unsafeSVG(item.data)}
-        </g>
-      `;
-//this._renderUserSvg(item)}
-    })
-
-    if (this.dev.debug) console.log('debug - _renderUserSvgs OUT', svgItems);
-    return svg`${svgItems}`;
-  }
 
 /*******************************************************************************
   * _handleClick()
@@ -6535,6 +5762,10 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
   * Summary.
   * Builds the Icon specification name.
   *
+	* #TODO:
+	* Add animation state for icon?? So icon can be changed by animation.
+	* In that case svg icon should be fetched too again. Check for cache/value??
+	* entityAnimation.icon orso...
   */
   _buildIcon(entityState, entityConfig) {
     return (
@@ -6608,6 +5839,9 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
   * _calculateColor()
   *
   * Summary.
+	*
+	* #TODO:
+	* replace by TinyColor library? Is that possible/feasable??
   *
   */
 
@@ -6892,9 +6126,6 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
     stateHistory = [...stateHistory, ...newStateHistory];
 
-    // this.hours=24;
-    // this.points=1;
-
     this.uppdate(entity, stateHistory);
     return;
   }
@@ -6922,8 +6153,6 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
         hours = this.ts[entity.tsidx].tools[entity.idx].tool.config.hours;
         barhours = this.ts[entity.tsidx].tools[entity.idx].tool.config.barhours;
       } else {
-        // hours = this.tools[entity.idx].tool.config.hours;
-        // barhours = this.tools[entity.idx].tool.config.barhours;
       }
     }
 
@@ -6992,9 +6221,6 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
         this.ts[entity.tsidx].tools[entity.idx].tool.series = [...theData];
       }
     } else {
-      // if (entity.type == 'bar') {
-        // this.tools[entity.idx].tool.series = [...theData];
-      // }
     }
 
     // Request a rerender of the card after receiving new data
