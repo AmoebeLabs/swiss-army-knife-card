@@ -95,8 +95,8 @@
               # ==============================================================================
               - toolset: title
                 position:
-                  cx: 150
-                  cy: 20
+                  cx: 10
+                  cy: 15
                 tools:
                   # Area
                   - type: area
@@ -107,6 +107,7 @@
                     styles:
                       font-size: 6em;
                       font-weight: 400;
+                      text-anchor: start;
 
               - toolset: weather-type
                 position:
@@ -131,7 +132,7 @@
                     radius: 12
                     styles:
                       opacity: 1;
-                      fill: grey;
+                      fill: white;
                       filter: url(#is-1);
 
                   - type: 'usersvg'
@@ -335,34 +336,35 @@
                     height: 45
                     radius:
                       all: 2
+                    entity_index: 0
                     animations:
                       - state: '50'
-                        operator: <
+                        operator: <=
                         styles:
                           fill: >
                             #A8E05F;
                       - state: '100'
-                        operator: <
+                        operator: <=
                         styles:
                           fill: >
                             #FDD74B;
                       - state: '150'
-                        operator: <
+                        operator: <=
                         styles:
                           fill: >
                             #FE9B57;
                       - state: '200'
-                        operator: <
+                        operator: <=
                         styles:
                           fill: >
                             #FE6A69;
                       - state: '300'
-                        operator: <
+                        operator: <=
                         styles:
                           fill: >
                             #A97ABC;
                       - state: '9999'
-                        operator: <
+                        operator: <=
                         styles:
                           fill: >
                             #A87383;
@@ -390,6 +392,35 @@
                     cx: 87.5
                     cy: 95
                     entity_index: 2
+                    show:
+                      units: default, none, below
+                      # en dan 
+                      # styles:
+                      #   state:
+                      #     ...
+                      #   units:
+                      #     ...
+                    text_before: 'text before state'
+                    text_after: 'text after state'
+                    text:
+                      before:
+                        content: 'text before state'
+                        position: above
+                      after:
+                        content: 'text after state'
+                        position: below
+                    styles:
+                      font-size: 2.5em;
+                      font-weight: 500;
+                      text-anchor: middle;
+                      alignment-baseline: central;
+
+                  # State / pollutant level
+                  - type: 'state'
+                    id: 8
+                    cx: 87.5
+                    cy: 25
+                    entity_index: 1
                     styles:
                       font-size: 2.5em;
                       font-weight: 500;
@@ -415,32 +446,32 @@
 
                     animations:
                       - state: '50'
-                        operator: <
+                        operator: <=
                         styles:
                           fill: >
                             #A8E05F;
                       - state: '100'
-                        operator: <
+                        operator: <=
                         styles:
                           fill: >
                             #FDD74B;
                       - state: '150'
-                        operator: <
+                        operator: <=
                         styles:
                           fill: >
                             #FE9B57;
                       - state: '200'
-                        operator: <
+                        operator: <=
                         styles:
                           fill: >
                             #FE6A69;
                       - state: '300'
-                        operator: <
+                        operator: <=
                         styles:
                           fill: >
                             #A97ABC;
                       - state: '9999'
-                        operator: <
+                        operator: <=
                         styles:
                           fill: >
                             #A87383;
@@ -465,22 +496,22 @@
                       - face6: /local/images/ic-face-6.svg
                     animations:
                       - state: '50'
-                        operator: <
+                        operator: <=
                         image: face1
                       - state: '100'
-                        operator: <
+                        operator: <=
                         image: face2
                       - state: '150'
-                        operator: <
+                        operator: <=
                         image: face3
                       - state: '200'
-                        operator: <
+                        operator: <=
                         image: face4
                       - state: '300'
-                        operator: <
+                        operator: <=
                         image: face5
                       - state: '9999'
-                        operator: <
+                        operator: <=
                         image: face6
 
                     styles:
@@ -513,6 +544,11 @@
                         #A97ABC
                       300: >
                         #A87383
+                    # Ook hier uitbreiden, zodat bar ook labels kan stylen
+                    # styles:
+                    #   bar:
+                    #   label_min:
+                    #   label_max:
                     styles:
                       stroke-linecap: round;
 
