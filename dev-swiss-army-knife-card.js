@@ -37,6 +37,12 @@ import {
 import 'https://cdn.skypack.dev/@ctrl/tinycolor';
 //++ Consts ++++++++++
 
+console.info(
+  `%c  SWISS ARMY KNIFE CARD  \n%c    Version 0.x.y-dev    `,
+  'color: yellow; font-weight: bold; background: black',
+  'color: white; font-weight: bold; background: dimgray',
+);
+
 // Set sizes:
 // If svg size is changed, change the font size accordingly.
 // These two are related ;-)
@@ -526,12 +532,13 @@ class BaseTool {
     let localState = state;
 
     if (this.dev.debug) console.log('BaseTool set value(state)', localState);
-    if (this._stateValue?.toLowerCase() == localState.toLowerCase()) return false;
+    if (typeof(localState) != 'undefined') if (this._stateValue?.toLowerCase() == localState.toLowerCase()) return false;
 
-    // testing calculated value
+    // testing calculated value, this might be undefined!
     if (this.config.custom_value) {
-      const someValue = new Function('states', 'entity', 'user', 'hass', `'use strict'; ${this.config.custom_value.slice(4, -4)}`).call(
+      const someValue = new Function('state', 'states', 'entity', 'user', 'hass', `'use strict'; ${this.config.custom_value.slice(4, -4)}`).call(
         this,
+        state,
         this._card._hass.states,
         this._card.entities[this.config.entity_index],
         this._card._hass.user,
@@ -1136,6 +1143,8 @@ class LineTool extends BaseTool {
     const DEFAULT_LINE_CONFIG = {
         orientation: 'vertical',
         length: '10',
+        cx: '50',
+        cy: '50',
         styles: {
           line: {
             "stroke-linecap": 'round;',
@@ -2307,10 +2316,17 @@ class EntityStateTool extends BaseTool {
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(this.configStyle.state).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
+
+    var inState = this._stateValue;
+    if (isNaN(inState)) {
+      const localeTag = this.config.locale_tag || 'component.' + this._card._computeDomain(this._card.config.entities[this.config.entity_index].entity) + '.state._.'
+      inState = this._card.toLocale(localeTag + inState.toLowerCase(), inState);
+    }
+
     return svg`
       <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}"
         style="${configStyleStr}">
-        ${this._stateValue}</tspan>
+        ${this.config?.text?.before ? this.config.text.before : ''} ${inState} ${this.config?.text?.after ? this.config.text.after : ''}</tspan>
     `;
   }
   
@@ -4854,7 +4870,7 @@ class devSwissArmyKnifeCard extends LitElement {
         fill : var(--primary-text-color);
         font-size: 1.5em;
         /*text-transform: uppercase;*/
-        letter-spacing: 0.1em;
+        letter-spacing: 0.05em;
       }
 
       .entity__area {
@@ -4864,7 +4880,7 @@ class devSwissArmyKnifeCard extends LitElement {
         fill : var(--primary-text-color);
         text-anchor: middle;
         /*text-transform: uppercase;*/
-        letter-spacing: 0.1em;
+        letter-spacing: 0.05em;
       }
 
       .shadow {
@@ -5026,17 +5042,76 @@ class devSwissArmyKnifeCard extends LitElement {
     for (value of this.config.entities) {
       this.entities[index] = hass.states[this.config.entities[index].entity];
 
+      
       // Get attribute state if specified and available
       if (this.config.entities[index].attribute) {
-        if (this.entities[index].attributes[this.config.entities[index].attribute]) {
-          newStateStr = this._buildState(this.entities[index].attributes[this.config.entities[index].attribute], this.config.entities[index]);
+
+        attrSet = true;
+
+        // #WIP:
+        // Check for indexed or mapped attributes, like weather forecast (array of 5 days with a map containing attributes)....
+        //
+        // states['weather.home'].attributes['forecast'][0].detailed_description
+        // attribute: forecast[0].condition
+        //
+
+        let attribute = this.config.entities[index].attribute;
+        let attrMore = '';
+        let attributeState = '';
+
+        var arrayPos = this.config.entities[index].attribute.indexOf("[");
+        var dotPos = this.config.entities[index].attribute.indexOf(".");
+        var arrayIdx = 0;
+        var arrayMap = '';
+        
+        if (arrayPos != -1) {
+          // We have an array. Split...
+          attribute = this.config.entities[index].attribute.substr(0, arrayPos);
+          attrMore = this.config.entities[index].attribute.substr(arrayPos, this.config.entities[index].attribute.length - arrayPos);
+          
+          // Just hack, assume single digit index...
+          arrayIdx = attrMore[1];
+          arrayMap = attrMore.substr(4, attrMore.length - 4);
+          
+          // Fetch state
+          attributeState = this.entities[index].attributes[attribute][arrayIdx][arrayMap];
+            
+          // console.log('set hass, attributes with array/map', this.config.entities[index].attribute, attribute, attrMore, arrayIdx, arrayMap, attributeState);
+          
+        } else if (dotPos != -1) {
+          // We have a map. Split...
+          attribute = this.config.entities[index].attribute.substr(0, dotPos);
+          attrMore = this.config.entities[index].attribute.substr(arrayPos, this.config.entities[index].attribute.length - arrayPos);
+          arrayMap = attrMore.substr(1, attrMore.length - 1);
+
+          // Fetch state
+          attributeState = this.entities[index].attributes[attribute][arrayMap];
+
+          console.log('set hass, attributes with map', this.config.entities[index].attribute, attribute, attrMore);
+        } else {
+          // default attribute handling...
+          attributeState = this.entities[index].attributes[attribute];
+        }
+
+        if (attributeState) {
+          newStateStr = this._buildState(attributeState, this.config.entities[index]);
           if (newStateStr != this.attributesStr[index]) {
             this.attributesStr[index] = newStateStr;
             entityHasChanged = true;
           }
           attrSet = true;
-          if (this.dev.debug) console.log("set hass - attrSet=true", this.cardId, new Date().getSeconds().toString() + '.'+ new Date().getMilliseconds().toString(), newStateStr);
         }
+          
+
+        // if (this.entities[index].attributes[this.config.entities[index].attribute]) {
+          // newStateStr = this._buildState(this.entities[index].attributes[this.config.entities[index].attribute], this.config.entities[index]);
+          // if (newStateStr != this.attributesStr[index]) {
+            // this.attributesStr[index] = newStateStr;
+            // entityHasChanged = true;
+          // }
+          // attrSet = true;
+          // if (this.dev.debug) console.log("set hass - attrSet=true", this.cardId, new Date().getSeconds().toString() + '.'+ new Date().getMilliseconds().toString(), newStateStr);
+        // }
       }
       if (!attrSet) {
         newStateStr = this._buildState(this.entities[index].state, this.config.entities[index]);
@@ -5720,15 +5795,15 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
               </filter>
 
               <!-- second try... -->
-              <filter id="filter" x="-50%" y="-50%" width="240%" height="240%">
-                <feFlood flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="0.8" result="flood2"/>
+              <filter id="filter" x="-50%" y="-50%" width="160%" height="160%">
+                <feFlood flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="flood2"/>
                 <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
-                <feOffset dx="-12" dy="-12" in="composite5" result="offset1"/>
+                <feOffset dx="-6" dy="-6" in="composite5" result="offset1"/>
                 <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
                 <feComposite in="blur2" in2="SourceAlpha" operator="in"  result="composite7"/>
 
                 <!-- flood-color="#777777" -->
-                <feFlood flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.9" result="flood4"/>
+                <feFlood flood-color="var(--cs-theme-shadow-darker)" flood-opacity="1" result="flood4"/>
                 <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
                 <feOffset dx="6" dy="6" in="composite8" result="offset2"/>
                 <feGaussianBlur stdDeviation="15" in="offset2" edgeMode="none" result="blur3"/>
@@ -5786,6 +5861,15 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
             <filter id="nm-1" x="-50%" y="-50%" width="300%" height="300%">
               <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
               <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+              <feMerge result="merge">
+                <feMergeNode in="dropShadow1"/>
+                <feMergeNode in="dropShadow"/>
+              </feMerge>
+            </filter>
+
+            <filter id="nm-1-reverse" x="-50%" y="-50%" width="300%" height="300%">
+              <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+              <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
               <feMerge result="merge">
                 <feMergeNode in="dropShadow1"/>
                 <feMergeNode in="dropShadow"/>
@@ -5973,6 +6057,12 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     );
   }
 
+  toLocale(string, fallback = 'unknown') {
+    const lang = this._hass.selectedLanguage || this._hass.language;
+    const resources = this._hass.resources[lang];
+    return (resources && resources[string] ? resources[string] : fallback);
+  }
+  
 /*******************************************************************************
   * _buildState()
   *
