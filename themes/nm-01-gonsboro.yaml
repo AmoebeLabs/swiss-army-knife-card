@@ -43,9 +43,10 @@
   #
   # theme-card-box-shadow: '3px 6px 9px 1px rgba(0, 0, 0, 0.4)'
   # ha-card-box-shadow: '6px 6px 12px var(--cs-theme-shadow-darker), -3px -3px 12px var(--cs-theme-shadow-lighter)'
+  ha-card-box-shadow: '3px 3px 6px var(--cs-theme-shadow-darker), -3px -3px 6px var(--cs-theme-shadow-lighter)'
 
   # Make it an inset shadow. Looks very nice combined with the neumorphic design!!!!
-  ha-card-box-shadow: 'inset 3px 3px 6px var(--cs-theme-shadow-darker), inset -3px -3px 6px var(--cs-theme-shadow-lighter)'
+  # ha-card-box-shadow: 'inset 3px 3px 6px var(--cs-theme-shadow-darker), inset -3px -3px 6px var(--cs-theme-shadow-lighter)'
   theme-card-box-shadow: 'var(--shadow-elevation-2dp_-_box-shadow)'
 
   # Define global ha-homekit alike border radius 
@@ -154,7 +155,8 @@
   cs-theme-default-primary-light: 'var(--cs-orange-lighten-40)'
   cs-theme-default-primary-dark: 'var(--cs-orange-darken-40)'
 
-  cs-theme-default-font-primary: '#222222'
+  # cs-theme-default-font-primary: '#222222'
+  cs-theme-default-font-primary: '#555555'
   cs-theme-default-font-secondary: 'var(--cs-orange-darken-30)'
   cs-theme-default-background-primary: 'var(--cs-theme-default-base)'
   cs-theme-default-background-secondary: '#bfbebe'
@@ -442,7 +444,8 @@
   # paper-dialog-background-color: 'rgba(255, 255, 255, 0.09)'
   paper-dialog-background-color: 'var(--cs-theme-default-background-primary)'
 
-  paper-item-icon-color: 'var(--primary-text-color)'
+  # paper-item-icon-color: 'var(--primary-text-color)'
+  paper-item-icon-color: '#555555'
   paper-item-icon-active-color: 'var(--primary-color)'
   paper-item-icon_-_color: 'var(--secondary-text-color)'
   paper-item-selected_-_background-color: 'var(--cs-theme-default-darken-20)'
