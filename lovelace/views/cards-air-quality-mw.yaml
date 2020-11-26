@@ -837,8 +837,12 @@
                         font-size: 2em;
                         font-weight: 400;
                         text-anchor: start;
-                      uom:
-                        alignment-baseline: central;
+                        # stroke: var(--primary-text-color);
+                        # stroke-width: 5;
+                        # fill: none;
+                        font-style: italic;
+                      # uom:
+                        # alignment-baseline: central;
 
               - toolset:
                 name: airvisual
@@ -1038,7 +1042,10 @@
                         image: 'windy-variant-night'
                       - state: 'windy-variant-day'
                         image: 'windy-variant-night'
-
+                    styles:
+                      usersvg:
+                        filter: url(#is-1);
+                        
               - toolset:
                 name: weather-temperature
                 position:
@@ -1427,8 +1434,8 @@
                     entity_index: 12
                     cx: 50
                     cy: 30
-                    height: 20
-                    width: 20
+                    height: 23
+                    width: 23
                     style: 'images'
                     images:
                       - clear-night: /local/images/weather/clear-night.svg
@@ -1471,6 +1478,9 @@
                         image: 'windy'
                       - state: 'windy-variant'
                         image: 'windy-variant'
+                    styles:
+                      usersvg:
+                        filter: url(#nm-1);
 
                   # temperature
                   - type: state
@@ -1562,8 +1572,8 @@
                     entity_index: 19
                     cx: 50
                     cy: 30
-                    height: 20
-                    width: 20
+                    height: 23
+                    width: 23
                     style: 'images'
                     images:
                       - clear-night: /local/images/weather/clear-night.svg
@@ -1606,6 +1616,9 @@
                         image: 'windy'
                       - state: 'windy-variant'
                         image: 'windy-variant'
+                    styles:
+                      usersvg:
+                        filter: url(#nm-1);
 
                   # temperature
                   - type: state
@@ -1697,8 +1710,8 @@
                     entity_index: 26
                     cx: 50
                     cy: 30
-                    height: 20
-                    width: 20
+                    height: 23
+                    width: 23
                     style: 'images'
                     images:
                       - clear-night: /local/images/weather/clear-night.svg
@@ -1741,6 +1754,9 @@
                         image: 'windy'
                       - state: 'windy-variant'
                         image: 'windy-variant'
+                    styles:
+                      usersvg:
+                        filter: url(#nm-1);
 
                   # temperature
                   - type: state
@@ -1832,8 +1848,8 @@
                     entity_index: 33
                     cx: 50
                     cy: 30
-                    height: 20
-                    width: 20
+                    height: 23
+                    width: 23
                     style: 'images'
                     images:
                       - clear-night: /local/images/weather/clear-night.svg
@@ -1876,6 +1892,9 @@
                         image: 'windy'
                       - state: 'windy-variant'
                         image: 'windy-variant'
+                    styles:
+                      usersvg:
+                        filter: url(#nm-1);
 
                   # temperature
                   - type: state
@@ -1967,8 +1986,8 @@
                     entity_index: 40
                     cx: 50
                     cy: 30
-                    height: 20
-                    width: 20
+                    height: 23
+                    width: 23
                     style: 'images'
                     images:
                       - clear-night: /local/images/weather/clear-night.svg
@@ -2011,6 +2030,9 @@
                         image: 'windy'
                       - state: 'windy-variant'
                         image: 'windy-variant'
+                    styles:
+                      usersvg:
+                        filter: url(#nm-1);
 
                   # temperature
                   - type: state
