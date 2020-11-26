@@ -378,18 +378,18 @@ cards:
                   - type: 'segarc'
                     id: 0
                     entity_index: 0
-                    cx: 49
+                    cx: 50
                     cy: 50
                     start_angle: -90
                     end_angle: 90
                     # was 5, now 10 
                     width: 10
-                    radius: 45
+                    radius: 38
                     scale:
                       min: 0
                       max: 100
                       width: 5
-                      offset: +10
+                      offset: 10
                     show:
                       scale: true
                       style: 'colorstops'
@@ -1426,7 +1426,7 @@ cards:
           template: sak_arc180_sparklinebar24_template
           variables:
             - entity: studyf_iaq_humidity
-            - name: Study Front
+            - name: 9Ta Study Front
             - decimals: 0
             - scale_min: 0
             - scale_max: 100
@@ -1434,7 +1434,7 @@ cards:
           template: sak_arc180_sparklinebar24_template
           variables:
             - entity: kitchen_iaq_humidity
-            - name: Kitchen
+            - name: 9Tb Kitchen
             - decimals: 0
             - scale_min: 0
             - scale_max: 100
@@ -1442,7 +1442,7 @@ cards:
           template: sak_arc180_sparklinebar24_template
           variables:
             - entity: livingroom_iaq_humidity
-            - name: Living
+            - name: 9Tc Living
             - decimals: 0
             - scale_min: 0
             - scale_max: 100
@@ -1453,7 +1453,7 @@ cards:
           template: sak_arc180_sparklinebar24_template_tpl
           variables:
             - entity: studyf_iaq_humidity
-            - name: Study Front
+            - name: 10Ta Study Front
             - decimals: 0
             - scale_min: 0
             - scale_max: 100
@@ -1461,7 +1461,7 @@ cards:
           template: sak_arc180_sparklinebar24_template_tpl
           variables:
             - entity: kitchen_iaq_humidity
-            - name: Kitchen
+            - name: 10Tb Kitchen
             - decimals: 0
             - scale_min: 0
             - scale_max: 100
@@ -1469,7 +1469,7 @@ cards:
           template: sak_arc180_sparklinebar24_template_tpl
           variables:
             - entity: livingroom_iaq_humidity
-            - name: Living
+            - name: 10Tc Living
             - decimals: 0
             - scale_min: 0
             - scale_max: 100
@@ -1480,7 +1480,7 @@ cards:
           template: sak_arc180_sparklinebar24_template_tpl
           variables:
             - entity: studym_iaq_humidity
-            - name: Study Back
+            - name: 11Ta Study Back
             - decimals: 0
             - scale_min: 0
             - scale_max: 100
@@ -1488,7 +1488,7 @@ cards:
           template: sak_arc180_sparklinebar24_template_tpl
           variables:
             - entity: bathroom_iaq_humidity
-            - name: Bathroom
+            - name: 11Tb Bathroom
             - decimals: 0
             - scale_min: 0
             - scale_max: 100
@@ -1496,7 +1496,7 @@ cards:
           template: sak_arc180_sparklinebar24_template_tpl
           variables:
             - entity: bedroom_iaq_humidity
-            - name: Bedroom
+            - name: 11Tc Bedroom
             - decimals: 0
             - scale_min: 0
             - scale_max: 100
