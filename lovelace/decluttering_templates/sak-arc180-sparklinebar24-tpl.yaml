@@ -19,25 +19,36 @@ card:
       area: '[[area]]'
 
   dimensions: 1/1
+  dev:
+    debug: false
   
   layout:
     toolsets:
       # ==============================================================================
-      - toolset: humi
+      - toolset: humi-dt-tpl
         template:
           name: toolset_arc180_sparklinebar24
+          variables:
+            - scale_min: '[[scale_min]]'
+            - scale_max: '[[scale_max]]'
+            - colorstops_template: '[[colorstops_template]]'
+            - cx: '[[cx]]'
+            - cy: '[[cy]]'
         position:
           cx: '[[cx]]'
           cy: '[[cy]]'
         tools:
           - type: 'segarc'
             id: 2
+            show:
+              scale: true
             scale:
               min: '[[scale_min]]'
               max: '[[scale_max]]'
+              fuckyou: true
             segments:
               colorstops:
                 template:
                   name: '[[colorstops_template]]'
                   variables:
-                    - thegap: 0
+                    - thegap: 1
