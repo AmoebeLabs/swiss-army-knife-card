@@ -22,21 +22,25 @@
 # sak-toolset-cs list...
 
 # The default colorswatch is ALWAYS loaded for the card!
+# NOTE:
+# - colorswatch or color palette? Latter seems the best one. Swatch is more colors/combintions??
 colorswatch_default:
-  type: colorswatch
-  colors:
-    light:
-      - --sak-cs-default-text: 'var(--primary-text-color)'
-      - --sak-cs-default-background: 'var(--primary-background-color)'
-      - --sak-cs-default-01: 'red'
-      - --sak-cs-default-02: 'green'
-      - --sak-cs-default-03: 'blue'
-    dark:
-      - --sak-cs-default-text: 'var(--primary-text-color)'
-      - --sak-cs-default-background: 'var(--primary-background-color)'
-      - --sak-cs-default-01: 'red'
-      - --sak-cs-default-02: 'green'
-      - --sak-cs-default-03: 'blue'
+  template:
+    type: colorswatches
+  colorswatches:
+    colors:
+      light:
+        - --sak-cs-default-text: 'var(--primary-text-color)'
+        - --sak-cs-default-background: 'var(--primary-background-color)'
+        - --sak-cs-default-01: 'red'
+        - --sak-cs-default-02: 'green'
+        - --sak-cs-default-03: 'blue'
+      dark:
+        - --sak-cs-default-text: 'var(--primary-text-color)'
+        - --sak-cs-default-background: 'var(--primary-background-color)'
+        - --sak-cs-default-01: 'red'
+        - --sak-cs-default-02: 'green'
+        - --sak-cs-default-03: 'blue'
 
 # From Pinterest
 # - gainsboro: kind of white / background
@@ -44,65 +48,79 @@ colorswatch_default:
 # - darkslategray: almost black for font
 
 colorswatch_android_watch:
-  type: colorswatch
-  colors:
-    light:
-    - --sak-cs-aw-gainsboro: '#e7e7e7'
-    - --sak-cs-aw-slategray: '#5c7886'
-    - --sak-cs-aw-lightgray: '#e7e7e7'
-    - --sak-cs-aw-darkorange: '#f79201'
-    - --sak-cs-aw-darkslategray: '#2e2e2e'
+  template:
+    type: colorswatch
+  colorswatch:
+    colorswatch: colorswatch_android_watch
+    colors:
+      light:
+      - --sak-cs-aw-gainsboro: '#e7e7e7'
+      - --sak-cs-aw-slategray: '#5c7886'
+      - --sak-cs-aw-lightgray: '#e7e7e7'
+      - --sak-cs-aw-darkorange: '#f79201'
+      - --sak-cs-aw-darkslategray: '#2e2e2e'
 
 colorswatch_default_gradient_white_orange:
-  type: colorswatch
-  colors:
-    light:
-    - --sak-cs-default-01: '#FFF6E3'
-    - --sak-cs-default-02: '#FFE9B9'
-    - --sak-cs-default-03: '#FFDA8A'
-    - --sak-cs-default-04: '#FFCB5B'
-    - --sak-cs-default-05: '#FFBF37'
-    - --sak-cs-default-06: '#ffb414
-    - --sak-cs-default-07: '#FFAD12'
-    - --sak-cs-default-08: '#FFA40E'
-    - --sak-cs-default-09: '#FF9C0B'
-    - --sak-cs-default-10: '#FF8C06'
+  template:
+    type: colorswatch
+  colorswatch:
+    colorswatch: colorswatch_default_gradient_white_orange
+    colors:
+      light:
+      - --sak-cs-default-01: '#FFF6E3'
+      - --sak-cs-default-02: '#FFE9B9'
+      - --sak-cs-default-03: '#FFDA8A'
+      - --sak-cs-default-04: '#FFCB5B'
+      - --sak-cs-default-05: '#FFBF37'
+      - --sak-cs-default-06: '#ffb414
+      - --sak-cs-default-07: '#FFAD12'
+      - --sak-cs-default-08: '#FFA40E'
+      - --sak-cs-default-09: '#FF9C0B'
+      - --sak-cs-default-10: '#FF8C06'
     
 
 colorswatch_gradient_white_orange:
-  type: colorswatch
-  colors:
-    - --sak-cs-gradient-white-orange-01: '#FFF6E3'
-    - --sak-cs-gradient-white-orange-02: '#FFE9B9'
-    - --sak-cs-gradient-white-orange-03: '#FFDA8A'
-    - --sak-cs-gradient-white-orange-04: '#FFCB5B'
-    - --sak-cs-gradient-white-orange-05: '#FFBF37'
-    - --sak-cs-gradient-white-orange-06: '#ffb414
-    - --sak-cs-gradient-white-orange-07: '#FFAD12'
-    - --sak-cs-gradient-white-orange-08: '#FFA40E'
-    - --sak-cs-gradient-white-orange-09: '#FF9C0B'
-    - --sak-cs-gradient-white-orange-10: '#FF8C06'
+  template:
+    type: colorswatch
+  colorswatch:
+    colorswatch: colorswatch_gradient_white_orange
+    colors:
+      - --sak-cs-gradient-white-orange-01: '#FFF6E3'
+      - --sak-cs-gradient-white-orange-02: '#FFE9B9'
+      - --sak-cs-gradient-white-orange-03: '#FFDA8A'
+      - --sak-cs-gradient-white-orange-04: '#FFCB5B'
+      - --sak-cs-gradient-white-orange-05: '#FFBF37'
+      - --sak-cs-gradient-white-orange-06: '#ffb414
+      - --sak-cs-gradient-white-orange-07: '#FFAD12'
+      - --sak-cs-gradient-white-orange-08: '#FFA40E'
+      - --sak-cs-gradient-white-orange-09: '#FF9C0B'
+      - --sak-cs-gradient-white-orange-10: '#FF8C06'
 
 colorswatch_rainbow:
-  type: colorswatch
-  colors:
-    - --sak-cs-rainbow-00: 'white'
-    - --sak-cs-rainbow-01: '#5e4fa2'
-    - --sak-cs-rainbow-02: '#3288bd'
-    - --sak-cs-rainbow-03: '#66c2a5'
-    - --sak-cs-rainbow-04: '#abdda4'
-    - --sak-cs-rainbow-05: '#e6f598'
-    - --sak-cs-rainbow-06: '#fee08b'
-    - --sak-cs-rainbow-07: '#fdae61'
-    - --sak-cs-rainbow-08: '#f46d43'
-    - --sak-cs-rainbow-09: '#d53e4f'
-    - --sak-cs-rainbow-10: '#9e0142'
+  template:
+    type: colorswatch
+  colorswatch:
+    colorswatch: colorswatch_rainbow
+    colors:
+      - --sak-cs-rainbow-00: 'white'
+      - --sak-cs-rainbow-01: '#5e4fa2'
+      - --sak-cs-rainbow-02: '#3288bd'
+      - --sak-cs-rainbow-03: '#66c2a5'
+      - --sak-cs-rainbow-04: '#abdda4'
+      - --sak-cs-rainbow-05: '#e6f598'
+      - --sak-cs-rainbow-06: '#fee08b'
+      - --sak-cs-rainbow-07: '#fdae61'
+      - --sak-cs-rainbow-08: '#f46d43'
+      - --sak-cs-rainbow-09: '#d53e4f'
+      - --sak-cs-rainbow-10: '#9e0142'
     
 colorstops_lux:
-  type: colorstops
-  defaults:
-    - thegap: 1
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
   colorstops:
+    # colorstops:
     gap: '[[thegap]]'
     colors:
       0: 'grey'
@@ -114,10 +132,12 @@ colorstops_lux:
       175: 'var(--theme-gradient-color-06)'
 
 colorstops_pressure:
-  type: colorstops
-  defaults:
-    - thegap: 1
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
   colorstops:
+    # colorstops:
     gap: '[[thegap]]'
     colors:
       980: 'lightgrey'
@@ -125,10 +145,12 @@ colorstops_pressure:
       1020: 'var(--theme-gradient-color-05)'
 
 colorstops_temperature_inside:
-  type: colorstops
-  defaults:
-    - thegap: 1
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
   colorstops:
+    # colorstops:
     gap: '[[thegap]]'
     colors:
       17: 'PowderBlue'
@@ -136,17 +158,19 @@ colorstops_temperature_inside:
       21: 'var(--theme-gradient-color-04)'
 
 colorstops_humidity:
-  type: colorstops
-  defaults:
-    - thegap: 1
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
   colorstops:
+    # colorstops:
     gap: '[[thegap]]'
     colors:
       00: 'var(--theme-gradient-color-02)'
       35: 'DarkSeaGreen'
       65: 'PowderBlue'
 
-tools_segarc_icon_state:
+tools_segarc_icon_state_OLD:
   type: toolset
   defaults: 
     - entity: 0
@@ -156,8 +180,109 @@ tools_segarc_icon_state:
       cx: 25
       cy: 50
       scale: 1
-    colorswatches:
-      - colorswatch_default_gradient_white_orange
+    colorswatch:
+      - template:
+          name: colorswatch_default_gradient_white_orange
+    tools:
+      - type: circle
+        id: 10
+        cx: 50
+        cy: 50
+        radius: 27.5
+        styles:
+          circle:
+            fill: var(--primary-background-color);
+            stroke-width: 0;
+            # filter: url(#nm-1);          
+        
+      - type: segarc
+        id: 0
+        entity_index: '[[entity]]'
+        cx: 50
+        cy: 50
+        start_angle: 0
+        end_angle: 360
+        width: 5
+        radius: 25
+        scale:
+          min: 0
+          max: 100
+        show:
+          scale: '[[show_scale]]'
+          style: 'colorlist'
+        segments:
+          colorlist:
+            gap: 1
+            colors:
+              - 'var(--theme-gradient-color-01)'
+        animation:
+          duration: 5
+        styles:
+          foreground:
+            fill: var(--theme-gradient-color-01);
+          background:
+            # fill: var(--primary-background-color);
+            # fill: lightgray;
+            # #efeeee
+            # fill: var(--secondary-background-color);
+            fill: var(--cs-theme-default-darken-15);
+              #dedddd;
+            filter: url(#is-1);
+
+      - type: icon
+        id: 1
+        entity_index: '[[entity]]'
+        cx: 50
+        cy: 42
+        align: center
+        icon_size: 15
+        styles:
+          icon:
+            filter: url(#is-1);
+            fill: lightgray;
+            color: lightgray;
+            # color: var(--primary-text-color);
+            # fill: var(--primary-text-color);
+            # opacity: 0.8;
+            
+            # color: var(--cs-theme-default-icon-primary, --primary-text-color);
+            # fill: var(--cs-theme-default-icon-primary, --primary-text-color);
+
+
+      - type: state
+        id: 2
+        entity_index: '[[entity]]'
+        cx: 50
+        cy: 56
+        styles:
+          state:
+            text-anchor: middle;
+            font-size: 2em;
+            color: var(--primary-text-color);
+            fill: var(--primary-text-color);
+
+tools_segarc_icon_state:
+  template:
+    type: toolset
+    defaults: 
+      - entity: 0
+      - show_scale: false
+  toolset:
+    from_template: true
+    toolset: segarc-icon-state
+    position:
+      cx: 25
+      cy: 50
+      scale: 1
+    colorswatch:
+      - template:
+          name: toolset_light_button
+      - template:
+          name: colorswatch_default_gradient_white_orange
+      # - template:
+          # name: colorswatch_default_gradient_white_orange
+      # - template:
+          # name: colorswatch_rainbow
     tools:
       - type: circle
         id: 10
@@ -237,14 +362,18 @@ tools_segarc_icon_state:
             fill: var(--primary-text-color);
 
 toolset_arc180_sparklinebar24:
-  type: toolset
-  defaults: 
-    - entity: 0
-    - show_scale: true
+  template:
+    type: toolset
+    defaults: 
+      - entity: 0
+      - show_scale: true
+      - cx: 50
+      - cy: 50
   toolset:
+    toolset: arc180-sparklinebar24
     position:
-      cx: 50
-      cy: 50
+      cx: '[[cx]]'
+      cy: '[[cy]]'
     tools:
       # - type: 'area'
         # id: 0
@@ -282,18 +411,18 @@ toolset_arc180_sparklinebar24:
         # keep getting the default values set by the segarc...
         # a separate segarc works with these settings in scale.width etc.
         scale:
-          min: 50
-          # min: '[[scale_min]]'
+          # min: 50
+          min: '[[scale_min]]'
           max: '[[scale_max]]'
           width: 5
-          offset: -20
+          offset: -10
         show:
           scale: '[[show_scale]]'
           style: 'colorstops'
         segments:
           colorstops:
             template:
-              name: '[[colorstops_humidity]]'
+              name: '[[colorstops_template]]'
               variables:
                 - thegap: 0
         styles:
@@ -345,11 +474,13 @@ toolset_arc180_sparklinebar24:
 #######################
 
 toolset_light_button:
-  type: toolset
-  defaults: 
-    - entity_light: 0
-    - entity_brightness: 1
+  template:
+    type: toolset
+    defaults: 
+      - entity_light: 0
+      - entity_brightness: 1
   toolset:
+    toolset: light-button
     position:
       cx: 50
       cy: 50
@@ -487,20 +618,20 @@ toolset_light_button:
         cx: 95
         cy: 95
         id: 7
-        custom_fields:
-          - brightness: >
-              [[[
-                if (typeof(entity) === 'undefined') return;
+        # custom_fields:
+          # - brightness: >
+              # [[[
+                # if (typeof(entity) === 'undefined') return;
                 
-                if ('brightness' in entity.attributes)
-                {
-                  if (entity.attributes
-                  && (entity.attributes.brightness <= 255)) {
-                    var bri = Math.round(entity.attributes.brightness / 2.55);
-                    return (bri ? bri : '0') + '%';
-                  }
-                }
-              ]]]
+                # if ('brightness' in entity.attributes)
+                # {
+                  # if (entity.attributes
+                  # && (entity.attributes.brightness <= 255)) {
+                    # var bri = Math.round(entity.attributes.brightness / 2.55);
+                    # return (bri ? bri : '0') + '%';
+                  # }
+                # }
+              # ]]]
         custom_value: >
           [[[
             if (typeof(entity) === 'undefined') return;
@@ -540,11 +671,13 @@ toolset_light_button:
 ###############################################
 
 toolset_light_button_nm:
-  type: toolset
-  defaults: 
-    - entity_light: 0
-    - entity_brightness: 1
+  template:
+    type: toolset
+    defaults: 
+      - entity_light: 0
+      - entity_brightness: 1
   toolset:
+    toolset: light-button-nm
     position:
       cx: 50
       cy: 50
@@ -662,7 +795,7 @@ toolset_light_button_nm:
       # Name of entity
       - type: name
         cx: 5
-        cy: 85
+        cy: 81
         id: 4
         entity_index: '[[entity_light]]'
         styles:
@@ -705,22 +838,22 @@ toolset_light_button_nm:
       # Brightness of entity
       - type: state
         cx: 95
-        cy: 95
+        cy: 91
         id: 7
-        custom_fields:
-          - brightness: >
-              [[[
-                if (typeof(entity) === 'undefined') return;
+        # custom_fields:
+          # - brightness: >
+              # [[[
+                # if (typeof(entity) === 'undefined') return;
                 
-                if ('brightness' in entity.attributes)
-                {
-                  if (entity.attributes
-                  && (entity.attributes.brightness <= 255)) {
-                    var bri = Math.round(entity.attributes.brightness / 2.55);
-                    return (bri ? bri : '0') + '%';
-                  }
-                }
-              ]]]
+                # if ('brightness' in entity.attributes)
+                # {
+                  # if (entity.attributes
+                  # && (entity.attributes.brightness <= 255)) {
+                    # var bri = Math.round(entity.attributes.brightness / 2.55);
+                    # return (bri ? bri : '0') + '%';
+                  # }
+                # }
+              # ]]]
         custom_value: >
           [[[
             if (typeof(entity) === 'undefined') return;
@@ -759,14 +892,15 @@ toolset_light_button_nm:
 
 ##########################
 toolset_sensor_history:
-  type: toolset
-  defaults: 
-    - entity: 0
-    - icon_color: var(--cs-orange-lighten-30);
-    - bar_color_min: var(--cs-orange-lighten-10)
-    - bar_color_max: var(--cs-orange-darken-30)
-
+  template:
+    type: toolset
+    defaults: 
+      - entity: 0
+      - icon_color: var(--cs-orange-lighten-30);
+      - bar_color_min: var(--cs-orange-lighten-10)
+      - bar_color_max: var(--cs-orange-darken-30)
   toolset:
+    toolset: sensor-history
     position:
       cx: 50
       cy: 50
