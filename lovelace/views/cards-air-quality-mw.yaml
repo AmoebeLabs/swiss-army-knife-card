@@ -804,8 +804,8 @@
           layout:
             toolsets:
               # ==============================================================================
-              - toolset:
-                name: card-title
+              - toolset: card-title
+                # name: card-title
                 position:
                   cx: 5
                   cy: 5
@@ -844,8 +844,8 @@
                       # uom:
                         # alignment-baseline: central;
 
-              - toolset:
-                name: airvisual
+              - toolset: airvisual
+                # name: airvisual
                 position:
                   cx: 173.5
                   cy: 60
@@ -932,8 +932,8 @@
                       # uom:
                         # alignment-baseline: central;
                 
-              - toolset:
-                  name: weather-type
+              - toolset: weather-type
+                  # name: weather-type
                 position:
                   cx: 26.5
                   cy: 60
@@ -1046,8 +1046,8 @@
                       usersvg:
                         filter: url(#is-1);
                         
-              - toolset:
-                name: weather-temperature
+              - toolset: weather-temperature
+                # name: weather-temperature
                 position:
                   cx: 75.5
                   cy: 60
@@ -1124,8 +1124,8 @@
                       uom:
                         alignment-baseline: central;
 
-              - toolset:
-                name: weather-humidity
+              - toolset: weather-humidity
+                # name: weather-humidity
                 position:
                   cx: 124.5
                   cy: 60
@@ -1201,8 +1201,8 @@
                         text-anchor: middle;
                         # opacity: 0.7;
 
-              - toolset:
-                name: weather-line-1
+              - toolset: weather-line-1
+                # name: weather-line-1
                 position:
                   cx: 100
                   # cy: 115
@@ -1220,8 +1220,8 @@
                         stroke-opacity: 0.7;
                         stroke-width: 5;
                         
-              - toolset:
-                name: weather-pressure
+              - toolset: weather-pressure
+                # name: weather-pressure
                 position:
                   cx: 30
                   cy: 132.5
@@ -1249,8 +1249,8 @@
                         text-anchor: end;
                         opacity: 0.6;
 
-              - toolset:
-                name: weather-wind
+              - toolset: weather-wind
+                # name: weather-wind
                 position:
                   cx: 30
                   cy: 150
@@ -1299,8 +1299,8 @@
                         text-anchor: start;
                         opacity: 0.6;
 
-              - toolset:
-                name: weather-sunset-up
+              - toolset: weather-sunset-up
+                # name: weather-sunset-up
                 position:
                   cx: 170
                   cy: 132.5
@@ -1333,8 +1333,8 @@
                         text-anchor: end;
                         opacity: 0.6;
 
-              - toolset:
-                name: weather-sunset-down
+              - toolset: weather-sunset-down
+                # name: weather-sunset-down
                 position:
                   cx: 170
                   cy: 150
@@ -1367,8 +1367,8 @@
                         text-anchor: end;
                         opacity: 0.6;
 
-              - toolset:
-                name: weather-line-2
+              - toolset: weather-line-2
+                # name: weather-line-2
                 position:
                   cx: 100
                   cy: 132.5
@@ -1385,8 +1385,8 @@
                         stroke-opacity: 0.7;
                         stroke-width: 5;
 
-              - toolset:
-                name: weather-forecast-0
+              - toolset: weather-forecast-0
+                # name: weather-forecast-0
                 position:
                   cx: 22
                   cy: 190
@@ -1523,8 +1523,8 @@
                         font-weight: 400;
                         text-anchor: middle;
 
-              - toolset:
-                name: weather-forecast-1
+              - toolset: weather-forecast-1
+                # name: weather-forecast-1
                 position:
                   cx: 61
                   cy: 190
@@ -1661,8 +1661,8 @@
                         font-weight: 400;
                         text-anchor: middle;
 
-              - toolset:
-                name: weather-forecast-2
+              - toolset: weather-forecast-2
+                # name: weather-forecast-2
                 position:
                   cx: 100
                   cy: 190
@@ -1799,8 +1799,8 @@
                         font-weight: 400;
                         text-anchor: middle;
 
-              - toolset:
-                name: weather-forecast-3
+              - toolset: weather-forecast-3
+                # name: weather-forecast-3
                 position:
                   cx: 139
                   cy: 190
@@ -1937,8 +1937,8 @@
                         font-weight: 400;
                         text-anchor: middle;
 
-              - toolset:
-                name: weather-forecast-4
+              - toolset: weather-forecast-4
+                # name: weather-forecast-4
                 position:
                   cx: 178
                   cy: 190
@@ -2115,8 +2115,8 @@
           layout:
             toolsets:
               # ==============================================================================
-              - toolset:
-                name: temperature
+              - toolset: temperature
+                # name: temperature
                 position:
                   cx: 100
                   cy: 50
