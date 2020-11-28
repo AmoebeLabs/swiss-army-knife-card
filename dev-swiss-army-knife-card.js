@@ -205,8 +205,8 @@ class Templates {
     //
     if (!argVariables && !argTemplate.template.defaults) {
       return argTemplate[argTemplate.template.type];
-      return JSON.parse(JSON.stringify(argTemplate[argTemplate.template.type]));
-      return argTemplate;
+      // return JSON.parse(JSON.stringify(argTemplate[argTemplate.template.type]));
+      // return argTemplate;
     }
     let variableArray = argVariables?.slice(0) ?? [];
 
@@ -1208,15 +1208,17 @@ class LineTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_LINE_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_LINE_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_LINE_CONFIG.styles, ...this.config.styles};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_LINE_CONFIG.styles, ...this.config.styles};
 
-    if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    this.config.show = {...DEFAULT_LINE_CONFIG.show, ...this.config.show};
+    // // if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+    // this.config.show = {...DEFAULT_LINE_CONFIG.show, ...this.config.show};
 
+    this.config = Merge.mergeDeep(DEFAULT_LINE_CONFIG, argConfig);
+    
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     if ((this.config.orientation == 'vertical') || (this.config.orientation == 'horizontal'))
@@ -1259,13 +1261,15 @@ class LineTool extends BaseTool {
 
   _renderLine() {
 
-    // Get configuration styles as the default styles
-    let configStyle = {...this.config.styles};
+    // // Get configuration styles as the default styles
+    // let configStyle = {...this.config.styles};
 
-    // Get the runtime styles, caused by states & animation settings
-    // Merge the two, where the runtime styles may overwrite the statically configured styles
-    configStyle = { ...configStyle, ...this.animationStyle};
+    // // Get the runtime styles, caused by states & animation settings
+    // // Merge the two, where the runtime styles may overwrite the statically configured styles
+    // configStyle = { ...configStyle, ...this.animationStyle};
 
+    let configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
+    
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(configStyle.line).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
@@ -1321,16 +1325,18 @@ class CircleTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_CIRCLE_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_CIRCLE_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_CIRCLE_CONFIG.styles, ...this.config.styles};
-    this.config.styles.circle = {...DEFAULT_CIRCLE_CONFIG.styles.circle, ...this.config.styles.circle};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_CIRCLE_CONFIG.styles, ...this.config.styles};
+    // this.config.styles.circle = {...DEFAULT_CIRCLE_CONFIG.styles.circle, ...this.config.styles.circle};
 
-    if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    this.config.show = {...DEFAULT_CIRCLE_CONFIG.show, ...this.config.show};
+    // // if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+    // this.config.show = {...DEFAULT_CIRCLE_CONFIG.show, ...this.config.show};
 
+    this.config = Merge.mergeDeep(DEFAULT_CIRCLE_CONFIG, argConfig);
+    
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.radius)
@@ -1432,15 +1438,17 @@ class UserSvgTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_USERSVG_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_USERSVG_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_USERSVG_CONFIG.styles, ...this.config.styles};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_USERSVG_CONFIG.styles, ...this.config.styles};
 
-    if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    this.config.show = {...DEFAULT_USERSVG_CONFIG.show, ...this.config.show};
+    // // if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+    // this.config.show = {...DEFAULT_USERSVG_CONFIG.show, ...this.config.show};
 
+    this.config = Merge.mergeDeep(DEFAULT_USERSVG_CONFIG, argConfig);
+    
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.images = {};
@@ -1560,15 +1568,17 @@ class RectangleTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_RECTANGLE_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_RECTANGLE_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_RECTANGLE_CONFIG.styles, ...this.config.styles};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_RECTANGLE_CONFIG.styles, ...this.config.styles};
 
-    if (argConfig.show) this.config.show = {...argConfig.show};
-    this.config.show = {...DEFAULT_RECTANGLE_CONFIG.show, ...this.config.show};
+    // if (argConfig.show) this.config.show = {...argConfig.show};
+    // this.config.show = {...DEFAULT_RECTANGLE_CONFIG.show, ...this.config.show};
 
+    this.config = Merge.mergeDeep(DEFAULT_RECTANGLE_CONFIG, argConfig);
+    
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.svg.rx = Utils.calculateSvgDimension(argConfig.rx)
@@ -1893,16 +1903,18 @@ class EntityIconTool extends BaseTool {
     }
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_ICON_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_ICON_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_ICON_CONFIG.styles, ...this.config.styles};
-    // Don't forget to merge icon style!
-    this.config.styles.icon = {...DEFAULT_ICON_CONFIG.styles.icon, ...this.config.styles.icon};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_ICON_CONFIG.styles, ...this.config.styles};
+    // // Don't forget to merge icon style!
+    // this.config.styles.icon = {...DEFAULT_ICON_CONFIG.styles.icon, ...this.config.styles.icon};
 
-    //if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    this.config.show = {...DEFAULT_ICON_CONFIG.show, ...this.config.show, ...argConfig.show};
+    // //if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+    // this.config.show = {...DEFAULT_ICON_CONFIG.show, ...this.config.show, ...argConfig.show};
+
+    this.config = Merge.mergeDeep(DEFAULT_ICON_CONFIG, argConfig);
 
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
@@ -2228,15 +2240,17 @@ class BadgeTool extends BaseTool {
     }
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_BADGE_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_BADGE_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_BADGE_CONFIG.styles, ...this.config.styles};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_BADGE_CONFIG.styles, ...this.config.styles};
 
-    if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    this.config.show = {...DEFAULT_BADGE_CONFIG.show, ...this.config.show};
+    // // if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+    // this.config.show = {...DEFAULT_BADGE_CONFIG.show, ...this.config.show};
 
+    this.config = Merge.mergeDeep(DEFAULT_BADGE_CONFIG, argConfig);
+    
     // Coordinates from left and right part.
     this.svg.radius = 5;
     this.svg.leftXpos = this.svg.x;
@@ -2346,17 +2360,19 @@ class EntityStateTool extends BaseTool {
     }
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_STATE_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_STATE_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    this._stateValueIsDirty = false;
+    // this._stateValueIsDirty = false;
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_STATE_CONFIG.styles, ...this.config.styles};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_STATE_CONFIG.styles, ...this.config.styles};
 
-    //if (argConfig.show) this.config.show = {...argConfig.show};
-    this.config.show = {...DEFAULT_STATE_CONFIG.show, ...argConfig.show};
+    // //if (argConfig.show) this.config.show = {...argConfig.show};
+    // this.config.show = {...DEFAULT_STATE_CONFIG.show, ...argConfig.show};
 
+    this.config = Merge.mergeDeep(DEFAULT_STATE_CONFIG, argConfig);
+    
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -2626,13 +2642,15 @@ class EntityNameTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_NAME_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_NAME_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_NAME_CONFIG.styles, ...this.config.styles};
-    this.config.styles.name = {...DEFAULT_NAME_CONFIG.styles.name, ...this.config.styles.name};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_NAME_CONFIG.styles, ...this.config.styles};
+    // this.config.styles.name = {...DEFAULT_NAME_CONFIG.styles.name, ...this.config.styles.name};
 
+    this.config = Merge.mergeDeep(DEFAULT_NAME_CONFIG, argConfig);
+    
     this._name = {};
 
     if (this.dev.debug) console.log('EntityName constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
@@ -2726,12 +2744,13 @@ class EntityAreaTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_AREA_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_AREA_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_AREA_CONFIG.styles, ...this.config.styles};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_AREA_CONFIG.styles, ...this.config.styles};
 
+    this.config = Merge.mergeDeep(DEFAULT_AREA_CONFIG, argConfig);
     //this._name = {};
 
     // Text is rendered in its own context. No need for SVG coordinates.
@@ -2761,13 +2780,15 @@ class EntityAreaTool extends BaseTool {
       }
     }
 
-    // Get configuration styles as the default styles
-    let configStyle = {...ENTITY_AREA_STYLES};
-    //if (item.styles) configStyle = Object.assign(configStyle, ...item.styles);
-    if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
+    // // Get configuration styles as the default styles
+    // let configStyle = {...ENTITY_AREA_STYLES};
+    // //if (item.styles) configStyle = Object.assign(configStyle, ...item.styles);
+    // if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
 
-    // Merge the two, where the runtime styles may overwrite the statically configured styles
-    configStyle = { ...configStyle, ...this.animationStyle};
+    // // Merge the two, where the runtime styles may overwrite the statically configured styles
+    // configStyle = { ...configStyle, ...this.animationStyle};
+
+    let configStyle = Merge.mergeDeep(ENTITY_AREA_STYLES, this.config.styles, this.animationStyle);
 
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(configStyle.area).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
@@ -2853,7 +2874,7 @@ class HorseshoeTool extends BaseTool {
     //if (argConfig.horseshoe_scale) this.config.horseshoe_scale = Object.assign(...argConfig.horseshoe_scale);
     this.config.horseshoe_scale = {...DEFAULT_HORSESHOE_CONFIG.horseshoe_scale, ...this.config.horseshoe_scale};
 
-    if (argConfig.horseshoe_state) this.config.horseshoe_state = Object.assign(...argConfig.horseshoe_state);
+    // if (argConfig.horseshoe_state) this.config.horseshoe_state = Object.assign(...argConfig.horseshoe_state);
     this.config.horseshoe_state = {...DEFAULT_HORSESHOE_CONFIG.horseshoe_state, ...this.config.horseshoe_state};
 
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
@@ -3129,14 +3150,16 @@ class SparklineBarChartTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_BARCHART_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_BARCHART_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_BARCHART_CONFIG.styles, ...this.config.styles};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_BARCHART_CONFIG.styles, ...this.config.styles};
 
-    this.config.show = {...DEFAULT_BARCHART_CONFIG.show, ...this.config.show};
+    // this.config.show = {...DEFAULT_BARCHART_CONFIG.show, ...this.config.show};
 
+    this.config = Merge.mergeDeep(DEFAULT_BARCHART_CONFIG, argConfig);
+    
     // Calculate real dimensions...
     this.svg.margin = Utils.calculateSvgDimension(this.config.margin);
     // #TODO: Nog check op style? voor hor anders dan vert???
@@ -3391,34 +3414,36 @@ class SegmentedArcTool extends BaseTool {
 
     if (this.dev.performance) console.time("--> "+ this.toolId + " PERFORMANCE SegmentedArcTool::constructor");
 
-    this.config = {...DEFAULT_SEGARC_CONFIG};
-    //console.log("segarc - scale fuckup config1", this.config);
+    // this.config = {...DEFAULT_SEGARC_CONFIG};
+    // //console.log("segarc - scale fuckup config1", this.config);
 
-    this.config = {...this.config, ...argConfig};
-    //this.config = {...DEFAULT_SEGARC_CONFIG, ...argConfig};
+    // this.config = {...this.config, ...argConfig};
+    // //this.config = {...DEFAULT_SEGARC_CONFIG, ...argConfig};
 
-    // Check for gap. Big enough?
-    if (this.config.segments.gap > 0) {
-      const minGap = this.config.radius * Math.PI / SVG_VIEW_BOX / 2;
-      this.config.segments.gap = Math.max(minGap, this.config.segments.gap);
-    }
+    // // Check for gap. Big enough?
+    // if (this.config.segments.gap > 0) {
+      // const minGap = this.config.radius * Math.PI / SVG_VIEW_BOX / 2;
+      // this.config.segments.gap = Math.max(minGap, this.config.segments.gap);
+    // }
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_SEGARC_CONFIG.styles, ...this.config.styles};
-    // this.config.styles_bg = {...DEFAULT_SEGARC_CONFIG.styles_bg, ...this.config.styles_bg};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_SEGARC_CONFIG.styles, ...this.config.styles};
+    // // this.config.styles_bg = {...DEFAULT_SEGARC_CONFIG.styles_bg, ...this.config.styles_bg};
 
-    // #TODO
-    // Next line generates an error: Found non-callable @@interator
-    //if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    this.config.show = {...DEFAULT_SEGARC_CONFIG.show, ...this.config.show};
+    // // #TODO
+    // // Next line generates an error: Found non-callable @@interator
+    // //if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+    // this.config.show = {...DEFAULT_SEGARC_CONFIG.show, ...this.config.show};
     //console.log("segarc - scale fuckup config2", this.config);
 
     // @2020.11.24 Testing...
-    this.config = Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig);
+    // this.config = Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig);
 
     // For certainty...
-    this.config.scale = {...DEFAULT_SEGARC_CONFIG.scale, ...argConfig.scale};
+    // this.config.scale = {...DEFAULT_SEGARC_CONFIG.scale, ...argConfig.scale};
 
+    this.config = Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig);
+    
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.radius);
@@ -3792,12 +3817,20 @@ class SegmentedArcTool extends BaseTool {
       var arcSizePrev = Math.abs(arcEndPrev - this.config.start_angle);
 
       // Styles are already converted to an Object {}...
-      let configStyleFg = {...this.config.styles.foreground};
-      const configStyleFgStr = JSON.stringify(configStyleFg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      if (!this.configStyleFgStr) {
+        let configStyleFg = {...this.config.styles.foreground};
+        // const configStyleFgStr = JSON.stringify(configStyleFg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+        this.configStyleFgStr = JSON.stringify(configStyleFg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      }
+      let configStyleFgStr = this.configStyleFgStr;
 
       // Draw background of segmented arc...
-      let configStyleBg = {...this.config.styles.background};
-      const configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      if (!this.configStyleBgStr) {
+        let configStyleBg = {...this.config.styles.background};
+        // const configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+        this.configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      }
+      let configStyleBgStr = this.configStyleBgStr;
 
       var svgItems = [];
 
@@ -4417,8 +4450,6 @@ class devSwissArmyKnifeCard extends LitElement {
     this.toolsets = [];
     this.tools = [];
 
-    this.colorCache = [];
-    
     // For history query interval updates.
     this.stateChanged = true;
     this.updating = false;
@@ -4463,6 +4494,8 @@ class devSwissArmyKnifeCard extends LitElement {
 
     // Fun test. write to lovelace...
     this.lovelace.sakIconCache = {};
+    this.lovelace.colorCache = [];
+    
 
     if (this.dev.debug) console.log('*****Event - card - constructor', this.cardId, new Date().getTime());
 
@@ -6482,8 +6515,8 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
   _colorToRGBA(argColor) {
     // return color if found in colorCache...
-    if (argColor in this.colorCache) {
-      return this.colorCache[argColor];
+    if (argColor in this.lovelace.colorCache) {
+      return this.lovelace.colorCache[argColor];
     }
 
     var theColor = argColor;
@@ -6503,7 +6536,7 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     ctx.fillRect(0, 0, 1, 1);
     const outColor = [ ...ctx.getImageData(0, 0, 1, 1).data ];
 
-    this.colorCache[argColor] = outColor;
+    this.lovelace.colorCache[argColor] = outColor;
     return outColor;
   }
 
