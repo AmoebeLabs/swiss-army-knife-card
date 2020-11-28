@@ -196,6 +196,51 @@ class Templates {
     return JSON.parse(jsonConfig);
   }
 
+  static replaceVariables3(argVariables, argTemplate) {
+
+    // If no variables specified, return template contents, so not the first object, but the contents!!!
+    // ie template.toolset or template.colorstops. The toolset and colorstops objects are removed...
+    //
+    // If not, one gets toolsets[1].toolset.position iso toolsets[1].position.
+    //
+    if (!argVariables && !argTemplate.template.defaults) {
+      return argTemplate[argTemplate.template.type];
+      return JSON.parse(JSON.stringify(argTemplate[argTemplate.template.type]));
+      return argTemplate;
+    }
+    let variableArray = argVariables?.slice(0) ?? [];
+
+    // Merge given variables and defaults...
+    if (argTemplate.template.defaults) {
+      variableArray = variableArray.concat(argTemplate.template.defaults);
+    }
+
+    let jsonConfig = JSON.stringify(argTemplate[argTemplate.template.type]);
+    // console.log("Templates::replaceVariables2, -1- jsonConfig=", jsonConfig);
+    variableArray.forEach(variable => {
+      const key = Object.keys(variable)[0];
+      const value = Object.values(variable)[0];
+      if (typeof value === 'number' || typeof value === 'boolean') {
+        const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
+        jsonConfig = jsonConfig.replace(rxp2, value);
+        // console.log("Templates::replaceVariables2, -2- jsonConfig=", jsonConfig);
+      }
+      if (typeof value === 'object') {
+        const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
+        const valueString = JSON.stringify(value);
+        jsonConfig = jsonConfig.replace(rxp2, valueString);
+        // console.log("Templates::replaceVariables2, -3- jsonConfig=", jsonConfig);
+      } else {
+        const rxp = new RegExp(`\\[\\[${key}\\]\\]`, 'gm');
+        jsonConfig = jsonConfig.replace(rxp, value);
+        // console.log("Templates::replaceVariables2, -4- jsonConfig=", jsonConfig);
+      }
+    });
+
+    // console.log("Templates::replaceVariables2, -5- jsonConfig=", jsonConfig);
+    return (JSON.parse(jsonConfig));
+  }
+
 }
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1881,7 +1926,10 @@ class EntityIconTool extends BaseTool {
     const adjust = (align == 'center' ? 0.5 : (align == 'start' ? -1 : +1));
 
   //  const parentClientWidth = this.parentElement.clientWidth;
-    const clientWidth = this._card.clientWidth; // hard coded adjust for padding...
+
+    // #TODO
+    // const clientWidth = this._card.clientWidth; // hard coded adjust for padding...
+    const clientWidth = 400; // testing
     const correction = clientWidth / this._card.viewBox.width;
 
     // icon is not calculated against viewbox, but against toolset pos
@@ -1961,7 +2009,10 @@ class EntityIconTool extends BaseTool {
       const adjust = (align == 'center' ? 0.5 : (align == 'start' ? -1 : +1));
 
     //  const parentClientWidth = this.parentElement.clientWidth;
-      const clientWidth = this._card.clientWidth; // hard coded adjust for padding...
+      // #TODO:
+      // Testing performance...
+      // const clientWidth = this._card.clientWidth; // hard coded adjust for padding...
+      const clientWidth = 400;
       var correction = clientWidth / (this._card.viewBox.width);
       var correctionRect = clientWidth / (this._card.viewBox.width + 50);
 
@@ -2030,15 +2081,15 @@ class EntityIconTool extends BaseTool {
 
     // Test with global cache in lovelace...
 
-    if (!this._card.lovelace.lovelace.sakIconCache[icon]) {
+    if (!this._card.lovelace.sakIconCache[icon]) {
       this.iconSvg = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot.querySelectorAll("*")[0]?.path;
       if (!this.iconSvg) {
         this._card.pleaseReRender();
       } else {
-        this._card.lovelace.lovelace.sakIconCache[icon] = this.iconSvg;
+        this._card.lovelace.sakIconCache[icon] = this.iconSvg;
       }
     } else {
-      this.iconSvg = this._card.lovelace.lovelace.sakIconCache[icon];
+      this.iconSvg = this._card.lovelace.sakIconCache[icon];
       // console.log("_renderIcon, icon from global cache!!, icon=", icon, "svg=", this.iconSvg);
     }
     
@@ -3442,7 +3493,7 @@ class SegmentedArcTool extends BaseTool {
         colorstops = this.config.segments.colorstops;
         if (this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]) {
           if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops found', colorstops.template, this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
-          tcolorstops = Templates.replaceVariables2(colorstops.template.variables, this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
+          tcolorstops = Templates.replaceVariables3(colorstops.template.variables, this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
           if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops replaced', colorstops.template, tcolorstops);
 
           // #testing mergeDeep
@@ -3460,6 +3511,7 @@ class SegmentedArcTool extends BaseTool {
 
           // And this one?? Seems to work. tcolorstops is a new object, so assigning should be no problem. Easy??
           this.config.segments.colorstops = tcolorstops;
+          // this.config.segments = colorstops;
           if (this.dev.debug) console.log("SegmentedArcTool::constructor, merge colorstops end config", this.toolId, this.config.segments);
           if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops config', this.config.segments);
         }
@@ -4410,7 +4462,7 @@ class devSwissArmyKnifeCard extends LitElement {
     if (!this.lovelace) console.error("card::constructor - Can't get Lovelace panel");
 
     // Fun test. write to lovelace...
-    this.lovelace.lovelace.sakIconCache = {};
+    this.lovelace.sakIconCache = {};
 
     if (this.dev.debug) console.log('*****Event - card - constructor', this.cardId, new Date().getTime());
 
@@ -5270,41 +5322,65 @@ class devSwissArmyKnifeCard extends LitElement {
     // NEW for ts processing
     this.toolset = [];
 
-    function replacer(key, value) {
-      // Filtering out properties
-      if (typeof value === 'string') {
-        return undefined;
-      }
-      return value;
-    }
+    // function replacer(key, value) {
+      // // Filtering out properties
+      // if (typeof value === 'string') {
+        // return undefined;
+      // }
+      // return value;
+    // }
 
-    var foo = {foundation: 'Mozilla', model: 'box', week: 45, transport: 'car', month: 7};
-    var str = JSON.stringify(foo, replacer);
-    console.log("setconfig, json str", foo, "result=", str);
+    // var foo = {foundation: 'Mozilla', model: 'box', week: 45, transport: 'car', month: 7};
+    // var str = JSON.stringify(foo, replacer);
+    // console.log("setconfig, json str", foo, "result=", str);
 
     var thisMe = this;
     function findTemplate(key, value) {
       // Filtering out properties
       // console.log("findTemplate, key=", key, "value=", value);
-      if (value?.template) {
+      if (value.template) {
         const template = thisMe.lovelace.lovelace.config.sak_templates[value.template.name];
-        var replacedValue = Templates.replaceVariables2(value.template.variables, template);
+        var replacedValue = Templates.replaceVariables3(value.template.variables, template);
+        // Hmm. cannot add .template var. object is not extensible...
+        // replacedValue.template = 'replaced';
+        var secondValue = Merge.mergeDeep(replacedValue);
+        secondValue.from_template = 'replaced';
 
         var newValue = {};
         // newValue[template.type] = replacedValue;//template[template.type];
         newValue = replacedValue;//template[template.type];
-        console.log("findTemplate FOUND, key=", key, "value=", value, "replaced=", replacedValue);
-        console.log("findTemplate in sak", thisMe.lovelace.lovelace.config.sak_templates[value.template.name]);
-        
-        return newValue;
+        // console.log("findTemplate FOUND, key/type=", key, typeof key, "value/type=", value, typeof value, "replaced=", replacedValue);
+        // console.log("findTemplate in sak", thisMe.lovelace.lovelace.config.sak_templates[value.template.name], thisMe.lovelace.lovelace.config.sak_templates);
+        // if (typeof key === 'string') {
+          // return replacedValue[value.template.type];
+        // }
+        // if (replacedValue[key]) {
+          // return replacedValue[key];
+        // }
+        // console.log("findTemplate return key/value", key, replacedValue);
+        return secondValue;
+        return replacedValue;
       }
+      if (key == 'template') {
+        // Template is gone via replace!!!! No template anymore, as there is no merge done.
+        console.log("findTemplate return key=template/value", key, undefined);
+        
+        return value;
+        return new string('replaced');
+      }
+      // console.log("findTemplate return key/value", key, value);
       return value;
     }
 
     
-    var cfg = JSON.stringify(this.config.layout, findTemplate);
-    var cfgobj = JSON.parse(cfg)
-    console.log("setconfig, json toolsets", this.config.layout.toolsets, "result=", cfgobj);
+    var cfg = JSON.stringify(this.config.layout.toolsets, findTemplate);
+    var cfgobj = JSON.parse(cfg);
+    
+    // nasty trick for now
+    //this.config.layout.toolsets = cfgobj;
+    // console.log("new config", cfgobj);
+    
+    // console.log("setconfig, json toolsets findTemplate", this.config.layout.toolsets, "result=", cfgobj);
     
     // #TODO 2020.10.14
     // - Merge templates into the toolsets (formerly groups) and tools (formerly tools)
@@ -5354,7 +5430,61 @@ class devSwissArmyKnifeCard extends LitElement {
 
       if (!this.ts) this.ts = [];
 
-      if (toolsetCfg.template) {
+      if (true) {
+        // door lijst  van originele config.
+        // vervang extra id in cfgobj waar template al is vervangen.
+        // kan dat?
+        
+        var found = false;
+        var toolAdd = [];
+        var atIndex = null;
+
+        toolList = cfgobj[toolidx].tools;
+        // Check for empty tool list. This can be if template is used. Tools come from template, not from config...
+        if (toolsetCfg.tools) {
+          toolsetCfg.tools.map((tool, index) => {
+            cfgobj[toolidx].tools.map((toolT, indexT) => {
+              if (tool.id == toolT.id) {
+                // toolList[indexT] = {...toolList[indexT], ...tool};
+                
+                // #TODO
+                // @202.11.24 replace next line with previous...
+                // HUH?
+                // Some cards need toollist[indext], tool to work, and others reversed?? WHY ????? WHAT IS HAPPENING??
+                // 8T needs toollist, tool. But 10,11 need tool, toollist ??. 10 and 11 use decluttering_template. Is that the real problem here??
+                
+                // Nope, toollist, tool is the right order.
+                // Something is going wrong with a color template: using the wrong configuration orso???
+                // console.log("setconfig template, id found", tool.id, toolList, toolList[indexT], tool);
+                
+                if (toolsetCfg.template) {
+                  // console.log("setconfig, template string, config=", this.config.layout.toolsets[toolidx].position, "replaced=", cfgobj[toolidx].position);
+                  if (this.config.layout.toolsets[toolidx].position)
+                    cfgobj[toolidx].position = Merge.mergeDeep(this.config.layout.toolsets[toolidx].position);
+
+                  toolList[indexT] = Merge.mergeDeep(toolList[indexT], tool);
+                  
+                  // After merging/replacing. We might get some template definitions back!!!!!!
+                  toolList[indexT] = JSON.parse(JSON.stringify(toolList[indexT], findTemplate));
+                
+                // toolList[indexT] = Merge.mergeDeep(tool, toolList[indexT]);
+                // #TODO
+                // No deep cloning/merging is done??
+                //toolList[indexT].scale = {...toolList[indexT].scale, ...tool.scale};
+                found = true;
+                }
+//                atIndex = indexT;
+                if (this.dev.debug) console.log("card::setConfig - got toolsetCfg toolid", tool, index, toolT, indexT, tool);
+              }
+            });
+            if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
+          });
+        }
+        toolList = toolList.concat(toolAdd);
+      }
+
+
+      if (false && toolsetCfg.template) {
         if (this.dev.debug) console.log("card::setConfig -1- got toolsetCfg template", this.cardId, toolsetCfg, toolidx);
 
         if (this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]) {
@@ -5362,7 +5492,7 @@ class devSwissArmyKnifeCard extends LitElement {
 
           // Get template and fill variables.
           // Result: filled template!
-          toolsetCfgFromTemplate = Templates.replaceVariables2(toolsetCfg.template.variables, this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]);
+          toolsetCfgFromTemplate = Templates.replaceVariables3(toolsetCfg.template.variables, this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]);
           if (this.dev.debug) console.log("card::setConfig -3- got toolsetCfg replaced vars", this.cardId, "result=", toolsetCfgFromTemplate);
           
           // Merge/overwrite position from template by card config
@@ -5458,6 +5588,11 @@ class devSwissArmyKnifeCard extends LitElement {
 
       // Create and push
       toolsetCfg.tools = toolList;
+      
+      // Testing new template replace stuff...
+      if (true) {
+        toolsetCfg = cfgobj[toolidx];
+      }
       const newToolset = new Toolset(this, toolsetCfg);
 
       this.ts.push(newToolset);
