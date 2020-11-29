@@ -21,10 +21,36 @@
 # sak-card-cs list...
 # sak-toolset-cs list...
 
+sak_filter_definitions:
+  filters:
+    - filter: nm-1-reverse
+      content: |
+        <filter id="nm-1-reverse" x="-50%" y="-50%" width="300%" height="300%">
+          <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+          <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+          <feMerge result="merge">
+            <feMergeNode in="dropShadow1"/>
+            <feMergeNode in="dropShadow"/>
+          </feMerge>
+        </filter>
+
+user_filter_definitions:
+  filters:
+    - filter: nm-1-reverse
+      content: |
+        <filter id="nm-1-reverse" x="-50%" y="-50%" width="300%" height="300%">
+          <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+          <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+          <feMerge result="merge">
+            <feMergeNode in="dropShadow1"/>
+            <feMergeNode in="dropShadow"/>
+          </feMerge>
+        </filter>
+
 # The default colorswatch is ALWAYS loaded for the card!
 # NOTE:
 # - colorswatch or color palette? Latter seems the best one. Swatch is more colors/combintions??
-colorswatch_default:
+color_palette_default:
   template:
     type: colorswatches
   colorswatches:
@@ -47,11 +73,11 @@ colorswatch_default:
 # - slategray: kind of green/gray
 # - darkslategray: almost black for font
 
-colorswatch_android_watch:
+color_palette_android_watch:
   template:
     type: colorswatch
   colorswatch:
-    colorswatch: colorswatch_android_watch
+    colorswatch: color_palette_android_watch
     colors:
       light:
       - --sak-cs-aw-gainsboro: '#e7e7e7'
@@ -60,11 +86,11 @@ colorswatch_android_watch:
       - --sak-cs-aw-darkorange: '#f79201'
       - --sak-cs-aw-darkslategray: '#2e2e2e'
 
-colorswatch_default_gradient_white_orange:
+color_palette_default_gradient_white_orange:
   template:
     type: colorswatch
   colorswatch:
-    colorswatch: colorswatch_default_gradient_white_orange
+    colorswatch: color_palette_default_gradient_white_orange
     colors:
       light:
       - --sak-cs-default-01: '#FFF6E3'
@@ -79,11 +105,11 @@ colorswatch_default_gradient_white_orange:
       - --sak-cs-default-10: '#FF8C06'
     
 
-colorswatch_gradient_white_orange:
+color_palette_gradient_white_orange:
   template:
     type: colorswatch
   colorswatch:
-    colorswatch: colorswatch_gradient_white_orange
+    colorswatch: color_palette_gradient_white_orange
     colors:
       - --sak-cs-gradient-white-orange-01: '#FFF6E3'
       - --sak-cs-gradient-white-orange-02: '#FFE9B9'
@@ -96,11 +122,11 @@ colorswatch_gradient_white_orange:
       - --sak-cs-gradient-white-orange-09: '#FF9C0B'
       - --sak-cs-gradient-white-orange-10: '#FF8C06'
 
-colorswatch_rainbow:
+color_palette_rainbow:
   template:
     type: colorswatch
   colorswatch:
-    colorswatch: colorswatch_rainbow
+    colorswatch: color_palette_rainbow
     colors:
       - --sak-cs-rainbow-00: 'white'
       - --sak-cs-rainbow-01: '#5e4fa2'
@@ -182,7 +208,7 @@ tools_segarc_icon_state_OLD:
       scale: 1
     colorswatch:
       - template:
-          name: colorswatch_default_gradient_white_orange
+          name: color_palette_default_gradient_white_orange
     tools:
       - type: circle
         id: 10
@@ -278,11 +304,7 @@ tools_segarc_icon_state:
       - template:
           name: toolset_light_button
       - template:
-          name: colorswatch_default_gradient_white_orange
-      # - template:
-          # name: colorswatch_default_gradient_white_orange
-      # - template:
-          # name: colorswatch_rainbow
+          name: color_palette_default_gradient_white_orange
     tools:
       - type: circle
         id: 10
@@ -704,6 +726,7 @@ toolset_light_button_nm:
         cy: 40
         # radius: 25
         radius: 28
+        entity_index: '[[entity_light]]'
         animations:
           - state: 'on'
             styles:
