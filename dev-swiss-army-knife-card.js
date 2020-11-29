@@ -159,42 +159,37 @@ class Templates {
   *
   */
 
-  static replaceVariables2(argVariables, argTemplate) {
+  // static replaceVariables2(argVariables, argTemplate) {
 
-    if (!argVariables && !argTemplate.defaults) {
-      return argTemplate;
-    }
-    let variableArray = argVariables?.slice(0) ?? [];
+    // if (!argVariables && !argTemplate.defaults) {
+      // return argTemplate;
+    // }
+    // let variableArray = argVariables?.slice(0) ?? [];
 
-    if (argTemplate.defaults) {
-      variableArray = variableArray.concat(argTemplate.defaults);
-    }
+    // if (argTemplate.defaults) {
+      // variableArray = variableArray.concat(argTemplate.defaults);
+    // }
 
-    let jsonConfig = JSON.stringify(argTemplate[argTemplate.type]);
-    // console.log("Templates::replaceVariables2, -1- jsonConfig=", jsonConfig);
-    variableArray.forEach(variable => {
-      const key = Object.keys(variable)[0];
-      const value = Object.values(variable)[0];
-      if (typeof value === 'number' || typeof value === 'boolean') {
-        const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
-        jsonConfig = jsonConfig.replace(rxp2, value);
-        // console.log("Templates::replaceVariables2, -2- jsonConfig=", jsonConfig);
-      }
-      if (typeof value === 'object') {
-        const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
-        const valueString = JSON.stringify(value);
-        jsonConfig = jsonConfig.replace(rxp2, valueString);
-        // console.log("Templates::replaceVariables2, -3- jsonConfig=", jsonConfig);
-      } else {
-        const rxp = new RegExp(`\\[\\[${key}\\]\\]`, 'gm');
-        jsonConfig = jsonConfig.replace(rxp, value);
-        // console.log("Templates::replaceVariables2, -4- jsonConfig=", jsonConfig);
-      }
-    });
+    // let jsonConfig = JSON.stringify(argTemplate[argTemplate.type]);
+    // variableArray.forEach(variable => {
+      // const key = Object.keys(variable)[0];
+      // const value = Object.values(variable)[0];
+      // if (typeof value === 'number' || typeof value === 'boolean') {
+        // const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
+        // jsonConfig = jsonConfig.replace(rxp2, value);
+      // }
+      // if (typeof value === 'object') {
+        // const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
+        // const valueString = JSON.stringify(value);
+        // jsonConfig = jsonConfig.replace(rxp2, valueString);
+      // } else {
+        // const rxp = new RegExp(`\\[\\[${key}\\]\\]`, 'gm');
+        // jsonConfig = jsonConfig.replace(rxp, value);
+      // }
+    // });
 
-    // console.log("Templates::replaceVariables2, -5- jsonConfig=", jsonConfig);
-    return JSON.parse(jsonConfig);
-  }
+    // return JSON.parse(jsonConfig);
+  // }
 
   static replaceVariables3(argVariables, argTemplate) {
 
@@ -205,8 +200,6 @@ class Templates {
     //
     if (!argVariables && !argTemplate.template.defaults) {
       return argTemplate[argTemplate.template.type];
-      // return JSON.parse(JSON.stringify(argTemplate[argTemplate.template.type]));
-      // return argTemplate;
     }
     let variableArray = argVariables?.slice(0) ?? [];
 
@@ -216,28 +209,23 @@ class Templates {
     }
 
     let jsonConfig = JSON.stringify(argTemplate[argTemplate.template.type]);
-    // console.log("Templates::replaceVariables2, -1- jsonConfig=", jsonConfig);
     variableArray.forEach(variable => {
       const key = Object.keys(variable)[0];
       const value = Object.values(variable)[0];
       if (typeof value === 'number' || typeof value === 'boolean') {
         const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
         jsonConfig = jsonConfig.replace(rxp2, value);
-        // console.log("Templates::replaceVariables2, -2- jsonConfig=", jsonConfig);
       }
       if (typeof value === 'object') {
         const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
         const valueString = JSON.stringify(value);
         jsonConfig = jsonConfig.replace(rxp2, valueString);
-        // console.log("Templates::replaceVariables2, -3- jsonConfig=", jsonConfig);
       } else {
         const rxp = new RegExp(`\\[\\[${key}\\]\\]`, 'gm');
         jsonConfig = jsonConfig.replace(rxp, value);
-        // console.log("Templates::replaceVariables2, -4- jsonConfig=", jsonConfig);
       }
     });
 
-    // console.log("Templates::replaceVariables2, -5- jsonConfig=", jsonConfig);
     return (JSON.parse(jsonConfig));
   }
 
@@ -253,7 +241,6 @@ class Toolset {
     this.toolsetId = Math.random().toString(36).substr(2, 9);
     this._card = argCard;
     this.dev = {...this._card.dev};
-    //this.dev.debug = this._card.config.dev.debug;
     if (this.dev.performance) console.time("--> "+ this.toolsetId + " PERFORMANCE Toolset::constructor");
 
 
@@ -322,9 +309,7 @@ class Toolset {
                      cy: 0 / 100 * SVG_DEFAULT_DIMENSIONS,
                      scale: this.config.position.scale ? this.config.position.scale : 1 };
 
-
       if (this.dev.debug) console.log("Toolset::constructor toolConfig", this.toolsetId, argConfig, argPos);
-
 
       const newTool = new toolsNew[toolConfig.type](this._card, argConfig, argPos);
       this.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
@@ -569,6 +554,8 @@ class BaseTool {
     this.svg.y = (this.svg.cy) - (this.svg.height / 2);
     
     this.animationStyle = {};
+    this.animationStyleHasChanged = true;
+
   }
 
  /*******************************************************************************
@@ -595,15 +582,12 @@ class BaseTool {
         this._card._hass.user,
         this._card._hass,
       );
-      //console.log("BaseTool::set value contains CUSTOM VALUE", this.config.custom_value, someValue);
       localState = someValue;
     }
-    //console.log("BaseTool::set value contains localState", localState);
 
     this._stateValuePrev = this._stateValue || localState;
     this._stateValue = localState;
     this._stateValueIsDirty = true;
-    //console.log("BaseTool::set value contains localState", localState, this._stateValuePrev, this._stateValue);
 
     // If animations defined, calculate style for current state.
 
@@ -663,6 +647,9 @@ class BaseTool {
         this.animationStyle = Merge.mergeDeep(this.animationStyle, item.styles)
       }
 
+      // Add for performance update on style creation
+      // Assume in this simple case that animationStyle has changed
+      this.animationStyleHasChanged = true;
       // Can this work?????????????????
       // #TODO:
       // Store activeAnimation. Should be renamed, and used for more purposes, as via this method
@@ -701,15 +688,17 @@ class RangeSliderTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    this.config = {...DEFAULT_SLIDER_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_SLIDER_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_SLIDER_CONFIG.styles, ...this.config.styles};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_SLIDER_CONFIG.styles, ...this.config.styles};
 
-    if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    this.config.show = {...DEFAULT_SLIDER_CONFIG.show, ...this.config.show};
+    // // if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+    // this.config.show = {...DEFAULT_SLIDER_CONFIG.show, ...this.config.show};
 
+    this.config = Merge.mergeDeep(DEFAULT_SLIDER_CONFIG, argConfig);
+    
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.svg.length = Utils.calculateSvgDimension(argConfig.length)
@@ -1155,7 +1144,6 @@ class RangeSliderTool extends BaseTool {
   *
   */
   render() {
-// viewbox="0,0,400,400"
     return svg`
       <svg  xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}" class="rangeslider" pointer-events="all"
       >
@@ -1208,18 +1196,9 @@ class LineTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    // this.config = {...DEFAULT_LINE_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_LINE_CONFIG.styles, ...this.config.styles};
-
-    // // if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    // this.config.show = {...DEFAULT_LINE_CONFIG.show, ...this.config.show};
-
     this.config = Merge.mergeDeep(DEFAULT_LINE_CONFIG, argConfig);
     
-    this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
+    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     if ((this.config.orientation == 'vertical') || (this.config.orientation == 'horizontal'))
         this.svg.length = Utils.calculateSvgDimension(argConfig.length);
@@ -1261,17 +1240,13 @@ class LineTool extends BaseTool {
 
   _renderLine() {
 
-    // // Get configuration styles as the default styles
-    // let configStyle = {...this.config.styles};
-
-    // // Get the runtime styles, caused by states & animation settings
-    // // Merge the two, where the runtime styles may overwrite the statically configured styles
-    // configStyle = { ...configStyle, ...this.animationStyle};
-
-    let configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
+    if (this.animationStyleHasChanged) {
+      this.animationStyleHasChanged = false;
+      this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
     
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleStr = JSON.stringify(configStyle.line).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // Convert javascript records to plain text, without "{}" and "," between the styles.
+      this.configStyleStr = JSON.stringify(this.configStyle.line).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    }
 
     if (this.dev.debug) console.log('_renderLine', this.config.orientation, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
     return svg`
@@ -1280,7 +1255,7 @@ class LineTool extends BaseTool {
         y1="${this.svg.y1}"
         x2="${this.svg.x2}"
         y2="${this.svg.y2}"
-        style="${configStyleStr}"/>
+        style="${this.configStyleStr}"/>
       `;
   }
 
@@ -1325,19 +1300,9 @@ class CircleTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    // this.config = {...DEFAULT_CIRCLE_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_CIRCLE_CONFIG.styles, ...this.config.styles};
-    // this.config.styles.circle = {...DEFAULT_CIRCLE_CONFIG.styles.circle, ...this.config.styles.circle};
-
-    // // if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    // this.config.show = {...DEFAULT_CIRCLE_CONFIG.show, ...this.config.show};
-
     this.config = Merge.mergeDeep(DEFAULT_CIRCLE_CONFIG, argConfig);
     
-    this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
+    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.radius)
     
@@ -1368,31 +1333,29 @@ class CircleTool extends BaseTool {
 
   _renderCircle() {
 
-    // // Get configuration styles as the default styles
-    // let configStyle = {...this.config.styles};
-    // configStyle.circle = {...this.config.styles.circle};
-
-    // // Get the runtime styles, caused by states & animation settings
-    // // Merge the two, where the runtime styles may overwrite the statically configured styles
-    // configStyle = { ...configStyle, ...this.animationStyle};
-    // configStyle.circle = { ...this.config.styles.circle, ...configStyle.circle, ...this.animationStyle?.circle};
+    if (this.animationStyleHasChanged) {
+      this.animationStyleHasChanged = false;
+      this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
     
-    let configStyle = {};
-    if (this.animationStyle) {
-      configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
-    } else {
-      //configStyle = Merge.mergeDeep(this.config.styles);
-      configStyle = this.config.styles;
+      // Convert javascript records to plain text, without "{}" and "," between the styles.
+      this.configStyleStr = JSON.stringify(this.configStyle.circle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
     }
-    //console.log("rendercircle, deepmerge", this.config.styles, this.animationStyle, configStyle);
 
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleStr = JSON.stringify(configStyle.circle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    // let configStyle = {};
+    // if (this.animationStyle) {
+      // configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
+    // } else {
+      // //configStyle = Merge.mergeDeep(this.config.styles);
+      // configStyle = this.config.styles;
+    // }
+
+    // // Convert javascript records to plain text, without "{}" and "," between the styles.
+    // const configStyleStr = JSON.stringify(configStyle.circle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
     return svg`
       <circle ""
         cx="${this.svg.cx}"% cy="${this.svg.cy}"% r="${this.svg.radius}"
-        style="${configStyleStr}"/>
+        style="${this.configStyleStr}"/>
       `;
   }
 
@@ -1438,18 +1401,9 @@ class UserSvgTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    // this.config = {...DEFAULT_USERSVG_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_USERSVG_CONFIG.styles, ...this.config.styles};
-
-    // // if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    // this.config.show = {...DEFAULT_USERSVG_CONFIG.show, ...this.config.show};
-
     this.config = Merge.mergeDeep(DEFAULT_USERSVG_CONFIG, argConfig);
     
-    this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
+    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.images = {};
     this.images = Object.assign({}, ...this.config.images);
@@ -1486,15 +1440,7 @@ class UserSvgTool extends BaseTool {
 
   _renderUserSvg() {
 
-    // Get configuration styles as the default styles
-    // let configStyle = {...this.config.styles};
-    let configStyle = {};
-
-    // Get the runtime styles, caused by states & animation settings
-    // Merge the two, where the runtime styles may overwrite the statically configured styles
-    // configStyle = { ...configStyle, ...this.animationStyle};
-    
-    configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
+    let configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
     
     // Convert javascript records to plain text, without "{}" and "," between the styles.
     const configStyleStr = JSON.stringify(configStyle.usersvg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
@@ -1568,18 +1514,9 @@ class RectangleTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    // this.config = {...DEFAULT_RECTANGLE_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_RECTANGLE_CONFIG.styles, ...this.config.styles};
-
-    // if (argConfig.show) this.config.show = {...argConfig.show};
-    // this.config.show = {...DEFAULT_RECTANGLE_CONFIG.show, ...this.config.show};
-
     this.config = Merge.mergeDeep(DEFAULT_RECTANGLE_CONFIG, argConfig);
     
-    this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
+    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.svg.rx = Utils.calculateSvgDimension(argConfig.rx)
 
@@ -1610,20 +1547,18 @@ class RectangleTool extends BaseTool {
 
   _renderRectangle() {
 
-    // Get configuration styles as the default styles
-    let configStyle = {...this.config.styles};
-
-    // Get the runtime styles, caused by states & animation settings
-    // Merge the two, where the runtime styles may overwrite the statically configured styles
-    configStyle = { ...configStyle, ...this.animationStyle};
-
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleStr = JSON.stringify(configStyle.rectangle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    if (this.animationStyleHasChanged) {
+      this.animationStyleHasChanged = false;
+      this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
+    
+      // Convert javascript records to plain text, without "{}" and "," between the styles.
+      this.configStyleStr = JSON.stringify(this.configStyle.rectangle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    }
 
     return svg`
       <rect ""
         x="${this.svg.x}" y="${this.svg.y}" width="${this.svg.width}" height="${this.svg.height}" rx="${this.svg.rx}"
-        style="${configStyleStr}"/>
+        style="${this.configStyleStr}"/>
       `;
   }
 
@@ -1676,16 +1611,6 @@ class RectangleToolEx extends BaseTool {
     }
     super(argCard, argConfig, argPos);
 
-    // this.config = {...DEFAULT_RECTANGLEEX_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_RECTANGLEEX_CONFIG.styles, ...this.config.styles, ...argConfig.styles};
-    // this.config.styles.rectex = {...DEFAULT_RECTANGLEEX_CONFIG.styles.rectex, ...this.config.styles.rectex, ...argConfig.styles?.rectex};
-
-    // //if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    // this.config.show = {...DEFAULT_RECTANGLEEX_CONFIG.show, ...this.config.show};
-    
     this.config = Merge.mergeDeep(DEFAULT_RECTANGLEEX_CONFIG, argConfig);
 
     // #TODO:
@@ -1735,15 +1660,13 @@ class RectangleToolEx extends BaseTool {
 
     var svgItems = [];
 
-    // Get configuration styles as the default styles
-    // let configStyle = {...this.config.styles};
-
-    // configStyle = {...configStyle, ...this.animationStyle};
+    if (this.animationStyleHasChanged) {
+      this.animationStyleHasChanged = false;
+      this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
     
-    let configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
-
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleStr = JSON.stringify(configStyle.rectex).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // Convert javascript records to plain text, without "{}" and "," between the styles.
+      this.configStyleStr = JSON.stringify(this.configStyle.rectex).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    }
 
 //    svgItems = svg``;
 
@@ -1760,7 +1683,7 @@ class RectangleToolEx extends BaseTool {
             v -${this.svg.height - this.svg.radiusBottomLeft - this.svg.radiusTopLeft}
             q 0 -${this.svg.radiusTopLeft} ${this.svg.radiusTopLeft} -${this.svg.radiusTopLeft}
             "
-            style="${configStyleStr}"/>
+            style="${this.configStyleStr}"/>
       </g>
       `;
     return svg`${svgItems}`;
@@ -1819,7 +1742,7 @@ class EllipseTool extends BaseTool {
 
     this.config = Merge.mergeDeep(DEFAULT_ELLIPSE_CONFIG, argConfig);
 
-    this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
+    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.svg.radiusx = Utils.calculateSvgDimension(argConfig.radiusx)
     this.svg.radiusy = Utils.calculateSvgDimension(argConfig.radiusy)
@@ -1838,24 +1761,21 @@ class EllipseTool extends BaseTool {
 
   _renderEllipse() {
 
-    // // Get configuration styles as the default styles
-    // let configStyle = {...this.config.styles};
+    if (this.animationStyleHasChanged) {
+      this.animationStyleHasChanged = false;
+      this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
+    
+      // Convert javascript records to plain text, without "{}" and "," between the styles.
+      this.configStyleStr = JSON.stringify(this.configStyle.ellipse).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    }
 
-    // // Get the runtime styles, caused by states & animation settings
-    // // Merge the two, where the runtime styles may overwrite the statically configured styles
-    // configStyle = { ...configStyle, ...this.animationStyle};
-
-    let configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
-
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleStr = JSON.stringify(configStyle.ellipse).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
     if (this.dev.debug) console.log('EllipseTool - renderEllipse', this.svg.cx, this.svg.cy, this.svg.radiusx, this.svg.radiusy);
 
     return svg`
       <ellipse ""
         cx="${this.svg.cx}"% cy="${this.svg.cy}"%
         rx="${this.svg.radiusx}" ry="${this.svg.radiusy}"
-        style="${configStyleStr}"/>
+        style="${this.configStyleStr}"/>
       `;
   }
 
@@ -1903,23 +1823,12 @@ class EntityIconTool extends BaseTool {
     }
     super(argCard, argConfig, argPos);
 
-    // this.config = {...DEFAULT_ICON_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_ICON_CONFIG.styles, ...this.config.styles};
-    // // Don't forget to merge icon style!
-    // this.config.styles.icon = {...DEFAULT_ICON_CONFIG.styles.icon, ...this.config.styles.icon};
-
-    // //if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    // this.config.show = {...DEFAULT_ICON_CONFIG.show, ...this.config.show, ...argConfig.show};
-
     this.config = Merge.mergeDeep(DEFAULT_ICON_CONFIG, argConfig);
 
-    this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
+    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
 // from original
-    this.config.entity = this.config.entity ? this.config.entity : 0;
+    // this.config.entity = this.config.entity ? this.config.entity : 0;
 
     // get icon size, and calculate the foreignObject position and size. This must match the icon size
     // 1em = FONT_SIZE pixels, so we can calculate the icon size, and x/y positions of the foreignObject
@@ -1985,23 +1894,31 @@ class EntityIconTool extends BaseTool {
 */
   _renderIcon() {
 
-    // Get configuration styles as the default styles
-    let configStyle = {...this.config.styles};
+    if (this.animationStyleHasChanged) {
+      this.animationStyleHasChanged = false;
+      this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
+    
+      // Convert javascript records to plain text, without "{}" and "," between the styles.
+      this.configStyleStr = JSON.stringify(this.configStyle.icon).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    }
 
-    // Get the runtime styles, caused by states & animation settings
-    //let stateStyle = {};
-    //if (this._card.animations.icons[this.config.animation_id])
-    //  stateStyle = Object.assign(stateStyle, this._card.animations.icons[this.config.animation_id]);
+    // // Get configuration styles as the default styles
+    // let configStyle = {...this.config.styles};
 
-    // Merge the two, where the runtime styles may overwrite the statically configured styles
-    //configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
-    configStyle = { ...configStyle, ...this.animationStyle};
-    configStyle.icon = { ...configStyle.icon, ...this.animationStyle?.icon};
+    // // Get the runtime styles, caused by states & animation settings
+    // //let stateStyle = {};
+    // //if (this._card.animations.icons[this.config.animation_id])
+    // //  stateStyle = Object.assign(stateStyle, this._card.animations.icons[this.config.animation_id]);
 
-    configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
+    // // Merge the two, where the runtime styles may overwrite the statically configured styles
+    // //configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
+    // configStyle = { ...configStyle, ...this.animationStyle};
+    // configStyle.icon = { ...configStyle.icon, ...this.animationStyle?.icon};
 
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleStr = JSON.stringify(configStyle.icon).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    // configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
+
+    // // Convert javascript records to plain text, without "{}" and "," between the styles.
+    // const configStyleStr = JSON.stringify(configStyle.icon).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
     const icon = this._card._buildIcon(
       this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
@@ -2153,7 +2070,7 @@ class EntityIconTool extends BaseTool {
         // Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required to position the icon on its desired location.
         // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
         return svg`
-          <g id="icon-${this.toolId}"  style="${configStyleStr}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
+          <g id="icon-${this.toolId}"  style="${this.configStyleStr}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
             <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke="yellow" stroke-width="0px" opacity="50%" fill="none"></rect>
             <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
           <g>
@@ -2164,7 +2081,7 @@ class EntityIconTool extends BaseTool {
             <body>
               <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
                   style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-                  <ha-icon icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}";></ha-icon>
+                  <ha-icon icon=${icon} id="icon-${this.toolId}" style="${this.configStyleStr}";></ha-icon>
               </div>
             </body>
           </foreignObject>
@@ -2176,7 +2093,7 @@ class EntityIconTool extends BaseTool {
                         >
           <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
                 style="line-height:${this.svg.iconPixels}px;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-            <ha-icon icon=${icon} id="icon-${this.toolId}" style="${configStyleStr}"></ha-icon>
+            <ha-icon icon=${icon} id="icon-${this.toolId}" style="${this.configStyleStr}"></ha-icon>
           </div>
         </foreignObject>
         `;
@@ -2202,9 +2119,11 @@ class EntityIconTool extends BaseTool {
   * a bug in rendering the Icon?? Only first time icon is clipped, then displayed normally if a data update
   * from hass is coming in.
   */
+//      <g "" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale}) translate(${this.svg.xlateX} ${this.svg.xlateY})"
+
   render() {
     return svg`
-      <g "" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale}) translate(${this.svg.xlateX} ${this.svg.xlateY})"
+      <g "" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale})"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
 
         ${this._renderIcon()}
@@ -2239,15 +2158,6 @@ class BadgeTool extends BaseTool {
       }
     }
     super(argCard, argConfig, argPos);
-
-    // this.config = {...DEFAULT_BADGE_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_BADGE_CONFIG.styles, ...this.config.styles};
-
-    // // if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    // this.config.show = {...DEFAULT_BADGE_CONFIG.show, ...this.config.show};
 
     this.config = Merge.mergeDeep(DEFAULT_BADGE_CONFIG, argConfig);
     
@@ -2360,17 +2270,6 @@ class EntityStateTool extends BaseTool {
     }
     super(argCard, argConfig, argPos);
 
-    // this.config = {...DEFAULT_STATE_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // this._stateValueIsDirty = false;
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_STATE_CONFIG.styles, ...this.config.styles};
-
-    // //if (argConfig.show) this.config.show = {...argConfig.show};
-    // this.config.show = {...DEFAULT_STATE_CONFIG.show, ...argConfig.show};
-
     this.config = Merge.mergeDeep(DEFAULT_STATE_CONFIG, argConfig);
     
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
@@ -2396,19 +2295,13 @@ class EntityStateTool extends BaseTool {
       }
     }
 
-    // Get configuration styles as the default styles
-    // Make state style global, because _renderUom() depends on it...
+    if (this.animationStyleHasChanged) {
+      this.animationStyleHasChanged = false;
+      this.configStyle = Merge.mergeDeep(STATE_STYLES, this.config.styles, this.animationStyle);
 
-    // if (!this.configStyle) this.configStyle = {...STATE_STYLES};
-     // if (this.config.styles.state) this.configStyle = {...this.configStyle, ...this.config.styles.state};
-    // // if (this.config.styles) this.configStyle = {...this.configStyle, ...this.config.styles};
-    // this.configStyle = { ...this.configStyle, ...this.animationStyle};
-
-    this.configStyle = Merge.mergeDeep(STATE_STYLES, this.config.styles, this.animationStyle);
-
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleStr = JSON.stringify(this.configStyle.state).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-
+      // Convert javascript records to plain text, without "{}" and "," between the styles.
+      this.configStyleStr = JSON.stringify(this.configStyle.state).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    }
 
     var inState = this._stateValue;
     if (inState && isNaN(inState)) {
@@ -2418,7 +2311,7 @@ class EntityStateTool extends BaseTool {
 
     return svg`
       <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}"
-        style="${configStyleStr}">
+        style="${this.configStyleStr}">
         ${this.config?.text?.before ? this.config.text.before : ''}${inState}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
     `;
   }
@@ -2435,18 +2328,11 @@ class EntityStateTool extends BaseTool {
     if (this.config.show.uom === 'none') {
       return svg``;
     } else {
-      // Get configuration styles as the default styles
-      // let configStyle = {...this.configStyle, ...UOM_STYLES};
-      // if (this.config.styles.uom) configStyle = {...configStyle, ...this.config.styles.uom};
-      // // if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
-      // configStyle = { ...configStyle, ...this.animationStyle};
-
       let configStyle = Merge.mergeDeep(this.configStyle.state, UOM_STYLES.uom, this.config.styles?.uom || {});
       if (this.animationStyle.uom) configStyle = Merge.mergeDeep(configStyle, this.animationStyle.uom);
 
-
       // Convert javascript records to plain text, without "{}" and "," between the styles.
-      const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
       var fsuomStr = configStyle["font-size"];
 
@@ -2517,109 +2403,109 @@ class EntityStateTool extends BaseTool {
     }
   } // render()
   
-  renderOld() {
+  // renderOld() {
 
-    // compute x,y or dx,dy positions. Spec none if not specified.
-    //const x = item.cx ? item.cx : '';
-    //const y = item.cy ? item.cy : '';
-    //const dx = item.dx ? item.dx : '0';
-    //const dy = item.dy ? item.dy : '0';
-    const dx = '0';
-    const dy = '0';
+    // // compute x,y or dx,dy positions. Spec none if not specified.
+    // //const x = item.cx ? item.cx : '';
+    // //const y = item.cy ? item.cy : '';
+    // //const dx = item.dx ? item.dx : '0';
+    // //const dy = item.dy ? item.dy : '0';
+    // const dx = '0';
+    // const dy = '0';
 
-    // compute some styling elements if configured for this state item
-    const STATE_STYLES = {
-      "font-size": '2em;',
-      "color": 'var(--primary-text-color);',
-      "opacity": '1.0;',
-      "text-anchor": 'middle;',
-      "alignment-baseline": 'central;',
-    }
+    // // compute some styling elements if configured for this state item
+    // const STATE_STYLES = {
+      // "font-size": '2em;',
+      // "color": 'var(--primary-text-color);',
+      // "opacity": '1.0;',
+      // "text-anchor": 'middle;',
+      // "alignment-baseline": 'central;',
+    // }
 
-    const UOM_STYLES = {
-      "opacity": '0.7;'
-    }
+    // const UOM_STYLES = {
+      // "opacity": '0.7;'
+    // }
 
-    // Get configuration styles as the default styles
-    let configStyle = {...STATE_STYLES};
-  //  if (item.styles) configStyle = Object.assign(configStyle, ...item.styles);
-    if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
+    // // Get configuration styles as the default styles
+    // let configStyle = {...STATE_STYLES};
+  // //  if (item.styles) configStyle = Object.assign(configStyle, ...item.styles);
+    // if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
 
-    // Get the runtime styles, caused by states & animation settings
-    //let stateStyle = {};
-    //if (this._card.animations.states[this.config.index])
-    //  stateStyle = Object.assign(stateStyle, this._card.animations.states[this.config.index]);
+    // // Get the runtime styles, caused by states & animation settings
+    // //let stateStyle = {};
+    // //if (this._card.animations.states[this.config.index])
+    // //  stateStyle = Object.assign(stateStyle, this._card.animations.states[this.config.index]);
 
-    // Merge the two, where the runtime styles may overwrite the statically configured styles
-    //configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
-    configStyle = { ...configStyle, ...this.animationStyle};
+    // // Merge the two, where the runtime styles may overwrite the statically configured styles
+    // //configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
+    // configStyle = { ...configStyle, ...this.animationStyle};
 
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    // // Convert javascript records to plain text, without "{}" and "," between the styles.
+    // const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
-    // Get font-size of state in configStyle.
-    // Split value and px/em; See: https://stackoverflow.com/questions/3370263/separate-integers-and-text-in-a-string
-    // For floats and strings:
-    //  - https://stackoverflow.com/questions/17374893/how-to-extract-floating-numbers-from-strings-in-javascript
+    // // Get font-size of state in configStyle.
+    // // Split value and px/em; See: https://stackoverflow.com/questions/3370263/separate-integers-and-text-in-a-string
+    // // For floats and strings:
+    // //  - https://stackoverflow.com/questions/17374893/how-to-extract-floating-numbers-from-strings-in-javascript
 
-    // 2019.09.12
-    // https://stackoverflow.com/questions/40758143/regular-expression-to-split-double-and-integer-numbers-in-a-string
-    // https://regex101.com/r/QYfDtB/1
-    // regex \D+|\d*\.?\d+ (plus /g for global match)
-    // in twee stukken, dus 1.27 en em;
+    // // 2019.09.12
+    // // https://stackoverflow.com/questions/40758143/regular-expression-to-split-double-and-integer-numbers-in-a-string
+    // // https://regex101.com/r/QYfDtB/1
+    // // regex \D+|\d*\.?\d+ (plus /g for global match)
+    // // in twee stukken, dus 1.27 en em;
 
-    var fsuomStr = configStyle["font-size"];
+    // var fsuomStr = configStyle["font-size"];
 
-    var fsuomValue = 0.5;
-    var fsuomType = 'em;'
-    const fsuomSplit = fsuomStr.match(/\D+|\d*\.?\d+/g);
-    if (fsuomSplit.length == 2) {
-      fsuomValue = Number(fsuomSplit[0]) * .6;
-      fsuomType = fsuomSplit[1];
-    }
-    else console.error('Cannot determine font-size for state', fsuomStr);
+    // var fsuomValue = 0.5;
+    // var fsuomType = 'em;'
+    // const fsuomSplit = fsuomStr.match(/\D+|\d*\.?\d+/g);
+    // if (fsuomSplit.length == 2) {
+      // fsuomValue = Number(fsuomSplit[0]) * .6;
+      // fsuomType = fsuomSplit[1];
+    // }
+    // else console.error('Cannot determine font-size for state', fsuomStr);
 
-    fsuomStr = { "font-size": fsuomValue + fsuomType};
+    // fsuomStr = { "font-size": fsuomValue + fsuomType};
 
-    let uomStyle = {...configStyle, ...UOM_STYLES, ...fsuomStr};
-    const uomStyleStr = JSON.stringify(uomStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    // let uomStyle = {...configStyle, ...UOM_STYLES, ...fsuomStr};
+    // const uomStyleStr = JSON.stringify(uomStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
-    const uom = this._card._buildUom(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+    // const uom = this._card._buildUom(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
-/*
-    const state = (this._card.config.entities[this.config.entity_index].attribute &&
-                  this._card.entities[this.config.entity_index].attributes[this._card.config.entities[this.config.entity_index].attribute])
-                  ? this._card.attributesStr[this.config.entity_index]
-                  : this._card.entitiesStr[this.config.entity_index];
-*/
-    const state = this._stateValue;
+// /*
+    // const state = (this._card.config.entities[this.config.entity_index].attribute &&
+                  // this._card.entities[this.config.entity_index].attributes[this._card.config.entities[this.config.entity_index].attribute])
+                  // ? this._card.attributesStr[this.config.entity_index]
+                  // : this._card.entitiesStr[this.config.entity_index];
+// */
+    // const state = this._stateValue;
 
-    if (this._card._computeDomain(this._card.entities[this.config.entity_index].entity_id) == 'sensor') {
-      return svg`
-        <text @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])}>
-          <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}" dx="${dx}em" dy="${dy}em"
-            style="${configStyleStr}">
-            ${state}</tspan>
-          <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
-            style="${uomStyleStr}">
-            ${uom}</tspan>
-        </text>
-      `;
-    } else {
-      // Not a sensor. Might be any other domain. Unit can only be specified using the units: in the configuration.
-      // Still check for using an attribute value for the domain...
-      return svg`
-        <text @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])}>
-          <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}" dx="${dx}em" dy="${dy}em"
-            style="${configStyleStr}">
-            ${state}</tspan>
-          <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
-            style="${uomStyleStr}">
-            ${uom}</tspan>
-        </text>
-      `;
-    }
-  }
+    // if (this._card._computeDomain(this._card.entities[this.config.entity_index].entity_id) == 'sensor') {
+      // return svg`
+        // <text @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])}>
+          // <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}" dx="${dx}em" dy="${dy}em"
+            // style="${configStyleStr}">
+            // ${state}</tspan>
+          // <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
+            // style="${uomStyleStr}">
+            // ${uom}</tspan>
+        // </text>
+      // `;
+    // } else {
+      // // Not a sensor. Might be any other domain. Unit can only be specified using the units: in the configuration.
+      // // Still check for using an attribute value for the domain...
+      // return svg`
+        // <text @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])}>
+          // <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}" dx="${dx}em" dy="${dy}em"
+            // style="${configStyleStr}">
+            // ${state}</tspan>
+          // <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
+            // style="${uomStyleStr}">
+            // ${uom}</tspan>
+        // </text>
+      // `;
+    // }
+  // }
 }
  /*******************************************************************************
   * EntityNameTool class
@@ -2641,13 +2527,6 @@ class EntityNameTool extends BaseTool {
     }
 
     super(argCard, argConfig, argPos);
-
-    // this.config = {...DEFAULT_NAME_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_NAME_CONFIG.styles, ...this.config.styles};
-    // this.config.styles.name = {...DEFAULT_NAME_CONFIG.styles.name, ...this.config.styles.name};
 
     this.config = Merge.mergeDeep(DEFAULT_NAME_CONFIG, argConfig);
     
@@ -2679,19 +2558,13 @@ class EntityNameTool extends BaseTool {
       }
     }
 
-    // Get configuration styles as the default styles
-    // let configStyle = {...ENTITY_NAME_STYLES};
-    // if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
-    // if (this.config.styles.name) configStyle = {...configStyle.name, ...this.config.styles.name};
+    if (this.animationStyleHasChanged) {
+      this.animationStyleHasChanged = false;
+      this.configStyle = Merge.mergeDeep(ENTITY_NAME_STYLES, this.config.styles, this.animationStyle);
 
-    // Merge the two, where the runtime styles may overwrite the statically configured styles
-    // configStyle = { ...configStyle, ...this.animationStyle};
-    // configStyle.name = { ...configStyle.name, ...this.animationStyle?.name};
-
-    let configStyle = Merge.mergeDeep(ENTITY_NAME_STYLES, this.config.styles, this.animationStyle);
-
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleStr = JSON.stringify(configStyle.name).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // Convert javascript records to plain text, without "{}" and "," between the styles.
+      this.configStyleStr = JSON.stringify(this.configStyle.name).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    }
 
     // #TODO:
     // Why is build* in card, and not in class????
@@ -2699,7 +2572,7 @@ class EntityNameTool extends BaseTool {
 
     return svg`
         <text>
-          <tspan class="entity__name" x="${this.svg.cx}" y="${this.svg.cy}" style="${configStyleStr}">${name}</tspan>
+          <tspan class="entity__name" x="${this.svg.cx}" y="${this.svg.cy}" style="${this.configStyleStr}">${name}</tspan>
         </text>
       `;
   }
@@ -2780,24 +2653,19 @@ class EntityAreaTool extends BaseTool {
       }
     }
 
-    // // Get configuration styles as the default styles
-    // let configStyle = {...ENTITY_AREA_STYLES};
-    // //if (item.styles) configStyle = Object.assign(configStyle, ...item.styles);
-    // if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
+    if (this.animationStyleHasChanged) {
+      this.animationStyleHasChanged = false;
+      this.configStyle = Merge.mergeDeep(ENTITY_AREA_STYLES, this.config.styles, this.animationStyle);
 
-    // // Merge the two, where the runtime styles may overwrite the statically configured styles
-    // configStyle = { ...configStyle, ...this.animationStyle};
-
-    let configStyle = Merge.mergeDeep(ENTITY_AREA_STYLES, this.config.styles, this.animationStyle);
-
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleStr = JSON.stringify(configStyle.area).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // Convert javascript records to plain text, without "{}" and "," between the styles.
+      this.configStyleStr = JSON.stringify(this.configStyle.area).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    }
 
     const area = this._card._buildArea(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
     return svg`
         <text class="entity__area">
-          <tspan class="entity__area" x="${this.svg.cx}" y="${this.svg.cy}" style="${configStyleStr}">${area}</tspan>
+          <tspan class="entity__area" x="${this.svg.cx}" y="${this.svg.cy}" style="${this.configStyleStr}">${area}</tspan>
         </text>
       `;
   }
@@ -3150,14 +3018,6 @@ class SparklineBarChartTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    // this.config = {...DEFAULT_BARCHART_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_BARCHART_CONFIG.styles, ...this.config.styles};
-
-    // this.config.show = {...DEFAULT_BARCHART_CONFIG.show, ...this.config.show};
-
     this.config = Merge.mergeDeep(DEFAULT_BARCHART_CONFIG, argConfig);
     
     // Calculate real dimensions...
@@ -3414,37 +3274,9 @@ class SegmentedArcTool extends BaseTool {
 
     if (this.dev.performance) console.time("--> "+ this.toolId + " PERFORMANCE SegmentedArcTool::constructor");
 
-    // this.config = {...DEFAULT_SEGARC_CONFIG};
-    // //console.log("segarc - scale fuckup config1", this.config);
-
-    // this.config = {...this.config, ...argConfig};
-    // //this.config = {...DEFAULT_SEGARC_CONFIG, ...argConfig};
-
-    // // Check for gap. Big enough?
-    // if (this.config.segments.gap > 0) {
-      // const minGap = this.config.radius * Math.PI / SVG_VIEW_BOX / 2;
-      // this.config.segments.gap = Math.max(minGap, this.config.segments.gap);
-    // }
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_SEGARC_CONFIG.styles, ...this.config.styles};
-    // // this.config.styles_bg = {...DEFAULT_SEGARC_CONFIG.styles_bg, ...this.config.styles_bg};
-
-    // // #TODO
-    // // Next line generates an error: Found non-callable @@interator
-    // //if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    // this.config.show = {...DEFAULT_SEGARC_CONFIG.show, ...this.config.show};
-    //console.log("segarc - scale fuckup config2", this.config);
-
-    // @2020.11.24 Testing...
-    // this.config = Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig);
-
-    // For certainty...
-    // this.config.scale = {...DEFAULT_SEGARC_CONFIG.scale, ...argConfig.scale};
-
     this.config = Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig);
     
-    this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
+    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.radius);
     this.svg.radiusX = Utils.calculateSvgDimension(argConfig.radius_x || argConfig.radius);
@@ -3514,33 +3346,33 @@ class SegmentedArcTool extends BaseTool {
     var tcolorstops = {};
     var colorstops = null;
 
-    if (this.config.segments.colorstops?.template) {
-        colorstops = this.config.segments.colorstops;
-        if (this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]) {
-          if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops found', colorstops.template, this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
-          tcolorstops = Templates.replaceVariables3(colorstops.template.variables, this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
-          if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops replaced', colorstops.template, tcolorstops);
+    // if (this.config.segments.colorstops?.template) {
+        // colorstops = this.config.segments.colorstops;
+        // if (this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]) {
+          // if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops found', colorstops.template, this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
+          // tcolorstops = Templates.replaceVariables3(colorstops.template.variables, this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
+          // if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops replaced', colorstops.template, tcolorstops);
 
-          // #testing mergeDeep
-          //colorstops = {...tcolorstops, ...colorstops};
-          //colorstops = null;//.colors = null;
-          colorstops = Merge.mergeDeep(tcolorstops/*, colorstops*/);
-          if (this.dev.debug) console.log("SegmentedArcTool::constructor, merge colorstops", this.toolId, "from template=", tcolorstops, "result=", colorstops);
+          // // #testing mergeDeep
+          // //colorstops = {...tcolorstops, ...colorstops};
+          // //colorstops = null;//.colors = null;
+          // colorstops = Merge.mergeDeep(tcolorstops/*, colorstops*/);
+          // if (this.dev.debug) console.log("SegmentedArcTool::constructor, merge colorstops", this.toolId, "from template=", tcolorstops, "result=", colorstops);
 
-          if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops merged', colorstops);
-          //this.config.segments.colorstops = {...colorstops};
-          // #TODO:
-          // Check if this is what is needed: only use template and ignore config for colorstops...
-          this.config.segments.colorstops = Merge.mergeDeep(this.config.segments.colorstops, colorstops);
-          this.config.segments.colorstops = Merge.mergeDeep(colorstops);
+          // if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops merged', colorstops);
+          // //this.config.segments.colorstops = {...colorstops};
+          // // #TODO:
+          // // Check if this is what is needed: only use template and ignore config for colorstops...
+          // this.config.segments.colorstops = Merge.mergeDeep(this.config.segments.colorstops, colorstops);
+          // this.config.segments.colorstops = Merge.mergeDeep(colorstops);
 
-          // And this one?? Seems to work. tcolorstops is a new object, so assigning should be no problem. Easy??
-          this.config.segments.colorstops = tcolorstops;
-          // this.config.segments = colorstops;
-          if (this.dev.debug) console.log("SegmentedArcTool::constructor, merge colorstops end config", this.toolId, this.config.segments);
-          if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops config', this.config.segments);
-        }
-    }
+          // // And this one?? Seems to work. tcolorstops is a new object, so assigning should be no problem. Easy??
+          // this.config.segments.colorstops = tcolorstops;
+          // // this.config.segments = colorstops;
+          // if (this.dev.debug) console.log("SegmentedArcTool::constructor, merge colorstops end config", this.toolId, this.config.segments);
+          // if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops config', this.config.segments);
+        // }
+    // }
 
     // FIXEDCOLOR
     if (this.config.show.style == 'fixedcolor') {
@@ -4498,15 +4330,6 @@ class devSwissArmyKnifeCard extends LitElement {
     
 
     if (this.dev.debug) console.log('*****Event - card - constructor', this.cardId, new Date().getTime());
-
-    // // Testing mergedeep.
-    // var obja = {a: 4, b: 5, c: 7, f: [{"1":"poep"},5,6,7]};
-    // var objb = {a: 44, d: 8, e: 9, f: [1,2,3,4]};
-
-    // // objb overwrites obja when duplicates
-    // var objm = Merge.mergeDeep(obja, objb);
-    // var objn = Merge.mergeDeep(objb, obja);
-    // console.log("testing mergedeep", obja, objb, objm, objn);
   }
 
  /*******************************************************************************
