@@ -34,6 +34,8 @@ import {
   unsafeSVG
 } from "https://unpkg.com/lit-html/directives/unsafe-svg.js?module";
 
+import { styleMap } from 'https://unpkg.com/lit-html/directives/style-map.js?module';
+
 import 'https://cdn.skypack.dev/@ctrl/tinycolor';
 //++ Consts ++++++++++
 
@@ -243,7 +245,6 @@ class Toolset {
     this.dev = {...this._card.dev};
     if (this.dev.performance) console.time("--> "+ this.toolsetId + " PERFORMANCE Toolset::constructor");
 
-
     // The position is the absolute position of the GROUP within the svg viewport.
     // The tool is positioned relative to this origin. A tool is always relative
     // to a 200x200 default svg viewport. A (50,50) position of the tool
@@ -298,6 +299,7 @@ class Toolset {
       "segarc": SegmentedArcTool,
       "state": EntityStateTool,
       "slider": RangeSliderTool,
+      "text": TextTool,
       "usersvg": UserSvgTool,
 
     }
@@ -678,10 +680,10 @@ class RangeSliderTool extends BaseTool {
         length: 80,
         styles: {
           slider: {
-            "stroke-linecap": 'round;',
-            "stroke": 'var(--primary-text-color);',
-            "opacity": '1.0;',
-            "stroke-width": '2;'
+            "stroke-linecap": 'round',
+            "stroke": 'var(--primary-text-color)',
+            "opacity": '1.0',
+            "stroke-width": '2',
           },
         }
     }
@@ -1106,6 +1108,15 @@ class RangeSliderTool extends BaseTool {
     const configStyleStrSlider = JSON.stringify(configStyle.slider).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
     const configStyleStrHandle = JSON.stringify(configStyle.handle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
+
+    // temp
+    // configStyle.slider['fill'] = 'var(--theme-gradient-color-01)';
+    // configStyle.slider['stroke'] = 'grey';
+    // configStyle.slider['stroke-width'] = '2';
+    
+    configStyle.handle['text-anchor'] = 'middle';
+    configStyle.handle['alignment-baseline'] = 'middle';
+    
     const toRender = []
     //toRender.push(html`<input type="range" id="witness" value="50" disabled style="display:none">`);
 
@@ -1122,12 +1133,12 @@ class RangeSliderTool extends BaseTool {
           <g id="_2" pointer-events="none">
             <path id="label-${this.toolId}" transform="translate(100,220) scale(5)"
               d="M 0 0 h ${this.svg.handle.width} v ${this.svg.handle.height} h -${this.svg.handle.width} v -${this.svg.handle.height}"
-              style="fill: var(--theme-gradient-color-01); stroke: grey; stroke-width:2" style="${configStyleStrSlider}"/>
+              style="${styleMap(configStyle.slider)}"/>
 
             <circle cx="${this.svg.x}" cy="${this.svg.y}" r="1" fill="none" pointer-events="none"/>
 
             <text text-anchor="middle" transform="translate(0,${this.svg.handle.height/4})" pointer-events="none" >
-            <textPath startOffset="${startOffset}%" text-anchor="middle" alignment-baseline="middle" style="${configStyleStrHandle}" href="#label-${this.toolId}" pointer-events="none">
+            <textPath startOffset="${startOffset}%" style="${styleMap(configStyle.handle)}" href="#label-${this.toolId}" pointer-events="none">
             50
             </textPath>
           </g>
@@ -1186,10 +1197,10 @@ class LineTool extends BaseTool {
         cy: '50',
         styles: {
           line: {
-            "stroke-linecap": 'round;',
-            "stroke": 'var(--primary-text-color);',
-            "opacity": '1.0;',
-            "stroke-width": '2;'
+            "stroke-linecap": 'round',
+            "stroke": 'var(--primary-text-color)',
+            "opacity": '1.0',
+            "stroke-width": '2',
           }
         }
     }
@@ -1245,7 +1256,7 @@ class LineTool extends BaseTool {
       this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
     
       // Convert javascript records to plain text, without "{}" and "," between the styles.
-      this.configStyleStr = JSON.stringify(this.configStyle.line).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // this.configStyleStr = JSON.stringify(this.configStyle.line).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
     }
 
     if (this.dev.debug) console.log('_renderLine', this.config.orientation, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
@@ -1255,7 +1266,7 @@ class LineTool extends BaseTool {
         y1="${this.svg.y1}"
         x2="${this.svg.x2}"
         y2="${this.svg.y2}"
-        style="${this.configStyleStr}"/>
+        style="${styleMap(this.configStyle.line)}"/>
       `;
   }
 
@@ -1338,7 +1349,7 @@ class CircleTool extends BaseTool {
       this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
     
       // Convert javascript records to plain text, without "{}" and "," between the styles.
-      this.configStyleStr = JSON.stringify(this.configStyle.circle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // this.configStyleStr = JSON.stringify(this.configStyle.circle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
     }
 
     // let configStyle = {};
@@ -1355,7 +1366,7 @@ class CircleTool extends BaseTool {
     return svg`
       <circle ""
         cx="${this.svg.cx}"% cy="${this.svg.cy}"% r="${this.svg.radius}"
-        style="${this.configStyleStr}"/>
+        style="${styleMap(this.configStyle.circle)}"/>
       `;
   }
 
@@ -1503,10 +1514,10 @@ class RectangleTool extends BaseTool {
         rx: 0,
         styles: {
           rectangle: {
-            "stroke-linecap": 'round;',
-            "stroke": 'var(--primary-text-color);',
-            "opacity": '1.0;',
-            "stroke-width": '2;',
+            "stroke-linecap": 'round',
+            "stroke": 'var(--primary-text-color)',
+            "opacity": '1.0',
+            "stroke-width": '2',
             "fill": 'white',
           }
         }
@@ -1552,13 +1563,13 @@ class RectangleTool extends BaseTool {
       this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
     
       // Convert javascript records to plain text, without "{}" and "," between the styles.
-      this.configStyleStr = JSON.stringify(this.configStyle.rectangle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // this.configStyleStr = JSON.stringify(this.configStyle.rectangle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
     }
 
     return svg`
       <rect ""
         x="${this.svg.x}" y="${this.svg.y}" width="${this.svg.width}" height="${this.svg.height}" rx="${this.svg.rx}"
-        style="${this.configStyleStr}"/>
+        style="${styleMap(this.configStyle.rectangle)}"/>
       `;
   }
 
@@ -1601,10 +1612,10 @@ class RectangleToolEx extends BaseTool {
         },
         styles: {
           rectex: {
-            "stroke-linecap": 'round;',
-            "stroke": 'var(--primary-text-color);',
-            "opacity": '1.0;',
-            "stroke-width": '0;',
+            "stroke-linecap": 'round',
+            "stroke": 'var(--primary-text-color)',
+            "opacity": '1.0',
+            "stroke-width": '0',
             "fill": 'var(--primary-background-color)',
           }
         }
@@ -1665,7 +1676,7 @@ class RectangleToolEx extends BaseTool {
       this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
     
       // Convert javascript records to plain text, without "{}" and "," between the styles.
-      this.configStyleStr = JSON.stringify(this.configStyle.rectex).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // this.configStyleStr = JSON.stringify(this.configStyle.rectex).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
     }
 
 //    svgItems = svg``;
@@ -1683,7 +1694,7 @@ class RectangleToolEx extends BaseTool {
             v -${this.svg.height - this.svg.radiusBottomLeft - this.svg.radiusTopLeft}
             q 0 -${this.svg.radiusTopLeft} ${this.svg.radiusTopLeft} -${this.svg.radiusTopLeft}
             "
-            style="${this.configStyleStr}"/>
+            style="${styleMap(this.configStyle.rectex)}"/>
       </g>
       `;
     return svg`${svgItems}`;
@@ -1766,7 +1777,7 @@ class EllipseTool extends BaseTool {
       this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
     
       // Convert javascript records to plain text, without "{}" and "," between the styles.
-      this.configStyleStr = JSON.stringify(this.configStyle.ellipse).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // this.configStyleStr = JSON.stringify(this.configStyle.ellipse).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
     }
 
     if (this.dev.debug) console.log('EllipseTool - renderEllipse', this.svg.cx, this.svg.cy, this.svg.radiusx, this.svg.radiusy);
@@ -1775,7 +1786,7 @@ class EllipseTool extends BaseTool {
       <ellipse ""
         cx="${this.svg.cx}"% cy="${this.svg.cy}"%
         rx="${this.svg.radiusx}" ry="${this.svg.radiusy}"
-        style="${this.configStyleStr}"/>
+        style="${styleMap(this.configStyle.ellipse)}"/>
       `;
   }
 
@@ -1812,12 +1823,12 @@ class EntityIconTool extends BaseTool {
     const DEFAULT_ICON_CONFIG = {
         styles: {
           icon: {
-            "--mdc-icon-size": '100%;',
-            "align-self": 'center;',
-            "height": '100%;',
-            "width": '100%;',
-            "fill": 'var(--primary-text-color);',
-            "color": 'var(--primary-text-color);',
+            "--mdc-icon-size": '100%',
+            "align-self": 'center',
+            "height": '100%',
+            "width": '100%',
+            "fill": 'var(--primary-text-color)',
+            "color": 'var(--primary-text-color)',
           }
         }
     }
@@ -1899,7 +1910,7 @@ class EntityIconTool extends BaseTool {
       this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
     
       // Convert javascript records to plain text, without "{}" and "," between the styles.
-      this.configStyleStr = JSON.stringify(this.configStyle.icon).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // this.configStyleStr = JSON.stringify(this.configStyle.icon).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
     }
 
     // // Get configuration styles as the default styles
@@ -2067,10 +2078,11 @@ class EntityIconTool extends BaseTool {
         this.svg.y1 = this.svg.cy - (this.svg.iconPixels * 0.5);
 
         scale = this.svg.iconPixels / 24;
+        // scale = 1;
         // Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required to position the icon on its desired location.
         // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
         return svg`
-          <g id="icon-${this.toolId}"  style="${this.configStyleStr}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
+          <g id="icon-${this.toolId}"  style="${styleMap(this.configStyle.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
             <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke="yellow" stroke-width="0px" opacity="50%" fill="none"></rect>
             <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
           <g>
@@ -2081,7 +2093,7 @@ class EntityIconTool extends BaseTool {
             <body>
               <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
                   style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-                  <ha-icon icon=${icon} id="icon-${this.toolId}" style="${this.configStyleStr}";></ha-icon>
+                  <ha-icon icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.configStyle.icon)}";></ha-icon>
               </div>
             </body>
           </foreignObject>
@@ -2093,7 +2105,7 @@ class EntityIconTool extends BaseTool {
                         >
           <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
                 style="line-height:${this.svg.iconPixels}px;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-            <ha-icon icon=${icon} id="icon-${this.toolId}" style="${this.configStyleStr}"></ha-icon>
+            <ha-icon icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.configStyle.icon)}"></ha-icon>
           </div>
         </foreignObject>
         `;
@@ -2121,9 +2133,12 @@ class EntityIconTool extends BaseTool {
   */
 //      <g "" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale}) translate(${this.svg.xlateX} ${this.svg.xlateY})"
 
+// 2020.12.01: Why scale?? Is done on toolset level...
+//       <g "" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale})"
+
   render() {
     return svg`
-      <g "" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale})"
+      <g "" id="icongrp-${this.toolId}" class="svgicon"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
 
         ${this._renderIcon()}
@@ -2148,12 +2163,12 @@ class BadgeTool extends BaseTool {
       divider: 30,
       styles: {
         left: {
-          "stroke-width": '0;',
-          "fill": 'grey;',
+          "stroke-width": '0',
+          "fill": 'grey',
         },
         right: {
-          "stroke-width": '0;',
-          "fill": 'var(--theme-gradient-color-03);',
+          "stroke-width": '0',
+          "fill": 'var(--theme-gradient-color-03)',
         }
       }
     }
@@ -2197,8 +2212,8 @@ class BadgeTool extends BaseTool {
     let configStyleRight = this.config.styles.right ? {...this.config.styles.right} : '';
 
     // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleLeftStr = JSON.stringify(configStyleLeft).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    const configStyleRightStr = JSON.stringify(configStyleRight).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    // const configStyleLeftStr = JSON.stringify(configStyleLeft).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    // const configStyleRightStr = JSON.stringify(configStyleRight).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
     svgItems = svg`
       <g  id="badge-${this.toolId}">
@@ -2212,7 +2227,7 @@ class BadgeTool extends BaseTool {
             v -${this.svg.height - 2 * this.svg.radius}
             z
             "
-            style="${configStyleRightStr}"/>
+            style="${styleMap(configStyleRight)}"/>
 
         <path "" d="
             M ${this.svg.leftXpos + this.svg.radius} ${this.svg.leftYpos}
@@ -2226,7 +2241,7 @@ class BadgeTool extends BaseTool {
             v -${this.svg.height - 2 * this.svg.radius}
             a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} -${this.svg.radius}
             "
-            style="${configStyleLeftStr}"/>
+            style="${styleMap(configStyleLeft)}"/>
       </g>
       `;
 
@@ -2275,6 +2290,7 @@ class EntityStateTool extends BaseTool {
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
+  // EntityStateTool::value
   set value(state) {
 
     var changed = super.value = state;
@@ -2287,11 +2303,11 @@ class EntityStateTool extends BaseTool {
     // compute some styling elements if configured for this state item
     const STATE_STYLES = {
       state: {
-        "font-size": '2em;',
-        "color": 'var(--primary-text-color);',
-        "opacity": '1.0;',
-        "text-anchor": 'middle;',
-        "alignment-baseline": 'central;',
+        "font-size": '2em',
+        "color": 'var(--primary-text-color)',
+        "opacity": '1.0',
+        "text-anchor": 'middle',
+        "alignment-baseline": 'central',
       }
     }
 
@@ -2300,7 +2316,7 @@ class EntityStateTool extends BaseTool {
       this.configStyle = Merge.mergeDeep(STATE_STYLES, this.config.styles, this.animationStyle);
 
       // Convert javascript records to plain text, without "{}" and "," between the styles.
-      this.configStyleStr = JSON.stringify(this.configStyle.state).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // this.configStyleStr = JSON.stringify(this.configStyle.state).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
     }
 
     var inState = this._stateValue;
@@ -2311,7 +2327,7 @@ class EntityStateTool extends BaseTool {
 
     return svg`
       <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}"
-        style="${this.configStyleStr}">
+        style="${styleMap(this.configStyle.state)}">
         ${this.config?.text?.before ? this.config.text.before : ''}${inState}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
     `;
   }
@@ -2321,7 +2337,7 @@ class EntityStateTool extends BaseTool {
     // compute some styling elements if configured for this state item
     const UOM_STYLES = {
       uom: {
-        "opacity": '0.7;',
+        "opacity": '0.7',
       }
     }
 
@@ -2337,7 +2353,7 @@ class EntityStateTool extends BaseTool {
       var fsuomStr = configStyle["font-size"];
 
       var fsuomValue = 0.5;
-      var fsuomType = 'em;'
+      var fsuomType = 'em';
       const fsuomSplit = fsuomStr.match(/\D+|\d*\.?\d+/g);
       if (fsuomSplit.length == 2) {
         fsuomValue = Number(fsuomSplit[0]) * .6;
@@ -2348,7 +2364,7 @@ class EntityStateTool extends BaseTool {
       fsuomStr = { "font-size": fsuomValue + fsuomType};
 
       let uomStyle = {...configStyle, ...UOM_STYLES, ...fsuomStr};
-      const uomStyleStr = JSON.stringify(uomStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // const uomStyleStr = JSON.stringify(uomStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
       const uom = this._card._buildUom(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
@@ -2356,19 +2372,19 @@ class EntityStateTool extends BaseTool {
       if (this.config.show.uom === 'default') {
         return svg`
           <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
-            style="${uomStyleStr}">
+            style="${styleMap(uomStyle)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'below') {
         return svg`
           <tspan class="state__uom" x="${this.svg.x}" dy="1.5em"
-            style="${uomStyleStr}">
+            style="${styleMap(uomStyle)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'above') {
         return svg`
           <tspan class="state__uom" x="${this.svg.x}" dy="-1.5em"
-            style="${uomStyleStr}">
+            style="${styleMap(uomStyle)}">
             ${uom}</tspan>
         `;
 
@@ -2415,15 +2431,15 @@ class EntityStateTool extends BaseTool {
 
     // // compute some styling elements if configured for this state item
     // const STATE_STYLES = {
-      // "font-size": '2em;',
-      // "color": 'var(--primary-text-color);',
-      // "opacity": '1.0;',
-      // "text-anchor": 'middle;',
-      // "alignment-baseline": 'central;',
+      // "font-size": '2em',
+      // "color": 'var(--primary-text-color)',
+      // "opacity": '1.0',
+      // "text-anchor": 'middle',
+      // "alignment-baseline": 'central',
     // }
 
     // const UOM_STYLES = {
-      // "opacity": '0.7;'
+      // "opacity": '0.7',
     // }
 
     // // Get configuration styles as the default styles
@@ -2457,7 +2473,7 @@ class EntityStateTool extends BaseTool {
     // var fsuomStr = configStyle["font-size"];
 
     // var fsuomValue = 0.5;
-    // var fsuomType = 'em;'
+    // var fsuomType = 'em',
     // const fsuomSplit = fsuomStr.match(/\D+|\d*\.?\d+/g);
     // if (fsuomSplit.length == 2) {
       // fsuomValue = Number(fsuomSplit[0]) * .6;
@@ -2550,11 +2566,11 @@ class EntityNameTool extends BaseTool {
     // See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/alignment-baseline
     const ENTITY_NAME_STYLES = {
       name: {
-        "font-size": '1.5em;',
-        "fill": 'var(--primary-text-color);',
-        "opacity": '1.0;',
-        "text-anchor": 'middle;',
-        "alignment-baseline": 'central;',
+        "font-size": '1.5em',
+        "fill": 'var(--primary-text-color)',
+        "opacity": '1.0',
+        "text-anchor": 'middle',
+        "alignment-baseline": 'central',
       }
     }
 
@@ -2563,7 +2579,7 @@ class EntityNameTool extends BaseTool {
       this.configStyle = Merge.mergeDeep(ENTITY_NAME_STYLES, this.config.styles, this.animationStyle);
 
       // Convert javascript records to plain text, without "{}" and "," between the styles.
-      this.configStyleStr = JSON.stringify(this.configStyle.name).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // this.configStyleStr = JSON.stringify(this.configStyle.name).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
     }
 
     // #TODO:
@@ -2572,7 +2588,7 @@ class EntityNameTool extends BaseTool {
 
     return svg`
         <text>
-          <tspan class="entity__name" x="${this.svg.cx}" y="${this.svg.cy}" style="${this.configStyleStr}">${name}</tspan>
+          <tspan class="entity__name" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.configStyle.name)}">${name}</tspan>
         </text>
       `;
   }
@@ -2645,11 +2661,11 @@ class EntityAreaTool extends BaseTool {
     // compute some styling elements if configured for this area item
     const ENTITY_AREA_STYLES = {
       area: {
-        "font-size": '1em;',
-        "fill": 'var(--primary-text-color);',
-        "opacity": '1.0;',
-        "text-anchor": 'middle;',
-        "alignment-baseline": 'central;',
+        "font-size": '1em',
+        "fill": 'var(--primary-text-color)',
+        "opacity": '1.0',
+        "text-anchor": 'middle',
+        "alignment-baseline": 'central',
       }
     }
 
@@ -2658,14 +2674,14 @@ class EntityAreaTool extends BaseTool {
       this.configStyle = Merge.mergeDeep(ENTITY_AREA_STYLES, this.config.styles, this.animationStyle);
 
       // Convert javascript records to plain text, without "{}" and "," between the styles.
-      this.configStyleStr = JSON.stringify(this.configStyle.area).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // this.configStyleStr = JSON.stringify(this.configStyle.area).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
     }
 
     const area = this._card._buildArea(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
     return svg`
         <text class="entity__area">
-          <tspan class="entity__area" x="${this.svg.cx}" y="${this.svg.cy}" style="${this.configStyleStr}">${area}</tspan>
+          <tspan class="entity__area" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.configStyle.area)}">${area}</tspan>
         </text>
       `;
   }
@@ -2688,6 +2704,90 @@ class EntityAreaTool extends BaseTool {
 
   }
 } // END of class
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+ /*******************************************************************************
+  * TextTool class
+  *
+  * Summary.
+  *
+  */
+
+class TextTool extends BaseTool {
+  constructor(argCard, argConfig, argPos) {
+
+    const DEFAULT_TEXT_CONFIG = {
+    }
+
+    super(argCard, argConfig, argPos);
+
+
+    this.config = Merge.mergeDeep(DEFAULT_TEXT_CONFIG, argConfig);
+    //this._name = {};
+    this.text = this.config.text;
+
+    // Text is rendered in its own context. No need for SVG coordinates.
+
+    if (this.dev.debug) console.log('TextTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
+  }
+
+ /*******************************************************************************
+  * TextTool::_renderText()
+  *
+  * Summary.
+  * Renders the text using precalculated coordinates and dimensions.
+  * Only the runtime style is calculated before rendering the text
+  *
+  */
+
+  _renderText() {
+
+    const ENTITY_TEXT_STYLES = {
+      text: {
+        'font-size': '1em',
+        'fill': 'var(--primary-text-color)',
+        'opacity': '1.0',
+        'text-anchor': 'middle',
+        'alignment-baseline': 'central',
+      }
+    }
+
+    if (this.animationStyleHasChanged) {
+      this.animationStyleHasChanged = false;
+      this.configStyle = Merge.mergeDeep(ENTITY_TEXT_STYLES, this.config.styles, this.animationStyle);
+
+      // Convert javascript records to plain text, without "{}" and "," between the styles.
+      // this.configStyleStr = JSON.stringify(this.configStyle.text).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    }
+
+    return svg`
+        <text class="text">
+          <tspan class="text" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.configStyle.text)}">${this.text}</tspan>
+        </text>
+      `;
+  }
+
+ /*******************************************************************************
+  * TextTool::render()
+  *
+  * Summary.
+  * The render() function for this object.
+  *
+  */
+  render() {
+
+    return svg`
+      <g id="text-${this.toolId}" class="text"
+        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        ${this._renderText()}
+      </g>
+    `;
+
+  }
+} // END of class
+
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -3008,8 +3108,8 @@ class SparklineBarChartTool extends BaseTool {
       color: 'var(--primary-color)',
       styles: {
         bar: {
-              "stroke-linecap": 'round;',
-              "stroke-linejoin": 'round;',
+              "stroke-linecap": 'round',
+              "stroke-linejoin": 'round',
         }
       },
       colorstops: [],
@@ -3044,6 +3144,8 @@ class SparklineBarChartTool extends BaseTool {
       this.sortedColorStops = Object.keys(this.config.colorstops).map(n => Number(n)).sort((a, b) => a - b);
     }
 
+    this.configStyleBar = {};
+    
     if (this.dev.debug) console.log('SparkleBarChart constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -3159,10 +3261,9 @@ class SparklineBarChartTool extends BaseTool {
     if (this.dev.debug) console.log('_renderBars IN', this.toolId);
     // Get configuration styles as the default styles
     // Styles are already converted to an Object {}...
-    let configStyleBar = {...this.config.styles.bar};
 
     // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleBarStr = JSON.stringify(configStyleBar).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    // const configStyleBarStr = JSON.stringify(configStyleBar).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
     
     this._bars.forEach((item, index) => {
@@ -3183,9 +3284,14 @@ class SparklineBarChartTool extends BaseTool {
           break;
       }
 
+      if (!this.configStyleBar[index])
+        this.configStyleBar[index] = {...this.config.styles.bar};
+
+      this.configStyleBar[index]['stroke'] = stroke;
+      
       svgItems.push(svg`
         <line id="line-segment-${this.toolId}-${index}" class="line__segment"
-                  style="${configStyleBarStr}" stroke="${stroke}"
+                  style="${styleMap(this.configStyleBar[index])}"
                   x1="${this._bars[index].x1}"
                   x2="${this._bars[index].x2}"
                   y1="${this._bars[index].y1}"
@@ -3242,19 +3348,19 @@ class SegmentedArcTool extends BaseTool {
       color: 'var(--primary-color)',
       styles: { 
         foreground: {
-          "stroke-linecap": 'round;',
-          "fill": 'var(--primary-color);',
-          "stroke": 'none;',
-          "stroke-width": '0.5;',
-          "fill-rule": 'evenodd;',
-          "stroke-linejoin": 'round;'
+          "stroke-linecap": 'round',
+          "fill": 'var(--primary-color)',
+          "stroke": 'none',
+          "stroke-width": '0.5',
+          "fill-rule": 'evenodd',
+          "stroke-linejoin": 'round',
         },
         background: {
-          "stroke-linecap": 'round;',
-          "fill": 'var(--primary-background-color);',
-          "stroke-width": '0;',
-          "fill-rule": 'evenodd;',
-          "stroke-linejoin": 'round;'
+          "stroke-linecap": 'round',
+          "fill": 'var(--primary-background-color)',
+          "stroke-width": '0',
+          "fill-rule": 'evenodd',
+          "stroke-linejoin": 'round',
         },
       },
       segments: {},
@@ -3276,6 +3382,9 @@ class SegmentedArcTool extends BaseTool {
 
     this.config = Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig);
     
+    // Extra for use of styleMap
+    this.styles = {};
+
     // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.radius);
@@ -3635,6 +3744,7 @@ class SegmentedArcTool extends BaseTool {
       var arcRadiusX = this.svg.radiusX;
       var arcRadiusY = this.svg.radiusY;
 
+      var d;
 
       if (this.dev.debug) console.log('RENDERNEW - IN _arcId, firstUpdatedCalled', this._arcId, this._firstUpdatedCalled);
       // calculate real end angle depending on value set in object and min/max scale
@@ -3673,7 +3783,7 @@ class SegmentedArcTool extends BaseTool {
                                 this._arc.clockwise, this.svg.radiusX, this.svg.radiusY, this.svg.width);
 
           svgItems.push(svg`<path id="arc-segment-bg-${this.toolId}-${k}" class="arc__segment"
-                              style="${configStyleBgStr}"
+                              style="${styleMap(this.config.styles.background)}"
                               d="${d}"
                               />`);
 
@@ -3698,9 +3808,19 @@ class SegmentedArcTool extends BaseTool {
             fill = this._segments.colorStops[this._segments.sortedStops[index]];
           }
 
+          if (!this.styles.foreground[index]) {
+            this.styles.foreground[index] = Merge.mergeDeep(this.config.styles.foreground);
+          }
+          
+          this.styles.foreground[index]['fill'] = fill;
+
+          // this.config.styles.foreground['fill'] = fill;
           //if (this.dev.debug) console.log('RENDERNEW _renderSegments - from cache', this.toolId, index, d);
+
+//                             style="${styleMap(this.config.styles.foreground)}"
+
           svgItems.push(svg`<path id="arc-segment-${this.toolId}-${index}" class="arc__segment"
-                            style="${configStyleFgStr} fill: ${fill};;"
+                            style="${styleMap(this.styles.foreground[index])}"
                             d="${d}"
                             />`);
         });
@@ -3775,6 +3895,7 @@ class SegmentedArcTool extends BaseTool {
                 // First try...
                 if (thisTool.config.show.style =="colorlist") {
                   as.style.fill = thisTool.config.segments.colorlist.colors[runningSegment];
+                  thisTool.styles.foreground[runningSegment]['fill'] = thisTool.config.segments.colorlist.colors[runningSegment];
                 }
               }
               thisTool._cache[runningSegment] = d;
@@ -3892,9 +4013,19 @@ class SegmentedArcTool extends BaseTool {
           if (this.config.show.style =="colorstops") {
             fill = this._segments.colorStops[this._segments.sortedStops[i]];
           }
+//                            style="${styleMap(this.config.styles.foreground)} fill: ${fill};"
+          if (!this.styles.foreground) {
+            this.styles.foreground = {};
+          };
+          if (!this.styles.foreground[i]) {
+            this.styles.foreground[i] = Merge.mergeDeep(this.config.styles.foreground);
+          };
+          this.styles.foreground[i]['fill'] = fill;
+//                            style="${styleMap(this.config.styles.foreground)}"
 
+          // this.config.styles.foreground['fill'] = fill;
           svgItems.push(svg`<path id="arc-segment-${this.toolId}-${i}" class="arc__segment"
-                            style="${configStyleFgStr} fill: ${fill};"
+                            style="${styleMap(this.styles.foreground[i])}"
                             d="${d}"
                             />`);
         }
@@ -3906,308 +4037,308 @@ class SegmentedArcTool extends BaseTool {
 
     // END OF NEW METHOD OF RENDERING
     } else {
-      var arcStart = this.config.start_angle;
-      var arcEnd = this.config.end_angle;
-      var arcEndPrev = this.config.end_angle;
-      //var arcWidth = this.config.width;
-      var arcWidth = this.svg.width;
+      // var arcStart = this.config.start_angle;
+      // var arcEnd = this.config.end_angle;
+      // var arcEndPrev = this.config.end_angle;
+      // //var arcWidth = this.config.width;
+      // var arcWidth = this.svg.width;
 
-      var arcEndFull = this.config.end_angle;
-      var arcClockwise = arcEnd > arcStart;
-      var arcPart = this.config.segments.dash;
-      var arcDivider = this.config.segments.gap;
+      // var arcEndFull = this.config.end_angle;
+      // var arcClockwise = arcEnd > arcStart;
+      // var arcPart = this.config.segments.dash;
+      // var arcDivider = this.config.segments.gap;
 
-      // #DONE: must use this.dimensions
-      //var arcRadius = this.config.radius;
-      var arcRadiusX = this.svg.radiusX;
-      var arcRadiusY = this.svg.radiusY;
+      // // #DONE: must use this.dimensions
+      // //var arcRadius = this.config.radius;
+      // var arcRadiusX = this.svg.radiusX;
+      // var arcRadiusY = this.svg.radiusY;
 
-      // calculate real end angle depending on value set in object and min/max scale
-      var val = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValue);
-      var valPrev = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValuePrev);
-      if (val != valPrev) if (this.dev.debug) console.log('_renderSegments diff value old new', this.toolId, valPrev, val);
+      // // calculate real end angle depending on value set in object and min/max scale
+      // var val = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValue);
+      // var valPrev = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValuePrev);
+      // if (val != valPrev) if (this.dev.debug) console.log('_renderSegments diff value old new', this.toolId, valPrev, val);
 
-      var arcSizeFull = Math.abs(arcEndFull - arcStart);
+      // var arcSizeFull = Math.abs(arcEndFull - arcStart);
 
-      arcEnd = (val * arcSizeFull * this._arc.direction) + arcStart;
-      arcEndPrev = (valPrev * arcSizeFull* this._arc.direction) + arcStart;
+      // arcEnd = (val * arcSizeFull * this._arc.direction) + arcStart;
+      // arcEndPrev = (valPrev * arcSizeFull* this._arc.direction) + arcStart;
 
-      // Styles are already converted to an Object {}...
-      let configStyle = {...this.config.styles};
-      const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // // Styles are already converted to an Object {}...
+      // let configStyle = {...this.config.styles};
+      // // const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
-      let configStyleBg = {...this.config.styles_bg};
-      const configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // let configStyleBg = {...this.config.styles_bg};
+      // // const configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
 
-      var arcSize = Math.abs(arcEnd - arcStart);
-      var arcSizePrev = Math.abs(arcEndPrev - arcStart);
+      // var arcSize = Math.abs(arcEnd - arcStart);
+      // var arcSizePrev = Math.abs(arcEndPrev - arcStart);
 
-      // Calc diff in arc size. Can be positive and negative.
-      // Then get stepsize. We draw in 20 steps.
-      var arcSizeDiff = arcSizePrev - arcSize;
-      var arcStepSize = arcSizeDiff / 50;
-      var arcChangeClockwise = (arcSize > arcSizePrev) ? true : false;
+      // // Calc diff in arc size. Can be positive and negative.
+      // // Then get stepsize. We draw in 20 steps.
+      // var arcSizeDiff = arcSizePrev - arcSize;
+      // var arcStepSize = arcSizeDiff / 50;
+      // var arcChangeClockwise = (arcSize > arcSizePrev) ? true : false;
 
-      var svgItems = [];
+      // var svgItems = [];
 
-      var fullParts = Math.floor(arcSize/Math.abs(arcPart));
-      var fullPartsAll = Math.floor(arcSizeFull/Math.abs(arcPart));
+      // var fullParts = Math.floor(arcSize/Math.abs(arcPart));
+      // var fullPartsAll = Math.floor(arcSizeFull/Math.abs(arcPart));
 
-      var d;
+      // var d;
 
-      // Count what's left of the arc. Start with the full size...
+      // // Count what's left of the arc. Start with the full size...
 
-      var arcRest = arcSize;
+      // var arcRest = arcSize;
 
-      // Draw background of segmented arc...
-      if (!this.config.isScale) {
-        for (var k = 0; k < this._segmentAngles.length; k++) {
-          d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
-                                this._arc.clockwise, arcRadiusX, arcRadiusY, arcWidth);
+      // // Draw background of segmented arc...
+      // if (!this.config.isScale) {
+        // for (var k = 0; k < this._segmentAngles.length; k++) {
+          // d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
+                                // this._arc.clockwise, arcRadiusX, arcRadiusY, arcWidth);
 
-          svgItems.push(svg`<path id="arc-segment-bg-${this.toolId}-${k}" class="arc__segment"
-                              style="${configStyleBgStr}"
-                              d="${d}"
-                              />`);
+          // svgItems.push(svg`<path id="arc-segment-bg-${this.toolId}-${k}" class="arc__segment"
+                              // style="${styleMap(configStyleBg)}"
+                              // d="${d}"
+                              // />`);
 
-        }
-      }
+        // }
+      // }
 
-      // Now draw the arc itself...
-      var arcPartStart;
-      var arcPartEnd;
-
-
-      // Check if arcId does exist
-      if (this._arcId != null) {
-        if (this.dev.debug) console.log('_arcId does exist');
-
-        // Render current from cache
-        this._cache.forEach((item, index) => {
-          d = item;
-          //if (this.dev.debug) console.log('_renderSegments - from cache', this.toolId, index, d);
-          svgItems.push(svg`<path id="arc-segment-${this.toolId}-${index}" class="arc__segment"
-                            style="${configStyleStr};"
-                            d="${d}"
-                            />`);
-        });
-
-        var tween = {};
-
-        function animateSegments(timestamp, thisTool){
-
-            const easeOut = progress =>
-              Math.pow(--progress, 5) + 1;
-
-            var frameSegment;
-            var runningSegment;
-
-            var timestamp = timestamp || new Date().getTime()
-            if (!tween.startTime) {
-              tween.startTime = timestamp;
-              tween.runningAngle = tween.fromAngle;
-            }
-
-            var runtime = timestamp - tween.startTime
-            tween.progress = Math.min(runtime / tween.duration, 1);
-            tween.progress = easeOut(tween.progress);
-
-            const increase = ((thisTool._arc.clockwise)
-                              ? (tween.toAngle > tween.fromAngle) : (tween.fromAngle > tween.toAngle));
-
-            // Calculate where the animation angle should be now in this animation frame: angle and segment.
-            tween.frameAngle = tween.fromAngle + ((tween.toAngle - tween.fromAngle) * tween.progress);
-            frameSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
-                thisTool._arc.clockwise
-                ? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
-                : ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
-
-            if (frameSegment == -1) {
-              if (thisTool.debug) console.log('animateSegments frameAngle not found', tween, thisTool._segmentAngles);
-            }
-
-            // Check where we actually are now. This might be in a different segment...
-            runningSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
-                thisTool._arc.clockwise
-                ? ((tween.runningAngle <= currentValue.boundsEnd) && (tween.runningAngle >= currentValue.boundsStart))
-                : ((tween.runningAngle <= currentValue.boundsStart) && (tween.runningAngle >= currentValue.boundsEnd)));
-
-            // Do render segments until the animation angle is at the requested animation frame angle.
-            do {
-
-              var aniStartAngle = thisTool._segmentAngles[runningSegment].drawStart;
-              var runningSegmentAngle = thisTool._arc.clockwise
-                                        ? Math.min(thisTool._segmentAngles[runningSegment].boundsEnd, tween.frameAngle)
-                                        : Math.max(thisTool._segmentAngles[runningSegment].boundsEnd, tween.frameAngle);
-              var aniEndAngle = thisTool._arc.clockwise
-                                  ? Math.min(thisTool._segmentAngles[runningSegment].drawEnd, tween.frameAngle)
-                                  : Math.max(thisTool._segmentAngles[runningSegment].drawEnd, tween.frameAngle);
-              // First phase. Just draw and ignore segments...
-              d = thisTool.buildArcPath(aniStartAngle, aniEndAngle, thisTool._arc.clockwise, arcRadiusX, arcRadiusY, arcWidth);
-
-              let as;
-              const myarc = "arc-segment-".concat(thisTool.toolId).concat("-").concat(runningSegment);
-              as = thisTool._card.shadowRoot.getElementById(myarc);
-              if (as) {
-                var e = as.getAttribute("d");
-                as.setAttribute("d", d);
-
-                // We also have to set the style fill if the color stops and gradients are implemented
-                // As we're using styles, attributes won't work. Must use as.style.fill = 'calculated color'
-                // #TODO
-                // Can't use gradients probably because of custom path. Conic-gradient would be fine.
-                //
-                // First try...
-                if (thisTool.config.show.style =="colorstops") {
-                  as.style.fill = thisTool.config.colorstops[runningSegment];
-                }
-              }
-              thisTool._cache[runningSegment] = d;
-
-              // If at end of animation, don't do the add to force going to next segment
-              if (tween.frameAngle != runningSegmentAngle) {
-                runningSegmentAngle = runningSegmentAngle + (0.000001 * thisTool._arc.direction);
-              }
-
-              var runningSegmentPrev = runningSegment;
-              runningSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
-                thisTool._arc.clockwise
-                ? ((runningSegmentAngle <= currentValue.boundsEnd) && (runningSegmentAngle >= currentValue.boundsStart))
-                : ((runningSegmentAngle <= currentValue.boundsStart) && (runningSegmentAngle >= currentValue.boundsEnd)));
-
-              frameSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
-                thisTool._arc.clockwise
-                ? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
-                : ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
-
-              if (!increase) {
-                if (runningSegmentPrev != runningSegment) {
-                  if (thisTool.debug) console.log('movit - remove path', thisTool.toolId, runningSegmentPrev);
-                  if (thisTool._arc.clockwise) {
-                    as.removeAttribute("d");
-                    thisTool._cache[runningSegmentPrev] = null;
-                  } else {
-                    as.removeAttribute("d");
-                    thisTool._cache[runningSegmentPrev] = null;
-                  }
-                }
-              }
-              tween.runningAngle = runningSegmentAngle;
-            } while ((tween.runningAngle != tween.frameAngle) && (runningSegment == runningSegmentPrev));
-
-            if (tween.progress != 1) {
-                thisTool.rAFid = requestAnimationFrame(function(timestamp){
-                    animateSegments(timestamp, thisTool)
-                })
-            } else {
-              tween.startTime = null;
-            }
-        } // function animateSegments
-
-        var mySelf = this;
-        var arcCur = arcEndPrev;
-
-        // Check if values changed and we should animate to another target then previously rendered
-        if ((val != valPrev) && (this._card.connected == true) && (this._renderTo != this._stateValue)) {
-          this._renderTo = this._stateValue;
-          if (this.dev.debug) console.log('val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
-
-          // If previous animation active, cancel this one before starting a new one...
-          if (this.rAFid) {
-            if (this.dev.debug) console.log('cancelling rAFid', this._card.cardId, this.toolId, 'rAFid', this.rAFid);
-            cancelAnimationFrame(this.rAFid);
-          }
-
-          // Start new animation with calculated settings...
-          // counter var not defined???
-          //if (this.dev.debug) console.log('starting animationframe timer...', this._card.cardId, this.toolId, counter);
-          tween.fromAngle = arcEndPrev;
-          tween.toAngle = arcEnd;
-          tween.runningAngle = arcEndPrev;
-          tween.duration = Math.min(Math.max(500, this.config.animation.duration * 1000), 5000);
-          tween.startTime = null;
-          this.rAFid = requestAnimationFrame(function(timestamp){
-                                              animateSegments(timestamp, mySelf)
-          })
-        }
-        return svg`${svgItems}`;
-
-      } else {
-        // FIRST draw! Do IT!
-        if (this.dev.debug) console.log('_arcId does NOT exist');
-
-        for(var i = 0; i < fullParts; i++) {
-          arcPartStart = this._segmentAngles[i].drawStart;
-          arcPartEnd = this._segmentAngles[i].drawEnd;
-          arcRest = arcRest - arcPart;
-
-          d = this.buildArcPath(arcPartStart, arcPartEnd, arcClockwise, arcRadiusX, arcRadiusY, arcWidth);
-          this._cache[i] = d;
-
-          // extra, set color from colorlist as a test
-          var fill = this.config.color;
-          if (this.config.show.style =="colorstops") {
-            fill = this.config.colorstops[i];
-          }
-
-          svgItems.push(svg`<path id="arc-segment-${this.toolId}-${i}" class="arc__segment"
-                              style="${configStyleStr} fill: ${fill};"
-                              d="${d}"
-                              />`);
-        }
-
-        this.arcEnd = arcPartEnd;
-        this.arcEndSegment = i;
-
-        // Did we draw a single segment or not? If not, reset start & end to start...
-        if (fullParts < 1) {
-          arcPartStart = arcStart + (arcDivider * this._arc.direction);
-          arcPartEnd = arcPartStart - (2 * arcDivider * this._arc.direction);
-        }
-
-        // If we have to draw the last partial arc, calculate size and draw it!
-
-        if (arcRest > 0) {
-          var lastPartStart = this._segmentAngles[i].drawStart;
-          var lastPartEnd = this._segmentAngles[i].drawStart + (arcRest * this._arc.direction) - (arcDivider * this._arc.direction);
-          d = this.buildArcPath(lastPartStart,
-                        lastPartEnd,
-                        arcClockwise,
-                        arcRadiusX,
-                        arcRadiusY,
-                        arcWidth);
-
-          this._cache[i] = d;
-          svgItems.push(svg`<path id="arc-segment-${this.toolId}-${i}" class="arc__segment"
-                            style="${configStyleStr}"
-                            d="${d}"
-                            />`);
-          this.arcEnd = lastPartEnd;
-          this.arcEndSegment = i;
-          i += 1;
-        }
-
-        // create empty elements, so no problem in animation function. All path's exist...
-        for (var j=i; j < fullPartsAll; j++) {
-          arcPartStart = this._segmentAngles[j].drawStart;
-          arcPartEnd = this._segmentAngles[j].drawStart;
-
-          d = this.buildArcPath(arcPartStart,
-                        arcPartStart,
-                        arcClockwise,
-                        arcRadiusX,
-                        arcRadiusY,
-                        0);
-          this._cache[j] = d;
-          svgItems.push(svg`<path id="arc-segment-${this.toolId}-${j}" class="arc__segment"
-                            style="${configStyleStr}"
-                            d="${d}"
-                            />`);
-        }
+      // // Now draw the arc itself...
+      // var arcPartStart;
+      // var arcPartEnd;
 
 
-        return svg`${svgItems}`;
-      }
+      // // Check if arcId does exist
+      // if (this._arcId != null) {
+        // if (this.dev.debug) console.log('_arcId does exist');
+
+        // // Render current from cache
+        // this._cache.forEach((item, index) => {
+          // d = item;
+          // //if (this.dev.debug) console.log('_renderSegments - from cache', this.toolId, index, d);
+          // svgItems.push(svg`<path id="arc-segment-${this.toolId}-${index}" class="arc__segment"
+                            // style="${styleMap(configStyle)};"
+                            // d="${d}"
+                            // />`);
+        // });
+
+        // var tween = {};
+
+        // function animateSegments(timestamp, thisTool){
+
+            // const easeOut = progress =>
+              // Math.pow(--progress, 5) + 1;
+
+            // var frameSegment;
+            // var runningSegment;
+
+            // var timestamp = timestamp || new Date().getTime()
+            // if (!tween.startTime) {
+              // tween.startTime = timestamp;
+              // tween.runningAngle = tween.fromAngle;
+            // }
+
+            // var runtime = timestamp - tween.startTime
+            // tween.progress = Math.min(runtime / tween.duration, 1);
+            // tween.progress = easeOut(tween.progress);
+
+            // const increase = ((thisTool._arc.clockwise)
+                              // ? (tween.toAngle > tween.fromAngle) : (tween.fromAngle > tween.toAngle));
+
+            // // Calculate where the animation angle should be now in this animation frame: angle and segment.
+            // tween.frameAngle = tween.fromAngle + ((tween.toAngle - tween.fromAngle) * tween.progress);
+            // frameSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
+                // thisTool._arc.clockwise
+                // ? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
+                // : ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
+
+            // if (frameSegment == -1) {
+              // if (thisTool.debug) console.log('animateSegments frameAngle not found', tween, thisTool._segmentAngles);
+            // }
+
+            // // Check where we actually are now. This might be in a different segment...
+            // runningSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
+                // thisTool._arc.clockwise
+                // ? ((tween.runningAngle <= currentValue.boundsEnd) && (tween.runningAngle >= currentValue.boundsStart))
+                // : ((tween.runningAngle <= currentValue.boundsStart) && (tween.runningAngle >= currentValue.boundsEnd)));
+
+            // // Do render segments until the animation angle is at the requested animation frame angle.
+            // do {
+
+              // var aniStartAngle = thisTool._segmentAngles[runningSegment].drawStart;
+              // var runningSegmentAngle = thisTool._arc.clockwise
+                                        // ? Math.min(thisTool._segmentAngles[runningSegment].boundsEnd, tween.frameAngle)
+                                        // : Math.max(thisTool._segmentAngles[runningSegment].boundsEnd, tween.frameAngle);
+              // var aniEndAngle = thisTool._arc.clockwise
+                                  // ? Math.min(thisTool._segmentAngles[runningSegment].drawEnd, tween.frameAngle)
+                                  // : Math.max(thisTool._segmentAngles[runningSegment].drawEnd, tween.frameAngle);
+              // // First phase. Just draw and ignore segments...
+              // d = thisTool.buildArcPath(aniStartAngle, aniEndAngle, thisTool._arc.clockwise, arcRadiusX, arcRadiusY, arcWidth);
+
+              // let as;
+              // const myarc = "arc-segment-".concat(thisTool.toolId).concat("-").concat(runningSegment);
+              // as = thisTool._card.shadowRoot.getElementById(myarc);
+              // if (as) {
+                // var e = as.getAttribute("d");
+                // as.setAttribute("d", d);
+
+                // // We also have to set the style fill if the color stops and gradients are implemented
+                // // As we're using styles, attributes won't work. Must use as.style.fill = 'calculated color'
+                // // #TODO
+                // // Can't use gradients probably because of custom path. Conic-gradient would be fine.
+                // //
+                // // First try...
+                // if (thisTool.config.show.style =="colorstops") {
+                  // as.style.fill = thisTool.config.colorstops[runningSegment];
+                // }
+              // }
+              // thisTool._cache[runningSegment] = d;
+
+              // // If at end of animation, don't do the add to force going to next segment
+              // if (tween.frameAngle != runningSegmentAngle) {
+                // runningSegmentAngle = runningSegmentAngle + (0.000001 * thisTool._arc.direction);
+              // }
+
+              // var runningSegmentPrev = runningSegment;
+              // runningSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
+                // thisTool._arc.clockwise
+                // ? ((runningSegmentAngle <= currentValue.boundsEnd) && (runningSegmentAngle >= currentValue.boundsStart))
+                // : ((runningSegmentAngle <= currentValue.boundsStart) && (runningSegmentAngle >= currentValue.boundsEnd)));
+
+              // frameSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
+                // thisTool._arc.clockwise
+                // ? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
+                // : ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
+
+              // if (!increase) {
+                // if (runningSegmentPrev != runningSegment) {
+                  // if (thisTool.debug) console.log('movit - remove path', thisTool.toolId, runningSegmentPrev);
+                  // if (thisTool._arc.clockwise) {
+                    // as.removeAttribute("d");
+                    // thisTool._cache[runningSegmentPrev] = null;
+                  // } else {
+                    // as.removeAttribute("d");
+                    // thisTool._cache[runningSegmentPrev] = null;
+                  // }
+                // }
+              // }
+              // tween.runningAngle = runningSegmentAngle;
+            // } while ((tween.runningAngle != tween.frameAngle) && (runningSegment == runningSegmentPrev));
+
+            // if (tween.progress != 1) {
+                // thisTool.rAFid = requestAnimationFrame(function(timestamp){
+                    // animateSegments(timestamp, thisTool)
+                // })
+            // } else {
+              // tween.startTime = null;
+            // }
+        // } // function animateSegments
+
+        // var mySelf = this;
+        // var arcCur = arcEndPrev;
+
+        // // Check if values changed and we should animate to another target then previously rendered
+        // if ((val != valPrev) && (this._card.connected == true) && (this._renderTo != this._stateValue)) {
+          // this._renderTo = this._stateValue;
+          // if (this.dev.debug) console.log('val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
+
+          // // If previous animation active, cancel this one before starting a new one...
+          // if (this.rAFid) {
+            // if (this.dev.debug) console.log('cancelling rAFid', this._card.cardId, this.toolId, 'rAFid', this.rAFid);
+            // cancelAnimationFrame(this.rAFid);
+          // }
+
+          // // Start new animation with calculated settings...
+          // // counter var not defined???
+          // //if (this.dev.debug) console.log('starting animationframe timer...', this._card.cardId, this.toolId, counter);
+          // tween.fromAngle = arcEndPrev;
+          // tween.toAngle = arcEnd;
+          // tween.runningAngle = arcEndPrev;
+          // tween.duration = Math.min(Math.max(500, this.config.animation.duration * 1000), 5000);
+          // tween.startTime = null;
+          // this.rAFid = requestAnimationFrame(function(timestamp){
+                                              // animateSegments(timestamp, mySelf)
+          // })
+        // }
+        // return svg`${svgItems}`;
+
+      // } else {
+        // // FIRST draw! Do IT!
+        // if (this.dev.debug) console.log('_arcId does NOT exist');
+
+        // for(var i = 0; i < fullParts; i++) {
+          // arcPartStart = this._segmentAngles[i].drawStart;
+          // arcPartEnd = this._segmentAngles[i].drawEnd;
+          // arcRest = arcRest - arcPart;
+
+          // d = this.buildArcPath(arcPartStart, arcPartEnd, arcClockwise, arcRadiusX, arcRadiusY, arcWidth);
+          // this._cache[i] = d;
+
+          // // extra, set color from colorlist as a test
+          // var fill = this.config.color;
+          // if (this.config.show.style =="colorstops") {
+            // fill = this.config.colorstops[i];
+          // }
+
+          // svgItems.push(svg`<path id="arc-segment-${this.toolId}-${i}" class="arc__segment"
+                              // style="${configStyleStr} fill: ${fill};"
+                              // d="${d}"
+                              // />`);
+        // }
+
+        // this.arcEnd = arcPartEnd;
+        // this.arcEndSegment = i;
+
+        // // Did we draw a single segment or not? If not, reset start & end to start...
+        // if (fullParts < 1) {
+          // arcPartStart = arcStart + (arcDivider * this._arc.direction);
+          // arcPartEnd = arcPartStart - (2 * arcDivider * this._arc.direction);
+        // }
+
+        // // If we have to draw the last partial arc, calculate size and draw it!
+
+        // if (arcRest > 0) {
+          // var lastPartStart = this._segmentAngles[i].drawStart;
+          // var lastPartEnd = this._segmentAngles[i].drawStart + (arcRest * this._arc.direction) - (arcDivider * this._arc.direction);
+          // d = this.buildArcPath(lastPartStart,
+                        // lastPartEnd,
+                        // arcClockwise,
+                        // arcRadiusX,
+                        // arcRadiusY,
+                        // arcWidth);
+
+          // this._cache[i] = d;
+          // svgItems.push(svg`<path id="arc-segment-${this.toolId}-${i}" class="arc__segment"
+                            // style="${configStyleStr}"
+                            // d="${d}"
+                            // />`);
+          // this.arcEnd = lastPartEnd;
+          // this.arcEndSegment = i;
+          // i += 1;
+        // }
+
+        // // create empty elements, so no problem in animation function. All path's exist...
+        // for (var j=i; j < fullPartsAll; j++) {
+          // arcPartStart = this._segmentAngles[j].drawStart;
+          // arcPartEnd = this._segmentAngles[j].drawStart;
+
+          // d = this.buildArcPath(arcPartStart,
+                        // arcPartStart,
+                        // arcClockwise,
+                        // arcRadiusX,
+                        // arcRadiusY,
+                        // 0);
+          // this._cache[j] = d;
+          // svgItems.push(svg`<path id="arc-segment-${this.toolId}-${j}" class="arc__segment"
+                            // style="${configStyleStr}"
+                            // d="${d}"
+                            // />`);
+        // }
+
+
+        // return svg`${svgItems}`;
+      // }
     }
   }
 
@@ -4912,10 +5043,11 @@ class devSwissArmyKnifeCard extends LitElement {
 
       .card--dropshadow-down-and-distant {
         filter: drop-shadow(0px 0.05em 0px #b2a98f)
-                drop-shadow(0px 14px 10px rgba(0,0,0,0.15)
+                drop-shadow(0px 14px 10px rgba(0,0,0,0.15))
                 drop-shadow(0px 24px 2px rgba(0,0,0,0.1))
                 drop-shadow(0px 34px 30px rgba(0,0,0,0.1));
       }
+      
       .card--filter-none {
       }
 
@@ -4973,6 +5105,10 @@ class devSwissArmyKnifeCard extends LitElement {
       //return;
     }
 
+    if (!this.config.entities) {
+      return;
+    }
+    
     var entityHasChanged = false;
 
     // Update state strings and check for changes.
@@ -5084,7 +5220,7 @@ class devSwissArmyKnifeCard extends LitElement {
 
     // For now, always force update to render the card if any of the states or attributes have changed...
     if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
-    //this.requestUpdate();
+    this.requestUpdate();
 
     //console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
   }
@@ -5126,9 +5262,9 @@ class devSwissArmyKnifeCard extends LitElement {
     this.viewBox.width = ar[0] * SVG_DEFAULT_DIMENSIONS;
     this.viewBox.height= ar[1] * SVG_DEFAULT_DIMENSIONS;
 
-    if (!config.entities) {
-      throw Error('card::setConfig - No entities defined');
-    }
+    // if (!config.entities) {
+      // throw Error('card::setConfig - No entities defined');
+    // }
     if (!config.layout) {
       throw Error('card::setConfig - No layout defined');
     }
@@ -5165,12 +5301,14 @@ class devSwissArmyKnifeCard extends LitElement {
     const newConfig = Merge.mergeDeep(config);
     
     // Set default tap_action, if none given for an entity
-    newConfig.entities.forEach((entity, i) => {
-      if (!entity.tap_action) {
-        newConfig.entities[i].tap_action = {action: 'more-info'};
+    if (newConfig.entities) {
+      newConfig.entities.forEach((entity, i) => {
+        if (!entity.tap_action) {
+          newConfig.entities[i].tap_action = {action: 'more-info'};
+        }
       }
+      );
     }
-    );
 
     // #TODO must be removed after removal of segmented arcs part below
     this.config = newConfig;
@@ -6547,7 +6685,15 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     if (firstInterval != '0') {
       // first index doesn't contain data.
       coords[0] = [];
-      coords[0].push(coords[firstInterval[0]][1]);
+      
+      // #TODO:
+      // this one crashes on [1] if history is empty, ie database is recreated... No data at-all present in database!
+      // So can't fill using that.
+      // if (coords[firstInterval[0]]) {
+        // coords[0].push(coords[firstInterval[0]][1]);
+      // }
+      coords[0].push(coords[firstInterval][0]);
+      // console.log('uppdate, coords', coords, firstInterval, firstInterval[0], coords[firstInterval], coords[firstInterval][0]);
     }
 
     for(var i = 0; i < (hours / barhours); i++) {
