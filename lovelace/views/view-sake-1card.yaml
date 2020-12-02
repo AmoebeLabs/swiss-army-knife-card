@@ -127,8 +127,8 @@ cards:
                       20: 'red'
                     styles:
                       bar:
-                        # stroke: var(--theme-gradient-color-01);
-                        stroke-linecap: butt;
+                        # stroke: var(--theme-gradient-color-01)
+                        stroke-linecap: butt
 
                   - type: 'name'
                     id: 3
@@ -137,9 +137,9 @@ cards:
                     cy: 42
                     styles:
                       name:
-                        text-anchor: center;
-                        font-size: 1.5em;
-                        fill: black;
+                        text-anchor: center
+                        font-size: 1.5em
+                        fill: black
 
                   - type: 'state'
                     id: 4
@@ -148,10 +148,10 @@ cards:
                     cy: 67
                     styles:
                       state:
-                        text-anchor: center;
-                        font-size: 1.9em;
-                        font-weight: 700;
-                        fill: black;
+                        text-anchor: center
+                        font-size: 1.9em
+                        font-weight: 700
+                        fill: black
                       
                   - type: 'slider'
                     id: 10
@@ -174,13 +174,13 @@ cards:
                       # parameter: brightness_pct
                     styles:
                       slider:
-                        fill: var(--theme-gradient-color-03);
-                        stroke: var(--theme-gradient-color-01);
-                        stroke-width: 2;
+                        fill: var(--theme-gradient-color-03)
+                        stroke: var(--theme-gradient-color-01)
+                        stroke-width: 2
                       handle:
-                        font-size: 1.2em;
-                        font-weight: 700;
-                        fill: black;
+                        font-size: 1.2em
+                        font-weight: 700
+                        fill: black
 
                   - type: 'slider'
                     id: 11
@@ -203,13 +203,13 @@ cards:
                       # parameter: brightness_pct
                     styles:
                       slider:
-                        fill: var(--theme-gradient-color-03);
-                        stroke: var(--theme-gradient-color-01);
-                        stroke-width: 2;
+                        fill: var(--theme-gradient-color-03)
+                        stroke: var(--theme-gradient-color-01)
+                        stroke-width: 2
                       handle:
-                        font-size: 1.2em;
-                        font-weight: 700;
-                        fill: black;
+                        font-size: 1.2em
+                        font-weight: 700
+                        fill: black
               
         ##- !include card-blank-card.yaml
 
@@ -286,23 +286,23 @@ cards:
                     radius: 8
                     entity_index: 6
                     styles:
-                      stroke: white;
-                      stroke-width: 5;
-                      fill: black;
+                      stroke: white
+                      stroke-width: 5
+                      fill: black
                     animations:
                       - state: 'on'
                         styles:
                           circle:
-                            fill: var(--theme-gradient-color-08);
-                            opacity: 0.9;
-                            animation: jello 1s ease-in-out both;
-                            transform-origin: center;
+                            fill: var(--theme-gradient-color-08)
+                            opacity: 0.9
+                            animation: jello 1s ease-in-out both
+                            transform-origin: center
                       - state: 'off'
                         reuse: true
                         styles:
                           circle:
-                            transform-origin: center;
-                            animation: zoomOut 1s ease-out both;
+                            transform-origin: center
+                            animation: zoomOut 1s ease-out both
                   - type: circle
                     id: 2
                     cx: 85
@@ -310,9 +310,9 @@ cards:
                     radius: 6
                     styles:
                       circle:
-                        stroke: white;
-                        stroke-width: 5;
-                        fill: none;
+                        stroke: white
+                        stroke-width: 5
+                        fill: none
                   - type: 'line'
                     id: 1
                     orientation: horizontal
@@ -343,9 +343,9 @@ cards:
                     radiusy: 20
                     styles:
                       ellipse:
-                        stroke: white;
-                        stroke-width: 5;
-                        fill: none;
+                        stroke: white
+                        stroke-width: 5
+                        fill: none
 
                   - type: 'name'
                     id: 3
@@ -354,8 +354,8 @@ cards:
                     cy: 62.5
                     styles:
                       name:
-                        text-anchor: start;
-                        font-size: 1.5em;
+                        text-anchor: start
+                        font-size: 1.5em
 
                   - type: 'state'
                     id: 4
@@ -364,9 +364,9 @@ cards:
                     cy: 90
                     styles:
                       state:
-                        text-anchor: start;
-                        font-size: 1.9em;
-                        font-weight: 700;
+                        text-anchor: start
+                        font-size: 1.9em
+                        font-weight: 700
                       
                   - type: 'horseshoe'
                     id: 10
@@ -553,24 +553,24 @@ cards:
                         operator: '>='
                         styles:
                           name:
-                            fill: red;
-                            transform-origin: center;
-                            animation: blinkingText 1.2s infinite;
+                            fill: red
+                            transform-origin: center
+                            animation: blinkingText 1.2s infinite
                       - state: '10'
                         operator: '>='
                         styles:
                           name:
-                            fill: yellow;
-                            transform-origin: center;
-                            animation: flash 5s infinite;
+                            fill: yellow
+                            transform-origin: center
+                            animation: flash 5s infinite
                       - state: '0'
                         operator: '>='
                         styles:
                           name:
-                            fill: DarkSeaGreen;
-                            opacity: 0.9;
-                            animation: pulse 1s ease-in-out both;
-                            transform-origin: center;
+                            fill: DarkSeaGreen
+                            opacity: 0.9
+                            animation: pulse 1s ease-in-out both
+                            transform-origin: center
                   
 
               # ==============================================================================
@@ -607,10 +607,10 @@ cards:
                       duration: 5
                     styles:
                       foreground:
-                        fill: var(--theme-gradient-color-01);
-                        # marker-end: url(#markerArrow);
+                        fill: var(--theme-gradient-color-01)
+                        # marker-end: url(#markerArrow)
                       background:
-                        fill: var(--primary-background-color);
+                        fill: var(--primary-background-color)
 
                   - type: state
                   # States 0 refers to the first entity in the list, ie index 0
@@ -621,9 +621,9 @@ cards:
                     cy: 60
                     styles:
                       state:
-                        text-anchor: center;
-                        font-size: 1.7em;
-                        color: var(--theme-gradient-color-01);
+                        text-anchor: center
+                        font-size: 1.7em
+                        color: var(--theme-gradient-color-01)
                   # 2020.10.01 ycx/cy of Widgets are not calculated correctly it seems.
                   # the positions defined below specify the coords, independant of toolset position?!?!?!?!?!
                   # was 12,5 / 45. Should be 50 / 45??
@@ -650,7 +650,7 @@ cards:
                     cy: 50
                     styles:
                       area:
-                        font-size: 1.5em;
+                        font-size: 1.5em
               
 
               # ==============================================================================
@@ -697,10 +697,10 @@ cards:
                       duration: 5
                     styles:
                       foreground:
-                        fill: var(--theme-gradient-color-02);
-                        # marker-end: url(#markerArrow);
+                        fill: var(--theme-gradient-color-02)
+                        # marker-end: url(#markerArrow)
                       background:
-                        fill: var(--primary-background-color);
+                        fill: var(--primary-background-color)
 
                   - type: state
                     id: 5
@@ -709,9 +709,9 @@ cards:
                     cy: 60
                     styles:
                       state:
-                        text-anchor: center;
-                        font-size: 1.7em;
-                        color: var(--theme-gradient-color-02);
+                        text-anchor: center
+                        font-size: 1.7em
+                        color: var(--theme-gradient-color-02)
                   - type: icon
                     id: 1
                     entity_index: 1
@@ -801,10 +801,10 @@ cards:
                       duration: 5
                     styles:
                       foreground:
-                        fill: var(--theme-gradient-color-03);
-                        #marker-end: url(#markerArrow);
+                        fill: var(--theme-gradient-color-03)
+                        #marker-end: url(#markerArrow)
                       background:
-                        fill: var(--primary-background-color);
+                        fill: var(--primary-background-color)
 
                   - type: state
                     id: 6
@@ -813,9 +813,9 @@ cards:
                     cy: 60
                     styles:
                       state:
-                        text-anchor: center;
-                        font-size: 1.7em;
-                        color: var(--theme-gradient-color-01);
+                        text-anchor: center
+                        font-size: 1.7em
+                        color: var(--theme-gradient-color-01)
                   - type: icon
                     id: 2
                     entity_index: 2
@@ -863,10 +863,10 @@ cards:
                           - 'var(--theme-gradient-color-04)'
                     styles:
                       foreground:
-                        fill: var(--theme-gradient-color-04);
-                        # marker-end: url(#markerCircle);
+                        fill: var(--theme-gradient-color-04)
+                        # marker-end: url(#markerCircle)
                       background:
-                        fill: var(--primary-background-color);
+                        fill: var(--primary-background-color)
 
                   - type: state
                     id: 7
@@ -875,9 +875,9 @@ cards:
                     cy: 60
                     styles:
                       state:
-                        text-anchor: center;
-                        font-size: 1.7em;
-                        color: var(--theme-gradient-color-02);
+                        text-anchor: center
+                        font-size: 1.7em
+                        color: var(--theme-gradient-color-02)
                   - type: icon
                     id: 3
                     entity_index: 3
@@ -910,9 +910,9 @@ cards:
                     # cy: 50
                     # radius: 75
                     # styles:
-                      # stroke: var(--theme-gradient-color-01);
-                      # stroke-width: 10;
-                      # fill: none;
+                      # stroke: var(--theme-gradient-color-01)
+                      # stroke-width: 10
+                      # fill: none
 
                   # - type: circle 
                     # id: 3
@@ -920,11 +920,11 @@ cards:
                     # cy: 50
                     # radius: 75
                     # styles:
-                      # stroke: var(--theme-gradient-color-02);
-                      # stroke-width: 40;
-                      # fill: none;
-                      # stroke-dasharray: 5 67;
-                      # stroke-dashoffset: 54;
+                      # stroke: var(--theme-gradient-color-02)
+                      # stroke-width: 40
+                      # fill: none
+                      # stroke-dasharray: 5 67
+                      # stroke-dashoffset: 54
 
                   # - type: circle
                     # id: 1
@@ -932,16 +932,16 @@ cards:
                     # cy: 52
                     # radius: 67.5
                     # styles:
-                      # stroke: var(--theme-gradient-color-02);
-                      # stroke-width: 10;
-                      # fill: none;
+                      # stroke: var(--theme-gradient-color-02)
+                      # stroke-width: 10
+                      # fill: none
 
 #
 # https://css-tricks.com/almanac/properties/s/stroke-linecap/
 #
 # regarding css settings:
 # This will override a presentation attribute <path stroke-linecap="square" ... />
-# This will not override an inline style e.g. <path style="stroke-linecap: square;" ... />
+# This will not override an inline style e.g. <path style="stroke-linecap: square" ... />
                 
 
         - !include card-blank-card.yaml
