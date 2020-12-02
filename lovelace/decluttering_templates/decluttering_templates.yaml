@@ -1,0 +1,72 @@
+#
+# File      : decluttering_templates.yaml
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/Home-Assistant-Config
+#
+# Author: Mars @ AmoebeLabs.com
+# 
+# License: CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Decluttering template yaml file
+#   
+###############################################################################
+
+air_visual_card_template:
+  !include air-visual-card-template-mw.yaml
+
+# Still a lot of button templates. Might merge them if possible...
+button_info_template:
+  !include button-switch-template-mw.yaml
+button_light_template:
+  !include button-light-template-mw.yaml
+#button_menu_template:
+#  !include button-menu-template-mw.yaml
+button_quick_menu_generic:
+  !include button-quick-menu-generic-mw.yaml
+button_switch_template:
+  !include button-switch-template-mw.yaml
+
+#glance_card_template:
+#  !include glance-card-template-mw.yaml
+
+# header_template:
+  # !include header-template-mw.yaml
+header_template:
+  !include sak-header-template-mw.yaml
+
+
+
+divider_template:
+  !include sak-divider-template-mw.yaml
+
+# divider_template:
+  # !include divider-template-mw.yaml
+  
+laundry_template:
+  !include laundry-template.yaml
+
+mini_graph_card_template:
+  !include mini-graph-card-template-mw.yaml
+
+#notification_card_template:
+#  !include notification-card-template-mw.yaml
+
+#thermostat_card_template:
+#  !include thermostat-card-template-mw.yaml
+
+sak_arc180_sparklinebar24_template:
+  !include sak-arc180-sparklinebar24.yaml
+  
+sak_arc180_sparklinebar24_template_tpl:
+  !include sak-arc180-sparklinebar24-tpl.yaml  
+
+sak_light_button_template_tpl:
+  !include sak-light-button-tpl.yaml  
+
+sak_light_button_template_nm_tpl:
+  !include sak-light-button-nm-tpl.yaml 
+
+sak_sensor_history_template_nm_tpl:
+  !include sak-sensor-history-nm-tpl.yaml
