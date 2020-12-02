@@ -15,7 +15,7 @@
     - type: custom:decluttering-card
       template: header_template
       variables:
-        - content: '### Scenes'
+        - content: 'Scenes'
 
     - type: custom:decluttering-card
       template: divider_template
@@ -24,13 +24,15 @@
     - type: custom:decluttering-card
       template: header_template
       variables:
-        - content: '### Verlichting'
+        - content: 'Verlichting'
 
     - type: custom:decluttering-card
       template: header_template
       variables:
-        - content: '#### Woonkamer'
+        - content: 'Woonkamer'
         - font_color: var(--secondary-text-color)
+        - font_size: 0.6em
+        
     - type: horizontal-stack
       cards:
         - !include card-blank-card.yaml
@@ -116,8 +118,9 @@
     - type: custom:decluttering-card
       template: header_template
       variables:
-        - content: '#### Keuken'
+        - content: 'Keuken'
         - font_color: var(--secondary-text-color)
+        - font_size: 0.6em
     - type: horizontal-stack
       cards:
         - !include card-blank-card.yaml
@@ -145,8 +148,9 @@
     - type: custom:decluttering-card
       template: header_template
       variables:
-        - content: '#### 1ste Verdieping'
+        - content: '1ste Verdieping'
         - font_color: var(--secondary-text-color)
+        - font_size: 0.6em
     - type: horizontal-stack
       cards:
         - !include card-blank-card.yaml
