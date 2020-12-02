@@ -161,38 +161,6 @@ class Templates {
   *
   */
 
-  // static replaceVariables2(argVariables, argTemplate) {
-
-    // if (!argVariables && !argTemplate.defaults) {
-      // return argTemplate;
-    // }
-    // let variableArray = argVariables?.slice(0) ?? [];
-
-    // if (argTemplate.defaults) {
-      // variableArray = variableArray.concat(argTemplate.defaults);
-    // }
-
-    // let jsonConfig = JSON.stringify(argTemplate[argTemplate.type]);
-    // variableArray.forEach(variable => {
-      // const key = Object.keys(variable)[0];
-      // const value = Object.values(variable)[0];
-      // if (typeof value === 'number' || typeof value === 'boolean') {
-        // const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
-        // jsonConfig = jsonConfig.replace(rxp2, value);
-      // }
-      // if (typeof value === 'object') {
-        // const rxp2 = new RegExp(`"\\[\\[${key}\\]\\]"`, 'gm');
-        // const valueString = JSON.stringify(value);
-        // jsonConfig = jsonConfig.replace(rxp2, valueString);
-      // } else {
-        // const rxp = new RegExp(`\\[\\[${key}\\]\\]`, 'gm');
-        // jsonConfig = jsonConfig.replace(rxp, value);
-      // }
-    // });
-
-    // return JSON.parse(jsonConfig);
-  // }
-
   static replaceVariables3(argVariables, argTemplate) {
 
     // If no variables specified, return template contents, so not the first object, but the contents!!!
@@ -555,6 +523,7 @@ class BaseTool {
     this.svg.x = (this.svg.cx) - (this.svg.width / 2);
     this.svg.y = (this.svg.cy) - (this.svg.height / 2);
     
+    this.configStyle = {};
     this.animationStyle = {};
     this.animationStyleHasChanged = true;
 
@@ -634,25 +603,16 @@ class BaseTool {
           // Unknown operator. Just do nothing and return;
           isMatch = false;
       }
-      // if animation state not equals sensor state, return... Nothing to animate for this state...
-      //if (this._stateValue.toLowerCase() != item.state.toLowerCase()) return;
       if (this.dev.debug) console.log('EntityStateTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
       if (!isMatch) return true;
 
       if (!this.animationStyle || !item.reuse) this.animationStyle = {};
-      //this.animationStyle = Object.assign(this.animationStyle, ...item.styles);
-      //this.animationStyle = {...this.animationStyle, ...item.styles};
-
-      // Try this????
-      //console.log("just before mergedeep", this.animationStyle, item.styles);
       if (item.styles) {
         this.animationStyle = Merge.mergeDeep(this.animationStyle, item.styles)
       }
 
-      // Add for performance update on style creation
-      // Assume in this simple case that animationStyle has changed
       this.animationStyleHasChanged = true;
-      // Can this work?????????????????
+
       // #TODO:
       // Store activeAnimation. Should be renamed, and used for more purposes, as via this method
       // you can override any value from within an animation, not just the css style settings.
@@ -660,7 +620,25 @@ class BaseTool {
     });
 
     return true;
+  }
 
+ /*******************************************************************************
+  * BaseTool::MergeAnimationStyleIfChanged()
+  *
+  * Summary.
+  * Merge changed animationStyle with configured static styles.
+  *
+  */
+  MergeAnimationStyleIfChanged(argDefaultStyles) {
+
+    if (this.animationStyleHasChanged) {
+      this.animationStyleHasChanged = false;
+      if (argDefaultStyles) {
+        this.configStyle = Merge.mergeDeep(argDefaultStyles, this.config.styles, this.animationStyle);
+      } else {
+        this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
+      }
+    }
   }
 
 }
@@ -689,15 +667,6 @@ class RangeSliderTool extends BaseTool {
     }
 
     super(argCard, argConfig, argPos);
-
-    // this.config = {...DEFAULT_SLIDER_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_SLIDER_CONFIG.styles, ...this.config.styles};
-
-    // // if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    // this.config.show = {...DEFAULT_SLIDER_CONFIG.show, ...this.config.show};
 
     this.config = Merge.mergeDeep(DEFAULT_SLIDER_CONFIG, argConfig);
     
@@ -1093,27 +1062,8 @@ class RangeSliderTool extends BaseTool {
 
     if (this.dev.debug) console.log('slider - _renderRangeSlider');
 
-    // Get configuration styles as the default styles
-    let configStyle = {...this.config.styles};
+    let configStyle = Merge.mergeDeep(this.config.styles);
 
-    // Get the runtime styles, caused by states & animation settings
-    let stateStyle = {};
-    //if (this._card.animations.lines[this.config.animation_id])
-    //  stateStyle = Object.assign(stateStyle, this._card.animations.lines[this.config.animation_id]);
-
-    // Merge the two, where the runtime styles may overwrite the statically configured styles
-    configStyle = { ...configStyle, ...stateStyle};
-
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleStrSlider = JSON.stringify(configStyle.slider).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    const configStyleStrHandle = JSON.stringify(configStyle.handle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-
-
-    // temp
-    // configStyle.slider['fill'] = 'var(--theme-gradient-color-01)';
-    // configStyle.slider['stroke'] = 'grey';
-    // configStyle.slider['stroke-width'] = '2';
-    
     configStyle.handle['text-anchor'] = 'middle';
     configStyle.handle['alignment-baseline'] = 'middle';
     
@@ -1209,8 +1159,6 @@ class LineTool extends BaseTool {
 
     this.config = Merge.mergeDeep(DEFAULT_LINE_CONFIG, argConfig);
     
-    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
-
     if ((this.config.orientation == 'vertical') || (this.config.orientation == 'horizontal'))
         this.svg.length = Utils.calculateSvgDimension(argConfig.length);
 
@@ -1251,13 +1199,7 @@ class LineTool extends BaseTool {
 
   _renderLine() {
 
-    if (this.animationStyleHasChanged) {
-      this.animationStyleHasChanged = false;
-      this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
-    
-      // Convert javascript records to plain text, without "{}" and "," between the styles.
-      // this.configStyleStr = JSON.stringify(this.configStyle.line).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    }
+    this.MergeAnimationStyleIfChanged();
 
     if (this.dev.debug) console.log('_renderLine', this.config.orientation, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
     return svg`
@@ -1313,8 +1255,6 @@ class CircleTool extends BaseTool {
 
     this.config = Merge.mergeDeep(DEFAULT_CIRCLE_CONFIG, argConfig);
     
-    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
-
     this.svg.radius = Utils.calculateSvgDimension(argConfig.radius)
     
     if (this.dev.debug) console.log('CircleTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
@@ -1344,24 +1284,7 @@ class CircleTool extends BaseTool {
 
   _renderCircle() {
 
-    if (this.animationStyleHasChanged) {
-      this.animationStyleHasChanged = false;
-      this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
-    
-      // Convert javascript records to plain text, without "{}" and "," between the styles.
-      // this.configStyleStr = JSON.stringify(this.configStyle.circle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    }
-
-    // let configStyle = {};
-    // if (this.animationStyle) {
-      // configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
-    // } else {
-      // //configStyle = Merge.mergeDeep(this.config.styles);
-      // configStyle = this.config.styles;
-    // }
-
-    // // Convert javascript records to plain text, without "{}" and "," between the styles.
-    // const configStyleStr = JSON.stringify(configStyle.circle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    this.MergeAnimationStyleIfChanged();
 
     return svg`
       <circle ""
@@ -1451,10 +1374,7 @@ class UserSvgTool extends BaseTool {
 
   _renderUserSvg() {
 
-    let configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
-    
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    const configStyleStr = JSON.stringify(configStyle.usersvg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    this.MergeAnimationStyleIfChanged();
 
     // #TODO:
     // This is only rendering an external svg. Also be able to render inline yaml svg stuff
@@ -1472,7 +1392,7 @@ class UserSvgTool extends BaseTool {
 
     
     return svg`
-      <svg x="${this.svg.x}" y="${this.svg.y}" style="${configStyleStr}">
+      <svg x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.configStyle)}">
         <image href="${this.images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
       </svg>
       `;
@@ -1558,13 +1478,7 @@ class RectangleTool extends BaseTool {
 
   _renderRectangle() {
 
-    if (this.animationStyleHasChanged) {
-      this.animationStyleHasChanged = false;
-      this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
-    
-      // Convert javascript records to plain text, without "{}" and "," between the styles.
-      // this.configStyleStr = JSON.stringify(this.configStyle.rectangle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    }
+    this.MergeAnimationStyleIfChanged();
 
     return svg`
       <rect ""
@@ -1671,15 +1585,7 @@ class RectangleToolEx extends BaseTool {
 
     var svgItems = [];
 
-    if (this.animationStyleHasChanged) {
-      this.animationStyleHasChanged = false;
-      this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
-    
-      // Convert javascript records to plain text, without "{}" and "," between the styles.
-      // this.configStyleStr = JSON.stringify(this.configStyle.rectex).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    }
-
-//    svgItems = svg``;
+    this.MergeAnimationStyleIfChanged();
 
     svgItems = svg`
       <g "" id="rectex-${this.toolId}">
@@ -1742,18 +1648,7 @@ class EllipseTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    // this.config = {...DEFAULT_ELLIPSE_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_ELLIPSE_CONFIG.styles, ...this.config.styles};
-
-    // if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    // this.config.show = {...DEFAULT_ELLIPSE_CONFIG.show, ...this.config.show};
-
     this.config = Merge.mergeDeep(DEFAULT_ELLIPSE_CONFIG, argConfig);
-
-    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.svg.radiusx = Utils.calculateSvgDimension(argConfig.radiusx)
     this.svg.radiusy = Utils.calculateSvgDimension(argConfig.radiusy)
@@ -1772,13 +1667,7 @@ class EllipseTool extends BaseTool {
 
   _renderEllipse() {
 
-    if (this.animationStyleHasChanged) {
-      this.animationStyleHasChanged = false;
-      this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
-    
-      // Convert javascript records to plain text, without "{}" and "," between the styles.
-      // this.configStyleStr = JSON.stringify(this.configStyle.ellipse).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    }
+    this.MergeAnimationStyleIfChanged();
 
     if (this.dev.debug) console.log('EllipseTool - renderEllipse', this.svg.cx, this.svg.cy, this.svg.radiusx, this.svg.radiusy);
 
@@ -1905,31 +1794,7 @@ class EntityIconTool extends BaseTool {
 */
   _renderIcon() {
 
-    if (this.animationStyleHasChanged) {
-      this.animationStyleHasChanged = false;
-      this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
-    
-      // Convert javascript records to plain text, without "{}" and "," between the styles.
-      // this.configStyleStr = JSON.stringify(this.configStyle.icon).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    }
-
-    // // Get configuration styles as the default styles
-    // let configStyle = {...this.config.styles};
-
-    // // Get the runtime styles, caused by states & animation settings
-    // //let stateStyle = {};
-    // //if (this._card.animations.icons[this.config.animation_id])
-    // //  stateStyle = Object.assign(stateStyle, this._card.animations.icons[this.config.animation_id]);
-
-    // // Merge the two, where the runtime styles may overwrite the statically configured styles
-    // //configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
-    // configStyle = { ...configStyle, ...this.animationStyle};
-    // configStyle.icon = { ...configStyle.icon, ...this.animationStyle?.icon};
-
-    // configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
-
-    // // Convert javascript records to plain text, without "{}" and "," between the styles.
-    // const configStyleStr = JSON.stringify(configStyle.icon).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    this.MergeAnimationStyleIfChanged();
 
     const icon = this._card._buildIcon(
       this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
@@ -2207,13 +2072,7 @@ class BadgeTool extends BaseTool {
 
     var svgItems = [];
 
-    // Get configuration styles as the default styles
-    let configStyleLeft = this.config.styles.left ? {...this.config.styles.left} : '';
-    let configStyleRight = this.config.styles.right ? {...this.config.styles.right} : '';
-
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    // const configStyleLeftStr = JSON.stringify(configStyleLeft).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    // const configStyleRightStr = JSON.stringify(configStyleRight).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+    this.MergeAnimationStyleIfChanged();
 
     svgItems = svg`
       <g  id="badge-${this.toolId}">
@@ -2227,7 +2086,7 @@ class BadgeTool extends BaseTool {
             v -${this.svg.height - 2 * this.svg.radius}
             z
             "
-            style="${styleMap(configStyleRight)}"/>
+            style="${styleMap(this.configStyle.right)}"/>
 
         <path "" d="
             M ${this.svg.leftXpos + this.svg.radius} ${this.svg.leftYpos}
@@ -2241,7 +2100,7 @@ class BadgeTool extends BaseTool {
             v -${this.svg.height - 2 * this.svg.radius}
             a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} -${this.svg.radius}
             "
-            style="${styleMap(configStyleLeft)}"/>
+            style="${styleMap(this.configStyle.left)}"/>
       </g>
       `;
 
@@ -2281,7 +2140,22 @@ class BadgeTool extends BaseTool {
 class EntityStateTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
     const DEFAULT_STATE_CONFIG = {
-      show: { uom: 'default' }
+      show: { uom: 'default' },
+      styles: {
+        state: {
+          "font-size": '2em',
+          "color": 'var(--primary-text-color)',
+          "opacity": '1.0',
+          "text-anchor": 'middle',
+          "alignment-baseline": 'central',
+        },
+        uom: {
+          "color": 'var(--primary-text-color)',
+          "text-anchor": 'middle',
+          "alignment-baseline": 'central',
+          "opacity": '0.7',
+        }
+      }
     }
     super(argCard, argConfig, argPos);
 
@@ -2301,23 +2175,17 @@ class EntityStateTool extends BaseTool {
   _renderState() {
 
     // compute some styling elements if configured for this state item
-    const STATE_STYLES = {
-      state: {
-        "font-size": '2em',
-        "color": 'var(--primary-text-color)',
-        "opacity": '1.0',
-        "text-anchor": 'middle',
-        "alignment-baseline": 'central',
-      }
-    }
+    // const STATE_STYLES = {
+      // state: {
+        // "font-size": '2em',
+        // "color": 'var(--primary-text-color)',
+        // "opacity": '1.0',
+        // "text-anchor": 'middle',
+        // "alignment-baseline": 'central',
+      // }
+    // }
 
-    if (this.animationStyleHasChanged) {
-      this.animationStyleHasChanged = false;
-      this.configStyle = Merge.mergeDeep(STATE_STYLES, this.config.styles, this.animationStyle);
-
-      // Convert javascript records to plain text, without "{}" and "," between the styles.
-      // this.configStyleStr = JSON.stringify(this.configStyle.state).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    }
+    this.MergeAnimationStyleIfChanged();
 
     var inState = this._stateValue;
     if (inState && isNaN(inState)) {
@@ -2335,22 +2203,18 @@ class EntityStateTool extends BaseTool {
   _renderUom() {
 
     // compute some styling elements if configured for this state item
-    const UOM_STYLES = {
-      uom: {
-        "opacity": '0.7',
-      }
-    }
+    // const UOM_STYLES = {
+      // uom: {
+        // "opacity": '0.7',
+      // }
+    // }
 
     if (this.config.show.uom === 'none') {
       return svg``;
     } else {
-      let configStyle = Merge.mergeDeep(this.configStyle.state, UOM_STYLES.uom, this.config.styles?.uom || {});
-      if (this.animationStyle.uom) configStyle = Merge.mergeDeep(configStyle, this.animationStyle.uom);
-
-      // Convert javascript records to plain text, without "{}" and "," between the styles.
-      // const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-
-      var fsuomStr = configStyle["font-size"];
+      this.MergeAnimationStyleIfChanged();
+      
+      var fsuomStr = this.configStyle.state["font-size"];
 
       var fsuomValue = 0.5;
       var fsuomType = 'em';
@@ -2363,8 +2227,7 @@ class EntityStateTool extends BaseTool {
 
       fsuomStr = { "font-size": fsuomValue + fsuomType};
 
-      let uomStyle = {...configStyle, ...UOM_STYLES, ...fsuomStr};
-      // const uomStyleStr = JSON.stringify(uomStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      this.configStyle.uom = Merge.mergeDeep(this.config.styles.uom, fsuomStr);
 
       const uom = this._card._buildUom(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
@@ -2372,19 +2235,19 @@ class EntityStateTool extends BaseTool {
       if (this.config.show.uom === 'default') {
         return svg`
           <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
-            style="${styleMap(uomStyle)}">
+            style="${styleMap(this.configStyle.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'below') {
         return svg`
           <tspan class="state__uom" x="${this.svg.x}" dy="1.5em"
-            style="${styleMap(uomStyle)}">
+            style="${styleMap(this.configStyle.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'above') {
         return svg`
           <tspan class="state__uom" x="${this.svg.x}" dy="-1.5em"
-            style="${styleMap(uomStyle)}">
+            style="${styleMap(this.configStyle.uom)}">
             ${uom}</tspan>
         `;
 
@@ -2418,111 +2281,8 @@ class EntityStateTool extends BaseTool {
       `;
     }
   } // render()
-  
-  // renderOld() {
-
-    // // compute x,y or dx,dy positions. Spec none if not specified.
-    // //const x = item.cx ? item.cx : '';
-    // //const y = item.cy ? item.cy : '';
-    // //const dx = item.dx ? item.dx : '0';
-    // //const dy = item.dy ? item.dy : '0';
-    // const dx = '0';
-    // const dy = '0';
-
-    // // compute some styling elements if configured for this state item
-    // const STATE_STYLES = {
-      // "font-size": '2em',
-      // "color": 'var(--primary-text-color)',
-      // "opacity": '1.0',
-      // "text-anchor": 'middle',
-      // "alignment-baseline": 'central',
-    // }
-
-    // const UOM_STYLES = {
-      // "opacity": '0.7',
-    // }
-
-    // // Get configuration styles as the default styles
-    // let configStyle = {...STATE_STYLES};
-  // //  if (item.styles) configStyle = Object.assign(configStyle, ...item.styles);
-    // if (this.config.styles) configStyle = {...configStyle, ...this.config.styles};
-
-    // // Get the runtime styles, caused by states & animation settings
-    // //let stateStyle = {};
-    // //if (this._card.animations.states[this.config.index])
-    // //  stateStyle = Object.assign(stateStyle, this._card.animations.states[this.config.index]);
-
-    // // Merge the two, where the runtime styles may overwrite the statically configured styles
-    // //configStyle = { ...configStyle, ...stateStyle, ...this.animationStyle};
-    // configStyle = { ...configStyle, ...this.animationStyle};
-
-    // // Convert javascript records to plain text, without "{}" and "," between the styles.
-    // const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-
-    // // Get font-size of state in configStyle.
-    // // Split value and px/em; See: https://stackoverflow.com/questions/3370263/separate-integers-and-text-in-a-string
-    // // For floats and strings:
-    // //  - https://stackoverflow.com/questions/17374893/how-to-extract-floating-numbers-from-strings-in-javascript
-
-    // // 2019.09.12
-    // // https://stackoverflow.com/questions/40758143/regular-expression-to-split-double-and-integer-numbers-in-a-string
-    // // https://regex101.com/r/QYfDtB/1
-    // // regex \D+|\d*\.?\d+ (plus /g for global match)
-    // // in twee stukken, dus 1.27 en em;
-
-    // var fsuomStr = configStyle["font-size"];
-
-    // var fsuomValue = 0.5;
-    // var fsuomType = 'em',
-    // const fsuomSplit = fsuomStr.match(/\D+|\d*\.?\d+/g);
-    // if (fsuomSplit.length == 2) {
-      // fsuomValue = Number(fsuomSplit[0]) * .6;
-      // fsuomType = fsuomSplit[1];
-    // }
-    // else console.error('Cannot determine font-size for state', fsuomStr);
-
-    // fsuomStr = { "font-size": fsuomValue + fsuomType};
-
-    // let uomStyle = {...configStyle, ...UOM_STYLES, ...fsuomStr};
-    // const uomStyleStr = JSON.stringify(uomStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-
-    // const uom = this._card._buildUom(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
-
-// /*
-    // const state = (this._card.config.entities[this.config.entity_index].attribute &&
-                  // this._card.entities[this.config.entity_index].attributes[this._card.config.entities[this.config.entity_index].attribute])
-                  // ? this._card.attributesStr[this.config.entity_index]
-                  // : this._card.entitiesStr[this.config.entity_index];
-// */
-    // const state = this._stateValue;
-
-    // if (this._card._computeDomain(this._card.entities[this.config.entity_index].entity_id) == 'sensor') {
-      // return svg`
-        // <text @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])}>
-          // <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}" dx="${dx}em" dy="${dy}em"
-            // style="${configStyleStr}">
-            // ${state}</tspan>
-          // <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
-            // style="${uomStyleStr}">
-            // ${uom}</tspan>
-        // </text>
-      // `;
-    // } else {
-      // // Not a sensor. Might be any other domain. Unit can only be specified using the units: in the configuration.
-      // // Still check for using an attribute value for the domain...
-      // return svg`
-        // <text @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])}>
-          // <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}" dx="${dx}em" dy="${dy}em"
-            // style="${configStyleStr}">
-            // ${state}</tspan>
-          // <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
-            // style="${uomStyleStr}">
-            // ${uom}</tspan>
-        // </text>
-      // `;
-    // }
-  // }
 }
+
  /*******************************************************************************
   * EntityNameTool class
   *
@@ -2535,9 +2295,15 @@ class EntityStateTool extends BaseTool {
 class EntityNameTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
+    // See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/alignment-baseline
     const DEFAULT_NAME_CONFIG = {
       styles: {
         name: {
+          "font-size": '1.5em',
+          "fill": 'var(--primary-text-color)',
+          "opacity": '1.0',
+          "text-anchor": 'middle',
+          "alignment-baseline": 'central',
         }
       }
     }
@@ -2562,25 +2328,7 @@ class EntityNameTool extends BaseTool {
 
   _renderEntityName() {
 
-    // compute some styling elements if configured for this name item
-    // See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/alignment-baseline
-    const ENTITY_NAME_STYLES = {
-      name: {
-        "font-size": '1.5em',
-        "fill": 'var(--primary-text-color)',
-        "opacity": '1.0',
-        "text-anchor": 'middle',
-        "alignment-baseline": 'central',
-      }
-    }
-
-    if (this.animationStyleHasChanged) {
-      this.animationStyleHasChanged = false;
-      this.configStyle = Merge.mergeDeep(ENTITY_NAME_STYLES, this.config.styles, this.animationStyle);
-
-      // Convert javascript records to plain text, without "{}" and "," between the styles.
-      // this.configStyleStr = JSON.stringify(this.configStyle.name).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    }
+    this.MergeAnimationStyleIfChanged();
 
     // #TODO:
     // Why is build* in card, and not in class????
@@ -2629,6 +2377,15 @@ class EntityAreaTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_AREA_CONFIG = {
+      styles: {
+        area: {
+          "font-size": '1em',
+          "fill": 'var(--primary-text-color)',
+          "opacity": '1.0',
+          "text-anchor": 'middle',
+          "alignment-baseline": 'central',
+        }
+      }
     }
 
     super(argCard, argConfig, argPos);
@@ -2658,24 +2415,7 @@ class EntityAreaTool extends BaseTool {
 
   _renderEntityArea() {
 
-    // compute some styling elements if configured for this area item
-    const ENTITY_AREA_STYLES = {
-      area: {
-        "font-size": '1em',
-        "fill": 'var(--primary-text-color)',
-        "opacity": '1.0',
-        "text-anchor": 'middle',
-        "alignment-baseline": 'central',
-      }
-    }
-
-    if (this.animationStyleHasChanged) {
-      this.animationStyleHasChanged = false;
-      this.configStyle = Merge.mergeDeep(ENTITY_AREA_STYLES, this.config.styles, this.animationStyle);
-
-      // Convert javascript records to plain text, without "{}" and "," between the styles.
-      // this.configStyleStr = JSON.stringify(this.configStyle.area).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    }
+    this.MergeAnimationStyleIfChanged();
 
     const area = this._card._buildArea(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
@@ -2719,16 +2459,21 @@ class TextTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_TEXT_CONFIG = {
+      styles: {
+        text: {
+          'font-size': '1em',
+          'fill': 'var(--primary-text-color)',
+          'opacity': '1.0',
+          'text-anchor': 'middle',
+          'alignment-baseline': 'central',
+        }
+      }
     }
 
     super(argCard, argConfig, argPos);
 
-
     this.config = Merge.mergeDeep(DEFAULT_TEXT_CONFIG, argConfig);
-    //this._name = {};
     this.text = this.config.text;
-
-    // Text is rendered in its own context. No need for SVG coordinates.
 
     if (this.dev.debug) console.log('TextTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -2744,23 +2489,7 @@ class TextTool extends BaseTool {
 
   _renderText() {
 
-    const ENTITY_TEXT_STYLES = {
-      text: {
-        'font-size': '1em',
-        'fill': 'var(--primary-text-color)',
-        'opacity': '1.0',
-        'text-anchor': 'middle',
-        'alignment-baseline': 'central',
-      }
-    }
-
-    if (this.animationStyleHasChanged) {
-      this.animationStyleHasChanged = false;
-      this.configStyle = Merge.mergeDeep(ENTITY_TEXT_STYLES, this.config.styles, this.animationStyle);
-
-      // Convert javascript records to plain text, without "{}" and "," between the styles.
-      // this.configStyleStr = JSON.stringify(this.configStyle.text).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-    }
+    this.MergeAnimationStyleIfChanged();
 
     return svg`
         <text class="text">
@@ -3287,7 +3016,7 @@ class SparklineBarChartTool extends BaseTool {
       if (!this.configStyleBar[index])
         this.configStyleBar[index] = {...this.config.styles.bar};
 
-      this.configStyleBar[index]['stroke'] = stroke;
+      // this.configStyleBar[index]['stroke'] = stroke;
       
       svgItems.push(svg`
         <line id="line-segment-${this.toolId}-${index}" class="line__segment"
@@ -3296,6 +3025,7 @@ class SparklineBarChartTool extends BaseTool {
                   x2="${this._bars[index].x2}"
                   y1="${this._bars[index].y1}"
                   y2="${this._bars[index].y2}"
+                  stroke="${stroke}"
                   stroke-width="${this.svg.barWidth}"
                   />
         `);
@@ -3455,34 +3185,6 @@ class SegmentedArcTool extends BaseTool {
     var tcolorstops = {};
     var colorstops = null;
 
-    // if (this.config.segments.colorstops?.template) {
-        // colorstops = this.config.segments.colorstops;
-        // if (this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]) {
-          // if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops found', colorstops.template, this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
-          // tcolorstops = Templates.replaceVariables3(colorstops.template.variables, this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
-          // if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops replaced', colorstops.template, tcolorstops);
-
-          // // #testing mergeDeep
-          // //colorstops = {...tcolorstops, ...colorstops};
-          // //colorstops = null;//.colors = null;
-          // colorstops = Merge.mergeDeep(tcolorstops/*, colorstops*/);
-          // if (this.dev.debug) console.log("SegmentedArcTool::constructor, merge colorstops", this.toolId, "from template=", tcolorstops, "result=", colorstops);
-
-          // if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops merged', colorstops);
-          // //this.config.segments.colorstops = {...colorstops};
-          // // #TODO:
-          // // Check if this is what is needed: only use template and ignore config for colorstops...
-          // this.config.segments.colorstops = Merge.mergeDeep(this.config.segments.colorstops, colorstops);
-          // this.config.segments.colorstops = Merge.mergeDeep(colorstops);
-
-          // // And this one?? Seems to work. tcolorstops is a new object, so assigning should be no problem. Easy??
-          // this.config.segments.colorstops = tcolorstops;
-          // // this.config.segments = colorstops;
-          // if (this.dev.debug) console.log("SegmentedArcTool::constructor, merge colorstops end config", this.toolId, this.config.segments);
-          // if (this.dev.debug) console.log('SegmentedArcTool::constructor - sak templates colorstops config', this.config.segments);
-        // }
-    // }
-
     // FIXEDCOLOR
     if (this.config.show.style == 'fixedcolor') {
     }
@@ -3572,19 +3274,9 @@ class SegmentedArcTool extends BaseTool {
 
       // Nope. I'm the main arc. Check if a scale is defined and clone myself with some options...
       if (this.config.show.scale) {
-        // console.log("SegmentedArcTool - show scale", this.toolId, this.config.scale);
-        //var scaleConfig = {...this.config};
         var scaleConfig = Merge.mergeDeep(this.config);
-        //scaleConfig.id = Number(scaleConfig.id) + 100;
         scaleConfig.id = scaleConfig.id + '-scale';
         
-        // scaleConfig.styles = {...this.config.styles};
-        // scaleConfig.styles_bg = {...this.config.styles_bg};
-        // scaleConfig.segments = {...this.config.segments};
-        // scaleConfig.scale = {...this.config.scale};
-        // scaleConfig.show = {...this.config.show};
-
-        //console.log("scaleConfig", scaleConfig.scale,scaleConfig.show);
         // Cloning done. Now set specific scale options.
         scaleConfig.show.scale = false;
         scaleConfig.isScale = true;
@@ -4037,308 +3729,6 @@ class SegmentedArcTool extends BaseTool {
 
     // END OF NEW METHOD OF RENDERING
     } else {
-      // var arcStart = this.config.start_angle;
-      // var arcEnd = this.config.end_angle;
-      // var arcEndPrev = this.config.end_angle;
-      // //var arcWidth = this.config.width;
-      // var arcWidth = this.svg.width;
-
-      // var arcEndFull = this.config.end_angle;
-      // var arcClockwise = arcEnd > arcStart;
-      // var arcPart = this.config.segments.dash;
-      // var arcDivider = this.config.segments.gap;
-
-      // // #DONE: must use this.dimensions
-      // //var arcRadius = this.config.radius;
-      // var arcRadiusX = this.svg.radiusX;
-      // var arcRadiusY = this.svg.radiusY;
-
-      // // calculate real end angle depending on value set in object and min/max scale
-      // var val = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValue);
-      // var valPrev = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValuePrev);
-      // if (val != valPrev) if (this.dev.debug) console.log('_renderSegments diff value old new', this.toolId, valPrev, val);
-
-      // var arcSizeFull = Math.abs(arcEndFull - arcStart);
-
-      // arcEnd = (val * arcSizeFull * this._arc.direction) + arcStart;
-      // arcEndPrev = (valPrev * arcSizeFull* this._arc.direction) + arcStart;
-
-      // // Styles are already converted to an Object {}...
-      // let configStyle = {...this.config.styles};
-      // // const configStyleStr = JSON.stringify(configStyle).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-
-      // let configStyleBg = {...this.config.styles_bg};
-      // // const configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-
-      // var arcSize = Math.abs(arcEnd - arcStart);
-      // var arcSizePrev = Math.abs(arcEndPrev - arcStart);
-
-      // // Calc diff in arc size. Can be positive and negative.
-      // // Then get stepsize. We draw in 20 steps.
-      // var arcSizeDiff = arcSizePrev - arcSize;
-      // var arcStepSize = arcSizeDiff / 50;
-      // var arcChangeClockwise = (arcSize > arcSizePrev) ? true : false;
-
-      // var svgItems = [];
-
-      // var fullParts = Math.floor(arcSize/Math.abs(arcPart));
-      // var fullPartsAll = Math.floor(arcSizeFull/Math.abs(arcPart));
-
-      // var d;
-
-      // // Count what's left of the arc. Start with the full size...
-
-      // var arcRest = arcSize;
-
-      // // Draw background of segmented arc...
-      // if (!this.config.isScale) {
-        // for (var k = 0; k < this._segmentAngles.length; k++) {
-          // d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
-                                // this._arc.clockwise, arcRadiusX, arcRadiusY, arcWidth);
-
-          // svgItems.push(svg`<path id="arc-segment-bg-${this.toolId}-${k}" class="arc__segment"
-                              // style="${styleMap(configStyleBg)}"
-                              // d="${d}"
-                              // />`);
-
-        // }
-      // }
-
-      // // Now draw the arc itself...
-      // var arcPartStart;
-      // var arcPartEnd;
-
-
-      // // Check if arcId does exist
-      // if (this._arcId != null) {
-        // if (this.dev.debug) console.log('_arcId does exist');
-
-        // // Render current from cache
-        // this._cache.forEach((item, index) => {
-          // d = item;
-          // //if (this.dev.debug) console.log('_renderSegments - from cache', this.toolId, index, d);
-          // svgItems.push(svg`<path id="arc-segment-${this.toolId}-${index}" class="arc__segment"
-                            // style="${styleMap(configStyle)};"
-                            // d="${d}"
-                            // />`);
-        // });
-
-        // var tween = {};
-
-        // function animateSegments(timestamp, thisTool){
-
-            // const easeOut = progress =>
-              // Math.pow(--progress, 5) + 1;
-
-            // var frameSegment;
-            // var runningSegment;
-
-            // var timestamp = timestamp || new Date().getTime()
-            // if (!tween.startTime) {
-              // tween.startTime = timestamp;
-              // tween.runningAngle = tween.fromAngle;
-            // }
-
-            // var runtime = timestamp - tween.startTime
-            // tween.progress = Math.min(runtime / tween.duration, 1);
-            // tween.progress = easeOut(tween.progress);
-
-            // const increase = ((thisTool._arc.clockwise)
-                              // ? (tween.toAngle > tween.fromAngle) : (tween.fromAngle > tween.toAngle));
-
-            // // Calculate where the animation angle should be now in this animation frame: angle and segment.
-            // tween.frameAngle = tween.fromAngle + ((tween.toAngle - tween.fromAngle) * tween.progress);
-            // frameSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
-                // thisTool._arc.clockwise
-                // ? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
-                // : ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
-
-            // if (frameSegment == -1) {
-              // if (thisTool.debug) console.log('animateSegments frameAngle not found', tween, thisTool._segmentAngles);
-            // }
-
-            // // Check where we actually are now. This might be in a different segment...
-            // runningSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
-                // thisTool._arc.clockwise
-                // ? ((tween.runningAngle <= currentValue.boundsEnd) && (tween.runningAngle >= currentValue.boundsStart))
-                // : ((tween.runningAngle <= currentValue.boundsStart) && (tween.runningAngle >= currentValue.boundsEnd)));
-
-            // // Do render segments until the animation angle is at the requested animation frame angle.
-            // do {
-
-              // var aniStartAngle = thisTool._segmentAngles[runningSegment].drawStart;
-              // var runningSegmentAngle = thisTool._arc.clockwise
-                                        // ? Math.min(thisTool._segmentAngles[runningSegment].boundsEnd, tween.frameAngle)
-                                        // : Math.max(thisTool._segmentAngles[runningSegment].boundsEnd, tween.frameAngle);
-              // var aniEndAngle = thisTool._arc.clockwise
-                                  // ? Math.min(thisTool._segmentAngles[runningSegment].drawEnd, tween.frameAngle)
-                                  // : Math.max(thisTool._segmentAngles[runningSegment].drawEnd, tween.frameAngle);
-              // // First phase. Just draw and ignore segments...
-              // d = thisTool.buildArcPath(aniStartAngle, aniEndAngle, thisTool._arc.clockwise, arcRadiusX, arcRadiusY, arcWidth);
-
-              // let as;
-              // const myarc = "arc-segment-".concat(thisTool.toolId).concat("-").concat(runningSegment);
-              // as = thisTool._card.shadowRoot.getElementById(myarc);
-              // if (as) {
-                // var e = as.getAttribute("d");
-                // as.setAttribute("d", d);
-
-                // // We also have to set the style fill if the color stops and gradients are implemented
-                // // As we're using styles, attributes won't work. Must use as.style.fill = 'calculated color'
-                // // #TODO
-                // // Can't use gradients probably because of custom path. Conic-gradient would be fine.
-                // //
-                // // First try...
-                // if (thisTool.config.show.style =="colorstops") {
-                  // as.style.fill = thisTool.config.colorstops[runningSegment];
-                // }
-              // }
-              // thisTool._cache[runningSegment] = d;
-
-              // // If at end of animation, don't do the add to force going to next segment
-              // if (tween.frameAngle != runningSegmentAngle) {
-                // runningSegmentAngle = runningSegmentAngle + (0.000001 * thisTool._arc.direction);
-              // }
-
-              // var runningSegmentPrev = runningSegment;
-              // runningSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
-                // thisTool._arc.clockwise
-                // ? ((runningSegmentAngle <= currentValue.boundsEnd) && (runningSegmentAngle >= currentValue.boundsStart))
-                // : ((runningSegmentAngle <= currentValue.boundsStart) && (runningSegmentAngle >= currentValue.boundsEnd)));
-
-              // frameSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
-                // thisTool._arc.clockwise
-                // ? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
-                // : ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
-
-              // if (!increase) {
-                // if (runningSegmentPrev != runningSegment) {
-                  // if (thisTool.debug) console.log('movit - remove path', thisTool.toolId, runningSegmentPrev);
-                  // if (thisTool._arc.clockwise) {
-                    // as.removeAttribute("d");
-                    // thisTool._cache[runningSegmentPrev] = null;
-                  // } else {
-                    // as.removeAttribute("d");
-                    // thisTool._cache[runningSegmentPrev] = null;
-                  // }
-                // }
-              // }
-              // tween.runningAngle = runningSegmentAngle;
-            // } while ((tween.runningAngle != tween.frameAngle) && (runningSegment == runningSegmentPrev));
-
-            // if (tween.progress != 1) {
-                // thisTool.rAFid = requestAnimationFrame(function(timestamp){
-                    // animateSegments(timestamp, thisTool)
-                // })
-            // } else {
-              // tween.startTime = null;
-            // }
-        // } // function animateSegments
-
-        // var mySelf = this;
-        // var arcCur = arcEndPrev;
-
-        // // Check if values changed and we should animate to another target then previously rendered
-        // if ((val != valPrev) && (this._card.connected == true) && (this._renderTo != this._stateValue)) {
-          // this._renderTo = this._stateValue;
-          // if (this.dev.debug) console.log('val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
-
-          // // If previous animation active, cancel this one before starting a new one...
-          // if (this.rAFid) {
-            // if (this.dev.debug) console.log('cancelling rAFid', this._card.cardId, this.toolId, 'rAFid', this.rAFid);
-            // cancelAnimationFrame(this.rAFid);
-          // }
-
-          // // Start new animation with calculated settings...
-          // // counter var not defined???
-          // //if (this.dev.debug) console.log('starting animationframe timer...', this._card.cardId, this.toolId, counter);
-          // tween.fromAngle = arcEndPrev;
-          // tween.toAngle = arcEnd;
-          // tween.runningAngle = arcEndPrev;
-          // tween.duration = Math.min(Math.max(500, this.config.animation.duration * 1000), 5000);
-          // tween.startTime = null;
-          // this.rAFid = requestAnimationFrame(function(timestamp){
-                                              // animateSegments(timestamp, mySelf)
-          // })
-        // }
-        // return svg`${svgItems}`;
-
-      // } else {
-        // // FIRST draw! Do IT!
-        // if (this.dev.debug) console.log('_arcId does NOT exist');
-
-        // for(var i = 0; i < fullParts; i++) {
-          // arcPartStart = this._segmentAngles[i].drawStart;
-          // arcPartEnd = this._segmentAngles[i].drawEnd;
-          // arcRest = arcRest - arcPart;
-
-          // d = this.buildArcPath(arcPartStart, arcPartEnd, arcClockwise, arcRadiusX, arcRadiusY, arcWidth);
-          // this._cache[i] = d;
-
-          // // extra, set color from colorlist as a test
-          // var fill = this.config.color;
-          // if (this.config.show.style =="colorstops") {
-            // fill = this.config.colorstops[i];
-          // }
-
-          // svgItems.push(svg`<path id="arc-segment-${this.toolId}-${i}" class="arc__segment"
-                              // style="${configStyleStr} fill: ${fill};"
-                              // d="${d}"
-                              // />`);
-        // }
-
-        // this.arcEnd = arcPartEnd;
-        // this.arcEndSegment = i;
-
-        // // Did we draw a single segment or not? If not, reset start & end to start...
-        // if (fullParts < 1) {
-          // arcPartStart = arcStart + (arcDivider * this._arc.direction);
-          // arcPartEnd = arcPartStart - (2 * arcDivider * this._arc.direction);
-        // }
-
-        // // If we have to draw the last partial arc, calculate size and draw it!
-
-        // if (arcRest > 0) {
-          // var lastPartStart = this._segmentAngles[i].drawStart;
-          // var lastPartEnd = this._segmentAngles[i].drawStart + (arcRest * this._arc.direction) - (arcDivider * this._arc.direction);
-          // d = this.buildArcPath(lastPartStart,
-                        // lastPartEnd,
-                        // arcClockwise,
-                        // arcRadiusX,
-                        // arcRadiusY,
-                        // arcWidth);
-
-          // this._cache[i] = d;
-          // svgItems.push(svg`<path id="arc-segment-${this.toolId}-${i}" class="arc__segment"
-                            // style="${configStyleStr}"
-                            // d="${d}"
-                            // />`);
-          // this.arcEnd = lastPartEnd;
-          // this.arcEndSegment = i;
-          // i += 1;
-        // }
-
-        // // create empty elements, so no problem in animation function. All path's exist...
-        // for (var j=i; j < fullPartsAll; j++) {
-          // arcPartStart = this._segmentAngles[j].drawStart;
-          // arcPartEnd = this._segmentAngles[j].drawStart;
-
-          // d = this.buildArcPath(arcPartStart,
-                        // arcPartStart,
-                        // arcClockwise,
-                        // arcRadiusX,
-                        // arcRadiusY,
-                        // 0);
-          // this._cache[j] = d;
-          // svgItems.push(svg`<path id="arc-segment-${this.toolId}-${j}" class="arc__segment"
-                            // style="${configStyleStr}"
-                            // d="${d}"
-                            // />`);
-        // }
-
-
-        // return svg`${svgItems}`;
-      // }
     }
   }
 
@@ -4456,9 +3846,18 @@ class devSwissArmyKnifeCard extends LitElement {
     if (!this.lovelace) console.error("card::constructor - Can't get Lovelace panel");
 
     // Fun test. write to lovelace...
-    this.lovelace.sakIconCache = {};
-    this.lovelace.colorCache = [];
+    // As this is global, do NOT reset this cache at startup! Only if yet created...
     
+    if (!this.lovelace.sakIconCache) {
+      this.lovelace.sakIconCache = {};
+      console.log('devSwissArmyKnifeCard::constructor, iconCache created');
+    }
+    if (!this.lovelace.colorCache) {
+      this.lovelace.colorCache = [];
+      console.log('devSwissArmyKnifeCard::constructor, colorCache created');
+    }
+
+    this.localStorage = window.localStorage;
 
     if (this.dev.debug) console.log('*****Event - card - constructor', this.cardId, new Date().getTime());
   }
@@ -5220,7 +4619,7 @@ class devSwissArmyKnifeCard extends LitElement {
 
     // For now, always force update to render the card if any of the states or attributes have changed...
     if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
-    this.requestUpdate();
+    // this.requestUpdate();
 
     //console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
   }
@@ -5240,8 +4639,6 @@ class devSwissArmyKnifeCard extends LitElement {
     config = JSON.parse(JSON.stringify(config))
 
     if (config.dev) this.dev = {...this.dev, ...config.dev};
-    //this.dev.debug = config.dev?.debug ? config.dev.debug : false;
-    //this.dev.performance = config.dev?.performance ? config.dev.performance : false;
 
     if (this.dev.debug) console.log('setConfig', this.cardId);
 
@@ -5254,17 +4651,12 @@ class devSwissArmyKnifeCard extends LitElement {
     this.dimensions = "1/1";
 
     if (config.dimensions) this.dimensions = config.dimensions;
-    // this.viewBox = aspectRatios.get(this.dimensions);
 
     var ar = config.dimensions.trim().split("/");
     if (!this.viewBox) this.viewBox = {};
-    // console.log("AR = ", ar, config.dimensions, this.viewBox);
     this.viewBox.width = ar[0] * SVG_DEFAULT_DIMENSIONS;
     this.viewBox.height= ar[1] * SVG_DEFAULT_DIMENSIONS;
 
-    // if (!config.entities) {
-      // throw Error('card::setConfig - No entities defined');
-    // }
     if (!config.layout) {
       throw Error('card::setConfig - No layout defined');
     }
@@ -5272,11 +4664,6 @@ class devSwissArmyKnifeCard extends LitElement {
     if (!config.layout.toolsets) {
       throw Error('card::setConfig - No toolsets defined');
     }
-
-    // Added at 2020.10.16
-    //config.entities.map((entity, index) => {
-    //  this.entities[index] = hass.states[entity];
-    //});
 
     // testing
     if (config.entities) {
@@ -5288,13 +4675,6 @@ class devSwissArmyKnifeCard extends LitElement {
         }
       }
     }
-
-    // const newConfig = {
-      // texts: [],
-      // card_filter: 'card--filter-none',
-      // disable_card: false,
-      // ...config,
-    // }
 
     // #TODO
     // @2020.11.24 new instead of previous lines.
@@ -5316,18 +4696,6 @@ class devSwissArmyKnifeCard extends LitElement {
     // NEW for ts processing
     this.toolset = [];
 
-    // function replacer(key, value) {
-      // // Filtering out properties
-      // if (typeof value === 'string') {
-        // return undefined;
-      // }
-      // return value;
-    // }
-
-    // var foo = {foundation: 'Mozilla', model: 'box', week: 45, transport: 'car', month: 7};
-    // var str = JSON.stringify(foo, replacer);
-    // console.log("setconfig, json str", foo, "result=", str);
-
     var thisMe = this;
     function findTemplate(key, value) {
       // Filtering out properties
@@ -5341,17 +4709,7 @@ class devSwissArmyKnifeCard extends LitElement {
         secondValue.from_template = 'replaced';
 
         var newValue = {};
-        // newValue[template.type] = replacedValue;//template[template.type];
         newValue = replacedValue;//template[template.type];
-        // console.log("findTemplate FOUND, key/type=", key, typeof key, "value/type=", value, typeof value, "replaced=", replacedValue);
-        // console.log("findTemplate in sak", thisMe.lovelace.lovelace.config.sak_templates[value.template.name], thisMe.lovelace.lovelace.config.sak_templates);
-        // if (typeof key === 'string') {
-          // return replacedValue[value.template.type];
-        // }
-        // if (replacedValue[key]) {
-          // return replacedValue[key];
-        // }
-        // console.log("findTemplate return key/value", key, replacedValue);
         return secondValue;
         return replacedValue;
       }
@@ -5370,56 +4728,12 @@ class devSwissArmyKnifeCard extends LitElement {
     var cfg = JSON.stringify(this.config.layout.toolsets, findTemplate);
     var cfgobj = JSON.parse(cfg);
     
-    // nasty trick for now
-    //this.config.layout.toolsets = cfgobj;
-    // console.log("new config", cfgobj);
-    
-    // console.log("setconfig, json toolsets findTemplate", this.config.layout.toolsets, "result=", cfgobj);
-    
-    // #TODO 2020.10.14
-    // - Merge templates into the toolsets (formerly groups) and tools (formerly tools)
-    // - Create a list of toolsets with tools, rather than only a list of tools
-    // - toolset == group
-    // - tool    == tool
-    //
-    // So we get:
-    // toolsets -> list of toolsets -> tools -> list of tools.
-    // this.toolsets[].tools[].
-    //
-
-    // Maintain two lists of tools:
-    // - A list with toolsets containing tools
-    // - A list with all the tools for easey traversing all tools created
-
-/*
-    this.kvTemplates = [];
-    if (this.config.templates) {
-      this.config.templates.map((template, index) => {
-        this.kvTemplates[template.template] = index;
-      });
-    }
-    if (this.dev.debug) console.log('toolconfig, kvtemplates', this.kvTemplates);
-*/
     this.config.layout.toolsets.map((toolsetCfg, toolidx) => {
 
       var argToolset = { config: toolsetCfg,
                           tools: []};
       var toolList = null;
 
-/*
-    if (this.config.segments.colorstops?.template) {
-        colorstops = this.config.segments.colorstops;
-        if (this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]) {
-          console.log('lovelace sak templates colorstops found', colorstops.template, this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
-          tcolorstops = Templates.replaceVariables2(colorstops.template.variables, this._card.lovelace.lovelace.config.sak_templates[colorstops.template.name]);
-          console.log('lovelace sak templates colorstops replaced', colorstops.template, tcolorstops);
-          colorstops = {...tcolorstops, ...colorstops};
-          console.log('lovelace sak templates colorstops merged', colorstops);
-          this.config.segments.colorstops = {...colorstops};
-          console.log('lovelace sak templates colorstops config', this.config.segments);
-        }
-    }
-*/
       var toolsetCfgFromTemplate = null;
 
       if (!this.ts) this.ts = [];
@@ -5439,20 +4753,8 @@ class devSwissArmyKnifeCard extends LitElement {
           toolsetCfg.tools.map((tool, index) => {
             cfgobj[toolidx].tools.map((toolT, indexT) => {
               if (tool.id == toolT.id) {
-                // toolList[indexT] = {...toolList[indexT], ...tool};
-                
-                // #TODO
-                // @202.11.24 replace next line with previous...
-                // HUH?
-                // Some cards need toollist[indext], tool to work, and others reversed?? WHY ????? WHAT IS HAPPENING??
-                // 8T needs toollist, tool. But 10,11 need tool, toollist ??. 10 and 11 use decluttering_template. Is that the real problem here??
-                
-                // Nope, toollist, tool is the right order.
-                // Something is going wrong with a color template: using the wrong configuration orso???
-                // console.log("setconfig template, id found", tool.id, toolList, toolList[indexT], tool);
                 
                 if (toolsetCfg.template) {
-                  // console.log("setconfig, template string, config=", this.config.layout.toolsets[toolidx].position, "replaced=", cfgobj[toolidx].position);
                   if (this.config.layout.toolsets[toolidx].position)
                     cfgobj[toolidx].position = Merge.mergeDeep(this.config.layout.toolsets[toolidx].position);
 
@@ -5479,102 +4781,102 @@ class devSwissArmyKnifeCard extends LitElement {
 
 
       if (false && toolsetCfg.template) {
-        if (this.dev.debug) console.log("card::setConfig -1- got toolsetCfg template", this.cardId, toolsetCfg, toolidx);
+        // if (this.dev.debug) console.log("card::setConfig -1- got toolsetCfg template", this.cardId, toolsetCfg, toolidx);
 
-        if (this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]) {
-          if (this.dev.debug) console.log("card::setConfig -2- got toolsetCfg template found", this.cardId, toolsetCfg, toolidx);
+        // if (this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]) {
+          // if (this.dev.debug) console.log("card::setConfig -2- got toolsetCfg template found", this.cardId, toolsetCfg, toolidx);
 
-          // Get template and fill variables.
-          // Result: filled template!
-          toolsetCfgFromTemplate = Templates.replaceVariables3(toolsetCfg.template.variables, this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]);
-          if (this.dev.debug) console.log("card::setConfig -3- got toolsetCfg replaced vars", this.cardId, "result=", toolsetCfgFromTemplate);
+          // // Get template and fill variables.
+          // // Result: filled template!
+          // toolsetCfgFromTemplate = Templates.replaceVariables3(toolsetCfg.template.variables, this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]);
+          // if (this.dev.debug) console.log("card::setConfig -3- got toolsetCfg replaced vars", this.cardId, "result=", toolsetCfgFromTemplate);
           
-          // Merge/overwrite position from template by card config
+          // // Merge/overwrite position from template by card config
           
-          if (this.config.layout.toolsets[toolidx].position)
-            toolsetCfgFromTemplate.position = Merge.mergeDeep(this.config.layout.toolsets[toolidx].position);
-          // toolsetCfgFromTemplate.position = this.config.layout.toolsets[toolidx].position ? this.config.layout.toolsets[toolidx].position : toolsetCfgFromTemplate.position;
-          if (this.dev.debug) console.log("card::setConfig -4- got toolsetCfg replaced vars position", this.cardId, "result=", toolsetCfgFromTemplate);
-          //this.config.layout.toolsets[toolidx].position = toolsetCfgFromTemplate.position;
-          //this.config.layout.toolsets[toolidx].tools = [...toolsetCfgFromTemplate.tools];
+          // if (this.config.layout.toolsets[toolidx].position)
+            // toolsetCfgFromTemplate.position = Merge.mergeDeep(this.config.layout.toolsets[toolidx].position);
+          // // toolsetCfgFromTemplate.position = this.config.layout.toolsets[toolidx].position ? this.config.layout.toolsets[toolidx].position : toolsetCfgFromTemplate.position;
+          // if (this.dev.debug) console.log("card::setConfig -4- got toolsetCfg replaced vars position", this.cardId, "result=", toolsetCfgFromTemplate);
+          // //this.config.layout.toolsets[toolidx].position = toolsetCfgFromTemplate.position;
+          // //this.config.layout.toolsets[toolidx].tools = [...toolsetCfgFromTemplate.tools];
 
-          toolList = toolsetCfgFromTemplate.tools;
+          // toolList = toolsetCfgFromTemplate.tools;
 
-          // testing.. --> crashes. No deep merge/clone done!!!!!!
-          //toolsetCfg = {...toolsetCfg, ...toolsetCfgFromTemplate};
-          // #TODO: does this work???????????????????
+          // // testing.. --> crashes. No deep merge/clone done!!!!!!
+          // //toolsetCfg = {...toolsetCfg, ...toolsetCfgFromTemplate};
+          // // #TODO: does this work???????????????????
 
-          if (false) {
-          // var newCfg1 = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
-          // var newCfg2 = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
-          // console.log("newCfg,mergeDeep) NOT", newCfg1, " yes--> Used ", newCfg2);
-          // toolsetCfg = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
-          // //toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
+          // if (false) {
+          // // var newCfg1 = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
+          // // var newCfg2 = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
+          // // console.log("newCfg,mergeDeep) NOT", newCfg1, " yes--> Used ", newCfg2);
+          // // toolsetCfg = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
+          // // //toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
 
 
-          // // #TODO: merge not here, but later, after replacement of toolid in next loop.
-          // // Merge everything, then replace the toolset tools with the template tools??
-          // // Then we would merge everything, except the tools. That will be merged by Id below!!!!!
+          // // // #TODO: merge not here, but later, after replacement of toolid in next loop.
+          // // // Merge everything, then replace the toolset tools with the template tools??
+          // // // Then we would merge everything, except the tools. That will be merged by Id below!!!!!
 
-          // // Template overwrites default configuration.
-          // toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
-          // toolsetCfg.tools = toolsetCfgFromTemplate.tools;
+          // // // Template overwrites default configuration.
+          // // toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
+          // // toolsetCfg.tools = toolsetCfgFromTemplate.tools;
 
-          } else {
-          }
+          // } else {
+          // }
 
-          var found = false;
-          var toolAdd = [];
-          var atIndex = null;
+          // var found = false;
+          // var toolAdd = [];
+          // var atIndex = null;
 
-          // Check for empty tool list. This can be if template is used. Tools come from template, not from config...
-          if (toolsetCfg.tools) {
-            toolsetCfg.tools.map((tool, index) => {
-              toolList.map((toolT, indexT) => {
-                if (tool.id == toolT.id) {
-                  // toolList[indexT] = {...toolList[indexT], ...tool};
+          // // Check for empty tool list. This can be if template is used. Tools come from template, not from config...
+          // if (toolsetCfg.tools) {
+            // toolsetCfg.tools.map((tool, index) => {
+              // toolList.map((toolT, indexT) => {
+                // if (tool.id == toolT.id) {
+                  // // toolList[indexT] = {...toolList[indexT], ...tool};
                   
-                  // #TODO
-                  // @202.11.24 replace next line with previous...
-                  // HUH?
-                  // Some cards need toollist[indext], tool to work, and others reversed?? WHY ????? WHAT IS HAPPENING??
-                  // 8T needs toollist, tool. But 10,11 need tool, toollist ??. 10 and 11 use decluttering_template. Is that the real problem here??
+                  // // #TODO
+                  // // @202.11.24 replace next line with previous...
+                  // // HUH?
+                  // // Some cards need toollist[indext], tool to work, and others reversed?? WHY ????? WHAT IS HAPPENING??
+                  // // 8T needs toollist, tool. But 10,11 need tool, toollist ??. 10 and 11 use decluttering_template. Is that the real problem here??
                   
-                  // Nope, toollist, tool is the right order.
-                  // Something is going wrong with a color template: using the wrong configuration orso???
-                  toolList[indexT] = Merge.mergeDeep(toolList[indexT], tool);
-                  // toolList[indexT] = Merge.mergeDeep(tool, toolList[indexT]);
-                  // #TODO
-                  // No deep cloning/merging is done??
-                  //toolList[indexT].scale = {...toolList[indexT].scale, ...tool.scale};
-                  found = true;
-  //                atIndex = indexT;
-                  if (this.dev.debug) console.log("card::setConfig - got toolsetCfg toolid", tool, index, toolT, indexT, tool);
-                }
-              });
-              if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
-            });
-          }
-          //toolList = toolList.concat(toolsetCfg.tools);
+                  // // Nope, toollist, tool is the right order.
+                  // // Something is going wrong with a color template: using the wrong configuration orso???
+                  // toolList[indexT] = Merge.mergeDeep(toolList[indexT], tool);
+                  // // toolList[indexT] = Merge.mergeDeep(tool, toolList[indexT]);
+                  // // #TODO
+                  // // No deep cloning/merging is done??
+                  // //toolList[indexT].scale = {...toolList[indexT].scale, ...tool.scale};
+                  // found = true;
+  // //                atIndex = indexT;
+                  // if (this.dev.debug) console.log("card::setConfig - got toolsetCfg toolid", tool, index, toolT, indexT, tool);
+                // }
+              // });
+              // if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
+            // });
+          // }
+          // //toolList = toolList.concat(toolsetCfg.tools);
 
-          toolList = toolList.concat(toolAdd);
-          if (this.dev.debug) console.log('card::setConfig - Step 2: templating, toolconfig', toolList);
+          // toolList = toolList.concat(toolAdd);
+          // if (this.dev.debug) console.log('card::setConfig - Step 2: templating, toolconfig', toolList);
 
-          if (this.dev.debug) console.log('card::setConfigtool - toolsetCfg ENDRESULT before', toolList, this.config.layout.toolsets[toolidx]);
+          // if (this.dev.debug) console.log('card::setConfigtool - toolsetCfg ENDRESULT before', toolList, this.config.layout.toolsets[toolidx]);
           
-          // Remove??
-          // if (this.config.layout.toolsets[toolidx].tools) this.config.layout.toolsets[toolidx].tools = [...toolList, ...this.config.layout.toolsets[toolidx].tools];
+          // // Remove??
+          // // if (this.config.layout.toolsets[toolidx].tools) this.config.layout.toolsets[toolidx].tools = [...toolList, ...this.config.layout.toolsets[toolidx].tools];
           
-          if (this.dev.debug) console.log('card::setConfig - toolsetCfg ENDRESULT after', toolList, this.config.layout.toolsets[toolidx]);
+          // if (this.dev.debug) console.log('card::setConfig - toolsetCfg ENDRESULT after', toolList, this.config.layout.toolsets[toolidx]);
 
-          // #TODO:
-          // does not help. So wht is the prblem with the scale. i dont'knowl.
+          // // #TODO:
+          // // does not help. So wht is the prblem with the scale. i dont'knowl.
 
-          // this.config.layout.toolsets[toolidx].scale = {...this.config.layout.toolsets[toolidx].scale, ...toolsetCfgFromTemplate.scale};
-          // toolsetCfg.scale = {...toolsetCfg.scale, ...toolsetCfgFromTemplate.scale};
+          // // this.config.layout.toolsets[toolidx].scale = {...this.config.layout.toolsets[toolidx].scale, ...toolsetCfgFromTemplate.scale};
+          // // toolsetCfg.scale = {...toolsetCfg.scale, ...toolsetCfgFromTemplate.scale};
 
-          // console.log("card::setConfig, did apply template. Result=", toolsetCfg, "template=",toolsetCfgFromTemplate);
-        }
+          // // console.log("card::setConfig, did apply template. Result=", toolsetCfg, "template=",toolsetCfgFromTemplate);
+        // }
       } else {
         // We don't have a template to run, get list of tools and use that...
         toolList = toolsetCfg.tools;
@@ -6344,7 +5646,9 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
   _calculateColor(argState, argStops, argIsGradient) {
     // console.log("calculateColor", argState, argStops, argIsGradient);
-    const sortedStops = Object.keys(argStops).map(n => Number(n)).sort((a, b) => a - b);
+    // const sortedStops = Object.keys(argStops).map(n => Number(n)).sort((a, b) => a - b);
+    const sortedStops = Object.keys(argStops);
+
     let start, end, val;
     const l = sortedStops.length;
 
@@ -6442,6 +5746,7 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     const gHex = this._padZero(gDec.toString(16));
     const bHex = this._padZero(bDec.toString(16));
     const aHex = this._padZero(aDec.toString(16));
+
     return `#${rHex}${gHex}${bHex}${aHex}`;
   }
   _padZero(argValue) {
@@ -6476,9 +5781,8 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
   _colorToRGBA(argColor) {
     // return color if found in colorCache...
-    if (argColor in this.lovelace.colorCache) {
-      return this.lovelace.colorCache[argColor];
-    }
+    let retColor = this.lovelace.colorCache[argColor];
+    if (retColor) return retColor;
 
     var theColor = argColor;
     // Check for 'var' colors
@@ -6498,6 +5802,7 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     const outColor = [ ...ctx.getImageData(0, 0, 1, 1).data ];
 
     this.lovelace.colorCache[argColor] = outColor;
+
     return outColor;
   }
 
@@ -6522,6 +5827,7 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     url += `?filter_entity_id=${entityId}`;
     if (end) url += `&end_time=${end.toISOString()}`;
     if (skipInitialState) url += '&skip_initial_state';
+    url += '&minimal_response';
 
     // console.log('fetchRecent - call is', entityId, start, end, skipInitialState, url);
     return this._hass.callApi('GET', url);
@@ -6647,17 +5953,6 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
       hours = this.ts[entity.tsidx].tools[entity.idx].tool.config.hours;
       barhours = this.ts[entity.tsidx].tools[entity.idx].tool.config.barhours;
     }
-
-    if (entity.type == 'hbars') {
-      hours = this.hbars[entity.idx].config.hours;
-      barhours = this.hbars[entity.idx].config.barhours;
-    }
-
-    if (entity.type == 'vbars') {
-      hours = this.vbars[entity.idx].config.hours;
-      barhours = this.vbars[entity.idx].config.barhours;
-    }
-
 
     const reduce = (res, item) => {
       const age = now - new Date(item.last_changed).getTime();
