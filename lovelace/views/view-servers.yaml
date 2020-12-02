@@ -16,13 +16,14 @@ cards:
     - type: custom:decluttering-card
       template: header_template
       variables:
-        - content: '### Servers'
+        - content: 'Servers'
 
     - type: custom:decluttering-card
       template: header_template
       variables:
-        - content: '#### Domotica'
+        - content: 'Domotica'
         - font_color: var(--secondary-text-color)
+        - font_size: 0.6em
 
     - type: horizontal-stack
       cards:
@@ -119,8 +120,8 @@ cards:
                     entity_index: 8
                     styles:
                       name:
-                        font-size: 1.0em;
-                        text-anchor: start;
+                        font-size: 1.0em
+                        text-anchor: start
                   - type: state
                     id: 2
                     cx: 63
@@ -128,9 +129,9 @@ cards:
                     entity_index: 8
                     styles:
                       state:
-                        font-size: 1.2em;
-                        font-weight: 700;
-                        text-anchor: end;
+                        font-size: 1.2em
+                        font-weight: 700
+                        text-anchor: end
 
                   # Free
                   - type: name
@@ -140,8 +141,8 @@ cards:
                     entity_index: 9
                     styles:
                       name:
-                        font-size: 1.0em;
-                        text-anchor: start;
+                        font-size: 1.0em
+                        text-anchor: start
                   - type: state
                     id: 4
                     cx: 63
@@ -149,9 +150,9 @@ cards:
                     entity_index: 9
                     styles:
                       state:
-                        font-size: 1.2em;
-                        font-weight: 700;
-                        text-anchor: end;
+                        font-size: 1.2em
+                        font-weight: 700
+                        text-anchor: end
 
               - toolset: memory
                 template:
@@ -197,8 +198,8 @@ cards:
                     cy: 50
                     styles:
                       area:
-                        font-size: 2em;
-                        text-anchor: end;
+                        font-size: 2em
+                        text-anchor: end
               
               # ==============================================================================
               - toolset: disc-free-used
@@ -223,8 +224,8 @@ cards:
                     entity_index: 6
                     styles:
                       name:
-                        font-size: 1.0em;
-                        text-anchor: start;
+                        font-size: 1.0em
+                        text-anchor: start
                   - type: state
                     id: 2
                     cx: 63
@@ -232,9 +233,9 @@ cards:
                     entity_index: 6
                     styles:
                       state:
-                        font-size: 1.2em;
-                        font-weight: 700;
-                        text-anchor: end;
+                        font-size: 1.2em
+                        font-weight: 700
+                        text-anchor: end
 
                   # Free
                   - type: name
@@ -244,8 +245,8 @@ cards:
                     entity_index: 7
                     styles:
                       name:
-                        font-size: 1.0em;
-                        text-anchor: start;
+                        font-size: 1.0em
+                        text-anchor: start
                   - type: state
                     id: 4
                     cx: 63
@@ -253,9 +254,9 @@ cards:
                     entity_index: 7
                     styles:
                       state:
-                        font-size: 1.2em;
-                        font-weight: 700;
-                        text-anchor: end;
+                        font-size: 1.2em
+                        font-weight: 700
+                        text-anchor: end
                     
               - toolset: disc
                 template:
