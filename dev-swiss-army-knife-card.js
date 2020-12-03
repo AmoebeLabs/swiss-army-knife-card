@@ -199,6 +199,65 @@ class Templates {
     return (JSON.parse(jsonConfig));
   }
 
+ /*******************************************************************************
+  * Templates::evaluateJsTemplate()
+  *
+  * Summary.
+  *
+  */
+
+  static evaluateJsTemplate(argTool, state, jsTemplate) {
+    try {
+      return new Function('state', 'states', 'entity', 'user', 'hass', `'use strict'; ${jsTemplate}`).call(
+        this,
+        state,
+        argTool._card._hass.states,
+        argTool.config.entity_index ? argTool._card.entities[argTool.config.entity_index] : undefined,
+        argTool._card._hass.user,
+        argTool._card._hass,
+      );
+    } catch (e) {
+      e.name = 'Sak-evaluateJsTemplate-Error';
+      throw e;
+    }
+  }
+ /*******************************************************************************
+  * Templates::getJsTemplateOrValue()
+  *
+  * Summary.
+  *
+  * References:
+  * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures
+  * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
+  * 
+  */
+  
+  static getJsTemplateOrValue(argTool, argState, argValue) {
+
+    // Check for 'undefined' or 'null'
+    if (!argValue) return argValue;
+
+    // Check for primitive data types 
+    if (['number', 'boolean', 'bigint', 'symbol'].includes(typeof argValue)) return argValue;
+
+    // We might have an object.
+    if (typeof argValue === 'object') {
+      Object.keys(argValue).forEach((key) => {
+        argValue[key] = Templates.getJsTemplateOrValue(argTool, argState, argValue[key]);
+      });
+      return argValue;
+    }
+
+    // typeof should be a string now.
+    // The string might be a Javascript template surrounded by [[[<js>]]], or just a string.
+    const trimmedValue = argValue.trim();
+    if (trimmedValue.substring(0, 3) === '[[[' && trimmedValue.slice(-3) === ']]]') {
+      return Templates.evaluateJsTemplate(argTool, argState, trimmedValue.slice(3, -3));
+    } else {
+      // Just a plain string, return value.
+      return argValue;
+    }
+  }
 }
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -566,9 +625,16 @@ class BaseTool {
     if (typeof(this._stateValue) === 'undefined') return;
 
     var isMatch = false;
+    // #TODO:
+    // Modify this loop using .find() orso. It now keeps returning true for all items in animations list.
+    // It works, but can be more efficient ;-)
+    
+    this.activeAnimation = null;
+
     if (this.config.animations) Object.keys(this.config.animations).map(animation => {
       const entityIndex = this.config.entity_index;
-      var item = this.config.animations[animation];
+      
+      var item = Templates.getJsTemplateOrValue(this, this._stateValue, this.config.animations[animation]);
 
       if (isMatch) return true;
 
@@ -578,11 +644,12 @@ class BaseTool {
       // Or above, with the mapping of tghe item using the name?????
 
       // Assume equals operator if not defined...
-      //console.log("set value(state), state, statevalue, item", state, this._stateValue, item.state);
-      var operator = item.operator ? item.operator : "=";
+      var operator = item.operator ? item.operator : "==";
+
       switch(operator) {
-        case "=":
+        case "==":
           isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
+          // console.log('set value, isMatch', isMatch, this._stateValue, Templates.getJsTemplateOrValue(this, this._stateValue, item.state.toLowerCase()));
           break;
         case "!=":
           isMatch = this._stateValue.toLowerCase() != item.state.toLowerCase();
@@ -617,6 +684,10 @@ class BaseTool {
       // Store activeAnimation. Should be renamed, and used for more purposes, as via this method
       // you can override any value from within an animation, not just the css style settings.
       this.item = item;
+      this.activeAnimation = item;
+      // console.log('set value, state, image BEFORE', this._stateValue, item);
+      // this.item = Templates.getJsTemplateOrValue(this, this._stateValue, item);
+      // console.log('set value, state, image AFTER', this._stateValue, item);
     });
 
     return true;
@@ -1337,8 +1408,6 @@ class UserSvgTool extends BaseTool {
 
     this.config = Merge.mergeDeep(DEFAULT_USERSVG_CONFIG, argConfig);
     
-    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
-
     this.images = {};
     this.images = Object.assign({}, ...this.config.images);
 
@@ -1447,8 +1516,6 @@ class RectangleTool extends BaseTool {
 
     this.config = Merge.mergeDeep(DEFAULT_RECTANGLE_CONFIG, argConfig);
     
-    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
-
     this.svg.rx = Utils.calculateSvgDimension(argConfig.rx)
 
     if (this.dev.debug) console.log('RectangleTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
@@ -2174,17 +2241,6 @@ class EntityStateTool extends BaseTool {
 
   _renderState() {
 
-    // compute some styling elements if configured for this state item
-    // const STATE_STYLES = {
-      // state: {
-        // "font-size": '2em',
-        // "color": 'var(--primary-text-color)',
-        // "opacity": '1.0',
-        // "text-anchor": 'middle',
-        // "alignment-baseline": 'central',
-      // }
-    // }
-
     this.MergeAnimationStyleIfChanged();
 
     var inState = this._stateValue;
@@ -2201,13 +2257,6 @@ class EntityStateTool extends BaseTool {
   }
   
   _renderUom() {
-
-    // compute some styling elements if configured for this state item
-    // const UOM_STYLES = {
-      // uom: {
-        // "opacity": '0.7',
-      // }
-    // }
 
     if (this.config.show.uom === 'none') {
       return svg``;
@@ -2390,14 +2439,7 @@ class EntityAreaTool extends BaseTool {
 
     super(argCard, argConfig, argPos);
 
-    // this.config = {...DEFAULT_AREA_CONFIG};
-    // this.config = {...this.config, ...argConfig};
-
-    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    // this.config.styles = {...DEFAULT_AREA_CONFIG.styles, ...this.config.styles};
-
     this.config = Merge.mergeDeep(DEFAULT_AREA_CONFIG, argConfig);
-    //this._name = {};
 
     // Text is rendered in its own context. No need for SVG coordinates.
 
@@ -2837,8 +2879,8 @@ class SparklineBarChartTool extends BaseTool {
       color: 'var(--primary-color)',
       styles: {
         bar: {
-              "stroke-linecap": 'round',
-              "stroke-linejoin": 'round',
+          "stroke-linecap": 'round',
+          "stroke-linejoin": 'round',
         }
       },
       colorstops: [],
@@ -2988,12 +3030,6 @@ class SparklineBarChartTool extends BaseTool {
     if (this._bars.length == 0) return;
 
     if (this.dev.debug) console.log('_renderBars IN', this.toolId);
-    // Get configuration styles as the default styles
-    // Styles are already converted to an Object {}...
-
-    // Convert javascript records to plain text, without "{}" and "," between the styles.
-    // const configStyleBarStr = JSON.stringify(configStyleBar).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-
     
     this._bars.forEach((item, index) => {
       if (this.dev.debug) console.log('_renderBars - bars', item, index);
@@ -3095,14 +3131,22 @@ class SegmentedArcTool extends BaseTool {
       },
       segments: {},
       colorstops: [],
-      scale: {"min": 0, "max": 100, "width": 2, "offset": -5 },
-      show: { "style": 'fixedcolor',
-              "scale_offset": 0,
-              "scale": false,
-            },
+      scale: {
+        "min": 0,
+        "max": 100,
+        "width": 2,
+        "offset": -5
+      },
+      show: {
+        "style": 'fixedcolor',
+        "scale_offset": 0,
+        "scale": false,
+      },
       scale_offset: -4.5,
       isScale: false,
-      animation: {"duration": 1.5 },
+      animation: {
+        "duration": 1.5,
+      },
     }
 
 
@@ -3757,7 +3801,6 @@ class SegmentedArcTool extends BaseTool {
 
     const sweepFlag = argClockwise ? "0": "1";
 
-//    var cutoutRadius = argRadius - argWidth,
     var cutoutRadiusX = argRadiusX - argWidth,
       cutoutRadiusY = argRadiusY - argWidth,
       start2 = this.polarToCartesian(this.svg.cx, this.svg.cy, cutoutRadiusX, cutoutRadiusY, argEndAngle),
