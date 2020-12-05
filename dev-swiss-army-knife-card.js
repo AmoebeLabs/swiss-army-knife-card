@@ -316,22 +316,23 @@ class Toolset {
     if (this.dev.debug) console.log("Toolset::constructor config/svg", this.toolsetId, this.config, this.svg);
 
     const toolsNew = {
-      "area": EntityAreaTool,
-      "badge": BadgeTool,
-      "bar": SparklineBarChartTool,
-      "circle": CircleTool,
-      "ellipse": EllipseTool,
-      "horseshoe": HorseshoeTool,
-      "icon": EntityIconTool,
-      "line": LineTool,
-      "name": EntityNameTool,
-      "rectangle": RectangleTool,
-      "rectex": RectangleToolEx,
-      "segarc": SegmentedArcTool,
-      "state": EntityStateTool,
-      "slider": RangeSliderTool,
-      "text": TextTool,
-      "usersvg": UserSvgTool,
+      "area"      : EntityAreaTool,
+      "badge"     : BadgeTool,
+      "bar"       : SparklineBarChartTool,
+      "circle"    : CircleTool,
+      "ellipse"   : EllipseTool,
+      "horseshoe" : HorseshoeTool,
+      "icon"      : EntityIconTool,
+      "line"      : LineTool,
+      "name"      : EntityNameTool,
+      "rectangle" : RectangleTool,
+      "rectex"    : RectangleToolEx,
+      "regpoly"   : RegPolyTool,
+      "segarc"    : SegmentedArcTool,
+      "state"     : EntityStateTool,
+      "slider"    : RangeSliderTool,
+      "text"      : TextTool,
+      "usersvg"   : UserSvgTool,
 
     }
 
@@ -359,6 +360,9 @@ class Toolset {
   * Called from set hass to update values for tools
   *
   */
+  
+  // #TODO:
+  // Update only the changed entity_index, not all indexes. Now ALL tools are updated...
   updateValues() {
     if (this.tools) {
       this.tools.map((item, index) => {
@@ -589,7 +593,6 @@ class BaseTool {
     this.configStyle = {};
     this.animationStyle = {};
     this.animationStyleHasChanged = true;
-
   }
 
  /*******************************************************************************
@@ -739,7 +742,7 @@ class RangeSliderTool extends BaseTool {
 
     this.config = Merge.mergeDeep(DEFAULT_SLIDER_CONFIG, argConfig);
     
-    this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
+    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.svg.length = Utils.calculateSvgDimension(argConfig.length)
 
@@ -1382,6 +1385,248 @@ class CircleTool extends BaseTool {
 
   }
 } // END of class
+
+ /*******************************************************************************
+  * RegPolyTool class
+  *
+  * Summary.
+  *
+  */
+
+class RegPolyTool extends BaseTool {
+  constructor(argCard, argConfig, argPos) {
+
+    const DEFAULT_REGPOLY_CONFIG = {
+        cx: 50,
+        cy: 50,
+        radius: 50,
+        side_count: 6,
+        side_skip: 1,
+        angle_offset: 0,
+        styles: {
+          regpoly: {
+            "stroke": 'var(--primary-text-color)',
+            "fill": 'var(--primary-background-color)',
+            "fill-rule": 'nonzero',            
+          }
+        }
+    }
+
+    super(argCard, argConfig, argPos);
+
+    this.config = Merge.mergeDeep(DEFAULT_REGPOLY_CONFIG, argConfig);
+    
+    this.svg.radius = Utils.calculateSvgDimension(argConfig.radius)
+    
+    if (this.dev.debug) console.log('RegPolyTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
+  }
+
+ /*******************************************************************************
+  * RegPolyTool::value()
+  *
+  * Summary.
+  * Receive new state data for the entity this circle is linked to. Called from set hass;
+  *
+  */
+  set value(state) {
+    var changed = super.value = state;
+
+    return changed;
+  }
+
+
+ /*******************************************************************************
+  * RegPolyTool::_renderRegPoly()
+  *
+  * Summary.
+  * Renders the circle using precalculated coordinates and dimensions.
+  * Only the runtime style is calculated before rendering the circle
+  *
+  */
+
+  _renderRegPoly() {
+
+    var generatePoly = function(p, q, r, a, cx, cy) {
+      var path = '',
+          base_angle = 2 * Math.PI / p, 
+          angle = a + base_angle, 
+          x, y, d_attr = '';
+      
+      for(var i = 0; i < p; i++) {
+        
+        angle += q * base_angle;
+        
+        x = cx + ~~(r * Math.cos(angle));
+        y = cy + ~~(r * Math.sin(angle));
+        
+        d_attr += 
+          ((i === 0)?'M':'L') + x + ' ' + y + ' ';
+        
+        if(i * q % p === 0 && i > 0) {
+          angle += base_angle;
+          x = cx + ~~(r * Math.cos(angle));
+          y = cy + ~~(r * Math.sin(angle));
+          
+          d_attr += 'M' + x + ' ' + y + ' ';
+        }
+      }
+      
+      d_attr += 'z'
+      return d_attr;
+    };
+
+    this.MergeAnimationStyleIfChanged();
+
+    return svg`
+      <path
+        d="${generatePoly(this.config.side_count, this.config.side_skip, this.svg.radius, this.config.angle_offset, this.svg.cx, this.svg.cy)}"
+        style="${styleMap(this.configStyle.regpoly)}"
+      />
+      `;
+  }
+
+ /*******************************************************************************
+  * RegPolyTool::render()
+  *
+  * Summary.
+  * The render() function for this object.
+  *
+  */
+//        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+
+  render() {
+
+    return svg`
+      <g "" id="regpoly-${this.toolId}" class="regpoly" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+        @click=${e => this._card.handlePopup2(e, this._card.config.entities[this.config.entity_index])}>
+        ${this._renderRegPoly()}
+      </g>
+    `;
+
+  }
+} // END of class
+
+// var NS_URI = 'http://www.w3.org/2000/svg', 
+    // MAX_P = 17,
+    // frag = document.createDocumentFragment();
+
+// Node.prototype.setAttrs = function(attr_obj) {
+  // for(var prop in attr_obj) {
+    // this.setAttribute(prop, attr_obj[prop]);
+  // }
+// };
+
+// Node.prototype.getAncestorWithClass = function(cls) {
+  // var parent = this.parentNode, parent_cls;
+    
+  // if(!parent) { return null; }
+  
+  // parent_cls = parent.getAttribute('class');
+  // if(!parent_cls || parent_cls.indexOf(cls) === -1) {
+    // return parent.getAncestorWithClass(cls);
+  // }
+  // else { return parent; }
+// };
+
+// var generatePoly = function(parent, p, q, r) {
+  // var path = document.createElementNS(NS_URI, 'path'), 
+      // points = document.createElementNS(NS_URI, 'g'), 
+      // curr_g, 
+      // curr_point, 
+      // base_angle = 2*Math.PI/p, 
+      // angle = /*(Math.random() -q)*/1*base_angle, 
+      // x, y, d_attr = '';
+  
+  // for(var i = 0; i < p; i++) {
+    // curr_g = document.createElementNS(NS_URI, 'g');
+    
+    // angle += q*base_angle;
+    
+    // x = ~~(r*Math.cos(angle));
+    // y = ~~(r*Math.sin(angle));
+    
+    // d_attr += 
+      // ((i === 0)?'M':'L') + x + ' ' + y + ' ';
+    
+    // if(i*q%p === 0 && i > 0) {
+      // angle += base_angle;
+      // x = ~~(r*Math.cos(angle));
+      // y = ~~(r*Math.sin(angle));
+      
+      // d_attr += 'M' + x + ' ' + y + ' ';
+    // }
+    
+    // curr_point = document.createElementNS(NS_URI, 'circle');
+    // curr_point.setAttrs({
+      // 'class': 'p p--' + i, 
+      // 'cx': x, 'cy': y, 
+      // 'r': 32
+    // });
+    // curr_g.appendChild(curr_point);
+    
+    // points.appendChild(curr_g);
+  // }
+  
+  // d_attr += 'z'
+  
+  // path.setAttribute('d', d_attr);
+  // path.setAttribute('fill-rule', 'evenodd');
+  // parent.appendChild(path);
+  // parent.appendChild(points)
+// };
+
+// var addTests = function(MAX_P) {
+  // var wrapper, svg, path, 
+      // w = 2000, h = 2000, 
+      // k = .4, 
+      // r = k*Math.min(w, h);
+  
+  // for(var p = 3; p <= MAX_P; p++) {
+    // for(var q = 1; q < p/2; q++) {
+      // wrapper = document.createElement('div');
+      // wrapper.classList.add('shape-wrapper');
+      // wrapper.dataset.type = 
+        // 'p: ' + p + ', q: ' + q;
+      // wrapper.dataset.curr = '';
+      
+      // svg = document.createElementNS(NS_URI, 'svg');
+      // svg.setAttribute('viewBox', -w/2 + ' ' + -h/2 + ' ' + w + ' ' + h);
+      
+      // generatePoly(svg, p, q, r-500);
+      
+      // wrapper.appendChild(svg);
+      // frag.appendChild(wrapper)
+    // }
+  // }
+  
+  // document.body.appendChild(frag);
+// };
+
+// addTests(MAX_P);
+
+// addEventListener('mouseover', function(e) {
+  // var t = e.target, 
+      // cls = t.getAttribute('class'), 
+      // idx, a;
+  
+  // if(cls && cls.indexOf('p--') > -1) {
+    // idx = ~~cls.split('p--')[1].split(' ')[0];
+    // a = t.getAncestorWithClass('shape-wrapper');
+    // a.dataset.curr = '' + (idx + 1);
+  // }
+// }, false);
+
+// addEventListener('mouseout', function(e) {
+  // var t = e.target, 
+      // cls = t.getAttribute('class'), 
+      // idx, a;
+  
+  // if(cls && cls.indexOf('p--') > -1) {
+    // idx = ~~cls.split('p--')[1].split(' ')[0];
+    // a = t.getAncestorWithClass('shape-wrapper');
+    // a.dataset.curr = '';
+  // }
+// }, false);
 
  /*******************************************************************************
   * UserSvgTool class, UserSvgTool::constructor
