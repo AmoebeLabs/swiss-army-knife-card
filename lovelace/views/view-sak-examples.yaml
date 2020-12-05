@@ -89,7 +89,7 @@ cards:
                     # cx: 50
                     # cy: 80
                     # styles:
-                      # font-size: 2.4em
+                      # font-size: 12em
 
                   ##
                   - type: 'name'
@@ -99,8 +99,7 @@ cards:
                     cy: 98
                     styles:
                       name:
-                        font-size: 1em
-                        text-anchor: center
+                        font-size: 5em
 
                   ## Temperature
                   - type: 'segarc'
@@ -163,7 +162,7 @@ cards:
                     styles:
                       state:
                         text-anchor: center
-                        font-size: 1.2em
+                        font-size: 6em
                         fill: var(--primary-text-color)
                         font-weight: 700
 
@@ -242,7 +241,7 @@ cards:
                     styles:
                       state:
                         text-anchor: center
-                        font-size: 1.2em
+                        font-size: 6em
                         fill: var(--primary-text-color)
                         font-weight: 700
 
@@ -302,7 +301,7 @@ cards:
                     styles:
                       state:
                         text-anchor: center
-                        font-size: 1.2em
+                        font-size: 6em
                         fill: var(--primary-text-color)
                         font-weight: 700
 
@@ -362,7 +361,7 @@ cards:
                     cy: 98
                     styles:
                       area:
-                        font-size: 1.2em
+                        font-size: 4em
 
                   - type: 'name'
                     id: 0
@@ -371,8 +370,7 @@ cards:
                     cy: 53
                     styles:
                       name:
-                        font-size: 1.2em
-                        text-anchor: center
+                        font-size: 6em
 
                   - type: 'segarc'
                     id: 0
@@ -417,8 +415,7 @@ cards:
                     cy: 35
                     styles:
                       state:
-                        text-anchor: center
-                        font-size: 3em
+                        font-size: 15em
                         fill: var(--primary-text-color)
 
                   - type: 'icon'
@@ -496,7 +493,7 @@ cards:
                     cy: 98
                     styles:
                       area:
-                        font-size: 1.2em
+                        font-size: 4em
 
                   - type: 'name'
                     id: 0
@@ -505,8 +502,7 @@ cards:
                     cy: 53
                     styles:
                       name:
-                        font-size: 1.2em
-                        text-anchor: center
+                        font-size: 6em
 
                   - type: 'segarc'
                     id: 0
@@ -547,8 +543,7 @@ cards:
                     cy: 40
                     styles:
                       state:
-                        text-anchor: center
-                        font-size: 2em
+                        font-size: 10em
                         fill: var(--primary-text-color)
 
                   - type: 'icon'
@@ -620,8 +615,7 @@ cards:
                     cy: 40
                     styles:
                       state:
-                        text-anchor: center
-                        font-size: 2em
+                        font-size: 10em
                         fill: var(--primary-text-color)
 
                   - type: 'icon'
@@ -704,7 +698,7 @@ cards:
                     # cx: 100
                     # cy: 98
                     # styles:
-                      # font-size: 3em
+                      # font-size: 15em
 
                   # - type: 'segarc'
                     # id: 0
@@ -924,7 +918,7 @@ cards:
                     cy: 50
                     styles:
                       area:
-                        font-size: 1.5em
+                        font-size: 7.5em
               
               # ==============================================================================
               - toolset: temp
@@ -962,7 +956,7 @@ cards:
                   - id: 2
                     styles:
                       state:
-                        font-size: 1.4em
+                        font-size: 7em
 
               # ==============================================================================
               - toolset: pressure
@@ -996,7 +990,7 @@ cards:
                   - id: 2
                     styles:
                       state:
-                        font-size: 1.4em
+                        font-size: 7em
                   
 
               # ==============================================================================
@@ -1160,7 +1154,7 @@ cards:
                     # cy: 75
                     # entity_index: 0
                     # styles:
-                      # font-size: 1.5em
+                      # font-size: 7.5em
                       # font-weight: 700
                       # text-anchor: start
                   # - type: area
@@ -1168,7 +1162,7 @@ cards:
                     # cx: 5
                     # cy: 85
                     # styles:
-                      # font-size: 2.4em
+                      # font-size: 12em
                       # text-anchor: start
                   # - type: state
                     # cx: 5
@@ -1185,7 +1179,7 @@ cards:
                           # fill: var(--theme-gradient-color-01)
                           # opacity: 0.7
                     # styles:
-                      # font-size: 1.5em
+                      # font-size: 7.5em
                       # text-anchor: start
 
 
@@ -1241,7 +1235,7 @@ cards:
                     # cy: 75
                     # entity_index: 1
                     # styles:
-                      # font-size: 1.5em
+                      # font-size: 7.5em
                       # font-weight: 700
                       # text-anchor: start
                   # - type: area
@@ -1249,14 +1243,14 @@ cards:
                     # cx: 5
                     # cy: 85
                     # styles:
-                      # font-size: 1.2em
+                      # font-size: 6em
                       # text-anchor: start
                   # - type: state
                     # cx: 5
                     # cy: 95
                     # entity_index: 1
                     # styles:
-                      # font-size: 1.5em
+                      # font-size: 7.5em
                       # text-anchor: start
 
               # # TOOLSET
@@ -1345,7 +1339,7 @@ cards:
                     # cy: 70
                     # entity_index: 2
                     # styles:
-                      # font-size: 1.5em
+                      # font-size: 7.5em
                       # font-weight: 700
                       # text-anchor: start
                   # - type: area
@@ -1353,7 +1347,7 @@ cards:
                     # cx: 5
                     # cy: 80
                     # styles:
-                      # font-size: 2.4em
+                      # font-size: 12em
                       # text-anchor: start
                   # # # STATE
                   # # - type: state
@@ -1361,7 +1355,7 @@ cards:
                     # # cy: 95
                     # # entity_index: 2
                     # # styles:
-                      # # font-size: 1.5em
+                      # # font-size: 7.5em
                       # # text-anchor: start
                   # # SLIDER
                   # - type: slider
@@ -1388,7 +1382,7 @@ cards:
                         # stroke: var(--theme-gradient-color-01)
                         # stroke-width: 2
                       # handle:
-                        # font-size: 2.4em
+                        # font-size: 12em
                         # font-weight: 700
                         # fill: black
 
@@ -1651,15 +1645,15 @@ cards:
 
                   - type: state
                     cx: 35
-                    cy: 22
+                    cy: 18
                     entity_index: 0
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 2.4em
+                        font-size: 12em
                         font-weight: 700
                         fill: black
-                        filter: url(#ds)
+                        # filter: url(#ds)
                   - type: line
                     cx: 60
                     cy: 18
@@ -1673,7 +1667,7 @@ cards:
                         stroke-width: 3
                   - type: icon
                     cx: 75
-                    cy: 17.5
+                    cy: 18
                     entity_index: 0
                     align: center
                     icon_size: 12
@@ -1689,7 +1683,7 @@ cards:
                     styles:
                       name:
                         text-anchor: middle
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 700
                         fill: black
                   - type: bar
@@ -1697,7 +1691,7 @@ cards:
                     orientation: vertical
                     entity_index: 0
                     cx: 50
-                    cy: 70
+                    cy: 80
                     width: 70
                     height: 25
                     margin: 1.5
@@ -1780,12 +1774,12 @@ cards:
                         fill: var(--theme-gradient-color-02)
                   - type: state
                     cx: 35
-                    cy: 22
+                    cy: 18
                     entity_index: 0
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 2.4em
+                        font-size: 12em
                         font-weight: 700
                         fill: black
                   - type: line
@@ -1801,7 +1795,7 @@ cards:
                         stroke-width: 3
                   - type: icon
                     cx: 75
-                    cy: 17.5
+                    cy: 18
                     entity_index: 0
                     align: center
                     icon_size: 12
@@ -1817,7 +1811,7 @@ cards:
                     styles:
                       name:
                         text-anchor: middle
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 700
                         fill: black
                   - type: bar
@@ -1825,7 +1819,7 @@ cards:
                     orientation: vertical
                     entity_index: 0
                     cx: 50
-                    cy: 70
+                    cy: 80
                     width: 70
                     height: 25
                     margin: 1.5
@@ -1905,7 +1899,7 @@ cards:
                     # entity_index: 0
                     # styles:
                       # text-anchor: middle
-                      # font-size: 2.4em
+                      # font-size: 12em
                       # font-weight: 700
                       # fill: black
                   # - type: line
@@ -1920,7 +1914,7 @@ cards:
                       # stroke-width: 3
                   # - type: icon
                     # cx: 75
-                    # cy: 17.5
+                    # cy: 18
                     # entity_index: 0
                     # align: center
                     # icon_size: 12
@@ -1969,7 +1963,7 @@ cards:
             # explictly enable the use of the usersvg tool.
             usersvg : true
           
-          dimensions: 1/4
+          dimensions: 1/1
 
           layout:
             toolsets:
@@ -1978,7 +1972,7 @@ cards:
               - toolset: humi
                 position:
                   cx: 50
-                  cy: 350
+                  cy: 50
                   scale: 1
                   rotate: 0
                 tools:
@@ -2025,12 +2019,12 @@ cards:
                         fill: var(--theme-gradient-color-02)
                   - type: state
                     cx: 35
-                    cy: 22
+                    cy: 18
                     entity_index: 0
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 2.4em
+                        font-size: 12em
                         font-weight: 700
                         fill: black
                   - type: line
@@ -2046,7 +2040,7 @@ cards:
                         stroke-width: 3
                   - type: icon
                     cx: 75
-                    cy: 17.5
+                    cy: 18
                     entity_index: 0
                     align: center
                     icon_size: 12
@@ -2062,7 +2056,7 @@ cards:
                     styles:
                       name:
                         text-anchor: middle
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 700
                         fill: black
                   - type: bar
@@ -2070,7 +2064,7 @@ cards:
                     orientation: vertical
                     entity_index: 0
                     cx: 50
-                    cy: 70
+                    cy: 80
                     width: 70
                     height: 25
                     margin: 1.5
@@ -2176,7 +2170,7 @@ cards:
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 3em
+                        font-size: 15em
                         font-weight: 700
                         # fill: var(--theme-gradient-color-01)
                         fill: DarkOliveGreen
@@ -2219,7 +2213,7 @@ cards:
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 3em
+                        font-size: 15em
                         font-weight: 700
                         # fill: var(--theme-gradient-color-01)
                         fill: black
@@ -2246,7 +2240,7 @@ cards:
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 3em
+                        font-size: 15em
                         font-weight: 700
                         # fill: var(--theme-gradient-color-01)
                         fill: black
@@ -2274,7 +2268,7 @@ cards:
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 3em
+                        font-size: 15em
                         font-weight: 700
                         # fill: var(--theme-gradient-color-01)
                         fill: black
@@ -2286,7 +2280,7 @@ cards:
                     styles:
                       name:
                         text-anchor: middle
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 700
                         fill: var(--primary-text-color)
 
