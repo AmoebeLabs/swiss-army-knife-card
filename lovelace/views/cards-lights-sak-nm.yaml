@@ -31,11 +31,11 @@
       variables:
         - content: 'Woonkamer'
         - font_color: var(--secondary-text-color)
-        - font_size: 0.6em
+        - font_size: 3em
         
     - type: horizontal-stack
       cards:
-        - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
 
         - type: custom:decluttering-card
           template: sak_light_button_template_nm_tpl
@@ -62,11 +62,11 @@
             - name: Muurlamp
             - icon: 'mdi:wall-sconce' #'border-right' #'mdi:grid-large'
 
-        - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
 
     - type: horizontal-stack
       cards:
-        - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
 
         - type: custom:decluttering-card
           template: sak_light_button_template_nm_tpl
@@ -87,11 +87,11 @@
 
         - type: 'custom:button-card'
           color_type: blank-card
-        - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
 
     - type: horizontal-stack
       cards:
-        - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
         - type: custom:decluttering-card
           template: sak_light_button_template_nm_tpl
           variables:
@@ -108,7 +108,7 @@
             - icon: 'mdi:sofa'
         - type: 'custom:button-card'
           color_type: blank-card
-        - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
 
 
 
@@ -120,10 +120,10 @@
       variables:
         - content: 'Keuken'
         - font_color: var(--secondary-text-color)
-        - font_size: 0.6em
+        - font_size: 3em
     - type: horizontal-stack
       cards:
-        - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
         - type: custom:decluttering-card
           template: sak_light_button_template_nm_tpl
           variables:
@@ -140,7 +140,7 @@
             - icon: 'mdi:wall-sconce'
         - type: 'custom:button-card'
           color_type: blank-card
-        - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
 
 ##
 ## 1ste Verdieping
@@ -150,10 +150,10 @@
       variables:
         - content: '1ste Verdieping'
         - font_color: var(--secondary-text-color)
-        - font_size: 0.6em
+        - font_size: 3em
     - type: horizontal-stack
       cards:
-        - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
         - type: custom:decluttering-card
           template: sak_light_button_template_nm_tpl
           variables:
@@ -165,4 +165,4 @@
           color_type: blank-card
         - type: 'custom:button-card'
           color_type: blank-card
-        - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
