@@ -23,7 +23,7 @@ cards:
       variables:
         - content: 'Domotica'
         - font_color: var(--secondary-text-color)
-        - font_size: 0.6em
+        - font_size: 3em
 
     - type: horizontal-stack
       cards:
@@ -120,7 +120,7 @@ cards:
                     entity_index: 8
                     styles:
                       name:
-                        font-size: 1.0em
+                        font-size: 5.0em
                         text-anchor: start
                   - type: state
                     id: 2
@@ -129,7 +129,7 @@ cards:
                     entity_index: 8
                     styles:
                       state:
-                        font-size: 1.2em
+                        font-size: 6em
                         font-weight: 700
                         text-anchor: end
 
@@ -141,7 +141,7 @@ cards:
                     entity_index: 9
                     styles:
                       name:
-                        font-size: 1.0em
+                        font-size: 5em
                         text-anchor: start
                   - type: state
                     id: 4
@@ -150,7 +150,7 @@ cards:
                     entity_index: 9
                     styles:
                       state:
-                        font-size: 1.2em
+                        font-size: 6em
                         font-weight: 700
                         text-anchor: end
 
@@ -198,7 +198,7 @@ cards:
                     cy: 50
                     styles:
                       area:
-                        font-size: 2em
+                        font-size: 6em
                         text-anchor: end
               
               # ==============================================================================
@@ -224,7 +224,8 @@ cards:
                     entity_index: 6
                     styles:
                       name:
-                        font-size: 1.0em
+                        #20px
+                        font-size: 5em
                         text-anchor: start
                   - type: state
                     id: 2
@@ -233,7 +234,8 @@ cards:
                     entity_index: 6
                     styles:
                       state:
-                        font-size: 1.2em
+                        #24px
+                        font-size: 6em
                         font-weight: 700
                         text-anchor: end
 
@@ -245,7 +247,7 @@ cards:
                     entity_index: 7
                     styles:
                       name:
-                        font-size: 1.0em
+                        font-size: 5em
                         text-anchor: start
                   - type: state
                     id: 4
@@ -254,7 +256,7 @@ cards:
                     entity_index: 7
                     styles:
                       state:
-                        font-size: 1.2em
+                        font-size: 6em
                         font-weight: 700
                         text-anchor: end
                     
