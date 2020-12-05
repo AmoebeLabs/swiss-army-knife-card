@@ -2430,6 +2430,7 @@
             
           layout:
             toolsets:
+
              # ==============================================================================
               - toolset: humi
                 position:
@@ -2797,6 +2798,178 @@
                       # name:
                         # font-size: 0.8em
                         # text-anchor: middle
+
+#################################################################################
+
+    - type: horizontal-stack
+      cards:
+        ##- !include card-blank-card.yaml
+
+        # Example 12T:: Neumorphic version of 1T. Circles etc.
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            - entity: weather.zoefdehaas
+              attribute: temperature
+              decimals: 1
+              name: '12T: met.no Weather'
+              area: '12T: De Maan'
+              unit: '°C'
+              icon: mdi:thermometer
+            - entity: weather.zoefdehaas
+              attribute: humidity
+              decimals: 0
+              unit: '%'
+              icon: mdi:water-percent
+            - entity: weather.zoefdehaas
+              attribute: pressure
+              decimals: 0
+              unit: 'hPa'
+              icon: mdi:gauge
+
+          dimensions: 2/1
+
+          disable_card: false
+
+          dev:
+            debug: false
+            
+          layout:
+            toolsets:
+              - toolset: polytest
+                position:
+                  cx: 100
+                  cy: 50
+                tools:
+                  - type: regpoly
+                    cx: 0
+                    cy: 50
+                    radius: 45
+                    side_count: 6
+                    side_skip: 1
+                    styles:
+                      regpoly:
+                        fill-rule: nonzero
+                        fill: var(--primary-background-color)
+                        stroke: var(--primary-background-color)
+                        transform: skewX(30deg)
+
+                  - type: regpoly
+                    cx: 0
+                    cy: 50
+                    radius: 35
+                    side_count: 6
+                    side_skip: 1
+                    styles:
+                      regpoly:
+                        fill-rule: nonzero
+                        fill: var(--primary-background-color)
+                        stroke: var(--primary-background-color)
+                        fill: gray
+                        stroke: gray
+                        opacity: 0.05
+                        filter: url(#nm-2)
+
+                  - type: regpoly
+                    cx: 0
+                    cy: 50
+                    radius: 25
+                    side_count: 6
+                    side_skip: 1
+                    styles:
+                      regpoly:
+                        fill-rule: nonzero
+                        fill: var(--primary-background-color)
+                        stroke: var(--primary-background-color)
+                        opacity: 0.9
+                        filter: url(#nm-2)
+
+                  - type: regpoly
+                    cx: 0
+                    cy: 50
+                    radius: 15
+                    side_count: 18
+                    side_skip: 6
+                    styles:
+                      regpoly:
+                        fill-rule: nonzero
+                        fill: var(--primary-background-color)
+                        stroke: var(--primary-background-color)
+                        opacity: 0.5
+                        filter: url(#nm-2)
+
+####
+                  - type: regpoly
+                    cx: 100
+                    cy: 50
+                    radius: 45
+                    side_count: 6
+                    side_skip: 1
+                    styles:
+                      regpoly:
+                        fill: var(--primary-background-color)
+                        stroke: var(--primary-background-color)
+
+                  - type: regpoly
+                    cx: 100
+                    cy: 50
+                    radius: 45
+                    side_count: 6
+                    side_skip: 2
+                    styles:
+                      regpoly:
+                        fill-rule: nonzero
+                        fill: var(--primary-background-color)
+                        stroke: var(--primary-background-color)
+                        opacity: 0.3
+                        filter: url(#nm-2)
+
+                  - type: regpoly
+                    cx: 100
+                    cy: 50
+                    radius: 35
+                    side_count: 6
+                    side_skip: 2
+                    styles:
+                      regpoly:
+                        fill-rule: nonzero
+                        fill: var(--primary-background-color)
+                        stroke: var(--primary-background-color)
+                        opacity: 0.3
+                        filter: url(#nm-2)
+
+                  - type: regpoly
+                    cx: 100
+                    cy: 50
+                    radius: 25
+                    side_count: 6
+                    side_skip: 2
+                    styles:
+                      regpoly:
+                        fill-rule: nonzero
+                        fill: var(--primary-background-color)
+                        stroke: var(--primary-background-color)
+                        opacity: 0.3
+                        # filter: url(#nm-1-reverse)
+                        filter: url(#nm-2)
+
+                  - type: regpoly
+                    cx: 100
+                    cy: 50
+                    radius: 15
+                    side_count: 6
+                    side_skip: 2
+                    styles:
+                      regpoly:
+                        fill-rule: nonzero
+                        fill: var(--primary-background-color)
+                        stroke: var(--primary-background-color)
+                        opacity: 0.3
+                        filter: url(#nm-2)
+
+
               
 
 #################################################################################
