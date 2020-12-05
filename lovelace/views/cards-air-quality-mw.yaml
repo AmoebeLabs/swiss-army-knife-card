@@ -106,7 +106,7 @@
                     entity_index: 0
                     styles:
                       area:
-                        font-size: 6em
+                        font-size: 18em
                         font-weight: 400
                         text-anchor: start
 
@@ -267,7 +267,7 @@
                     entity_index: 3
                     styles:
                       state:
-                        font-size: 3em
+                        font-size: 15em
                         font-weight: 400
                         text-anchor: end
 
@@ -303,7 +303,7 @@
                     entity_index: 4
                     styles:
                       state:
-                        font-size: 3em
+                        font-size: 15em
                         font-weight: 400
                         text-anchor: end
 
@@ -339,7 +339,7 @@
                     entity_index: 5
                     styles:
                       state:
-                        font-size: 3em
+                        font-size: 15em
                         font-weight: 400
                         text-anchor: end
 
@@ -375,7 +375,7 @@
                     entity_index: 6
                     styles:
                       state:
-                        font-size: 3em
+                        font-size: 15em
                         font-weight: 400
                         text-anchor: end
               
@@ -450,7 +450,7 @@
                       uom: default
                     styles:
                       state:
-                        font-size: 5.8em
+                        font-size: 29em
                         font-weight: 700
                         text-anchor: end
                         alignment-baseline: central
@@ -470,7 +470,7 @@
                         # position: below
                     styles:
                       state:
-                        font-size: 2.5em
+                        font-size: 12.5em
                         font-weight: 500
                         text-anchor: middle
                         alignment-baseline: central
@@ -483,7 +483,7 @@
                     entity_index: 1
                     styles:
                       state:
-                        font-size: 2.5em
+                        font-size: 12.5em
                         font-weight: 500
                         text-anchor: middle
                         alignment-baseline: central
@@ -827,7 +827,7 @@
                     entity_index: 0
                     styles:
                       area:
-                        font-size: 4em
+                        font-size: 12em
                         font-weight: 400
                         text-anchor: start
                         alignment-baseline: hanging
@@ -843,7 +843,7 @@
                     entity_index: 7
                     styles:
                       state:
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 400
                         text-anchor: start
                         # stroke: var(--primary-text-color)
@@ -921,7 +921,7 @@
                     entity_index: 0
                     styles:
                       state:
-                        font-size: 2.2em
+                        font-size: 11em
                         font-weight: 400
                         text-anchor: middle
                       uom:
@@ -1133,7 +1133,7 @@
                     entity_index: 3
                     styles:
                       state:
-                        font-size: 2.2em
+                        font-size: 11em
                         font-weight: 400
                         text-anchor: middle
                       uom:
@@ -1211,7 +1211,7 @@
                     entity_index: 4
                     styles:
                       state:
-                        font-size: 2.2em
+                        font-size: 11em
                         font-weight: 400
                         text-anchor: middle
                         # opacity: 0.7
@@ -1259,7 +1259,7 @@
                     entity_index: 5
                     styles:
                       state:
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 400
                         text-anchor: end
                         opacity: 0.6
@@ -1288,7 +1288,7 @@
                     entity_index: 6
                     styles:
                       state:
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 400
                         text-anchor: end
                         opacity: 0.6
@@ -1301,15 +1301,16 @@
                     locale_tag: 'ui.card.weather.cardinal_direction.'
                     text:
                       before: '/ '
-                    custom_value: |
-                      [[[
-                        const DIRECTION = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW", ];
-                        const dir = Math.floor((state / 22.5) + .5);
-                        return DIRECTION[(dir % 16)];
-                      ]]]
+                    derived_entity:
+                      state: |
+                        [[[
+                          const DIRECTION = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW", ];
+                          const dir = Math.floor((state / 22.5) + .5);
+                          return DIRECTION[(dir % 16)];
+                        ]]]
                     styles:
                       state:
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 400
                         text-anchor: start
                         opacity: 0.6
@@ -1336,14 +1337,15 @@
                     cx: 75
                     cy: 20
                     entity_index: 9
-                    custom_value: >
-                      [[[
-                        if (typeof(entity) === 'undefined') return('?');
-                        return (new Date(state).toLocaleTimeString(undefined,{ hour: '2-digit', minute: '2-digit' }));
-                      ]]]
+                    derived_entity:
+                      state: |
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleTimeString(undefined,{ hour: '2-digit', minute: '2-digit' }));
+                        ]]]
                     styles:
                       state:
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 400
                         text-anchor: end
                         opacity: 0.6
@@ -1370,14 +1372,15 @@
                     cx: 75
                     cy: 20
                     entity_index: 10
-                    custom_value: >
-                      [[[
-                        if (typeof(entity) === 'undefined') return('?');
-                        return (new Date(state).toLocaleTimeString(undefined,{ hour: '2-digit', minute: '2-digit' }));
-                      ]]]
+                    derived_entity:
+                      state: |
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleTimeString(undefined,{ hour: '2-digit', minute: '2-digit' }));
+                        ]]]
                     styles:
                       state:
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 400
                         text-anchor: end
                         opacity: 0.6
@@ -1412,14 +1415,15 @@
                     cx: 50
                     cy: 5
                     entity_index: 11
-                    custom_value: >
-                      [[[
-                        if (typeof(entity) === 'undefined') return('?');
-                        return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
-                      ]]]
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
+                        ]]]
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 700
                         text-anchor: middle
                         text-transform: capitalize
@@ -1507,7 +1511,7 @@
                     entity_index: 13
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 700
                         text-anchor: middle
 
@@ -1519,7 +1523,7 @@
                     entity_index: 14
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 400
                         text-anchor: middle
 
@@ -1529,14 +1533,15 @@
                     cx: 50
                     cy: 77.5
                     entity_index: 17
-                    custom_value: >
-                      [[[
-                        if (typeof(state) === 'undefined') return('0');
-                        return (state);
-                      ]]]
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(state) === 'undefined') return('0');
+                          return (state);
+                        ]]]
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 400
                         text-anchor: middle
 
@@ -1552,14 +1557,15 @@
                     cx: 50
                     cy: 5
                     entity_index: 18
-                    custom_value: >
-                      [[[
-                        if (typeof(entity) === 'undefined') return('?');
-                        return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
-                      ]]]
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
+                        ]]]
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 700
                         text-anchor: middle
                         text-transform: capitalize
@@ -1647,7 +1653,7 @@
                     entity_index: 20
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 700
                         text-anchor: middle
 
@@ -1659,7 +1665,7 @@
                     entity_index: 21
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 400
                         text-anchor: middle
 
@@ -1669,14 +1675,15 @@
                     cx: 50
                     cy: 77.5
                     entity_index: 24
-                    custom_value: >
-                      [[[
-                        if (typeof(state) === 'undefined') return('0');
-                        return (state);
-                      ]]]
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(state) === 'undefined') return('0');
+                          return (state);
+                        ]]]
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 400
                         text-anchor: middle
 
@@ -1692,14 +1699,15 @@
                     cx: 50
                     cy: 5
                     entity_index: 25
-                    custom_value: >
-                      [[[
-                        if (typeof(entity) === 'undefined') return('?');
-                        return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
-                      ]]]
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
+                        ]]]
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 700
                         text-anchor: middle
                         text-transform: capitalize
@@ -1787,7 +1795,7 @@
                     entity_index: 27
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 700
                         text-anchor: middle
 
@@ -1799,7 +1807,7 @@
                     entity_index: 28
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 400
                         text-anchor: middle
 
@@ -1809,14 +1817,15 @@
                     cx: 50
                     cy: 77.5
                     entity_index: 31
-                    custom_value: >
-                      [[[
-                        if (typeof(state) === 'undefined') return('0');
-                        return (state);
-                      ]]]
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(state) === 'undefined') return('0');
+                          return (state);
+                        ]]]
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 400
                         text-anchor: middle
 
@@ -1832,14 +1841,15 @@
                     cx: 50
                     cy: 5
                     entity_index: 32
-                    custom_value: >
-                      [[[
-                        if (typeof(entity) === 'undefined') return('?');
-                        return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
-                      ]]]
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
+                        ]]]
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 700
                         text-anchor: middle
                         text-transform: capitalize
@@ -1927,7 +1937,7 @@
                     entity_index: 34
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 700
                         text-anchor: middle
 
@@ -1939,7 +1949,7 @@
                     entity_index: 35
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 400
                         text-anchor: middle
 
@@ -1949,14 +1959,15 @@
                     cx: 50
                     cy: 77.5
                     entity_index: 38
-                    custom_value: >
-                      [[[
-                        if (typeof(state) === 'undefined') return('0');
-                        return (state);
-                      ]]]
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(state) === 'undefined') return('0');
+                          return (state);
+                        ]]]
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 400
                         text-anchor: middle
 
@@ -1972,14 +1983,15 @@
                     cx: 50
                     cy: 5
                     entity_index: 39
-                    custom_value: >
-                      [[[
-                        if (typeof(entity) === 'undefined') return('?');
-                        return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
-                      ]]]
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
+                        ]]]
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 700
                         text-anchor: middle
                         text-transform: capitalize
@@ -2067,7 +2079,7 @@
                     entity_index: 41
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 700
                         text-anchor: middle
 
@@ -2079,7 +2091,7 @@
                     entity_index: 42
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 400
                         text-anchor: middle
 
@@ -2089,14 +2101,15 @@
                     cx: 50
                     cy: 77.5
                     entity_index: 45
-                    custom_value: >
-                      [[[
-                        if (typeof(state) === 'undefined') return('0');
-                        return (state);
-                      ]]]
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(state) === 'undefined') return('0');
+                          return (state);
+                        ]]]
                     styles:
                       state:
-                        font-size: 1.5em
+                        font-size: 7.5em
                         font-weight: 400
                         text-anchor: middle
 
@@ -2154,7 +2167,7 @@
                     cy: 80
                     styles:
                       area:
-                        font-size: 2.4em
+                        font-size: 7.2em
 
                   - type: 'name'
                     id: 0
@@ -2163,7 +2176,7 @@
                     cy: 95
                     styles:
                       name:
-                        font-size: 1.2em
+                        font-size: 6em
                         text-anchor: middle
 
                   - type: 'segarc'
@@ -2229,7 +2242,7 @@
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 3em
+                        font-size: 15em
                         fill: var(--primary-text-color)
 
                   - type: 'icon'
@@ -2305,7 +2318,7 @@
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 2em
+                        font-size: 10em
                         fill: var(--primary-text-color)
 
                   - type: 'icon'
@@ -2363,7 +2376,7 @@
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 2em
+                        font-size: 10em
                         fill: var(--primary-text-color)
 
                   - type: 'icon'
@@ -2522,10 +2535,9 @@
                     icon_size: 18.5
                     styles:
                       icon:
-                        # color: var(--primary-text-color)
-                        # fill: var(--primary-text-color)
-                        color: gray
-                        fill: gray
+                        color: var(--primary-text-color)
+                        fill: var(--primary-text-color)
+                        opacity: 0.7
                         filter: url(#is-1)
 
                   - type: 'state'
@@ -2538,10 +2550,10 @@
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 2.5em
+                        font-size: 12.5em
                         font-weight: bolder
-                        # fill: var(--primary-text-color)
-                        fill: gray
+                        fill: var(--primary-text-color)
+                        opacity: 0.7
                         filter: url(#is-1)
 
 
@@ -2611,8 +2623,9 @@
                     icon_size: 18.5
                     styles:
                       icon:
-                        color: gray
-                        fill: gray
+                        color: var(--primary-text-color)
+                        fill: var(--primary-text-color)
+                        opacity: 0.7
                         filter: url(#is-1)
 
                   - type: 'state'
@@ -2625,10 +2638,10 @@
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 2.5em
+                        font-size: 12.5em
                         font-weight: bolder
-                        # fill: var(--primary-text-color)
-                        fill: gray
+                        fill: var(--primary-text-color)
+                        opacity: 0.7
                         filter: url(#is-1)
 
               # ==============================================================================
@@ -2739,10 +2752,9 @@
                     icon_size: 18.5
                     styles:
                       icon:
-                        # color: var(--primary-text-color)
-                        # fill: var(--primary-text-color)
-                        color: gray
-                        fill: gray
+                        color: var(--primary-text-color)
+                        fill: var(--primary-text-color)
+                        opacity: 0.7
                         filter: url(#is-1)
 
                   - type: 'state'
@@ -2755,10 +2767,10 @@
                     styles:
                       state:
                         text-anchor: middle
-                        font-size: 3em
-                        # fill: var(--primary-text-color)
+                        font-size: 15em
+                        fill: var(--primary-text-color)
+                        opacity: 0.7
                         font-weight: bolder
-                        fill: gray
                         filter: url(#is-1)
 
                # ==============================================================================
@@ -2774,7 +2786,7 @@
                     cy: 85
                     styles:
                       area:
-                        font-size: 2.4em
+                        font-size: 7.2em
 
                   # - type: 'name'
                     # id: 0
@@ -2859,7 +2871,7 @@
                     styles:
                       state:
                         text-anchor: start
-                        font-size: 3.5em
+                        font-size: 17.5em
                         font-weight: 700
 
                   # circle for icon
@@ -2892,7 +2904,7 @@
                     styles:
                       name:
                         text-anchor: middle
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 400
 
                   # bar
@@ -2944,7 +2956,7 @@
                     styles:
                       state:
                         text-anchor: start
-                        font-size: 3.5em
+                        font-size: 17.5em
                         font-weight: 700
 
                   # circle for icon
@@ -2977,7 +2989,7 @@
                     styles:
                       name:
                         text-anchor: middle
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 400
 
                   # bar
@@ -3029,7 +3041,7 @@
                     styles:
                       state:
                         text-anchor: start
-                        font-size: 3.5em
+                        font-size: 17.5em
                         font-weight: 700
 
                   # circle for icon
@@ -3061,7 +3073,7 @@
                     styles:
                       name:
                         text-anchor: middle
-                        font-size: 2em
+                        font-size: 10em
                         font-weight: 400
 
                   # bar
@@ -3099,7 +3111,7 @@
       variables:
         - content: 'Temperatuur'
         - font_color: var(--secondary-text-color)
-        - font_size: 0.6em
+        - font_size: 3em
 
     - type: horizontal-stack
       cards:
@@ -3174,7 +3186,7 @@
       variables:
         - content: 'Luchtvochtigheid'
         - font_color: var(--secondary-text-color)
-        - font_size: 0.6em
+        - font_size: 3em
     - type: horizontal-stack
       cards:
         # - !include card-blank-card.yaml
@@ -3249,7 +3261,7 @@
         # - content: '#### Luchtdruk'
         - content: 'Luchtdruk'
         - font_color: var(--secondary-text-color)
-        - font_size: 0.6em
+        - font_size: 3em
     - type: horizontal-stack
       cards:
         # - !include card-blank-card.yaml
@@ -3294,7 +3306,7 @@
         # - content: '#### Lichtwaarde'
         - content: 'Lichtwaarde'
         - font_color: var(--secondary-text-color)
-        - font_size: 0.6em
+        - font_size: 3em
     - type: horizontal-stack
       cards:
         # - !include card-blank-card.yaml
