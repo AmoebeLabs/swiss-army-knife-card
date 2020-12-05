@@ -48,10 +48,12 @@ console.info(
 // Set sizes:
 // If svg size is changed, change the font size accordingly.
 // These two are related ;-)
+
+// for font-size, 1em = 1%
 const SCALE_DIMENSIONS = 2
-const FONT_SIZE = 10 * SCALE_DIMENSIONS;
 const SVG_DEFAULT_DIMENSIONS = 200 * SCALE_DIMENSIONS;
 const SVG_VIEW_BOX = SVG_DEFAULT_DIMENSIONS;//200;
+const FONT_SIZE = SVG_DEFAULT_DIMENSIONS / 100;
 
 //--
 
@@ -241,6 +243,8 @@ class Templates {
     if (['number', 'boolean', 'bigint', 'symbol'].includes(typeof argValue)) return argValue;
 
     // We might have an object.
+    // Beware of the fact that this recursive function overwrites the argValue object,
+    // so clone argValue if this is the tool configuration...
     if (typeof argValue === 'object') {
       Object.keys(argValue).forEach((key) => {
         argValue[key] = Templates.getJsTemplateOrValue(argTool, argState, argValue[key]);
@@ -602,17 +606,12 @@ class BaseTool {
     if (this.dev.debug) console.log('BaseTool set value(state)', localState);
     if (typeof(localState) != 'undefined') if (this._stateValue?.toLowerCase() == localState.toLowerCase()) return false;
 
-    // testing calculated value, this might be undefined!
-    if (this.config.custom_value) {
-      const someValue = new Function('state', 'states', 'entity', 'user', 'hass', `'use strict'; ${this.config.custom_value.slice(4, -4)}`).call(
-        this,
-        state,
-        this._card._hass.states,
-        this._card.entities[this.config.entity_index],
-        this._card._hass.user,
-        this._card._hass,
-      );
-      localState = someValue;
+    this.derivedEntity = null;
+    
+    if (this.config.derived_entity) {
+      this.derivedEntity = Templates.getJsTemplateOrValue(this, state, Merge.mergeDeep(this.config.derived_entity));
+      
+      localState = this.derivedEntity.state?.toString();
     }
 
     this._stateValuePrev = this._stateValue || localState;
@@ -634,8 +633,8 @@ class BaseTool {
     if (this.config.animations) Object.keys(this.config.animations).map(animation => {
       const entityIndex = this.config.entity_index;
       
-      var item = Templates.getJsTemplateOrValue(this, this._stateValue, this.config.animations[animation]);
-
+      var item = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.config.animations[animation]));
+      
       if (isMatch) return true;
 
       // #TODO:
@@ -687,7 +686,6 @@ class BaseTool {
       this.activeAnimation = item;
       // console.log('set value, state, image BEFORE', this._stateValue, item);
       // this.item = Templates.getJsTemplateOrValue(this, this._stateValue, item);
-      // console.log('set value, state, image AFTER', this._stateValue, item);
     });
 
     return true;
@@ -1371,11 +1369,13 @@ class CircleTool extends BaseTool {
   * The render() function for this object.
   *
   */
+//        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+
   render() {
 
     return svg`
       <g "" id="circle-${this.toolId}" class="circle" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handlePopup2(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderCircle()}
       </g>
     `;
@@ -1805,7 +1805,7 @@ class EntityIconTool extends BaseTool {
     // Safari doesn't use the svg viewport for rendering of the foreignObject, but the real clientsize.
     // So positioning an icon doesn't work correctly...
 
-    this.svg.iconSize = this.config.icon_size ? this.config.icon_size : 2;
+    this.svg.iconSize = this.config.icon_size ? this.config.icon_size : 3;
     this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
     const x = this.config.cx ? this.config.cx / 100 : 0.5;
     const y = this.config.cy ? this.config.cy / 100 : 0.5;
@@ -2210,17 +2210,19 @@ class EntityStateTool extends BaseTool {
       show: { uom: 'default' },
       styles: {
         state: {
-          "font-size": '2em',
-          "color": 'var(--primary-text-color)',
+          "font-size": '3em',
+          "fill": 'var(--primary-text-color)',
           "opacity": '1.0',
           "text-anchor": 'middle',
           "alignment-baseline": 'central',
+          "letter-spacing": '0.05em',
         },
         uom: {
-          "color": 'var(--primary-text-color)',
+          "fill": 'var(--primary-text-color)',
           "text-anchor": 'middle',
           "alignment-baseline": 'central',
           "opacity": '0.7',
+          "letter-spacing": '0.05em',
         }
       }
     }
@@ -2278,12 +2280,12 @@ class EntityStateTool extends BaseTool {
 
       this.configStyle.uom = Merge.mergeDeep(this.config.styles.uom, fsuomStr);
 
-      const uom = this._card._buildUom(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+      const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
       // Check for location of uom. Default = next to state, below = below state ;-)
       if (this.config.show.uom === 'default') {
         return svg`
-          <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
+          <tspan class="state__uom" dx="-0.1em" dy="-0.35em"
             style="${styleMap(this.configStyle.uom)}">
             ${uom}</tspan>
         `;
@@ -2310,7 +2312,7 @@ class EntityStateTool extends BaseTool {
 
     if (true || (this._card._computeDomain(this._card.entities[this.config.entity_index].entity_id) == 'sensor')) {
       return svg`
-        <text @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])}>
+        <text @click=${e => this._card.handlePopup2(e, this._card.config.entities[this.config.entity_index])}>
           ${this._renderState()}
           ${this._renderUom()}
         </text>
@@ -2348,11 +2350,12 @@ class EntityNameTool extends BaseTool {
     const DEFAULT_NAME_CONFIG = {
       styles: {
         name: {
-          "font-size": '1.5em',
+          "font-size": '3em',
           "fill": 'var(--primary-text-color)',
           "opacity": '1.0',
           "text-anchor": 'middle',
           "alignment-baseline": 'central',
+          "letter-spacing": '0.05em',
         }
       }
     }
@@ -2428,11 +2431,12 @@ class EntityAreaTool extends BaseTool {
     const DEFAULT_AREA_CONFIG = {
       styles: {
         area: {
-          "font-size": '1em',
+          "font-size": '3em',
           "fill": 'var(--primary-text-color)',
           "opacity": '1.0',
           "text-anchor": 'middle',
           "alignment-baseline": 'central',
+          "letter-spacing": '0.05em',
         }
       }
     }
@@ -2503,7 +2507,7 @@ class TextTool extends BaseTool {
     const DEFAULT_TEXT_CONFIG = {
       styles: {
         text: {
-          'font-size': '1em',
+          'font-size': '3em',
           'fill': 'var(--primary-text-color)',
           'opacity': '1.0',
           'text-anchor': 'middle',
@@ -3893,11 +3897,9 @@ class devSwissArmyKnifeCard extends LitElement {
     
     if (!this.lovelace.sakIconCache) {
       this.lovelace.sakIconCache = {};
-      console.log('devSwissArmyKnifeCard::constructor, iconCache created');
     }
     if (!this.lovelace.colorCache) {
       this.lovelace.colorCache = [];
-      console.log('devSwissArmyKnifeCard::constructor, colorCache created');
     }
 
     this.localStorage = window.localStorage;
@@ -4328,75 +4330,75 @@ class devSwissArmyKnifeCard extends LitElement {
         margin: 3% 0;
       }
 
-      .text {
-        font-size: 100%;
-      }
+      // .text {
+        // font-size: 100%;
+      // }
 
-      #name {
-      font-size: 80%;
-      font-weight: 300;
-      }
+      // #name {
+      // font-size: 80%;
+      // font-weight: 300;
+      // }
 
-      .unit {
-        font-size: 65%;
-        font-weight: normal;
-        opacity: 0.6;
-        line-height: 2em;
-        vertical-align: bottom;
-        margin-left: 0.25rem;
-      }
+      // .unit {
+        // font-size: 65%;
+        // font-weight: normal;
+        // opacity: 0.6;
+        // line-height: 2em;
+        // vertical-align: bottom;
+        // margin-left: 0.25rem;
+      // }
 
-      .entity__area {
-        position: absolute;
-        top: 70%;
-        font-size: 120%;
-        opacity: 0.6;
-        display: flex;
-        line-height: 1;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 20%;
-        flex-direction: column;
-      }
+      // .entity__area {
+        // position: absolute;
+        // top: 70%;
+        // font-size: 120%;
+        // opacity: 0.6;
+        // display: flex;
+        // line-height: 1;
+        // align-items: center;
+        // justify-content: center;
+        // width: 100%;
+        // height: 20%;
+        // flex-direction: column;
+      // }
 
       .nam {
         alignment-baseline: central;
         fill: var(--primary-text-color);
       }
 
-      .state__uom {
-        font-size: 20px;
-        opacity: 0.7;
-        margin: 0;
-        fill : var(--primary-text-color);
-      }
+      // .state__uom {
+        // font-size: 20px;
+        // opacity: 0.7;
+        // margin: 0;
+        // fill : var(--primary-text-color);
+      // }
 
-      .state__value {
-        font-size: 3em;
-        opacity: 1;
-        fill : var(--primary-text-color);
-        text-anchor: middle;
-      }
-      .entity__name {
-        text-anchor: middle;
-        overflow: hidden;
-        opacity: 0.8;
-        fill : var(--primary-text-color);
-        font-size: 1.5em;
-        /*text-transform: uppercase;*/
-        letter-spacing: 0.05em;
-      }
+      // .state__value {
+        // font-size: 3em;
+        // opacity: 1;
+        // fill : var(--primary-text-color);
+        // text-anchor: middle;
+      // }
+      // .entity__name {
+        // text-anchor: middle;
+        // overflow: hidden;
+        // opacity: 0.8;
+        // fill : var(--primary-text-color);
+        // font-size: 1.5em;
+        // /*text-transform: uppercase;*/
+        // letter-spacing: 0.05em;
+      // }
 
-      .entity__area {
-        font-size: 12px;
-        opacity: 0.7;
-        overflow: hidden;
-        fill : var(--primary-text-color);
-        text-anchor: middle;
-        /*text-transform: uppercase;*/
-        letter-spacing: 0.05em;
-      }
+      // .entity__area {
+        // font-size: 12px;
+        // opacity: 0.7;
+        // overflow: hidden;
+        // fill : var(--primary-text-color);
+        // text-anchor: middle;
+        // /*text-transform: uppercase;*/
+        // letter-spacing: 0.05em;
+      // }
 
       .shadow {
         font-size: 30px;
@@ -4770,6 +4772,17 @@ class devSwissArmyKnifeCard extends LitElement {
     
     var cfg = JSON.stringify(this.config.layout.toolsets, findTemplate);
     var cfgobj = JSON.parse(cfg);
+
+    // Set default tap_action, if none given for an entity
+    if (this.config.entities) {
+      this.config.entities.forEach((entity, i) => {
+        if (!entity.tap_action) {
+          this.config.entities[i].tap_action = {action: 'more-info', haptic: light};
+          this.config.entities[i].hold_action = {action: 'more-info', haptic: success};
+        }
+      }
+      );
+    }
     
     this.config.layout.toolsets.map((toolsetCfg, toolidx) => {
 
@@ -5514,6 +5527,8 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
   _handleClick(node, hass, config, actionConfig, entityId) {
     let e;
     // eslint-disable-next-line default-case
+
+    console.log('_handleClick', config, actionConfig, entityId);
     switch (actionConfig.action) {
       case 'more-info': {
         e = new Event('hass-more-info', { composed: true });
@@ -5556,10 +5571,27 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
   handlePopup(e, entity) {
     e.stopPropagation();
 
+    // #TODO:
+    // No check on attribute?? So wrong tap_action selected!! for a light and its brigtness!
     this._handleClick(this, this._hass, this.config,
       this.config.entities[this.config.entities.findIndex(
-        function(element, index, array){return element.entity == entity.entity_id})]
+        // function(element, index, array){return element.entity == entity.entity_id})]
+        function(element, index, array){console.log('in handlePopup', element, entity);return (element.entity == entity.entity_id) && (element.attribute ? element.attribute == entity.attribute : true)})]
           .tap_action, entity.entity_id);
+  }
+
+  handlePopup2(e, entityCfg) {
+    e.stopPropagation();
+
+    // #TODO:
+    // No check on attribute?? So wrong tap_action selected!! for a light and its brigtness!
+    this._handleClick(this, this._hass, this.config,
+      entityCfg.tap_action, entityCfg.entity);
+
+      // this.config.entities[this.config.entities.findIndex(
+        // // function(element, index, array){return element.entity == entity.entity_id})]
+        // function(element, index, array){console.log('in handlePopup2', element, entityCfg);return (element.entity == entityCfg.entity_id) && (entityCfg.attribute ? element.attribute == entityCfg.attribute : true)})]
+          // .tap_action, entity.entity_id);
   }
 
 /*******************************************************************************
@@ -5618,9 +5650,10 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
   *
   */
 
-  _buildUom(entityState, entityConfig) {
+  _buildUom(derivedEntity, entityState, entityConfig) {
     return (
-      entityConfig.unit
+      derivedEntity?.unit
+      || entityConfig.unit
       || entityState.attributes.unit_of_measurement
       || ''
     );

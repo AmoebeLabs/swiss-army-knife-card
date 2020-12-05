@@ -283,7 +283,7 @@ tools_segarc_icon_state_OLD:
         styles:
           state:
             text-anchor: middle
-            font-size: 2em
+            font-size: 10em
             color: var(--primary-text-color)
             fill: var(--primary-text-color)
 
@@ -357,6 +357,7 @@ tools_segarc_icon_state:
         cx: 50
         cy: 42
         align: center
+        #60px for width/height, so what is 15 then for number, times 4. Is it 15% ??
         icon_size: 15
         styles:
           icon:
@@ -379,7 +380,8 @@ tools_segarc_icon_state:
         styles:
           state:
             text-anchor: middle
-            font-size: 2em
+            #40px
+            font-size: 10em
             color: var(--primary-text-color)
             fill: var(--primary-text-color)
 
@@ -413,7 +415,7 @@ toolset_arc180_sparklinebar24:
         cy: 65
         styles:
           name:
-            font-size: 1.8em
+            font-size: 9em
             text-anchor: middle
 
       - type: 'segarc'
@@ -463,7 +465,7 @@ toolset_arc180_sparklinebar24:
         styles:
           state:
             text-anchor: middle
-            font-size: 3.6em
+            font-size: 18em
             fill: var(--primary-text-color)
 
       - type: 'icon'
@@ -603,7 +605,7 @@ toolset_light_button:
         entity_index: '[[entity_light]]'
         styles:
           name:
-            font-size: 1.8em
+            font-size: 9em
             font-weight: 700
             text-anchor: start
       - type: area
@@ -613,7 +615,7 @@ toolset_light_button:
         cy: 85
         styles:
           area:
-            font-size: 1.2em
+            font-size: 6em
             text-anchor: start
       - type: state
         cx: 5
@@ -634,7 +636,7 @@ toolset_light_button:
                 opacity: 0.7
         styles:
           state:
-            font-size: 1.8em
+            font-size: 9em
             text-anchor: start
       - type: state
         cx: 95
@@ -667,6 +669,22 @@ toolset_light_button:
               }
             }
           ]]]
+        derived_entity:
+          state: >
+            [[[
+              if (typeof(entity) === 'undefined') return;
+              
+              if ('brightness' in entity.attributes)
+              {
+                if (entity.attributes
+                && (entity.attributes.brightness <= 255)) {
+                  var bri = Math.round(entity.attributes.brightness / 2.55);
+                  // return (bri ? bri : '0') + '%';
+                  return (bri ? bri : '0');
+                }
+              }
+            ]]]
+          unit: '%'
         entity_index: '[[entity_brightness]]'
         # Animation can run on the entities 'state', or on the custom_value.
         # so - state: 'on', or for example - custom_value: '10%' in this case for light.
@@ -687,7 +705,7 @@ toolset_light_button:
                 opacity: 0.7
         styles:
           state:
-            font-size: 1.8em
+            font-size: 9em
             text-anchor: end
 
 ###############################################
@@ -823,7 +841,8 @@ toolset_light_button_nm:
         entity_index: '[[entity_light]]'
         styles:
           name:
-            font-size: 1.8em
+            # 36px
+            font-size: 9em
             font-weight: 700
             text-anchor: start
 
@@ -835,7 +854,8 @@ toolset_light_button_nm:
         cy: 91
         styles:
           area:
-            font-size: 2.4em
+            #28.8px
+            font-size: 7.5em
             text-anchor: start
 
       # # State of entity
@@ -863,33 +883,45 @@ toolset_light_button_nm:
         cx: 95
         cy: 91
         id: 7
-        # custom_fields:
-          # - brightness: >
-              # [[[
-                # if (typeof(entity) === 'undefined') return;
-                
-                # if ('brightness' in entity.attributes)
-                # {
-                  # if (entity.attributes
-                  # && (entity.attributes.brightness <= 255)) {
-                    # var bri = Math.round(entity.attributes.brightness / 2.55);
-                    # return (bri ? bri : '0') + '%';
-                  # }
+        derived_entity:
+        # derived_entity: >
+            # [[[
+              # if (typeof(entity) === 'undefined') return;
+              
+              # if ('brightness' in entity.attributes)
+              # {
+                # if (entity.attributes
+                # && (entity.attributes.brightness <= 255)) {
+                  # var bri = Math.round(entity.attributes.brightness / 2.55);
+                  # return (bri ? bri : '0') + '%';
                 # }
-              # ]]]
-        custom_value: >
-          [[[
-            if (typeof(entity) === 'undefined') return;
-            
-            if ('brightness' in entity.attributes)
-            {
-              if (entity.attributes
-              && (entity.attributes.brightness <= 255)) {
-                var bri = Math.round(entity.attributes.brightness / 2.55);
-                return (bri ? bri : '0') + '%';
+              # }
+            # ]]]
+
+          input : '[[[ return state ]]]'
+          state: >
+            [[[
+              if (typeof(entity) === 'undefined') return;
+              if (typeof(state) === 'undefined') return;
+              
+              var bri = Math.round(state / 2.55);
+              return (bri ? bri : '0');
+              
+              if ('brightness' in entity.attributes)
+              {
+                if (entity.attributes
+                && (state <= 255)) {
+                  var bri = Math.round(state / 2.55);
+                  // return (bri ? bri : '0') + '%';
+                  return (bri ? bri : '0');
+                }
               }
-            }
-          ]]]
+            ]]]
+          unit: >
+            [[[
+              if (typeof(state) === 'undefined') return undefined;
+              return '%';
+            ]]]
         entity_index: '[[entity_brightness]]'
         # Animation can run on the entities 'state', or on the custom_value.
         # so - state: 'on', or for example - custom_value: '10%' in this case for light.
@@ -910,7 +942,8 @@ toolset_light_button_nm:
                 opacity: 0.7
         styles:
           state:
-            font-size: 1.8em
+            #36px
+            font-size: 9em
             text-anchor: end
 
 ##########################
@@ -953,7 +986,7 @@ toolset_sensor_history:
         styles:
           state:
             text-anchor: start
-            font-size: 3.5em
+            font-size: 17.5em
             font-weight: 700
 
       # circle for icon
@@ -985,7 +1018,7 @@ toolset_sensor_history:
         styles:
           name:
             text-anchor: middle
-            font-size: 2.2em
+            font-size: 11em
             font-weight: 400
 
       # bar
