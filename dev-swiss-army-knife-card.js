@@ -565,6 +565,8 @@ class BaseTool {
 
     this.toolId = Math.random().toString(36).substr(2, 9);
     this._card = argCard;
+    this.config = argConfig;
+
     //console.time("--> "+ this.toolId + " PERFORMANCE BaseTool::constructor");
 
     this.dev = {...this._card.dev};
@@ -593,6 +595,25 @@ class BaseTool {
     this.configStyle = {};
     this.animationStyle = {};
     this.animationStyleHasChanged = true;
+    
+    // Process basic color stuff.
+    if (!this.config?.show?.style) {
+      if (!this.config.show)
+        this.config.show = {};
+      this.config.show.style = 'default';
+    }
+    //Get colorstops and make a key/value store...
+    this.colorStops = {};
+    if ((this.config.colorstops) && (this.config.colorstops.colors)) {
+      Object.keys(this.config.colorstops.colors).forEach((key) => {
+        this.colorStops[key] = this.config.colorstops.colors[key];
+      });
+    }
+
+    if ((this.config.show.style == 'colorstop') && (this.config?.colorstops.colors)) {
+      this.sortedColorStops = Object.keys(this.config.colorstops.colors).map(n => Number(n)).sort((a, b) => a - b);
+    }
+    
   }
 
  /*******************************************************************************
@@ -713,6 +734,54 @@ class BaseTool {
     }
   }
 
+ /*******************************************************************************
+  * BaseTool::MergeColorFromState()
+  *
+  * Summary.
+  * Merge color depending on state into colorStyle
+  *
+  */
+
+  MergeColorFromState(argStyleMap) {
+    
+    if (this.config.hasOwnProperty('entity_index')) {
+      const color = this.getColorFromState(this._stateValue);
+      if (color != '') {
+        this.config[this.config.show.style].fill ? argStyleMap['fill'] = color : '';
+        this.config[this.config.show.style].stroke ? argStyleMap['stroke'] = color : '';
+      }
+    }
+  }
+
+ /*******************************************************************************
+  * BaseTool::getColorFromState()
+  *
+  * Summary.
+  * Get color from colorstop or gradient depending on state.
+  *
+  */
+  getColorFromState(argValue) {
+
+    var color = '';
+    switch (this.config.show.style) {
+      case 'default':
+        break;
+      case 'fixedcolor':
+        color = this.config.color;
+        break;
+      case 'colorstop':
+      case 'colorstops':
+      case 'colorstopgradient':
+        color = this._card._calculateColor(argValue, this.colorStops, (this.config.show.style === 'colorstopgradient'));
+        break;
+      case 'minmaxgradient':
+        color = this._card._calculateColor(argValue, this.colorStopsMinMax, true);
+        break;
+    }
+    return color;
+  }
+
+
 }
 
  /*******************************************************************************
@@ -738,11 +807,7 @@ class RangeSliderTool extends BaseTool {
         }
     }
 
-    super(argCard, argConfig, argPos);
-
-    this.config = Merge.mergeDeep(DEFAULT_SLIDER_CONFIG, argConfig);
-    
-    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
+    super(argCard, Merge.mergeDeep(DEFAULT_SLIDER_CONFIG, argConfig), argPos);
 
     this.svg.length = Utils.calculateSvgDimension(argConfig.length)
 
@@ -1227,10 +1292,8 @@ class LineTool extends BaseTool {
         }
     }
 
-    super(argCard, argConfig, argPos);
+    super(argCard, Merge.mergeDeep(DEFAULT_LINE_CONFIG, argConfig), argPos);
 
-    this.config = Merge.mergeDeep(DEFAULT_LINE_CONFIG, argConfig);
-    
     if ((this.config.orientation == 'vertical') || (this.config.orientation == 'horizontal'))
         this.svg.length = Utils.calculateSvgDimension(argConfig.length);
 
@@ -1271,6 +1334,8 @@ class LineTool extends BaseTool {
 
   _renderLine() {
 
+
+    this.MergeColorFromState(this.configStyle.line);
     this.MergeAnimationStyleIfChanged();
 
     if (this.dev.debug) console.log('_renderLine', this.config.orientation, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
@@ -1323,12 +1388,10 @@ class CircleTool extends BaseTool {
         }
     }
 
-    super(argCard, argConfig, argPos);
+    super(argCard, Merge.mergeDeep(DEFAULT_CIRCLE_CONFIG, argConfig), argPos);
 
-    this.config = Merge.mergeDeep(DEFAULT_CIRCLE_CONFIG, argConfig);
-    
     this.svg.radius = Utils.calculateSvgDimension(argConfig.radius)
-    
+    this.configStyle.circle = {};
     if (this.dev.debug) console.log('CircleTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -1356,6 +1419,7 @@ class CircleTool extends BaseTool {
 
   _renderCircle() {
 
+    this.MergeColorFromState(this.configStyle.circle);
     this.MergeAnimationStyleIfChanged();
 
     return svg`
@@ -1412,12 +1476,10 @@ class RegPolyTool extends BaseTool {
         }
     }
 
-    super(argCard, argConfig, argPos);
+    super(argCard, Merge.mergeDeep(DEFAULT_REGPOLY_CONFIG, argConfig), argPos);
 
-    this.config = Merge.mergeDeep(DEFAULT_REGPOLY_CONFIG, argConfig);
-    
     this.svg.radius = Utils.calculateSvgDimension(argConfig.radius)
-    
+    this.configStyle.regpoly = {};
     if (this.dev.debug) console.log('RegPolyTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -1475,6 +1537,7 @@ class RegPolyTool extends BaseTool {
       return d_attr;
     };
 
+    this.MergeColorFromState(this.configStyle.regpoly);
     this.MergeAnimationStyleIfChanged();
 
     return svg`
@@ -1506,128 +1569,6 @@ class RegPolyTool extends BaseTool {
   }
 } // END of class
 
-// var NS_URI = 'http://www.w3.org/2000/svg', 
-    // MAX_P = 17,
-    // frag = document.createDocumentFragment();
-
-// Node.prototype.setAttrs = function(attr_obj) {
-  // for(var prop in attr_obj) {
-    // this.setAttribute(prop, attr_obj[prop]);
-  // }
-// };
-
-// Node.prototype.getAncestorWithClass = function(cls) {
-  // var parent = this.parentNode, parent_cls;
-    
-  // if(!parent) { return null; }
-  
-  // parent_cls = parent.getAttribute('class');
-  // if(!parent_cls || parent_cls.indexOf(cls) === -1) {
-    // return parent.getAncestorWithClass(cls);
-  // }
-  // else { return parent; }
-// };
-
-// var generatePoly = function(parent, p, q, r) {
-  // var path = document.createElementNS(NS_URI, 'path'), 
-      // points = document.createElementNS(NS_URI, 'g'), 
-      // curr_g, 
-      // curr_point, 
-      // base_angle = 2*Math.PI/p, 
-      // angle = /*(Math.random() -q)*/1*base_angle, 
-      // x, y, d_attr = '';
-  
-  // for(var i = 0; i < p; i++) {
-    // curr_g = document.createElementNS(NS_URI, 'g');
-    
-    // angle += q*base_angle;
-    
-    // x = ~~(r*Math.cos(angle));
-    // y = ~~(r*Math.sin(angle));
-    
-    // d_attr += 
-      // ((i === 0)?'M':'L') + x + ' ' + y + ' ';
-    
-    // if(i*q%p === 0 && i > 0) {
-      // angle += base_angle;
-      // x = ~~(r*Math.cos(angle));
-      // y = ~~(r*Math.sin(angle));
-      
-      // d_attr += 'M' + x + ' ' + y + ' ';
-    // }
-    
-    // curr_point = document.createElementNS(NS_URI, 'circle');
-    // curr_point.setAttrs({
-      // 'class': 'p p--' + i, 
-      // 'cx': x, 'cy': y, 
-      // 'r': 32
-    // });
-    // curr_g.appendChild(curr_point);
-    
-    // points.appendChild(curr_g);
-  // }
-  
-  // d_attr += 'z'
-  
-  // path.setAttribute('d', d_attr);
-  // path.setAttribute('fill-rule', 'evenodd');
-  // parent.appendChild(path);
-  // parent.appendChild(points)
-// };
-
-// var addTests = function(MAX_P) {
-  // var wrapper, svg, path, 
-      // w = 2000, h = 2000, 
-      // k = .4, 
-      // r = k*Math.min(w, h);
-  
-  // for(var p = 3; p <= MAX_P; p++) {
-    // for(var q = 1; q < p/2; q++) {
-      // wrapper = document.createElement('div');
-      // wrapper.classList.add('shape-wrapper');
-      // wrapper.dataset.type = 
-        // 'p: ' + p + ', q: ' + q;
-      // wrapper.dataset.curr = '';
-      
-      // svg = document.createElementNS(NS_URI, 'svg');
-      // svg.setAttribute('viewBox', -w/2 + ' ' + -h/2 + ' ' + w + ' ' + h);
-      
-      // generatePoly(svg, p, q, r-500);
-      
-      // wrapper.appendChild(svg);
-      // frag.appendChild(wrapper)
-    // }
-  // }
-  
-  // document.body.appendChild(frag);
-// };
-
-// addTests(MAX_P);
-
-// addEventListener('mouseover', function(e) {
-  // var t = e.target, 
-      // cls = t.getAttribute('class'), 
-      // idx, a;
-  
-  // if(cls && cls.indexOf('p--') > -1) {
-    // idx = ~~cls.split('p--')[1].split(' ')[0];
-    // a = t.getAncestorWithClass('shape-wrapper');
-    // a.dataset.curr = '' + (idx + 1);
-  // }
-// }, false);
-
-// addEventListener('mouseout', function(e) {
-  // var t = e.target, 
-      // cls = t.getAttribute('class'), 
-      // idx, a;
-  
-  // if(cls && cls.indexOf('p--') > -1) {
-    // idx = ~~cls.split('p--')[1].split(' ')[0];
-    // a = t.getAncestorWithClass('shape-wrapper');
-    // a.dataset.curr = '';
-  // }
-// }, false);
-
  /*******************************************************************************
   * UserSvgTool class, UserSvgTool::constructor
   *
@@ -1649,10 +1590,8 @@ class UserSvgTool extends BaseTool {
         }
     }
 
-    super(argCard, argConfig, argPos);
+    super(argCard, Merge.mergeDeep(DEFAULT_USERSVG_CONFIG, argConfig), argPos);
 
-    this.config = Merge.mergeDeep(DEFAULT_USERSVG_CONFIG, argConfig);
-    
     this.images = {};
     this.images = Object.assign({}, ...this.config.images);
 
@@ -1757,11 +1696,9 @@ class RectangleTool extends BaseTool {
         }
     }
 
-    super(argCard, argConfig, argPos);
-
-    this.config = Merge.mergeDeep(DEFAULT_RECTANGLE_CONFIG, argConfig);
-    
+    super(argCard, Merge.mergeDeep(DEFAULT_RECTANGLE_CONFIG, argConfig), argPos);
     this.svg.rx = Utils.calculateSvgDimension(argConfig.rx)
+    this.configStyle.rectangle = {};
 
     if (this.dev.debug) console.log('RectangleTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -1790,6 +1727,7 @@ class RectangleTool extends BaseTool {
 
   _renderRectangle() {
 
+    this.MergeColorFromState(this.configStyle.rectangle);
     this.MergeAnimationStyleIfChanged();
 
     return svg`
@@ -1846,10 +1784,10 @@ class RectangleToolEx extends BaseTool {
           }
         }
     }
-    super(argCard, argConfig, argPos);
+    super(argCard, Merge.mergeDeep(DEFAULT_RECTANGLEEX_CONFIG, argConfig), argPos);
 
-    this.config = Merge.mergeDeep(DEFAULT_RECTANGLEEX_CONFIG, argConfig);
-
+    this.configStyle.rectex = {};
+    
     // #TODO:
     // Verify max radius, or just let it go, and let the user handle that right value.
     // A q can be max height of rectangle, ie both corners added must be less than the height, but also less then the width...
@@ -1897,6 +1835,7 @@ class RectangleToolEx extends BaseTool {
 
     var svgItems = [];
 
+    this.MergeColorFromState(this.configStyle.rectex);
     this.MergeAnimationStyleIfChanged();
 
     svgItems = svg`
@@ -1958,13 +1897,11 @@ class EllipseTool extends BaseTool {
         }
     }
 
-    super(argCard, argConfig, argPos);
-
-    this.config = Merge.mergeDeep(DEFAULT_ELLIPSE_CONFIG, argConfig);
+    super(argCard, Merge.mergeDeep(DEFAULT_ELLIPSE_CONFIG, argConfig), argPos);
 
     this.svg.radiusx = Utils.calculateSvgDimension(argConfig.radiusx)
     this.svg.radiusy = Utils.calculateSvgDimension(argConfig.radiusy)
-
+    this.configStyle.ellipse = {};
     if (this.dev.debug) console.log('EllipseTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -1979,6 +1916,7 @@ class EllipseTool extends BaseTool {
 
   _renderEllipse() {
 
+    this.MergeColorFromState(this.configStyle.ellipse);
     this.MergeAnimationStyleIfChanged();
 
     if (this.dev.debug) console.log('EllipseTool - renderEllipse', this.svg.cx, this.svg.cy, this.svg.radiusx, this.svg.radiusy);
@@ -2033,11 +1971,7 @@ class EntityIconTool extends BaseTool {
           }
         }
     }
-    super(argCard, argConfig, argPos);
-
-    this.config = Merge.mergeDeep(DEFAULT_ICON_CONFIG, argConfig);
-
-    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
+    super(argCard, Merge.mergeDeep(DEFAULT_ICON_CONFIG, argConfig), argPos);
 
 // from original
     // this.config.entity = this.config.entity ? this.config.entity : 0;
@@ -2085,7 +2019,7 @@ class EntityIconTool extends BaseTool {
       this.svg.xpx = this.svg.xpx - (this.svg.iconPixels * adjust);
       this.svg.ypx = this.svg.ypx - (this.svg.iconPixels * 0.5) - (this.svg.iconPixels * 0.25);
     }
-
+    this.configStyle.icon = {};
     if (this.dev.debug) console.log('EntityIconTool constructor coords, dimensions, config', this.coords, this.dimensions, this.config);
   }
 
@@ -2106,6 +2040,7 @@ class EntityIconTool extends BaseTool {
 */
   _renderIcon() {
 
+    this.MergeColorFromState(this.configStyle.icon);
     this.MergeAnimationStyleIfChanged();
 
     const icon = this._card._buildIcon(
@@ -2349,10 +2284,8 @@ class BadgeTool extends BaseTool {
         }
       }
     }
-    super(argCard, argConfig, argPos);
+    super(argCard, Merge.mergeDeep(DEFAULT_BADGE_CONFIG, argConfig), argPos);
 
-    this.config = Merge.mergeDeep(DEFAULT_BADGE_CONFIG, argConfig);
-    
     // Coordinates from left and right part.
     this.svg.radius = 5;
     this.svg.leftXpos = this.svg.x;
@@ -2471,10 +2404,9 @@ class EntityStateTool extends BaseTool {
         }
       }
     }
-    super(argCard, argConfig, argPos);
-
-    this.config = Merge.mergeDeep(DEFAULT_STATE_CONFIG, argConfig);
-    
+    super(argCard, Merge.mergeDeep(DEFAULT_STATE_CONFIG, argConfig), argPos);
+    this.configStyle.state = {};
+    this.configStyle.uom = {};
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -2488,6 +2420,7 @@ class EntityStateTool extends BaseTool {
 
   _renderState() {
 
+    this.MergeColorFromState(this.configStyle.state);
     this.MergeAnimationStyleIfChanged();
 
     var inState = this._stateValue;
@@ -2508,6 +2441,7 @@ class EntityStateTool extends BaseTool {
     if (this.config.show.uom === 'none') {
       return svg``;
     } else {
+      this.MergeColorFromState(this.configStyle.uom);
       this.MergeAnimationStyleIfChanged();
       
       var fsuomStr = this.configStyle.state["font-size"];
@@ -2605,12 +2539,10 @@ class EntityNameTool extends BaseTool {
       }
     }
 
-    super(argCard, argConfig, argPos);
-
-    this.config = Merge.mergeDeep(DEFAULT_NAME_CONFIG, argConfig);
+    super(argCard, Merge.mergeDeep(DEFAULT_NAME_CONFIG, argConfig), argPos);
     
     this._name = {};
-
+    this.configStyle.name = {};
     if (this.dev.debug) console.log('EntityName constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -2625,6 +2557,7 @@ class EntityNameTool extends BaseTool {
 
   _renderEntityName() {
 
+    this.MergeColorFromState(this.configStyle.name);
     this.MergeAnimationStyleIfChanged();
 
     // #TODO:
@@ -2686,12 +2619,10 @@ class EntityAreaTool extends BaseTool {
       }
     }
 
-    super(argCard, argConfig, argPos);
-
-    this.config = Merge.mergeDeep(DEFAULT_AREA_CONFIG, argConfig);
+    super(argCard, Merge.mergeDeep(DEFAULT_AREA_CONFIG, argConfig), argPos);
 
     // Text is rendered in its own context. No need for SVG coordinates.
-
+    this.configStyle.area = {};
     if (this.dev.debug) console.log('EntityAreaTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -2706,6 +2637,7 @@ class EntityAreaTool extends BaseTool {
 
   _renderEntityArea() {
 
+    this.MergeColorFromState(this.configStyle.area);
     this.MergeAnimationStyleIfChanged();
 
     const area = this._card._buildArea(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
@@ -2761,11 +2693,10 @@ class TextTool extends BaseTool {
       }
     }
 
-    super(argCard, argConfig, argPos);
+    super(argCard, Merge.mergeDeep(DEFAULT_TEXT_CONFIG, argConfig), argPos);
 
-    this.config = Merge.mergeDeep(DEFAULT_TEXT_CONFIG, argConfig);
     this.text = this.config.text;
-
+    this.configStyle.text = {};
     if (this.dev.debug) console.log('TextTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -2780,6 +2711,7 @@ class TextTool extends BaseTool {
 
   _renderText() {
 
+    this.MergeColorFromState(this.configStyle.text);
     this.MergeAnimationStyleIfChanged();
 
     return svg`
@@ -2843,27 +2775,27 @@ class HorseshoeTool extends BaseTool {
     }
 
 
-    super(argCard, argConfig, argPos);
+    super(argCard, Merge.mergeDeep(DEFAULT_HORSESHOE_CONFIG, argConfig), argPos);
 
     // Next consts are now variable. Should be calculated!!!!!!
     this.HORSESHOE_RADIUS_SIZE = 0.45 * SVG_VIEW_BOX;
     this.TICKMARKS_RADIUS_SIZE = 0.43 * SVG_VIEW_BOX;
     this.HORSESHOE_PATH_LENGTH = 2 * 260/360 * Math.PI * this.HORSESHOE_RADIUS_SIZE;
 
-    this.config = {...DEFAULT_HORSESHOE_CONFIG};
-    this.config = {...this.config, ...argConfig};
+    // this.config = {...DEFAULT_HORSESHOE_CONFIG};
+    // this.config = {...this.config, ...argConfig};
 
-    if (argConfig.styles) this.config.styles = {...argConfig.styles};
-    this.config.styles = {...DEFAULT_HORSESHOE_CONFIG.styles, ...this.config.styles};
+    // if (argConfig.styles) this.config.styles = {...argConfig.styles};
+    // this.config.styles = {...DEFAULT_HORSESHOE_CONFIG.styles, ...this.config.styles};
 
-    //if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
-    this.config.show = {...DEFAULT_HORSESHOE_CONFIG.show, ...this.config.show};
+    // //if (argConfig.show) this.config.show = Object.assign(...argConfig.show);
+    // this.config.show = {...DEFAULT_HORSESHOE_CONFIG.show, ...this.config.show};
 
-    //if (argConfig.horseshoe_scale) this.config.horseshoe_scale = Object.assign(...argConfig.horseshoe_scale);
-    this.config.horseshoe_scale = {...DEFAULT_HORSESHOE_CONFIG.horseshoe_scale, ...this.config.horseshoe_scale};
+    // //if (argConfig.horseshoe_scale) this.config.horseshoe_scale = Object.assign(...argConfig.horseshoe_scale);
+    // this.config.horseshoe_scale = {...DEFAULT_HORSESHOE_CONFIG.horseshoe_scale, ...this.config.horseshoe_scale};
 
-    // if (argConfig.horseshoe_state) this.config.horseshoe_state = Object.assign(...argConfig.horseshoe_state);
-    this.config.horseshoe_state = {...DEFAULT_HORSESHOE_CONFIG.horseshoe_state, ...this.config.horseshoe_state};
+    // // if (argConfig.horseshoe_state) this.config.horseshoe_state = Object.assign(...argConfig.horseshoe_state);
+    // this.config.horseshoe_state = {...DEFAULT_HORSESHOE_CONFIG.horseshoe_state, ...this.config.horseshoe_state};
 
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
@@ -3136,9 +3068,10 @@ class SparklineBarChartTool extends BaseTool {
       show: {style: 'fixedcolor'}
     }
 
-    super(argCard, argConfig, argPos);
+    // super(argCard, argConfig, argPos);
 
-    this.config = Merge.mergeDeep(DEFAULT_BARCHART_CONFIG, argConfig);
+    super(argCard, Merge.mergeDeep(DEFAULT_BARCHART_CONFIG, argConfig), argPos);
+    // this.config = Merge.mergeDeep(DEFAULT_BARCHART_CONFIG, argConfig);
     
     // Calculate real dimensions...
     this.svg.margin = Utils.calculateSvgDimension(this.config.margin);
@@ -3152,17 +3085,6 @@ class SparklineBarChartTool extends BaseTool {
     this._scale = {};
     this._needsRendering = false;
 
-    // Get colorstops and make a key/value store...
-    this.colorStops = {};
-    if (this.config.colorstops) {
-      Object.keys(this.config.colorstops).forEach((key) => {
-        this.colorStops[key] = this.config.colorstops[key];
-      });
-    }
-
-    if (this.config.show.style == 'colorstop') {
-      this.sortedColorStops = Object.keys(this.config.colorstops).map(n => Number(n)).sort((a, b) => a - b);
-    }
 
     this.configStyleBar = {};
     
@@ -3234,8 +3156,8 @@ class SparklineBarChartTool extends BaseTool {
 
     if (this.config.show.style === 'minmaxgradient') {
       this.colorStopsMinMax = {};
-      this.colorStopsMinMax = {[this._scale.min.toString()]: this.config.minmaxgradient.min,
-                               [this._scale.max.toString()]: this.config.minmaxgradient.max};
+      this.colorStopsMinMax = {[this._scale.min.toString()]: this.config.minmaxgradient.colors.min,
+                               [this._scale.max.toString()]: this.config.minmaxgradient.colors.max};
     }
 
     // VERTICAL
@@ -3283,20 +3205,21 @@ class SparklineBarChartTool extends BaseTool {
     this._bars.forEach((item, index) => {
       if (this.dev.debug) console.log('_renderBars - bars', item, index);
 
-      var stroke = '';
-      switch (this.config.show.style) {
-        case 'fixedcolor':
-          stroke = this.config.color;
-          break;
-        case 'colorstop':
-        case 'colorstops':
-        case 'colorstopgradient':
-          stroke = this._card._calculateColor(this._series[index], this.colorStops, (this.config.show.style === 'colorstopgradient'));
-          break;
-        case 'minmaxgradient':
-          stroke = this._card._calculateColor(this._series[index], this.colorStopsMinMax, true);
-          break;
-      }
+      const stroke = this.getColorFromState(this._series[index]);
+      // var stroke = '';
+      // switch (this.config.show.style) {
+        // case 'fixedcolor':
+          // stroke = this.config.color;
+          // break;
+        // case 'colorstop':
+        // case 'colorstops':
+        // case 'colorstopgradient':
+          // stroke = this._card._calculateColor(this._series[index], this.colorStops, (this.config.show.style === 'colorstopgradient'));
+          // break;
+        // case 'minmaxgradient':
+          // stroke = this._card._calculateColor(this._series[index], this.colorStopsMinMax, true);
+          // break;
+      // }
 
       if (!this.configStyleBar[index])
         this.configStyleBar[index] = {...this.config.styles.bar};
@@ -3399,12 +3322,10 @@ class SegmentedArcTool extends BaseTool {
     }
 
 
-    super(argCard, argConfig, argPos);
+    super(argCard, Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig), argPos);
 
     if (this.dev.performance) console.time("--> "+ this.toolId + " PERFORMANCE SegmentedArcTool::constructor");
 
-    this.config = Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig);
-    
     // Extra for use of styleMap
     this.styles = {};
 
@@ -5967,8 +5888,8 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
   _calculateColor(argState, argStops, argIsGradient) {
     // console.log("calculateColor", argState, argStops, argIsGradient);
-    // const sortedStops = Object.keys(argStops).map(n => Number(n)).sort((a, b) => a - b);
-    const sortedStops = Object.keys(argStops);
+    const sortedStops = Object.keys(argStops).map(n => Number(n)).sort((a, b) => a - b);
+    // const sortedStops = Object.keys(argStops);
 
     let start, end, val;
     const l = sortedStops.length;
