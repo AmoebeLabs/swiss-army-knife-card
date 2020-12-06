@@ -1036,8 +1036,9 @@ toolset_sensor_history:
         show:
           style: 'minmaxgradient'
         minmaxgradient:
-          min: '[[bar_color_min]]'
-          max: '[[bar_color_max]]'
+          colors:
+            min: '[[bar_color_min]]'
+            max: '[[bar_color_max]]'
         styles:
           bar:
             # stroke: '[[bar_color]]'
