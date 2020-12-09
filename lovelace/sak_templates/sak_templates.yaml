@@ -492,7 +492,8 @@ toolset_arc180_sparklinebar24:
         barhours: 1
         styles:
           bar:
-            stroke: grey
+            stroke: var(--primary-text-color)
+            opacity: 0.8
             stroke-linecap: butt
 
 #######################
