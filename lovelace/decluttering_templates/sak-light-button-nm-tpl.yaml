@@ -17,10 +17,16 @@ card:
         service: light.toggle
         service_data: { "entity_id" : "[[entity]]" }
         haptic: light
+      hold_action:
+        action: more-info
+        haptic: success
 
     - entity: '[[entity]]'
       attribute: brightness
       unit_of_measurement: "%"
+      tap_action:
+        action: more-info
+        haptic: success
 
   dimensions: 1/1
   dev:
@@ -28,6 +34,10 @@ card:
     ts: true
   
   layout:
+    styles:
+      card:
+      toolsets:
+        filter: url(#nm-1)
     toolsets:
       # ==============================================================================
       # Using Neumorphic ligth button design
