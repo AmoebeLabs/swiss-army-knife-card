@@ -592,7 +592,7 @@ class BaseTool {
     this.svg.x = (this.svg.cx) - (this.svg.width / 2);
     this.svg.y = (this.svg.cy) - (this.svg.height / 2);
     
-    this.configStyle = {};
+    this.styles = {};
     this.animationStyle = {};
     this.animationStyleHasChanged = true;
     
@@ -672,7 +672,6 @@ class BaseTool {
       switch(operator) {
         case "==":
           isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
-          // console.log('set value, isMatch', isMatch, this._stateValue, Templates.getJsTemplateOrValue(this, this._stateValue, item.state.toLowerCase()));
           break;
         case "!=":
           isMatch = this._stateValue.toLowerCase() != item.state.toLowerCase();
@@ -727,9 +726,9 @@ class BaseTool {
     if (this.animationStyleHasChanged) {
       this.animationStyleHasChanged = false;
       if (argDefaultStyles) {
-        this.configStyle = Merge.mergeDeep(argDefaultStyles, this.config.styles, this.animationStyle);
+        this.styles = Merge.mergeDeep(argDefaultStyles, this.config.styles, this.animationStyle);
       } else {
-        this.configStyle = Merge.mergeDeep(this.config.styles, this.animationStyle);
+        this.styles = Merge.mergeDeep(this.config.styles, this.animationStyle);
       }
     }
   }
@@ -780,8 +779,6 @@ class BaseTool {
     }
     return color;
   }
-
-
 }
 
  /*******************************************************************************
@@ -1335,7 +1332,7 @@ class LineTool extends BaseTool {
   _renderLine() {
 
 
-    this.MergeColorFromState(this.configStyle.line);
+    this.MergeColorFromState(this.styles.line);
     this.MergeAnimationStyleIfChanged();
 
     if (this.dev.debug) console.log('_renderLine', this.config.orientation, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
@@ -1345,7 +1342,7 @@ class LineTool extends BaseTool {
         y1="${this.svg.y1}"
         x2="${this.svg.x2}"
         y2="${this.svg.y2}"
-        style="${styleMap(this.configStyle.line)}"/>
+        style="${styleMap(this.styles.line)}"/>
       `;
   }
 
@@ -1391,7 +1388,7 @@ class CircleTool extends BaseTool {
     super(argCard, Merge.mergeDeep(DEFAULT_CIRCLE_CONFIG, argConfig), argPos);
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.radius)
-    this.configStyle.circle = {};
+    this.styles.circle = {};
     if (this.dev.debug) console.log('CircleTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -1419,13 +1416,13 @@ class CircleTool extends BaseTool {
 
   _renderCircle() {
 
-    this.MergeColorFromState(this.configStyle.circle);
+    this.MergeColorFromState(this.styles.circle);
     this.MergeAnimationStyleIfChanged();
 
     return svg`
       <circle ""
         cx="${this.svg.cx}"% cy="${this.svg.cy}"% r="${this.svg.radius}"
-        style="${styleMap(this.configStyle.circle)}"
+        style="${styleMap(this.styles.circle)}"
       </circle>
 
       `;
@@ -1481,7 +1478,7 @@ class RegPolyTool extends BaseTool {
     super(argCard, Merge.mergeDeep(DEFAULT_REGPOLY_CONFIG, argConfig), argPos);
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.radius)
-    this.configStyle.regpoly = {};
+    this.styles.regpoly = {};
     if (this.dev.debug) console.log('RegPolyTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -1539,13 +1536,13 @@ class RegPolyTool extends BaseTool {
       return d_attr;
     };
 
-    this.MergeColorFromState(this.configStyle.regpoly);
+    this.MergeColorFromState(this.styles.regpoly);
     this.MergeAnimationStyleIfChanged();
 
     return svg`
       <path
         d="${generatePoly(this.config.side_count, this.config.side_skip, this.svg.radius, this.config.angle_offset, this.svg.cx, this.svg.cy)}"
-        style="${styleMap(this.configStyle.regpoly)}"
+        style="${styleMap(this.styles.regpoly)}"
       />
       `;
   }
@@ -1647,7 +1644,7 @@ class UserSvgTool extends BaseTool {
 
     
     return svg`
-      <svg x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.configStyle)}">
+      <svg x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
         <image href="${this.images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
       </svg>
       `;
@@ -1692,15 +1689,15 @@ class RectangleTool extends BaseTool {
             "stroke-linecap": 'round',
             "stroke": 'var(--primary-text-color)',
             "opacity": '1.0',
-            "stroke-width": '2',
-            "fill": 'white',
+            "stroke-width": '2em',
+            "fill": 'var(--primary-background-color)',
           }
         }
     }
 
     super(argCard, Merge.mergeDeep(DEFAULT_RECTANGLE_CONFIG, argConfig), argPos);
     this.svg.rx = Utils.calculateSvgDimension(argConfig.rx)
-    this.configStyle.rectangle = {};
+    this.styles.rectangle = {};
 
     if (this.dev.debug) console.log('RectangleTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -1729,13 +1726,13 @@ class RectangleTool extends BaseTool {
 
   _renderRectangle() {
 
-    this.MergeColorFromState(this.configStyle.rectangle);
+    this.MergeColorFromState(this.styles.rectangle);
     this.MergeAnimationStyleIfChanged();
 
     return svg`
       <rect ""
         x="${this.svg.x}" y="${this.svg.y}" width="${this.svg.width}" height="${this.svg.height}" rx="${this.svg.rx}"
-        style="${styleMap(this.configStyle.rectangle)}"/>
+        style="${styleMap(this.styles.rectangle)}"/>
       `;
   }
 
@@ -1788,7 +1785,7 @@ class RectangleToolEx extends BaseTool {
     }
     super(argCard, Merge.mergeDeep(DEFAULT_RECTANGLEEX_CONFIG, argConfig), argPos);
 
-    this.configStyle.rectex = {};
+    this.styles.rectex = {};
     
     // #TODO:
     // Verify max radius, or just let it go, and let the user handle that right value.
@@ -1837,7 +1834,7 @@ class RectangleToolEx extends BaseTool {
 
     var svgItems = [];
 
-    this.MergeColorFromState(this.configStyle.rectex);
+    this.MergeColorFromState(this.styles.rectex);
     this.MergeAnimationStyleIfChanged();
 
     svgItems = svg`
@@ -1853,7 +1850,7 @@ class RectangleToolEx extends BaseTool {
             v -${this.svg.height - this.svg.radiusBottomLeft - this.svg.radiusTopLeft}
             q 0 -${this.svg.radiusTopLeft} ${this.svg.radiusTopLeft} -${this.svg.radiusTopLeft}
             "
-            style="${styleMap(this.configStyle.rectex)}"/>
+            style="${styleMap(this.styles.rectex)}"/>
       </g>
       `;
     return svg`${svgItems}`;
@@ -1903,7 +1900,7 @@ class EllipseTool extends BaseTool {
 
     this.svg.radiusx = Utils.calculateSvgDimension(argConfig.radiusx)
     this.svg.radiusy = Utils.calculateSvgDimension(argConfig.radiusy)
-    this.configStyle.ellipse = {};
+    this.styles.ellipse = {};
     if (this.dev.debug) console.log('EllipseTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -1918,7 +1915,7 @@ class EllipseTool extends BaseTool {
 
   _renderEllipse() {
 
-    this.MergeColorFromState(this.configStyle.ellipse);
+    this.MergeColorFromState(this.styles.ellipse);
     this.MergeAnimationStyleIfChanged();
 
     if (this.dev.debug) console.log('EllipseTool - renderEllipse', this.svg.cx, this.svg.cy, this.svg.radiusx, this.svg.radiusy);
@@ -1927,7 +1924,7 @@ class EllipseTool extends BaseTool {
       <ellipse ""
         cx="${this.svg.cx}"% cy="${this.svg.cy}"%
         rx="${this.svg.radiusx}" ry="${this.svg.radiusy}"
-        style="${styleMap(this.configStyle.ellipse)}"/>
+        style="${styleMap(this.styles.ellipse)}"/>
       `;
   }
 
@@ -2021,7 +2018,7 @@ class EntityIconTool extends BaseTool {
       this.svg.xpx = this.svg.xpx - (this.svg.iconPixels * adjust);
       this.svg.ypx = this.svg.ypx - (this.svg.iconPixels * 0.5) - (this.svg.iconPixels * 0.25);
     }
-    this.configStyle.icon = {};
+    this.styles.icon = {};
     if (this.dev.debug) console.log('EntityIconTool constructor coords, dimensions, config', this.coords, this.dimensions, this.config);
   }
 
@@ -2042,7 +2039,7 @@ class EntityIconTool extends BaseTool {
 */
   _renderIcon() {
 
-    this.MergeColorFromState(this.configStyle.icon);
+    this.MergeColorFromState(this.styles.icon);
     this.MergeAnimationStyleIfChanged();
 
     const icon = this._card._buildIcon(
@@ -2196,7 +2193,7 @@ class EntityIconTool extends BaseTool {
         // Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required to position the icon on its desired location.
         // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
         return svg`
-          <g id="icon-${this.toolId}"  style="${styleMap(this.configStyle.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
+          <g id="icon-${this.toolId}"  style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
             <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke="yellow" stroke-width="0px" opacity="50%" fill="none"></rect>
             <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
           <g>
@@ -2207,7 +2204,7 @@ class EntityIconTool extends BaseTool {
             <body>
               <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
                   style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-                  <ha-icon icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.configStyle.icon)}";></ha-icon>
+                  <ha-icon icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.styles.icon)}";></ha-icon>
               </div>
             </body>
           </foreignObject>
@@ -2219,7 +2216,7 @@ class EntityIconTool extends BaseTool {
                         >
           <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
                 style="line-height:${this.svg.iconPixels}px;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-            <ha-icon icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.configStyle.icon)}"></ha-icon>
+            <ha-icon icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.styles.icon)}"></ha-icon>
           </div>
         </foreignObject>
         `;
@@ -2333,7 +2330,7 @@ class BadgeTool extends BaseTool {
             v -${this.svg.height - 2 * this.svg.radius}
             z
             "
-            style="${styleMap(this.configStyle.right)}"/>
+            style="${styleMap(this.styles.right)}"/>
 
         <path "" d="
             M ${this.svg.leftXpos + this.svg.radius} ${this.svg.leftYpos}
@@ -2347,7 +2344,7 @@ class BadgeTool extends BaseTool {
             v -${this.svg.height - 2 * this.svg.radius}
             a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} -${this.svg.radius}
             "
-            style="${styleMap(this.configStyle.left)}"/>
+            style="${styleMap(this.styles.left)}"/>
       </g>
       `;
 
@@ -2407,8 +2404,8 @@ class EntityStateTool extends BaseTool {
       }
     }
     super(argCard, Merge.mergeDeep(DEFAULT_STATE_CONFIG, argConfig), argPos);
-    this.configStyle.state = {};
-    this.configStyle.uom = {};
+    this.styles.state = {};
+    this.styles.uom = {};
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -2422,7 +2419,7 @@ class EntityStateTool extends BaseTool {
 
   _renderState() {
 
-    this.MergeColorFromState(this.configStyle.state);
+    this.MergeColorFromState(this.styles.state);
     this.MergeAnimationStyleIfChanged();
 
     var inState = this._stateValue;
@@ -2433,7 +2430,7 @@ class EntityStateTool extends BaseTool {
 
     return svg`
       <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}"
-        style="${styleMap(this.configStyle.state)}">
+        style="${styleMap(this.styles.state)}">
         ${this.config?.text?.before ? this.config.text.before : ''}${inState}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
     `;
   }
@@ -2443,10 +2440,10 @@ class EntityStateTool extends BaseTool {
     if (this.config.show.uom === 'none') {
       return svg``;
     } else {
-      this.MergeColorFromState(this.configStyle.uom);
+      this.MergeColorFromState(this.styles.uom);
       this.MergeAnimationStyleIfChanged();
       
-      var fsuomStr = this.configStyle.state["font-size"];
+      var fsuomStr = this.styles.state["font-size"];
 
       var fsuomValue = 0.5;
       var fsuomType = 'em';
@@ -2459,7 +2456,7 @@ class EntityStateTool extends BaseTool {
 
       fsuomStr = { "font-size": fsuomValue + fsuomType};
 
-      this.configStyle.uom = Merge.mergeDeep(this.config.styles.uom, fsuomStr);
+      this.styles.uom = Merge.mergeDeep(this.config.styles.uom, fsuomStr);
 
       const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
@@ -2467,19 +2464,19 @@ class EntityStateTool extends BaseTool {
       if (this.config.show.uom === 'default') {
         return svg`
           <tspan class="state__uom" dx="-0.1em" dy="-0.35em"
-            style="${styleMap(this.configStyle.uom)}">
+            style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'below') {
         return svg`
           <tspan class="state__uom" x="${this.svg.x}" dy="1.5em"
-            style="${styleMap(this.configStyle.uom)}">
+            style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'above') {
         return svg`
           <tspan class="state__uom" x="${this.svg.x}" dy="-1.5em"
-            style="${styleMap(this.configStyle.uom)}">
+            style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
 
@@ -2520,8 +2517,6 @@ class EntityStateTool extends BaseTool {
   *
   * Summary.
   *
-  * #TODO
-  * Migrate to BaseTool class. Not yet done. issue #2
   */
 
 class EntityNameTool extends BaseTool {
@@ -2544,9 +2539,25 @@ class EntityNameTool extends BaseTool {
     super(argCard, Merge.mergeDeep(DEFAULT_NAME_CONFIG, argConfig), argPos);
     
     this._name = {};
-    this.configStyle.name = {};
+    this.styles.name = {};
     if (this.dev.debug) console.log('EntityName constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
+
+/*******************************************************************************
+  * _buildName()
+  *
+  * Summary.
+  * Builds the Name string.
+  *
+  */
+
+  _buildName(entityState, entityConfig) {
+    return (
+      entityConfig.name
+      || entityState.attributes.friendly_name
+    );
+  }
+
 
  /*******************************************************************************
   * EntityNameTool::_renderEntityName()
@@ -2559,16 +2570,14 @@ class EntityNameTool extends BaseTool {
 
   _renderEntityName() {
 
-    this.MergeColorFromState(this.configStyle.name);
+    this.MergeColorFromState(this.styles.name);
     this.MergeAnimationStyleIfChanged();
 
-    // #TODO:
-    // Why is build* in card, and not in class????
-    const name = this._card._buildName(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+    const name = this._buildName(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
     return svg`
         <text>
-          <tspan class="entity__name" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.configStyle.name)}">${name}</tspan>
+          <tspan class="entity__name" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.name)}">${name}</tspan>
         </text>
       `;
   }
@@ -2624,8 +2633,23 @@ class EntityAreaTool extends BaseTool {
     super(argCard, Merge.mergeDeep(DEFAULT_AREA_CONFIG, argConfig), argPos);
 
     // Text is rendered in its own context. No need for SVG coordinates.
-    this.configStyle.area = {};
+    this.styles.area = {};
     if (this.dev.debug) console.log('EntityAreaTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
+  }
+
+/*******************************************************************************
+  * _buildArea()
+  *
+  * Summary.
+  * Builds the Area string.
+  *
+  */
+
+  _buildArea(entityState, entityConfig) {
+    return (
+      entityConfig.area
+      || '?'
+    );
   }
 
  /*******************************************************************************
@@ -2639,14 +2663,14 @@ class EntityAreaTool extends BaseTool {
 
   _renderEntityArea() {
 
-    this.MergeColorFromState(this.configStyle.area);
+    this.MergeColorFromState(this.styles.area);
     this.MergeAnimationStyleIfChanged();
 
-    const area = this._card._buildArea(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+    const area = this._buildArea(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
     return svg`
         <text class="entity__area">
-          <tspan class="entity__area" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.configStyle.area)}">${area}</tspan>
+          <tspan class="entity__area" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.area)}">${area}</tspan>
         </text>
       `;
   }
@@ -2698,7 +2722,7 @@ class TextTool extends BaseTool {
     super(argCard, Merge.mergeDeep(DEFAULT_TEXT_CONFIG, argConfig), argPos);
 
     this.text = this.config.text;
-    this.configStyle.text = {};
+    this.styles.text = {};
     if (this.dev.debug) console.log('TextTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -2713,12 +2737,12 @@ class TextTool extends BaseTool {
 
   _renderText() {
 
-    this.MergeColorFromState(this.configStyle.text);
+    this.MergeColorFromState(this.styles.text);
     this.MergeAnimationStyleIfChanged();
 
     return svg`
         <text class="text">
-          <tspan class="text" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.configStyle.text)}">${this.text}</tspan>
+          <tspan class="text" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.text)}">${this.text}</tspan>
         </text>
       `;
   }
@@ -3070,14 +3094,9 @@ class SparklineBarChartTool extends BaseTool {
       show: {style: 'fixedcolor'}
     }
 
-    // super(argCard, argConfig, argPos);
-
     super(argCard, Merge.mergeDeep(DEFAULT_BARCHART_CONFIG, argConfig), argPos);
-    // this.config = Merge.mergeDeep(DEFAULT_BARCHART_CONFIG, argConfig);
     
-    // Calculate real dimensions...
     this.svg.margin = Utils.calculateSvgDimension(this.config.margin);
-    // #TODO: Nog check op style? voor hor anders dan vert???
     const theWidth = (this.config.orientation == 'vertical') ?  this.svg.width : this.svg.height;
 
     this.svg.barWidth = (theWidth - (((this.config.hours / this.config.barhours) - 1) *
@@ -3087,8 +3106,7 @@ class SparklineBarChartTool extends BaseTool {
     this._scale = {};
     this._needsRendering = false;
 
-
-    this.configStyleBar = {};
+    this.stylesBar = {};
     
     if (this.dev.debug) console.log('SparkleBarChart constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -3208,29 +3226,15 @@ class SparklineBarChartTool extends BaseTool {
       if (this.dev.debug) console.log('_renderBars - bars', item, index);
 
       const stroke = this.getColorFromState(this._series[index]);
-      // var stroke = '';
-      // switch (this.config.show.style) {
-        // case 'fixedcolor':
-          // stroke = this.config.color;
-          // break;
-        // case 'colorstop':
-        // case 'colorstops':
-        // case 'colorstopgradient':
-          // stroke = this._card._calculateColor(this._series[index], this.colorStops, (this.config.show.style === 'colorstopgradient'));
-          // break;
-        // case 'minmaxgradient':
-          // stroke = this._card._calculateColor(this._series[index], this.colorStopsMinMax, true);
-          // break;
-      // }
 
-      if (!this.configStyleBar[index])
-        this.configStyleBar[index] = {...this.config.styles.bar};
+      if (!this.stylesBar[index])
+        this.stylesBar[index] = {...this.config.styles.bar};
 
-      // this.configStyleBar[index]['stroke'] = stroke;
+      // this.stylesBar[index]['stroke'] = stroke;
       
       svgItems.push(svg`
         <line id="line-segment-${this.toolId}-${index}" class="line__segment"
-                  style="${styleMap(this.configStyleBar[index])}"
+                  style="${styleMap(this.stylesBar[index])}"
                   x1="${this._bars[index].x1}"
                   x2="${this._bars[index].x2}"
                   y1="${this._bars[index].y1}"
@@ -3330,8 +3334,6 @@ class SegmentedArcTool extends BaseTool {
 
     // Extra for use of styleMap
     this.styles = {};
-
-    // this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.radius);
     this.svg.radiusX = Utils.calculateSvgDimension(argConfig.radius_x || argConfig.radius);
@@ -3647,8 +3649,6 @@ class SegmentedArcTool extends BaseTool {
       var arcPart = this.config.segments.dash;
       var arcDivider = this.config.segments.gap;
 
-      // #DONE: must use this.dimensions
-      //var arcRadius = this.config.radius;
       var arcRadiusX = this.svg.radiusX;
       var arcRadiusY = this.svg.radiusY;
 
@@ -3666,21 +3666,21 @@ class SegmentedArcTool extends BaseTool {
       var arcSize = Math.abs(arcEnd - this.config.start_angle);
       var arcSizePrev = Math.abs(arcEndPrev - this.config.start_angle);
 
-      // Styles are already converted to an Object {}...
-      if (!this.configStyleFgStr) {
-        let configStyleFg = {...this.config.styles.foreground};
-        // const configStyleFgStr = JSON.stringify(configStyleFg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-        this.configStyleFgStr = JSON.stringify(configStyleFg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-      }
-      let configStyleFgStr = this.configStyleFgStr;
+      // // Styles are already converted to an Object {}...
+      // if (!this.stylesFgStr) {
+        // let configStyleFg = {...this.config.styles.foreground};
+        // // const configStyleFgStr = JSON.stringify(configStyleFg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+        // this.stylesFgStr = JSON.stringify(configStyleFg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // }
+      // let configStyleFgStr = this.stylesFgStr;
 
-      // Draw background of segmented arc...
-      if (!this.configStyleBgStr) {
-        let configStyleBg = {...this.config.styles.background};
-        // const configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-        this.configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-      }
-      let configStyleBgStr = this.configStyleBgStr;
+      // // Draw background of segmented arc...
+      // if (!this.stylesBgStr) {
+        // let configStyleBg = {...this.config.styles.background};
+        // // const configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+        // this.stylesBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
+      // }
+      // let configStyleBgStr = this.stylesBgStr;
 
       var svgItems = [];
 
@@ -4902,8 +4902,8 @@ class devSwissArmyKnifeCard extends LitElement {
       return;
     }
 
-    if (this.ts) {
-      this.ts.map((item, index) => {
+    if (this.toolsets) {
+      this.toolsets.map((item, index) => {
         item.updateValues();
       });
     }
@@ -4933,11 +4933,11 @@ class devSwissArmyKnifeCard extends LitElement {
 
     if (this.dev.debug) console.log('setConfig', this.cardId);
 
-    if (this.configIsSet) {
-      console.log("card::setConfig - already set, returning");
-      if (this.dev.performance) console.timeEnd("--> " + this.cardId + " PERFORMANCE card::setConfig");
-      return;
-    }
+    // if (this.configIsSet) {
+      // console.log("card::setConfig - already set, returning");
+      // if (this.dev.performance) console.timeEnd("--> " + this.cardId + " PERFORMANCE card::setConfig");
+      // return;
+    // }
 
     this.dimensions = "1/1";
 
@@ -5038,7 +5038,7 @@ class devSwissArmyKnifeCard extends LitElement {
 
       var toolsetCfgFromTemplate = null;
 
-      if (!this.ts) this.ts = [];
+      if (!this.toolsets) this.toolsets = [];
 
       if (true) {
         // door lijst  van originele config.
@@ -5083,105 +5083,9 @@ class devSwissArmyKnifeCard extends LitElement {
 
 
       if (false && toolsetCfg.template) {
-        // if (this.dev.debug) console.log("card::setConfig -1- got toolsetCfg template", this.cardId, toolsetCfg, toolidx);
-
-        // if (this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]) {
-          // if (this.dev.debug) console.log("card::setConfig -2- got toolsetCfg template found", this.cardId, toolsetCfg, toolidx);
-
-          // // Get template and fill variables.
-          // // Result: filled template!
-          // toolsetCfgFromTemplate = Templates.replaceVariables3(toolsetCfg.template.variables, this.lovelace.lovelace.config.sak_templates[toolsetCfg.template.name]);
-          // if (this.dev.debug) console.log("card::setConfig -3- got toolsetCfg replaced vars", this.cardId, "result=", toolsetCfgFromTemplate);
-          
-          // // Merge/overwrite position from template by card config
-          
-          // if (this.config.layout.toolsets[toolidx].position)
-            // toolsetCfgFromTemplate.position = Merge.mergeDeep(this.config.layout.toolsets[toolidx].position);
-          // // toolsetCfgFromTemplate.position = this.config.layout.toolsets[toolidx].position ? this.config.layout.toolsets[toolidx].position : toolsetCfgFromTemplate.position;
-          // if (this.dev.debug) console.log("card::setConfig -4- got toolsetCfg replaced vars position", this.cardId, "result=", toolsetCfgFromTemplate);
-          // //this.config.layout.toolsets[toolidx].position = toolsetCfgFromTemplate.position;
-          // //this.config.layout.toolsets[toolidx].tools = [...toolsetCfgFromTemplate.tools];
-
-          // toolList = toolsetCfgFromTemplate.tools;
-
-          // // testing.. --> crashes. No deep merge/clone done!!!!!!
-          // //toolsetCfg = {...toolsetCfg, ...toolsetCfgFromTemplate};
-          // // #TODO: does this work???????????????????
-
-          // if (false) {
-          // // var newCfg1 = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
-          // // var newCfg2 = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
-          // // console.log("newCfg,mergeDeep) NOT", newCfg1, " yes--> Used ", newCfg2);
-          // // toolsetCfg = Merge.mergeDeep(toolsetCfgFromTemplate, toolsetCfg);
-          // // //toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
-
-
-          // // // #TODO: merge not here, but later, after replacement of toolid in next loop.
-          // // // Merge everything, then replace the toolset tools with the template tools??
-          // // // Then we would merge everything, except the tools. That will be merged by Id below!!!!!
-
-          // // // Template overwrites default configuration.
-          // // toolsetCfg = Merge.mergeDeep(toolsetCfg, toolsetCfgFromTemplate);
-          // // toolsetCfg.tools = toolsetCfgFromTemplate.tools;
-
-          // } else {
-          // }
-
-          // var found = false;
-          // var toolAdd = [];
-          // var atIndex = null;
-
-          // // Check for empty tool list. This can be if template is used. Tools come from template, not from config...
-          // if (toolsetCfg.tools) {
-            // toolsetCfg.tools.map((tool, index) => {
-              // toolList.map((toolT, indexT) => {
-                // if (tool.id == toolT.id) {
-                  // // toolList[indexT] = {...toolList[indexT], ...tool};
-                  
-                  // // #TODO
-                  // // @202.11.24 replace next line with previous...
-                  // // HUH?
-                  // // Some cards need toollist[indext], tool to work, and others reversed?? WHY ????? WHAT IS HAPPENING??
-                  // // 8T needs toollist, tool. But 10,11 need tool, toollist ??. 10 and 11 use decluttering_template. Is that the real problem here??
-                  
-                  // // Nope, toollist, tool is the right order.
-                  // // Something is going wrong with a color template: using the wrong configuration orso???
-                  // toolList[indexT] = Merge.mergeDeep(toolList[indexT], tool);
-                  // // toolList[indexT] = Merge.mergeDeep(tool, toolList[indexT]);
-                  // // #TODO
-                  // // No deep cloning/merging is done??
-                  // //toolList[indexT].scale = {...toolList[indexT].scale, ...tool.scale};
-                  // found = true;
-  // //                atIndex = indexT;
-                  // if (this.dev.debug) console.log("card::setConfig - got toolsetCfg toolid", tool, index, toolT, indexT, tool);
-                // }
-              // });
-              // if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
-            // });
-          // }
-          // //toolList = toolList.concat(toolsetCfg.tools);
-
-          // toolList = toolList.concat(toolAdd);
-          // if (this.dev.debug) console.log('card::setConfig - Step 2: templating, toolconfig', toolList);
-
-          // if (this.dev.debug) console.log('card::setConfigtool - toolsetCfg ENDRESULT before', toolList, this.config.layout.toolsets[toolidx]);
-          
-          // // Remove??
-          // // if (this.config.layout.toolsets[toolidx].tools) this.config.layout.toolsets[toolidx].tools = [...toolList, ...this.config.layout.toolsets[toolidx].tools];
-          
-          // if (this.dev.debug) console.log('card::setConfig - toolsetCfg ENDRESULT after', toolList, this.config.layout.toolsets[toolidx]);
-
-          // // #TODO:
-          // // does not help. So wht is the prblem with the scale. i dont'knowl.
-
-          // // this.config.layout.toolsets[toolidx].scale = {...this.config.layout.toolsets[toolidx].scale, ...toolsetCfgFromTemplate.scale};
-          // // toolsetCfg.scale = {...toolsetCfg.scale, ...toolsetCfgFromTemplate.scale};
-
-          // // console.log("card::setConfig, did apply template. Result=", toolsetCfg, "template=",toolsetCfgFromTemplate);
-        // }
       } else {
         // We don't have a template to run, get list of tools and use that...
-        toolList = toolsetCfg.tools;
+        // toolList = toolsetCfg.tools;
       }
 
       // Create and push
@@ -5193,7 +5097,7 @@ class devSwissArmyKnifeCard extends LitElement {
       }
       const newToolset = new Toolset(this, toolsetCfg);
 
-      this.ts.push(newToolset);
+      this.toolsets.push(newToolset);
       //this.tools.push(newToolset);
     });
     if (this.dev.debug) console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
@@ -5264,8 +5168,8 @@ class devSwissArmyKnifeCard extends LitElement {
 
     if (this.dev.debug) console.log('*****Event - firstUpdated', this.cardId, new Date().getTime());
 
-    if (this.ts) {
-      this.ts.map((item, index) => {
+    if (this.toolsets) {
+      this.toolsets.map((item, index) => {
         item.firstUpdated(changedProperties);
       });
     }
@@ -5323,13 +5227,13 @@ class devSwissArmyKnifeCard extends LitElement {
   * render ICON TESTING pathh lzwzmegla undefined NodeList [ha-svg-icon]
   * render ICON TESTING pathh lzwzmegla M7,2V13H10V22L17,10H13L17,2H7Z NodeList [ha-svg-icon]
   */
-  iconOnLoad(e, iconName) {
-    console.log("icononload", this.cardId, e, iconName);
+  // iconOnLoad(e, iconName) {
+    // console.log("icononload", this.cardId, e, iconName);
 
-    var pathh = this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path
-    console.log("in icononload, icon testing, pathh", this.cardId, pathh, this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*"),
-    this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path);
-  }
+    // var pathh = this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path
+    // console.log("in icononload, icon testing, pathh", this.cardId, pathh, this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*"),
+    // this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path);
+  // }
 
 //  render({ config } = this) {
   render() {
@@ -5433,9 +5337,17 @@ class devSwissArmyKnifeCard extends LitElement {
     return svg`${scaleItems}`;
   }
 
-  _RenderTools() {
+/*******************************************************************************
+  * card::_RenderToolsets()
+  *
+  * Summary.
+  * Renders the toolsets
+  *
+  */
 
-if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
+  _RenderToolsets() {
+
+    if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
 //              ${this._renderIcons()}
 // The clip-path below gives a 200x200 size if switching from views in safari. Not on chrome of course!!!!
@@ -5452,9 +5364,11 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
 //                ${this._renderUserSvgs()}
 
+//            <g id="toolsets" class="toolsets" style="filter:url(#nm-1);">
+
     return svg`
-            <g id="datatoolset" class="datatoolset" filter="url(#nm-1)">
-              ${this.ts.map(toolset => toolset.render())}
+            <g id="toolsets" class="toolsets" style="${styleMap(this.config.layout?.styles?.toolsets)}">
+              ${this.toolsets.map(toolset => toolset.render())}
             </g>
 
 
@@ -5722,7 +5636,7 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
 
 /*******************************************************************************
-  * _renderSvg()
+  * card::_renderSvg()
   *
   * Summary.
   * Renders the SVG
@@ -5763,14 +5677,14 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
                   class="${cardFilter}"
                   viewBox="0 0 ${this.viewBox.width} ${this.viewBox.height}">
-                  ${this._RenderTools()}`);
+                  ${this._RenderToolsets()}`);
 
     return svg`${svgItems}`;
   }
 
 
 /*******************************************************************************
-  * _handleClick()
+  * card::_handleClick()
   *
   * Summary.
   * Processes the mouse click of the user and dispatches the event to the
@@ -5812,7 +5726,7 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
   }
 
 /*******************************************************************************
-  * handlePopup()
+  * card::handlePopup()
   *
   * Summary.
   * Handles the first part of mouse click processing.
@@ -5852,35 +5766,6 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
           // .tap_action, entity.entity_id);
   }
 
-/*******************************************************************************
-  * _buildArea()
-  *
-  * Summary.
-  * Builds the Area string.
-  *
-  */
-
-  _buildArea(entityState, entityConfig) {
-    return (
-      entityConfig.area
-      || '?'
-    );
-  }
-
-/*******************************************************************************
-  * _buildName()
-  *
-  * Summary.
-  * Builds the Name string.
-  *
-  */
-
-  _buildName(entityState, entityConfig) {
-    return (
-      entityConfig.name
-      || entityState.attributes.friendly_name
-    );
-  }
 
 /*******************************************************************************
   * _buildIcon()
@@ -6182,7 +6067,7 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     // Lookup in this.tools for bars, or better tools that need history...
     // get that entity_index for that object
     // add to list...
-    this.ts.map((toolset, k) => {
+    this.toolsets.map((toolset, k) => {
       toolset.tools.map((item, i) => {
         if (item.type == "bar") {
           const end = new Date();
@@ -6284,8 +6169,8 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
     if (entity.type == 'bar') {
       if (this.dev.debug) console.log('entity.type == bar', entity);
 
-      hours = this.ts[entity.tsidx].tools[entity.idx].tool.config.hours;
-      barhours = this.ts[entity.tsidx].tools[entity.idx].tool.config.barhours;
+      hours = this.toolsets[entity.tsidx].tools[entity.idx].tool.config.hours;
+      barhours = this.toolsets[entity.tsidx].tools[entity.idx].tool.config.barhours;
     }
 
     const reduce = (res, item) => {
@@ -6346,7 +6231,7 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
     // now push data into object...
     if (entity.type == 'bar') {
-      this.ts[entity.tsidx].tools[entity.idx].tool.series = [...theData];
+      this.toolsets[entity.tsidx].tools[entity.idx].tool.series = [...theData];
     }
 
     // Request a rerender of the card after receiving new data
