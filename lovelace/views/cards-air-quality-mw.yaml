@@ -91,6 +91,11 @@
             ts: true
             
           layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
+              
             toolsets:
               # ==============================================================================
               - toolset: title
@@ -101,6 +106,9 @@
                   # Area
                   - type: area
                     id: 10
+                    position:
+                      cx: 50
+                      cy: 50
                     cx: 50
                     cy: 50
                     entity_index: 0
@@ -125,7 +133,6 @@
                       circle:
                         opacity: 1
                         fill: var(--primary-background-color)
-
                   - type: 'usersvg'
                     id: 2
                     entity_index: 7
@@ -243,16 +250,16 @@
                   # Temperature part
                   - type: rectex
                     id: 1
-                    cx: 45
+                    cx: 42.5
                     cy: 20
-                    width: 80
+                    width: 85
                     height: 28
                     radius:
                       all: 2
                       
                   - type: icon
                     id: 2
-                    cx: 18
+                    cx: 13
                     cy: 20
                     entity_index: 3
                     icon_size: 20
@@ -279,16 +286,16 @@
                   # Humidity part
                   - type: rectex
                     id: 1
-                    cx: 45
+                    cx: 42.5
                     cy: 20
-                    width: 80
+                    width: 85
                     height: 28
                     radius:
                       all: 2
                       
                   - type: icon
                     id: 2
-                    cx: 18
+                    cx: 13
                     cy: 20
                     entity_index: 4
                     icon_size: 20
@@ -315,16 +322,16 @@
                   # Pressure part
                   - type: rectex
                     id: 1
-                    cx: 45
+                    cx: 42.5
                     cy: 20
-                    width: 80
+                    width: 85
                     height: 28
                     radius:
                       all: 2
                       
                   - type: icon
                     id: 2
-                    cx: 18
+                    cx: 13
                     cy: 20
                     entity_index: 5
                     icon_size: 20
@@ -351,16 +358,16 @@
                   # wind part
                   - type: rectex
                     id: 1
-                    cx: 45
+                    cx: 42.5
                     cy: 20
-                    width: 80
+                    width: 85
                     height: 28
                     radius:
                       all: 2
                       
                   - type: icon
                     id: 2
-                    cx: 18
+                    cx: 13
                     cy: 20
                     entity_index: 6
                     icon_size: 20
@@ -407,49 +414,12 @@
                         150: '#FE6A69'
                         200: '#A97ABC'
                         300: '#A87383'
-                    
-                    # animations:
-                      # - state: '50'
-                        # operator: <=
-                        # styles:
-                          # rectex:
-                            # fill: >-
-                              # #A8E05F
-                      # - state: '100'
-                        # operator: <=
-                        # styles:
-                          # rectex:
-                            # fill: >-
-                              # #FDD74B
-                      # - state: '150'
-                        # operator: <=
-                        # styles:
-                          # rectex:
-                            # fill: >-
-                              # #FE9B57
-                      # - state: '200'
-                        # operator: <=
-                        # styles:
-                          # rectex:
-                            # fill: >-
-                              # #FE6A69
-                      # - state: '300'
-                        # operator: <=
-                        # styles:
-                          # rectex:
-                            # fill: >-
-                              # #A97ABC
-                      # - state: '9999'
-                        # operator: <=
-                        # styles:
-                          # rectex:
-                            # fill: >-
-                              # #A87383
                     styles:
                       rectex:
                         stroke: var(--primary-background-color)
-                        stroke-width: 1em
+                        stroke-width: 5em
                         opacity: 1
+                        transition: fill 0.5s
                         fill: >-
                           #A8E05F
                   # State / AQI
@@ -462,7 +432,7 @@
                       uom: default
                     styles:
                       state:
-                        font-size: 29em
+                        font-size: 26em
                         font-weight: 700
                         text-anchor: end
                         alignment-baseline: central
@@ -528,48 +498,11 @@
                         150: '#FE6A69'
                         200: '#A97ABC'
                         300: '#A87383'
-
-                    # animations:
-                      # - state: '50'
-                        # operator: <=
-                        # styles:
-                          # circle:
-                            # fill: >-
-                              # #A8E05F
-                      # - state: '100'
-                        # operator: <=
-                        # styles:
-                          # circle:
-                            # fill: >-
-                              # #FDD74B
-                      # - state: '150'
-                        # operator: <=
-                        # styles:
-                          # circle:
-                            # fill: >-
-                              # #FE9B57
-                      # - state: '200'
-                        # operator: <=
-                        # styles:
-                          # circle:
-                            # fill: >-
-                              # #FE6A69
-                      # - state: '300'
-                        # operator: <=
-                        # styles:
-                          # circle:
-                            # fill: >-
-                              # #A97ABC
-                      # - state: '9999'
-                        # operator: <=
-                        # styles:
-                          # circle:
-                            # fill: >-
-                              # #A87383
                     styles:
                       circle:
+                        fill: var(--primary-background-color)
                         opacity: 1
-                    
+                        transition: fill 0.5s
 
                   - type: 'usersvg'
                     id: 2
@@ -640,6 +573,7 @@
                     styles:
                       bar:
                         stroke-linecap: round
+                        transition: fill 0.5s
 
     - type: horizontal-stack
       cards:
@@ -835,6 +769,10 @@
             debug: false
             
           layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
             toolsets:
               # ==============================================================================
               - toolset: card-title
@@ -2175,6 +2113,10 @@
             ts: true
             
           layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#ds-1)
             toolsets:
               # ==============================================================================
               - toolset: temperature
@@ -2453,6 +2395,10 @@
             debug: false
             
           layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
             toolsets:
 
              # ==============================================================================
@@ -2861,6 +2807,10 @@
             debug: false
             
           layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
             toolsets:
               - toolset: polytest
                 position:
@@ -3038,6 +2988,10 @@
           dimensions: 3/1
 
           layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
             toolsets:
               - toolset: temperature
                 position:
