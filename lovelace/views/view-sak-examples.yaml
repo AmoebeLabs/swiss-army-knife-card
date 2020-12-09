@@ -407,6 +407,7 @@ cards:
                         fill: darkgrey
                       background:
                         fill: var(--primary-background-color)
+                        filter: url(#ds-1)
 
                   - type: 'state'
                     id: 0
@@ -443,7 +444,8 @@ cards:
                     barhours: 1
                     styles:
                       bar:
-                        stroke: grey
+                        stroke: var(--primary-text-color)
+                        opacity: 0.8
                         stroke-linecap: butt
 
 
@@ -570,8 +572,9 @@ cards:
                     barhours: 2
                     styles:
                       bar:
-                        stroke: grey
-                        stroke-linecap: butt
+                        stroke: var(--primary-text-color)
+                        opacity: 0.8
+                        stroke-linecap: round
 
 
                   # ------------------------------------------------------
@@ -642,8 +645,9 @@ cards:
                     barhours: 2
                     styles:
                       bar:
-                        stroke: darkgrey
-                        stroke-linecap: butt
+                        stroke: var(--primary-text-color)
+                        opacity: 0.6
+                        stroke-linecap: round
         ##- !include card-blank-card.yaml
 
 
@@ -1654,6 +1658,10 @@ cards:
                         font-weight: 700
                         fill: black
                         # filter: url(#ds)
+                      uom:
+                        fill: black
+                        font-weight: 700
+                      
                   - type: line
                     cx: 60
                     cy: 18
@@ -1782,6 +1790,9 @@ cards:
                         font-size: 12em
                         font-weight: 700
                         fill: black
+                      uom:
+                        fill: black
+                        font-weight: 700
                   - type: line
                     cx: 60
                     cy: 18
@@ -2027,6 +2038,9 @@ cards:
                         font-size: 12em
                         font-weight: 700
                         fill: black
+                      uom:
+                        fill: black
+                        font-weight: 700
                   - type: line
                     cx: 60
                     cy: 18
@@ -2120,6 +2134,9 @@ cards:
           dimensions: 4/1
 
           layout:
+            styles:
+              toolsets:
+                filter: url(#nm-1)
             toolsets:
               - toolset: fourcircles
                 position:
@@ -2340,6 +2357,9 @@ cards:
           dimensions: 2/1
 
           layout:
+            styles:
+              toolsets:
+                filter: url(#nm-1)
             toolsets:
               - toolset: lamp1
                 position:
@@ -2361,6 +2381,7 @@ cards:
                     cx: 50
                     cy: 30
                     radius: 23
+                    entity_index: 0
                     animations:
                       - state: 'on'
                         styles:
