@@ -94,6 +94,10 @@ cards:
 
 
           layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
             toolsets:
               # ==============================================================================
 
@@ -304,16 +308,21 @@ cards:
                     show:
                       scale: true
                       style: 'colorstops'
+                      lastcolor: true
                     segments:
                       colorstops:
                         gap: 1
                         # arc can be 'followcolorstop', or 'followvalue'
                         arc_color: 'followcolorstop'
                         colors:
-                          00: '#FFF6E3'
-                          10: '#FFE9B9'
-                          15: '#FFDA8A'
-                          20: '#FFCB5B'
+                          00: 'DarkSeaGreen'
+                          10: 'yellow'
+                          15: 'blue'
+                          20: 'red'
+                          # 00: '#FFF6E3'
+                          # 10: '#FFE9B9'
+                          # 15: '#FFDA8A'
+                          # 20: '#FFCB5B'
                           22.5: '#FFBF37'
                           25: '#ffb414'
                           60: '#FFAD12'

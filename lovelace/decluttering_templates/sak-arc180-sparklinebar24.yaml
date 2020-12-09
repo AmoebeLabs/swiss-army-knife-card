@@ -24,6 +24,10 @@ card:
     ts: true
   
   layout:
+    styles:
+      card:
+      toolsets:
+        filter: url(#nm-1)
     toolsets:
       # ==============================================================================
       - toolset: humi-dt

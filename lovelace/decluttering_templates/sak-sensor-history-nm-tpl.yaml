@@ -21,6 +21,10 @@ card:
     ts: true
   
   layout:
+    styles:
+      card:
+      toolsets:
+        filter: url(#nm-1)
     toolsets:
       # ==============================================================================
       # Using Neumorphic sensor history design
