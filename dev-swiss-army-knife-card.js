@@ -1425,7 +1425,9 @@ class CircleTool extends BaseTool {
     return svg`
       <circle ""
         cx="${this.svg.cx}"% cy="${this.svg.cy}"% r="${this.svg.radius}"
-        style="${styleMap(this.configStyle.circle)}"/>
+        style="${styleMap(this.configStyle.circle)}"
+      </circle>
+
       `;
   }
 
@@ -3706,19 +3708,31 @@ class SegmentedArcTool extends BaseTool {
           d = item;
 
           // extra, set color from colorlist as a test
-          var fill = this.config.color;
-          if (this.config.show.style =="colorlist") {
-            fill = this.config.segments.colorlist.colors[index];
-          }
-          if (this.config.show.style =="colorstops") {
-            fill = this._segments.colorStops[this._segments.sortedStops[index]];
+          if (this.config.isScale) {
+            var fill = this.config.color;
+            if (this.config.show.style =="colorlist") {
+              fill = this.config.segments.colorlist.colors[index];
+            }
+            if (this.config.show.style =="colorstops") {
+              fill = this._segments.colorStops[this._segments.sortedStops[index]];
+            }
+
+            if (!this.styles.foreground[index]) {
+              this.styles.foreground[index] = Merge.mergeDeep(this.config.styles.foreground);
+            }
+            
+            this.styles.foreground[index]['fill'] = fill;
           }
 
-          if (!this.styles.foreground[index]) {
-            this.styles.foreground[index] = Merge.mergeDeep(this.config.styles.foreground);
-          }
-          
-          this.styles.foreground[index]['fill'] = fill;
+          // // #WIP
+          // // Testing 'lastcolor'
+          // if (this.config.show.lastcolor) {
+            // if (index > 0) {
+              // for (var j=index-1; j--; j>0) {
+                // this.styles.foreground[j]['fill'] = fill;
+              // }
+            // }
+          // }
 
           // this.config.styles.foreground['fill'] = fill;
           //if (this.dev.debug) console.log('RENDERNEW _renderSegments - from cache', this.toolId, index, d);
@@ -3786,11 +3800,22 @@ class SegmentedArcTool extends BaseTool {
               // First phase. Just draw and ignore segments...
               d = thisTool.buildArcPath(aniStartAngle, aniEndAngle, thisTool._arc.clockwise, arcRadiusX, arcRadiusY, arcWidth);
 
+              if (!thisTool.myarc) thisTool.myarc = {};
+              if (!thisTool.as) thisTool.as = {};
+
               let as;
               const myarc = "arc-segment-".concat(thisTool.toolId).concat("-").concat(runningSegment);
-              as = thisTool._card.shadowRoot.getElementById(myarc);
+              // as = thisTool._card.shadowRoot.getElementById(myarc);
+              if (!thisTool.as[runningSegment])
+                thisTool.as[runningSegment] = thisTool._card.shadowRoot.getElementById(myarc);
+              as = thisTool.as[runningSegment];
+              // Extra. Remember id's and references
+              // Quick hack...
+              thisTool.myarc[runningSegment] = myarc;
+              // thisTool.as[runningSegment] = as;
+              
               if (as) {
-                var e = as.getAttribute("d");
+                // var e = as.getAttribute("d");
                 as.setAttribute("d", d);
 
                 // We also have to set the style fill if the color stops and gradients are implemented
@@ -3803,6 +3828,50 @@ class SegmentedArcTool extends BaseTool {
                   as.style.fill = thisTool.config.segments.colorlist.colors[runningSegment];
                   thisTool.styles.foreground[runningSegment]['fill'] = thisTool.config.segments.colorlist.colors[runningSegment];
                 }
+                // #WIP
+                // Testing 'lastcolor'
+                if (thisTool.config.show.lastcolor) {
+                  var fill = thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]]; //thisTool.styles.foreground[runningSegment]['fill'];
+                  // console.log('testing...', thisTool.config.show, runningSegment, fill);
+                  
+                  var boundsStart = thisTool._arc.clockwise
+                                ? (thisTool._segmentAngles[runningSegment].drawStart)
+                                : (thisTool._segmentAngles[runningSegment].drawEnd);
+                  var boundsEnd = thisTool._arc.clockwise
+                                ? (thisTool._segmentAngles[runningSegment].drawEnd)
+                                : (thisTool._segmentAngles[runningSegment].drawStart);
+                  var value = Math.min(Math.max(0, (runningSegmentAngle - boundsStart) / (boundsEnd - boundsStart)), 1);
+                  fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
+                                           thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment+1]],
+                                           value);
+                  console.log('runningsegment, runningcolor = ', fill, 'value=', value, 'ra= ', runningSegmentAngle, 'sa=', boundsStart, 'ea=', boundsEnd);
+                  
+                  thisTool.styles.foreground[0]['fill'] = fill;
+                  thisTool.as[0].style.fill = fill;
+
+                  if (runningSegment > 0) {
+                    // for (var j=0; j++; j< runningSegment) {
+                      // thisTool.styles.foreground[j]['fill'] = fill;
+                      // thisTool.as[j].style.fill = fill;
+                      // console.log('in segarc draw', j, runningSegment, fill);
+                    // }
+                    for (var j=runningSegment+1; j--; j>=0) {
+                      if (thisTool.styles.foreground[j]['fill'] != fill) {
+                        thisTool.styles.foreground[j]['fill'] = fill;
+                        thisTool.as[j].style.fill = fill;
+                      }
+                        thisTool.styles.foreground[j]['fill'] = fill;
+                        thisTool.as[j].style.fill = fill;
+                      // console.log('in segarc draw', j, runningSegment, fill);
+                    }
+                  } else {
+                    // if (thisTool.styles.foreground[0]['fill'] != fill) {
+                      // thisTool.styles.foreground[0]['fill'] = thisTool._segments.colorStops[thisTool._segments.sortedStops[0]];
+                      // thisTool.as[0].style.fill = thisTool._segments.colorStops[thisTool._segments.sortedStops[0]];
+                    // }
+                  }
+                }
+
               }
               thisTool._cache[runningSegment] = d;
 
@@ -3927,6 +3996,17 @@ class SegmentedArcTool extends BaseTool {
             this.styles.foreground[i] = Merge.mergeDeep(this.config.styles.foreground);
           };
           this.styles.foreground[i]['fill'] = fill;
+          
+          // #WIP
+          // Testing 'lastcolor'
+          if (this.config.show.lastcolor) {
+            if (i > 0) {
+              for (var j=i-1; j--; j>0) {
+                this.styles.foreground[j]['fill'] = fill;
+              }
+            }
+          }
+
 //                            style="${styleMap(this.config.styles.foreground)}"
 
           // this.config.styles.foreground['fill'] = fill;
@@ -5606,6 +5686,18 @@ if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
             <!-- flood-color="#d1cdc7" -->
             <!-- flood-color="#FFFFFF" -->
+            <filter id="nm-11" x="-50%" y="-50%" width="300%" height="300%">
+              <feDropShadow stdDeviation="5" in="SourceGraphic"
+                dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"
+              </feDropShadow>
+              <feDropShadow stdDeviation="4.5" in="SourceGraphic"
+                dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+              <feMerge result="merge">
+                <feMergeNode in="dropShadow1"/>
+                <feMergeNode in="dropShadow"/>
+              </feMerge>
+            </filter>
+
             <filter id="nm-1" x="-50%" y="-50%" width="300%" height="300%">
               <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
               <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
