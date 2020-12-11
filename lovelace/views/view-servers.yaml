@@ -109,18 +109,20 @@ cards:
                 tools:
                   - type: rectex
                     id: 0
-                    cx: 50
-                    cy: 50
-                    width: 60
-                    height: 20
-                    radius:
-                      all: 2
+                    position:
+                      cx: 50
+                      cy: 50
+                      width: 60
+                      height: 20
+                      radius:
+                        all: 2
                   # inconsistent: tool has no separate position:, toolset has...
                   # Used
                   - type: name
                     id: 1
-                    cx: 25
-                    cy: 45
+                    position:
+                      cx: 25
+                      cy: 45
                     entity_index: 8
                     styles:
                       name:
@@ -128,8 +130,9 @@ cards:
                         text-anchor: start
                   - type: state
                     id: 2
-                    cx: 63
-                    cy: 45
+                    position:
+                      cx: 63
+                      cy: 45
                     entity_index: 8
                     styles:
                       state:
@@ -140,8 +143,9 @@ cards:
                   # Free
                   - type: name
                     id: 3
-                    cx: 25
-                    cy: 55
+                    position:
+                      cx: 25
+                      cy: 55
                     entity_index: 9
                     styles:
                       name:
@@ -149,8 +153,9 @@ cards:
                         text-anchor: start
                   - type: state
                     id: 4
-                    cx: 63
-                    cy: 55
+                    position:
+                      cx: 63
+                      cy: 55
                     entity_index: 9
                     styles:
                       state:
@@ -198,8 +203,9 @@ cards:
                   - type: area
                     id: 0
                     entity_index: 0
-                    cx: 50
-                    cy: 50
+                    position:
+                      cx: 50
+                      cy: 50
                     styles:
                       area:
                         font-size: 6em
@@ -213,18 +219,20 @@ cards:
                 tools:
                   - type: rectex
                     id: 0
-                    cx: 50
-                    cy: 50
-                    width: 60
-                    height: 20
-                    radius:
-                      all: 2
+                    position:
+                      cx: 50
+                      cy: 50
+                      width: 60
+                      height: 20
+                      radius:
+                        all: 2
                   # inconsistent: tool has no separate position:, toolset has...
                   # Used
                   - type: name
                     id: 1
-                    cx: 25
-                    cy: 45
+                    position:
+                      cx: 25
+                      cy: 45
                     entity_index: 6
                     styles:
                       name:
@@ -233,8 +241,9 @@ cards:
                         text-anchor: start
                   - type: state
                     id: 2
-                    cx: 63
-                    cy: 45
+                    position:
+                      cx: 63
+                      cy: 45
                     entity_index: 6
                     styles:
                       state:
@@ -246,8 +255,9 @@ cards:
                   # Free
                   - type: name
                     id: 3
-                    cx: 25
-                    cy: 55
+                    position:
+                      cx: 25
+                      cy: 55
                     entity_index: 7
                     styles:
                       name:
@@ -255,8 +265,9 @@ cards:
                         text-anchor: start
                   - type: state
                     id: 4
-                    cx: 63
-                    cy: 55
+                    position:
+                      cx: 63
+                      cy: 55
                     entity_index: 7
                     styles:
                       state:

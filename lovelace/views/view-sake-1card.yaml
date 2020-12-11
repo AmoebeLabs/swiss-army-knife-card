@@ -100,20 +100,22 @@ cards:
                   - type: 'badge'
                     id: 1
                     entity_index: 1
-                    cx: 50
-                    cy: 50
-                    height: 40
-                    width: 160
-                    ratio: 40
+                    position:
+                      cx: 50
+                      cy: 50
+                      height: 40
+                      width: 160
+                      ratio: 40
 
                   - type: 'bar'
                     id: 2
-                    orientation: vertical
                     entity_index: 1
-                    cx: 2
-                    cy: 50
-                    width: 50
-                    height: 30
+                    position:
+                      orientation: vertical
+                      cx: 2
+                      cy: 50
+                      width: 50
+                      height: 30
                     hours: 24
                     barhours: 2
                     show:
@@ -133,8 +135,9 @@ cards:
                   - type: 'name'
                     id: 3
                     entity_index: 1
-                    cx: 82
-                    cy: 42
+                    position:
+                      cx: 82
+                      cy: 42
                     styles:
                       name:
                         text-anchor: center
@@ -144,8 +147,9 @@ cards:
                   - type: 'state'
                     id: 4
                     entity_index: 1
-                    cx: 82
-                    cy: 67
+                    position:
+                      cx: 82
+                      cy: 67
                     styles:
                       state:
                         text-anchor: center
@@ -155,11 +159,12 @@ cards:
                       
                   - type: 'slider'
                     id: 10
-                    cx: 40
-                    cy: 90
-                    length: 40
+                    position:
+                      cx: 40
+                      cy: 90
+                      length: 40
+                      orientation: 'horizontal'
                     entity_index: 1
-                    orientation: 'horizontal'
                     scale:
                       min: 15
                       max: 25
@@ -184,9 +189,11 @@ cards:
 
                   - type: 'slider'
                     id: 11
-                    cx: 90
-                    cy: 90
-                    length: 100
+                    position:
+                      cx: 90
+                      cy: 90
+                      length: 100
+                      orientation: 'vertical'
                     entity_index: 1
                     scale:
                       min: 50
@@ -195,7 +202,6 @@ cards:
                       width: 20
                       height: 12
                       popout: 30
-                    orientation: 'vertical'
                     slide_action:
                       service: climate.set_temperature
                       parameter: temperature
@@ -281,9 +287,10 @@ cards:
                 tools:
                   - type: circle
                     id: 1
-                    cx: 55
-                    cy: 85
-                    radius: 8
+                    position:
+                      cx: 55
+                      cy: 85
+                      radius: 8
                     entity_index: 6
                     styles:
                       stroke: white
@@ -305,9 +312,10 @@ cards:
                             animation: zoomOut 1s ease-out both
                   - type: circle
                     id: 2
-                    cx: 85
-                    cy: 85
-                    radius: 6
+                    position:
+                      cx: 85
+                      cy: 85
+                      radius: 6
                     styles:
                       circle:
                         stroke: white
@@ -315,32 +323,36 @@ cards:
                         fill: none
                   - type: 'line'
                     id: 1
-                    orientation: horizontal
-                    cx: 50
-                    cy: 50
-                    length: 90
+                    position:
+                      orientation: horizontal
+                      cx: 50
+                      cy: 50
+                      length: 90
 
                   - type: 'line'
                     id: 2
-                    orientation: horizontal
-                    cx: 50
-                    cy: 70
-                    length: 90
+                    position:
+                      orientation: horizontal
+                      cx: 50
+                      cy: 70
+                      length: 90
 
                   - type: 'line'
                     id: 3
-                    orientation: fromto
-                    x1: -10
-                    y1: 70
-                    x2: 40
-                    y2: 50
+                    position:
+                      orientation: fromto
+                      x1: -10
+                      y1: 70
+                      x2: 40
+                      y2: 50
 
                   - type: 'ellipse'
                     id: 10
-                    cx: 50
-                    cy: 20
-                    radiusx: 80
-                    radiusy: 20
+                    position:
+                      cx: 50
+                      cy: 20
+                      radiusx: 80
+                      radiusy: 20
                     styles:
                       ellipse:
                         stroke: white
@@ -350,8 +362,9 @@ cards:
                   - type: 'name'
                     id: 3
                     entity_index: 1
-                    cx: 5
-                    cy: 62.5
+                    position:
+                      cx: 5
+                      cy: 62.5
                     styles:
                       name:
                         text-anchor: start
@@ -360,8 +373,9 @@ cards:
                   - type: 'state'
                     id: 4
                     entity_index: 1
-                    cx: 5
-                    cy: 90
+                    position:
+                      cx: 5
+                      cy: 90
                     styles:
                       state:
                         text-anchor: start
@@ -370,9 +384,10 @@ cards:
                       
                   - type: 'horseshoe'
                     id: 10
-                    cx: 120
-                    cy: 30
-                    radius: 30
+                    position:
+                      cx: 120
+                      cy: 30
+                      radius: 30
                     entity_index: 5
                     show:
                       horseshoe: true
@@ -464,17 +479,20 @@ cards:
                 - type: state
                   id: '[[id0]]'
                   entity_index: '[[entity0]]'
-                  cx: 50
-                  cy: 5
+                  position:
+                    cx: 50
+                    cy: 5
                 - type: state
                   id: '[[id1]]'
-                  cx: 50
-                  cy: 10
+                  position:
+                    cx: 50
+                    cy: 10
                   entity_index: '[[entity1]]'
                 - type: state
                   id: '[[id2]]'
-                  cx: 50
-                  cy: 15
+                  position:
+                    cx: 50
+                    cy: 15
                   entity_index: '[[entity2]]'
 
           # toolsets:
@@ -532,8 +550,9 @@ cards:
                 tools:
                   - type: name
                     id: 5
-                    cx: 50
-                    cy: 90
+                    position:
+                      cx: 50
+                      cy: 90
                     entity_index: 3
                     fuckyou: 'yes'
                   - id: 6
@@ -583,12 +602,13 @@ cards:
                   - type: segarc
                     id: 0
                     entity_index: 0
-                    cx: 50
-                    cy: 50
-                    start_angle: 0
-                    end_angle: 360
-                    width: 5
-                    radius: 25
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 5
+                      radius: 25
                     scale:
                       min: 0
                       max: 2
@@ -617,8 +637,9 @@ cards:
                   # font-size was 1.7em. Test with 2.5em
                     id: 4
                     entity_index: 0
-                    cx: 50
-                    cy: 60
+                    position:
+                      cx: 50
+                      cy: 60
                     styles:
                       state:
                         text-anchor: center
@@ -630,10 +651,11 @@ cards:
                   - type: icon
                     id: 5
                     entity_index: 0
-                    cx: 50
-                    cy: 42
-                    align: center
-                    icon_size: 15
+                    position:
+                      cx: 50
+                      cy: 42
+                      align: center
+                      icon_size: 15
 
               # ==============================================================================
               - toolset: areatoolset
@@ -646,8 +668,9 @@ cards:
                   - type: area
                     id: 0
                     entity_index: 0
-                    cx: 50
-                    cy: 50
+                    position:
+                      cx: 50
+                      cy: 50
                     styles:
                       area:
                         font-size: 1.5em
@@ -665,12 +688,13 @@ cards:
                   - type: segarc
                     id: 1
                     entity_index: 1
-                    cx: 50
-                    cy: 50
-                    start_angle: 0
-                    end_angle: 360
-                    width: 5
-                    radius: 25
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 5
+                      radius: 25
                     scale:
                       min: 0
                       max: 100
@@ -705,8 +729,9 @@ cards:
                   - type: state
                     id: 5
                     entity_index: 1
-                    cx: 50
-                    cy: 60
+                    position:
+                      cx: 50
+                      cy: 60
                     styles:
                       state:
                         text-anchor: center
@@ -716,10 +741,11 @@ cards:
                     id: 1
                     entity_index: 1
                     # was 36.25 / 20. Nu 50 / 35
-                    cx: 50
-                    cy: 42
-                    align: center
-                    icon_size: 15
+                    position:
+                      cx: 50
+                      cy: 42
+                      align: center
+                      icon_size: 15
 
 
               # 63.76/25 -> 127.5/25
@@ -733,12 +759,13 @@ cards:
                   - type: segarc
                     id: 2
                     entity_index: 2
-                    cx: 50
-                    cy: 50
-                    start_angle: 0
-                    end_angle: 360
-                    width: 5
-                    radius: 25
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 5
+                      radius: 25
                     scale:
                       min: 0
                       max: 100
@@ -809,8 +836,9 @@ cards:
                   - type: state
                     id: 6
                     entity_index: 2
-                    cx: 50
-                    cy: 60
+                    position:
+                      cx: 50
+                      cy: 60
                     styles:
                       state:
                         text-anchor: center
@@ -820,10 +848,11 @@ cards:
                     id: 2
                     entity_index: 2
                     # was 63.75 / 20. Nu 50/35
-                    cx: 50
-                    cy: 42
-                    align: center
-                    icon_size: 15
+                    position:
+                      cx: 50
+                      cy: 42
+                      align: center
+                      icon_size: 15
 
               # 87.5/50 -> 175/50
               # ==============================================================================
@@ -837,12 +866,13 @@ cards:
                   - type: segarc
                     id: 3
                     entity_index: 3
-                    cx: 50
-                    cy: 50
-                    start_angle: 0
-                    end_angle: 360
-                    width: 5
-                    radius: 25
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 5
+                      radius: 25
                     scale:
                       min: 0
                       max: 2
@@ -871,8 +901,9 @@ cards:
                   - type: state
                     id: 7
                     entity_index: 3
-                    cx: 50
-                    cy: 60
+                    position:
+                      cx: 50
+                      cy: 60
                     styles:
                       state:
                         text-anchor: center
@@ -882,10 +913,11 @@ cards:
                     id: 3
                     entity_index: 3
                     # was 87.5 / 45. Nu 50 / 35
-                    cx: 50
-                    cy: 42
-                    align: center
-                    icon_size: 15
+                    position:
+                      cx: 50
+                      cy: 42
+                      align: center
+                      icon_size: 15
 
               # Thse circles that are largely offscreen cause a 0.5-1sec delay while switching to this panel on the iPad.
               # PC / Chrome has no problems. It works, but makes initial rendering slow. No idea why!!!! But now I know, that it is NOT the card itself
