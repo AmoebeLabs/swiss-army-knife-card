@@ -212,9 +212,10 @@ tools_segarc_icon_state_OLD:
     tools:
       - type: circle
         id: 10
-        cx: 50
-        cy: 50
-        radius: 27.5
+        position:
+          cx: 50
+          cy: 50
+          radius: 27.5
         styles:
           circle:
             fill: var(--primary-background-color)
@@ -224,12 +225,13 @@ tools_segarc_icon_state_OLD:
       - type: segarc
         id: 0
         entity_index: '[[entity]]'
-        cx: 50
-        cy: 50
-        start_angle: 0
-        end_angle: 360
-        width: 5
-        radius: 25
+        position:
+          cx: 50
+          cy: 50
+          start_angle: 0
+          end_angle: 360
+          width: 5
+          radius: 25
         scale:
           min: 0
           max: 100
@@ -258,10 +260,11 @@ tools_segarc_icon_state_OLD:
       - type: icon
         id: 1
         entity_index: '[[entity]]'
-        cx: 50
-        cy: 42
-        align: center
-        icon_size: 15
+        position:
+          cx: 50
+          cy: 42
+          align: center
+          icon_size: 15
         styles:
           icon:
             filter: url(#is-1)
@@ -278,8 +281,9 @@ tools_segarc_icon_state_OLD:
       - type: state
         id: 2
         entity_index: '[[entity]]'
-        cx: 50
-        cy: 56
+        position:
+          cx: 50
+          cy: 56
         styles:
           state:
             text-anchor: middle
@@ -308,9 +312,10 @@ tools_segarc_icon_state:
     tools:
       - type: circle
         id: 10
-        cx: 50
-        cy: 50
-        radius: 27.5
+        position:
+          cx: 50
+          cy: 50
+          radius: 27.5
         styles:
           circle:
             fill: var(--primary-background-color)
@@ -320,12 +325,13 @@ tools_segarc_icon_state:
       - type: segarc
         id: 0
         entity_index: '[[entity]]'
-        cx: 50
-        cy: 50
-        start_angle: 0
-        end_angle: 360
-        width: 5
-        radius: 25
+        position:
+          cx: 50
+          cy: 50
+          start_angle: 0
+          end_angle: 360
+          width: 5
+          radius: 25
         scale:
           min: 0
           max: 100
@@ -354,11 +360,12 @@ tools_segarc_icon_state:
       - type: icon
         id: 1
         entity_index: '[[entity]]'
-        cx: 50
-        cy: 42
-        align: center
-        #60px for width/height, so what is 15 then for number, times 4. Is it 15% ??
-        icon_size: 15
+        position:
+          cx: 50
+          cy: 42
+          align: center
+          #60px for width/height, so what is 15 then for number, times 4. Is it 15% ??
+          icon_size: 15
         styles:
           icon:
             filter: url(#is-1)
@@ -375,8 +382,9 @@ tools_segarc_icon_state:
       - type: state
         id: 2
         entity_index: '[[entity]]'
-        cx: 50
-        cy: 56
+        position:
+          cx: 50
+          cy: 56
         styles:
           state:
             text-anchor: middle
@@ -411,8 +419,9 @@ toolset_arc180_sparklinebar24:
       - type: 'name'
         id: 1
         entity_index: '[[entity]]'
-        cx: 50
-        cy: 65
+        position:
+          cx: 50
+          cy: 65
         styles:
           name:
             font-size: 9em
@@ -421,14 +430,15 @@ toolset_arc180_sparklinebar24:
       - type: 'segarc'
         id: 2
         entity_index: '[[entity]]'
-        cx: 50
-        cy: 50
-        start_angle: -90
-        end_angle: 90
-        width: 10
-        radius: 45
-        radius_x: 45
-        radius_y: 45
+        position:
+          cx: 50
+          cy: 50
+          start_angle: -90
+          end_angle: 90
+          width: 10
+          radius: 45
+          radius_x: 45
+          radius_y: 45
         # scale_offset: -20
         #
         # Scale settings are not merged using templates. Why??
@@ -460,8 +470,9 @@ toolset_arc180_sparklinebar24:
       - type: 'state'
         id: 3
         entity_index: '[[entity]]'
-        cx: 50
-        cy: 40
+        position:
+          cx: 50
+          cy: 40
         styles:
           state:
             text-anchor: middle
@@ -471,10 +482,11 @@ toolset_arc180_sparklinebar24:
       - type: 'icon'
         id: 4
         entity_index: '[[entity]]'
-        cx: 10
-        cy: 10
-        align: center
-        icon_size: 15
+        position:
+          cx: 10
+          cy: 10
+          align: center
+          icon_size: 15
         styles:
           icon:
             color: var(--primary-text-color)
@@ -482,12 +494,13 @@ toolset_arc180_sparklinebar24:
 
       - type: 'bar'
         id: 5
-        orientation: vertical
         entity_index: '[[entity]]'
-        cx: 50
-        cy: 85
-        width: 90
-        height: 25
+        position:
+          orientation: vertical
+          cx: 50
+          cy: 85
+          width: 90
+          height: 25
         hours: 24
         barhours: 1
         styles:
@@ -513,9 +526,10 @@ toolset_light_button:
       # Static circle
       - type: circle
         id: 1
-        cx: 50
-        cy: 30
-        radius: 25
+        position:
+          cx: 50
+          cy: 30
+          radius: 25
         entity_index: '[[entity_light]]'
         # If on, hide this circle
         animations:
@@ -534,9 +548,10 @@ toolset_light_button:
       #Animated circle
       - type: circle
         id: 2
-        cx: 50
-        cy: 30
-        radius: 25
+        position:
+          cx: 50
+          cy: 30
+          radius: 25
         entity_index: '[[entity_light]]'
         animations:
           - state: 'on'
@@ -576,12 +591,13 @@ toolset_light_button:
             # stroke-opacity: 0.9
         
       - type: icon
-        cx: 50
-        cy: 30
+        position:
+          cx: 50
+          cy: 30
+          align: center
+          icon_size: 36
         id: 3
         entity_index: '[[entity_light]]'
-        align: center
-        icon_size: 36
         animations:
           - state: 'on'
             styles:
@@ -600,8 +616,9 @@ toolset_light_button:
             pointer-events: none
 
       - type: name
-        cx: 5
-        cy: 75
+        position:
+          cx: 5
+          cy: 75
         id: 4
         entity_index: '[[entity_light]]'
         styles:
@@ -612,15 +629,17 @@ toolset_light_button:
       - type: area
         entity_index: 0
         id: 5
-        cx: 5
-        cy: 85
+        position:
+          cx: 5
+          cy: 85
         styles:
           area:
             font-size: 6em
             text-anchor: start
       - type: state
-        cx: 5
-        cy: 95
+        position:
+          cx: 5
+          cy: 95
         id: 6
         entity_index: '[[entity_light]]'
         animations:
@@ -640,8 +659,9 @@ toolset_light_button:
             font-size: 9em
             text-anchor: start
       - type: state
-        cx: 95
-        cy: 95
+        position:
+          cx: 95
+          cy: 95
         id: 7
         # custom_fields:
           # - brightness: >
@@ -727,11 +747,12 @@ toolset_light_button_nm:
     tools:
       # Surface 
       - type: circle
-        cx: 50
-        # cy: 35
-        cy: 40
-        # radius: 28
-        radius: 31
+        position:
+          cx: 50
+          # cy: 35
+          cy: 40
+          # radius: 28
+          radius: 31
         styles:
           circle:
             pointer-events: none
@@ -740,11 +761,12 @@ toolset_light_button_nm:
 
       # Activation ring
       - type: circle
-        cx: 50
-        # cy: 35
-        cy: 40
-        # radius: 25
-        radius: 28
+        position:
+          cx: 50
+          # cy: 35
+          cy: 40
+          # radius: 25
+          radius: 28
         entity_index: '[[entity_light]]'
         animations:
           - state: 'on'
@@ -767,11 +789,12 @@ toolset_light_button_nm:
 
       # Actual "button"
       - type: circle
-        cx: 50
-        # cy: 35
-        cy: 40
-        # radius: 24
-        radius: 27
+        position:
+          cx: 50
+          # cy: 35
+          cy: 40
+          # radius: 24
+          radius: 27
         entity_index: '[[entity_light]]'
         # Note, 2020.11.07
         # Safari (again) can't handle modifications in the filter url:
@@ -798,13 +821,14 @@ toolset_light_button_nm:
 
       # Light/Switch icon
       - type: icon
-        cx: 50
-        # cy: 35
-        cy: 40
+        position:
+          cx: 50
+          # cy: 35
+          cy: 40
+          align: center
+          # icon_size: 36
+          icon_size: 39
         entity_index: '[[entity_light]]'
-        align: center
-        # icon_size: 36
-        icon_size: 39
         animations:
           - state: 'on'
             styles:
@@ -836,8 +860,9 @@ toolset_light_button_nm:
 
       # Name of entity
       - type: name
-        cx: 5
-        cy: 81
+        position:
+          cx: 5
+          cy: 81
         id: 4
         entity_index: '[[entity_light]]'
         styles:
@@ -851,8 +876,9 @@ toolset_light_button_nm:
       - type: area
         entity_index: 0
         id: 5
-        cx: 5
-        cy: 91
+        position:
+          cx: 5
+          cy: 91
         styles:
           area:
             #28.8px
@@ -881,8 +907,9 @@ toolset_light_button_nm:
 
       # Brightness of entity
       - type: state
-        cx: 95
-        cy: 91
+        position:
+          cx: 95
+          cy: 91
         id: 7
         derived_entity:
         # derived_entity: >
@@ -965,15 +992,16 @@ toolset_sensor_history:
       scale: 1
     tools:
       - type: rectex
-        cx: 50
-        cy: 50
-        width: 90
-        height: 90
-        radius:
-          top_left: 0
-          top_right: 50
-          bottom_right: 0
-          bottom_left: 10
+        position:
+          cx: 50
+          cy: 50
+          width: 90
+          height: 90
+          radius:
+            top_left: 0
+            top_right: 50
+            bottom_right: 0
+            bottom_left: 10
         styles:
           rectex:
             stroke: var(--primary-background-color)
@@ -981,8 +1009,9 @@ toolset_sensor_history:
 
       # state
       - type: state
-        cx: 10
-        cy: 20
+        position:
+          cx: 10
+          cy: 20
         entity_index: '[[entity]]'
         styles:
           state:
@@ -992,19 +1021,21 @@ toolset_sensor_history:
 
       # circle for icon
       - type: circle
-        cx: 85
-        cy: 15
-        radius: 10
+        position:
+          cx: 85
+          cy: 15
+          radius: 10
         styles:
           circle:
             fill: var(--primary-background-color)
       # icon
       - type: icon
-        cx: 85
-        cy: 15
+        position:
+          cx: 85
+          cy: 15
+          align: center
+          icon_size: 20
         entity_index: '[[entity]]'
-        align: center
-        icon_size: 20
         styles:
           icon:
             fill: '[[icon_color]]'
@@ -1013,8 +1044,9 @@ toolset_sensor_history:
 
       # name
       - type: name
-        cx: 50
-        cy: 45
+        position:
+          cx: 50
+          cy: 45
         entity_index: '[[entity]]'
         styles:
           name:
@@ -1025,13 +1057,14 @@ toolset_sensor_history:
       # bar
       - type: bar
         id: 2
-        orientation: vertical
         entity_index: '[[entity]]'
-        cx: 50
-        cy: 77.5
-        width: 85
-        height: 30
-        margin: 1
+        position:
+          orientation: vertical
+          cx: 50
+          cy: 77.5
+          width: 85
+          height: 30
+          margin: 1
         hours: 24
         barhours: 1
         show:
