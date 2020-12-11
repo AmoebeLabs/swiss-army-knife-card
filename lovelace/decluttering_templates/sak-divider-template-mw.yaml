@@ -52,17 +52,19 @@ card:
           # Also, cannot set filter on line itself: line disappears!!!
           - type: name
             entity_index: 0
-            cx: 50
-            cy: 50
+            position:
+              cx: 50
+              cy: 50
             styles:
               name:
                 font-size: 0.05em
           
           - type: line
-            orientation: horizontal
-            cx: 50
-            cy: 50
-            length: 100
+            position:
+              orientation: horizontal
+              cx: 50
+              cy: 50
+              length: 100
             styles:
               line:
                 stroke: var(--cs-theme-shadow-darker)
