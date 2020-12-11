@@ -579,15 +579,15 @@ class BaseTool {
 
     // Get SVG coordinates.
     this.svg = {};
-    this.svg.cx = Utils.calculateSvgCoordinate(argConfig.cx, this.toolsetPos.cx);
-    this.svg.cy = Utils.calculateSvgCoordinate(argConfig.cy, this.toolsetPos.cy);
+    this.svg.cx = Utils.calculateSvgCoordinate(argConfig.position.cx, this.toolsetPos.cx);
+    this.svg.cy = Utils.calculateSvgCoordinate(argConfig.position.cy, this.toolsetPos.cy);
 
-    this.svg.cx = Utils.calculateSvgCoordinate(argConfig.cx, 0);
-    this.svg.cy = Utils.calculateSvgCoordinate(argConfig.cy, 0);
+    this.svg.cx = Utils.calculateSvgCoordinate(argConfig.position.cx, 0);
+    this.svg.cy = Utils.calculateSvgCoordinate(argConfig.position.cy, 0);
 
     //this.dimensions = {};
-    this.svg.height = argConfig.height ? Utils.calculateSvgDimension(argConfig.height) : 0;
-    this.svg.width = argConfig.width ? Utils.calculateSvgDimension(argConfig.width) : 0;
+    this.svg.height = argConfig.position.height ? Utils.calculateSvgDimension(argConfig.position.height) : 0;
+    this.svg.width = argConfig.position.width ? Utils.calculateSvgDimension(argConfig.position.width) : 0;
 
     this.svg.x = (this.svg.cx) - (this.svg.width / 2);
     this.svg.y = (this.svg.cy) - (this.svg.height / 2);
@@ -792,8 +792,10 @@ class RangeSliderTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_SLIDER_CONFIG = {
-        orientation: 'horizontal',
-        length: 80,
+        position: {
+          orientation: 'horizontal',
+          length: 80,
+        },
         styles: {
           slider: {
             "stroke-linecap": 'round',
@@ -806,7 +808,7 @@ class RangeSliderTool extends BaseTool {
 
     super(argCard, Merge.mergeDeep(DEFAULT_SLIDER_CONFIG, argConfig), argPos);
 
-    this.svg.length = Utils.calculateSvgDimension(argConfig.length)
+    this.svg.length = Utils.calculateSvgDimension(argConfig.position.length)
 
     this.svg.handle = {};
     this.svg.handle.width = Utils.calculateSvgDimension(argConfig.handle.width);
@@ -815,7 +817,7 @@ class RangeSliderTool extends BaseTool {
 
     // Define the bounding box for the pointer / touch events to get detected.
 
-    if (this.config.orientation == 'vertical') {
+    if (this.config.position.orientation == 'vertical') {
       this.svg.x1 = this.svg.cx;
       this.svg.y1 = this.svg.cy - this.svg.length/2;
       this.svg.x2 = this.svg.cx;
@@ -867,14 +869,14 @@ class RangeSliderTool extends BaseTool {
     // is m.x in svg x1/x2 range. Then translate to actual value.
     // need scale.min / max...
 
-    if (argThis.config.orientation == 'horizontal') {
+    if (argThis.config.position.orientation == 'horizontal') {
       var xpos = m.x - argThis.svg.x1;
       var xposp = xpos / argThis.svg.length;
       var state = ((argThis.config.scale.max - argThis.config.scale.min) * xposp) + argThis.config.scale.min;
       //var state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, xposp);
       if (this.dev.debug) console.log ('SLIDER - svgToValue results)', xpos, xposp, state);
       return state;
-    } else if (argThis.config.orientation == 'vertical') {
+    } else if (argThis.config.position.orientation == 'vertical') {
       // y is calculated from lower y value. So slider is from bottom to top...
       var ypos = argThis.svg.y2 - m.y;
       var yposp = ypos / argThis.svg.length;
@@ -887,13 +889,13 @@ class RangeSliderTool extends BaseTool {
 
   valueToSvg(argValue) {
 
-    if (this.config.orientation == 'horizontal') {
+    if (this.config.position.orientation == 'horizontal') {
       var state = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, argValue);
 
       var xposp = state * this.svg.length;
       var xpos = this.svg.x1 + xposp;
       return xpos;
-    } else if (this.config.orientation == 'vertical') {
+    } else if (this.config.position.orientation == 'vertical') {
       var state = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, argValue);
 
       var yposp = state * this.svg.length;
@@ -917,7 +919,7 @@ class RangeSliderTool extends BaseTool {
 
   updatePath(argThis, m) {
     // HORIZONTAL
-    if (argThis.config.orientation == 'horizontal') {
+    if (argThis.config.position.orientation == 'horizontal') {
       //argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argThis.svg.handle.popout / 1000, argThis.deformation, argThis._value);
       argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argThis.svg.handle.height / 2, argThis.deformation, argThis._value);
       argThis.elements.path.setAttributeNS(null, "d", argThis.d);
@@ -925,7 +927,7 @@ class RangeSliderTool extends BaseTool {
       argThis.elements.thumb.setAttributeNS(null, "r", 1 + argThis._value / 3);
       argThis.elements.thumb.setAttributeNS(null, "cx", m.x);
     } //VERTICAL
-    else if (argThis.config.orientation == 'vertical') {
+    else if (argThis.config.position.orientation == 'vertical') {
 //      argThis.d = argThis.curvedPath(m.x + argThis.svg.handle.width / 2, argThis.svg.y, argThis.deformation, argThis._value);
       argThis.d = argThis.curvedPath(argThis.svg.x + argThis.svg.handle.width / 2, m.y, argThis.deformation, argThis._value);
       argThis.elements.path.setAttributeNS(null, "d", argThis.d);
@@ -938,8 +940,8 @@ class RangeSliderTool extends BaseTool {
   }
 
   updateLabel(argThis, m) {
-    if (this.dev.debug) console.log('SLIDER - updateLabel start', m, argThis.config.orientation);
-    if (argThis.config.orientation == 'horizontal') {
+    if (this.dev.debug) console.log('SLIDER - updateLabel start', m, argThis.config.position.orientation);
+    if (argThis.config.position.orientation == 'horizontal') {
 
       // The -30 is for correction width of box around label??????
 
@@ -951,7 +953,7 @@ class RangeSliderTool extends BaseTool {
       argThis.elements.text.textContent = Math.round(argThis.svgToValue(argThis, m));
       if (this.dev.debug) console.log('SLIDER - updateLabel horizontal', m, argThis.svgToValue(argThis, m));
 
-    } else if (argThis.config.orientation == 'vertical') {
+    } else if (argThis.config.position.orientation == 'vertical') {
       argThis.elements.label.setAttributeNS(
         null,
         "transform",
@@ -1008,7 +1010,7 @@ class RangeSliderTool extends BaseTool {
     const offset = this.svg.y1;
 
     // HORIZONTAL
-    if (this.config.orientation == 'horizontal') {
+    if (this.config.position.orientation == 'horizontal') {
       // Coordinates are clipped between the start and end of the slider, svg.x1 and svg.x2
       var D = { cx: Math.max(this.svg.x1, Math.min(argX,                  this.svg.x2)), cy: argY - argPopout, r: 1 };
       var B = { cx: Math.max(this.svg.x1, Math.min(D.cx - argDeform,      this.svg.x2)), cy: argY,        r: 1 };
@@ -1024,7 +1026,7 @@ class RangeSliderTool extends BaseTool {
       V = argY;
 
     } // VERTICAL
-    else if (this.config.orientation == 'vertical') {
+    else if (this.config.position.orientation == 'vertical') {
       // Coordinates are clipped between the bottom and top of the slider, svg.y1 and svg.y2
 
       var D = { cy: Math.max(this.svg.y1, Math.min(argY,                  this.svg.y2)), cx: argX - argPopout, r: 1 };
@@ -1065,13 +1067,13 @@ class RangeSliderTool extends BaseTool {
     //line divided in n segments
     //find the i-th point
 
-    if (this.config.orientation == 'horizontal') {
+    if (this.config.position.orientation == 'horizontal') {
       var o = {
         cx: a.cx + (b.cx - a.cx) * (i / n),
         cy: a.cy + (b.cy - a.cy) * (i / n)
       }
     }
-    else if (this.config.orientation == 'vertical') {
+    else if (this.config.position.orientation == 'vertical') {
       var o = {
         cx: a.cx + (b.cx - a.cx) * (i / n),
         cy: a.cy + (b.cy - a.cy) * (i / n)
@@ -1275,10 +1277,12 @@ class LineTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_LINE_CONFIG = {
-        orientation: 'vertical',
-        length: '10',
-        cx: '50',
-        cy: '50',
+        position: {
+          orientation: 'vertical',
+          length: '10',
+          cx: '50',
+          cy: '50',
+        },
         styles: {
           line: {
             "stroke-linecap": 'round',
@@ -1291,27 +1295,27 @@ class LineTool extends BaseTool {
 
     super(argCard, Merge.mergeDeep(DEFAULT_LINE_CONFIG, argConfig), argPos);
 
-    if ((this.config.orientation == 'vertical') || (this.config.orientation == 'horizontal'))
-        this.svg.length = Utils.calculateSvgDimension(argConfig.length);
+    if ((this.config.position.orientation == 'vertical') || (this.config.position.orientation == 'horizontal'))
+        this.svg.length = Utils.calculateSvgDimension(argConfig.position.length);
 
-    if (this.config.orientation == 'fromto') {
-      this.svg.x1 = Utils.calculateSvgCoordinate(argConfig.x1, this.toolsetPos.cx);
-      this.svg.y1 = Utils.calculateSvgCoordinate(argConfig.y1, this.toolsetPos.cy);
-      this.svg.x2 = Utils.calculateSvgCoordinate(argConfig.x2, this.toolsetPos.cx);
-      this.svg.y2 = Utils.calculateSvgCoordinate(argConfig.y2, this.toolsetPos.cy);
+    if (this.config.position.orientation == 'fromto') {
+      this.svg.x1 = Utils.calculateSvgCoordinate(argConfig.position.x1, this.toolsetPos.cx);
+      this.svg.y1 = Utils.calculateSvgCoordinate(argConfig.position.y1, this.toolsetPos.cy);
+      this.svg.x2 = Utils.calculateSvgCoordinate(argConfig.position.x2, this.toolsetPos.cx);
+      this.svg.y2 = Utils.calculateSvgCoordinate(argConfig.position.y2, this.toolsetPos.cy);
     }
 
-    if (this.config.orientation == 'vertical') {
+    if (this.config.position.orientation == 'vertical') {
       this.svg.x1 = this.svg.cx;
       this.svg.y1 = this.svg.cy - this.svg.length/2;
       this.svg.x2 = this.svg.cx;
       this.svg.y2 = this.svg.cy + this.svg.length/2;
-    } else if (this.config.orientation == 'horizontal') {
+    } else if (this.config.position.orientation == 'horizontal') {
       this.svg.x1 = this.svg.cx - this.svg.length/2;
       this.svg.y1 = this.svg.cy;
       this.svg.x2 = this.svg.cx + this.svg.length/2;
       this.svg.y2 = this.svg.cy;
-    } else if (this.config.orientation == 'fromto') {
+    } else if (this.config.position.orientation == 'fromto') {
       this.svg.x1 = this.svg.x1;
       this.svg.y1 = this.svg.y1;
       this.svg.x2 = this.svg.x2;
@@ -1335,7 +1339,7 @@ class LineTool extends BaseTool {
     this.MergeColorFromState(this.styles.line);
     this.MergeAnimationStyleIfChanged();
 
-    if (this.dev.debug) console.log('_renderLine', this.config.orientation, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
+    if (this.dev.debug) console.log('_renderLine', this.config.position.orientation, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
     return svg`
       <line
         x1="${this.svg.x1}"
@@ -1356,7 +1360,7 @@ class LineTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="line-${this.toolId}" class="line"
+      <g id="line-${this.toolId}" class="line, hover"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
         ${this._renderLine()}
       </g>
@@ -1376,9 +1380,11 @@ class CircleTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_CIRCLE_CONFIG = {
-        cx: 50,
-        cy: 50,
-        radius: 50,
+        position: {
+          cx: 50,
+          cy: 50,
+          radius: 50,
+        },
         styles: {
           circle: {
           }
@@ -1387,7 +1393,7 @@ class CircleTool extends BaseTool {
 
     super(argCard, Merge.mergeDeep(DEFAULT_CIRCLE_CONFIG, argConfig), argPos);
 
-    this.svg.radius = Utils.calculateSvgDimension(argConfig.radius)
+    this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius)
     this.styles.circle = {};
     if (this.dev.debug) console.log('CircleTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -1440,7 +1446,7 @@ class CircleTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="circle-${this.toolId}" class="circle" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g "" id="circle-${this.toolId}" class="circle hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
         @click=${e => this._card.handlePopup2(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderCircle()}
       </g>
@@ -1460,12 +1466,14 @@ class RegPolyTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_REGPOLY_CONFIG = {
-        cx: 50,
-        cy: 50,
-        radius: 50,
-        side_count: 6,
-        side_skip: 1,
-        angle_offset: 0,
+        position: {
+          cx: 50,
+          cy: 50,
+          radius: 50,
+          side_count: 6,
+          side_skip: 1,
+          angle_offset: 0,
+        },
         styles: {
           regpoly: {
             "stroke": 'var(--primary-text-color)',
@@ -1477,7 +1485,7 @@ class RegPolyTool extends BaseTool {
 
     super(argCard, Merge.mergeDeep(DEFAULT_REGPOLY_CONFIG, argConfig), argPos);
 
-    this.svg.radius = Utils.calculateSvgDimension(argConfig.radius)
+    this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius)
     this.styles.regpoly = {};
     if (this.dev.debug) console.log('RegPolyTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -1541,7 +1549,7 @@ class RegPolyTool extends BaseTool {
 
     return svg`
       <path
-        d="${generatePoly(this.config.side_count, this.config.side_skip, this.svg.radius, this.config.angle_offset, this.svg.cx, this.svg.cy)}"
+        d="${generatePoly(this.config.position.side_count, this.config.position.side_skip, this.svg.radius, this.config.position.angle_offset, this.svg.cx, this.svg.cy)}"
         style="${styleMap(this.styles.regpoly)}"
       />
       `;
@@ -1559,7 +1567,7 @@ class RegPolyTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="regpoly-${this.toolId}" class="regpoly" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g "" id="regpoly-${this.toolId}" class="regpoly, hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
         @click=${e => this._card.handlePopup2(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderRegPoly()}
       </g>
@@ -1579,10 +1587,12 @@ class UserSvgTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_USERSVG_CONFIG = {
-        cx: 50,
-        cy: 50,
-        height: 50,
-        width: 50,
+        position: {
+          cx: 50,
+          cy: 50,
+          height: 50,
+          width: 50,
+        },
         styles: {
           usersvg: {
           }
@@ -1659,7 +1669,7 @@ class UserSvgTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="circle-${this.toolId}" class="circle" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g "" id="circle-${this.toolId}" class="svg, hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
         ${this._renderUserSvg()}
       </g>
@@ -1679,11 +1689,13 @@ class RectangleTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_RECTANGLE_CONFIG = {
-        cx: 50,
-        cy: 50,
-        width: 50,
-        height: 50,
-        rx: 0,
+        position: {
+          cx: 50,
+          cy: 50,
+          width: 50,
+          height: 50,
+          rx: 0,
+        }, 
         styles: {
           rectangle: {
             "stroke-linecap": 'round',
@@ -1696,7 +1708,7 @@ class RectangleTool extends BaseTool {
     }
 
     super(argCard, Merge.mergeDeep(DEFAULT_RECTANGLE_CONFIG, argConfig), argPos);
-    this.svg.rx = Utils.calculateSvgDimension(argConfig.rx)
+    this.svg.rx = Utils.calculateSvgDimension(argConfig.position.rx)
     this.styles.rectangle = {};
 
     if (this.dev.debug) console.log('RectangleTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
@@ -1766,12 +1778,14 @@ class RectangleToolEx extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_RECTANGLEEX_CONFIG = {
-        cx: 50,
-        cy: 50,
-        width: 50,
-        height: 50,
-        radius: {
-          all: 0,
+        position: {
+          cx: 50,
+          cy: 50,
+          width: 50,
+          height: 50,
+          radius: {
+            all: 0,
+          },
         },
         styles: {
           rectex: {
@@ -1793,18 +1807,18 @@ class RectangleToolEx extends BaseTool {
 
     let maxRadius = Math.min(this.svg.height, this.svg.width) / 2;
     let radius = 0;
-    radius = Utils.calculateSvgDimension(this.config.radius.all);
+    radius = Utils.calculateSvgDimension(this.config.position.radius.all);
     this.svg.radiusTopLeft = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
-                              this.config.radius.top_left || this.config.radius.left || this.config.radius.top || radius))) || 0;
+                              this.config.position.radius.top_left || this.config.position.radius.left || this.config.position.radius.top || radius))) || 0;
 
     this.svg.radiusTopRight = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
-                              this.config.radius.top_right || this.config.radius.right || this.config.radius.top || radius))) || 0;
+                              this.config.position.radius.top_right || this.config.position.radius.right || this.config.position.radius.top || radius))) || 0;
 
     this.svg.radiusBottomLeft = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
-                              this.config.radius.bottom_left || this.config.radius.left || this.config.radius.bottom || radius))) || 0;
+                              this.config.position.radius.bottom_left || this.config.position.radius.left || this.config.position.radius.bottom || radius))) || 0;
 
     this.svg.radiusBottomRight = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
-                              this.config.radius.bottom_right || this.config.radius.right || this.config.radius.bottom || radius))) || 0;
+                              this.config.position.radius.bottom_right || this.config.position.radius.right || this.config.position.radius.bottom || radius))) || 0;
 
     if (this.dev.debug) console.log('RectangleToolEx constructor coords, dimensions', this.toolId, this.svg, this.config);
   }
@@ -1886,10 +1900,12 @@ class EllipseTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_ELLIPSE_CONFIG = {
-        cx: 50,
-        cy: 50,
-        radiusx: 50,
-        radiusy: 25,
+        position: {
+          cx: 50,
+          cy: 50,
+          radiusx: 50,
+          radiusy: 25,
+        },
         styles: {
           ellipse: {
           }
@@ -1898,8 +1914,8 @@ class EllipseTool extends BaseTool {
 
     super(argCard, Merge.mergeDeep(DEFAULT_ELLIPSE_CONFIG, argConfig), argPos);
 
-    this.svg.radiusx = Utils.calculateSvgDimension(argConfig.radiusx)
-    this.svg.radiusy = Utils.calculateSvgDimension(argConfig.radiusy)
+    this.svg.radiusx = Utils.calculateSvgDimension(argConfig.position.radiusx)
+    this.svg.radiusy = Utils.calculateSvgDimension(argConfig.position.radiusy)
     this.styles.ellipse = {};
     if (this.dev.debug) console.log('EllipseTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -1983,12 +1999,12 @@ class EntityIconTool extends BaseTool {
     // Safari doesn't use the svg viewport for rendering of the foreignObject, but the real clientsize.
     // So positioning an icon doesn't work correctly...
 
-    this.svg.iconSize = this.config.icon_size ? this.config.icon_size : 3;
+    this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 3;
     this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
-    const x = this.config.cx ? this.config.cx / 100 : 0.5;
-    const y = this.config.cy ? this.config.cy / 100 : 0.5;
+    const x = this.config.position.cx ? this.config.position.cx / 100 : 0.5;
+    const y = this.config.position.cy ? this.config.position.cy / 100 : 0.5;
 
-    const align = this.config.align ? this.config.align : 'center';
+    const align = this.config.position.align ? this.config.position.align : 'center';
     const adjust = (align == 'center' ? 0.5 : (align == 'start' ? -1 : +1));
 
   //  const parentClientWidth = this.parentElement.clientWidth;
@@ -2047,16 +2063,16 @@ class EntityIconTool extends BaseTool {
 
     if (true || (this.svg.xpx == 0)) {
 
-      this.svg.iconSize = this.config.icon_size ? this.config.icon_size : 2;
+      this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
       this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
-      const x = this.config.cx ? this.config.cx / 100 : 0.5;
-      const y = this.config.cy ? this.config.cy / 100 : 0.5;
+      const x = this.config.position.cx ? this.config.position.cx / 100 : 0.5;
+      const y = this.config.position.cy ? this.config.position.cy / 100 : 0.5;
 
       // NEW NEW NEW Use % for size of icon...
-      this.svg.iconSize = this.config.icon_size ? this.config.icon_size : 2;
+      this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
       this.svg.iconPixels = Utils.calculateSvgDimension(this.svg.iconSize);
 
-      const align = this.config.align ? this.config.align : 'center';
+      const align = this.config.position.align ? this.config.position.align : 'center';
       const adjust = (align == 'center' ? 0.5 : (align == 'start' ? -1 : +1));
 
     //  const parentClientWidth = this.parentElement.clientWidth;
@@ -2180,7 +2196,7 @@ class EntityIconTool extends BaseTool {
     if ((this._card.isSafari) || (this._card.iOS)) {
       if (this.iconSvg) {
         // Use original size, not the corrected one!
-        this.svg.iconSize = this.config.icon_size ? this.config.icon_size : 2;
+        this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
         this.svg.iconPixels = Utils.calculateSvgDimension(this.svg.iconSize);
 
         this.svg.x1 = this.svg.cx - this.svg.iconPixels / 2;
@@ -2193,7 +2209,7 @@ class EntityIconTool extends BaseTool {
         // Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required to position the icon on its desired location.
         // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
         return svg`
-          <g id="icon-${this.toolId}"  style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
+          <g id="icon-${this.toolId}" class="hover" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
             <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke="yellow" stroke-width="0px" opacity="50%" fill="none"></rect>
             <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
           <g>
@@ -2202,7 +2218,7 @@ class EntityIconTool extends BaseTool {
         return svg`
           <foreignObject width="0px" height="0px" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="visible">
             <body>
-              <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
+              <div class="div__icon, hover" xmlns="http://www.w3.org/1999/xhtml"
                   style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
                   <ha-icon icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.styles.icon)}";></ha-icon>
               </div>
@@ -2249,7 +2265,7 @@ class EntityIconTool extends BaseTool {
 
   render() {
     return svg`
-      <g "" id="icongrp-${this.toolId}" class="svgicon"
+      <g "" id="icongrp-${this.toolId}" class="svgicon, hover"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
 
         ${this._renderIcon()}
@@ -2429,7 +2445,7 @@ class EntityStateTool extends BaseTool {
     }
 
     return svg`
-      <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}"
+      <tspan class="state__value, hover" x="${this.svg.x}" y="${this.svg.y}"
         style="${styleMap(this.styles.state)}">
         ${this.config?.text?.before ? this.config.text.before : ''}${inState}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
     `;
@@ -2463,19 +2479,19 @@ class EntityStateTool extends BaseTool {
       // Check for location of uom. Default = next to state, below = below state ;-)
       if (this.config.show.uom === 'default') {
         return svg`
-          <tspan class="state__uom" dx="-0.1em" dy="-0.35em"
+          <tspan class="state__uom, hover" dx="-0.1em" dy="-0.35em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'below') {
         return svg`
-          <tspan class="state__uom" x="${this.svg.x}" dy="1.5em"
+          <tspan class="state__uom, hover" x="${this.svg.x}" dy="1.5em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'above') {
         return svg`
-          <tspan class="state__uom" x="${this.svg.x}" dy="-1.5em"
+          <tspan class="state__uom, hover" x="${this.svg.x}" dy="-1.5em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
@@ -2577,7 +2593,7 @@ class EntityNameTool extends BaseTool {
 
     return svg`
         <text>
-          <tspan class="entity__name" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.name)}">${name}</tspan>
+          <tspan class="entity__name hover" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.name)}">${name}</tspan>
         </text>
       `;
   }
@@ -2592,7 +2608,7 @@ class EntityNameTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="name-${this.toolId}" class="name"
+      <g id="name-${this.toolId}" class="name hover"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
         ${this._renderEntityName()}
       </g>
@@ -2669,7 +2685,7 @@ class EntityAreaTool extends BaseTool {
     const area = this._buildArea(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
     return svg`
-        <text class="entity__area">
+        <text class="entity__area hover">
           <tspan class="entity__area" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.area)}">${area}</tspan>
         </text>
       `;
@@ -2685,7 +2701,7 @@ class EntityAreaTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="area-${this.toolId}" class="area"
+      <g id="area-${this.toolId}" class="area hover"
         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
         ${this._renderEntityArea()}
       </g>
@@ -2785,9 +2801,11 @@ class HorseshoeTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_HORSESHOE_CONFIG = {
-      cx: 50,
-      cy: 50,
-      radius: 45,
+      position: {
+        cx: 50,
+        cy: 50,
+        radius: 45,
+      },
       card_filter: 'card--filter-none',
       horseshoe_scale: {  min: 0,
                   max: 100,
@@ -2825,8 +2843,8 @@ class HorseshoeTool extends BaseTool {
 
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
-    this.svg.radius = Utils.calculateSvgDimension(this.config.radius)
-    this.svg.radius_ticks = Utils.calculateSvgDimension(0.95 * this.config.radius)
+    this.svg.radius = Utils.calculateSvgDimension(this.config.position.radius)
+    this.svg.radius_ticks = Utils.calculateSvgDimension(0.95 * this.config.position.radius)
 
     this.svg.horseshoe_scale = {};
     this.svg.horseshoe_scale.width = Utils.calculateSvgDimension(this.config.horseshoe_scale.width);
@@ -3075,14 +3093,16 @@ class SparklineBarChartTool extends BaseTool {
   constructor (argCard, argConfig, argPos) {
 
     const DEFAULT_BARCHART_CONFIG = {
-      cx: 50,
-      cy: 50,
-      height: 25,
-      width: 25,
-      margin: 0.5,
+      position: {
+        cx: 50,
+        cy: 50,
+        height: 25,
+        width: 25,
+        margin: 0.5,
+        orientation: 'vertical',
+      },
       hours: 24,
       barhours: 1,
-      type: 'vertical',
       color: 'var(--primary-color)',
       styles: {
         bar: {
@@ -3096,8 +3116,8 @@ class SparklineBarChartTool extends BaseTool {
 
     super(argCard, Merge.mergeDeep(DEFAULT_BARCHART_CONFIG, argConfig), argPos);
     
-    this.svg.margin = Utils.calculateSvgDimension(this.config.margin);
-    const theWidth = (this.config.orientation == 'vertical') ?  this.svg.width : this.svg.height;
+    this.svg.margin = Utils.calculateSvgDimension(this.config.position.margin);
+    const theWidth = (this.config.position.orientation == 'vertical') ?  this.svg.width : this.svg.height;
 
     this.svg.barWidth = (theWidth - (((this.config.hours / this.config.barhours) - 1) *
                                 this.svg.margin)) / (this.config.hours / this.config.barhours);
@@ -3181,7 +3201,7 @@ class SparklineBarChartTool extends BaseTool {
     }
 
     // VERTICAL
-    if (this.config.orientation == 'vertical') {
+    if (this.config.position.orientation == 'vertical') {
       if (this.dev.debug) console.log('bar is vertical');
       this._series.forEach((item, index) => {
         if (!_bars[index]) _bars[index] = {};
@@ -3192,7 +3212,7 @@ class SparklineBarChartTool extends BaseTool {
         _bars[index].y2 = _bars[index].y1 - this._bars[index].length;
       });
       // HORIZONTAL
-    } else if (this.config.orientation == 'horizontal') {
+    } else if (this.config.position.orientation == 'horizontal') {
       if (this.dev.debug) console.log('bar is horizontal');
       this._data.forEach((item, index) => {
         if (!_bars[index]) _bars[index] = {};
@@ -3284,11 +3304,13 @@ class SegmentedArcTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_SEGARC_CONFIG = {
-      cx: 50,
-      cy: 50,
-      radius: 45,
-      width: 3,
-      margin: 1.5,
+      position: {
+        cx: 50,
+        cy: 50,
+        radius: 45,
+        width: 3,
+        margin: 1.5,
+      },
       color: 'var(--primary-color)',
       styles: { 
         foreground: {
@@ -3313,20 +3335,17 @@ class SegmentedArcTool extends BaseTool {
         "min": 0,
         "max": 100,
         "width": 2,
-        "offset": -5
+        "offset": -3.5
       },
       show: {
         "style": 'fixedcolor',
-        "scale_offset": 0,
         "scale": false,
       },
-      scale_offset: -4.5,
       isScale: false,
       animation: {
         "duration": 1.5,
       },
     }
-
 
     super(argCard, Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig), argPos);
 
@@ -3335,16 +3354,16 @@ class SegmentedArcTool extends BaseTool {
     // Extra for use of styleMap
     this.styles = {};
 
-    this.svg.radius = Utils.calculateSvgDimension(argConfig.radius);
-    this.svg.radiusX = Utils.calculateSvgDimension(argConfig.radius_x || argConfig.radius);
-    this.svg.radiusY = Utils.calculateSvgDimension(argConfig.radius_y || argConfig.radius);
+    this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius);
+    this.svg.radiusX = Utils.calculateSvgDimension(argConfig.position.radius_x || argConfig.position.radius);
+    this.svg.radiusY = Utils.calculateSvgDimension(argConfig.position.radius_y || argConfig.position.radius);
 
     this.svg.segments = {};
     // #TODO:
     // Get gap from colorlist, colorstop or something else. Not from the default segments gap.
     this.svg.segments.gap = Utils.calculateSvgDimension(this.config.segments.gap);
     //this.svg.segments.dash = Utils.calculateSvgDimension(this.config.segments.dash);
-    this.svg.scale_offset = Utils.calculateSvgDimension(this.config.scale_offset);
+    // this.svg.scale_offset = Utils.calculateSvgDimension(this.config.scale_offset);
     this.svg.scale_offset = Utils.calculateSvgDimension(this.config.scale.offset);
 
 
@@ -3367,7 +3386,7 @@ class SegmentedArcTool extends BaseTool {
     this._cache = [];
 
     // Check for gap. Big enough?
-    //const minGap = this.config.radius * Math.PI / SVG_VIEW_BOX / 2;
+    //const minGap = this.config.position.radius * Math.PI / SVG_VIEW_BOX / 2;
     //this.config.segments.gap = Math.max(minGap, this.config.segments.gap);
 
     //this.config.styles = {...DEFAULT_SEGARC_CONFIG.styles, ...this.config.styles};
@@ -3380,8 +3399,8 @@ class SegmentedArcTool extends BaseTool {
 
     // Precalculate segments with start and end angle!
     this._arc = {};
-    this._arc.size = Math.abs(this.config.end_angle - this.config.start_angle);
-    this._arc.clockwise = this.config.end_angle > this.config.start_angle;
+    this._arc.size = Math.abs(this.config.position.end_angle - this.config.position.start_angle);
+    this._arc.clockwise = this.config.position.end_angle > this.config.position.start_angle;
     this._arc.direction = this._arc.clockwise ? 1 : -1;
 
     // 2020.10.13 (see issue #5)
@@ -3420,10 +3439,10 @@ class SegmentedArcTool extends BaseTool {
       // Use a running total for the size of the segments...
       var segmentRunningSize = 0;
       for (var i = 0; i < this._segments.count; i++) {
-        this._segmentAngles[i] = {"boundsStart": this.config.start_angle + (segmentRunningSize * this._arc.direction),
-                                  "boundsEnd": this.config.start_angle + ((segmentRunningSize + this._segments.sizeList[i]) * this._arc.direction),
-                                  "drawStart": this.config.start_angle + (segmentRunningSize * this._arc.direction) + (this._segments.gap * this._arc.direction),
-                                  "drawEnd": this.config.start_angle + ((segmentRunningSize + this._segments.sizeList[i]) * this._arc.direction) - (this._segments.gap * this._arc.direction)};
+        this._segmentAngles[i] = {"boundsStart": this.config.position.start_angle + (segmentRunningSize * this._arc.direction),
+                                  "boundsEnd": this.config.position.start_angle + ((segmentRunningSize + this._segments.sizeList[i]) * this._arc.direction),
+                                  "drawStart": this.config.position.start_angle + (segmentRunningSize * this._arc.direction) + (this._segments.gap * this._arc.direction),
+                                  "drawEnd": this.config.position.start_angle + ((segmentRunningSize + this._segments.sizeList[i]) * this._arc.direction) - (this._segments.gap * this._arc.direction)};
         segmentRunningSize += this._segments.sizeList[i];
       }
 
@@ -3469,10 +3488,10 @@ class SegmentedArcTool extends BaseTool {
       // Use a running total for the size of the segments...
       var segmentRunningSize = 0;
       for (var i = 0; i < this._segments.count; i++) {
-        this._segmentAngles[i] = {"boundsStart": this.config.start_angle + (segmentRunningSize * this._arc.direction),
-                                  "boundsEnd": this.config.start_angle + ((segmentRunningSize + this._segments.sizeList[i]) * this._arc.direction),
-                                  "drawStart": this.config.start_angle + (segmentRunningSize * this._arc.direction) + (this._segments.gap * this._arc.direction),
-                                  "drawEnd": this.config.start_angle + ((segmentRunningSize + this._segments.sizeList[i]) * this._arc.direction) - (this._segments.gap * this._arc.direction)};
+        this._segmentAngles[i] = {"boundsStart": this.config.position.start_angle + (segmentRunningSize * this._arc.direction),
+                                  "boundsEnd": this.config.position.start_angle + ((segmentRunningSize + this._segments.sizeList[i]) * this._arc.direction),
+                                  "drawStart": this.config.position.start_angle + (segmentRunningSize * this._arc.direction) + (this._segments.gap * this._arc.direction),
+                                  "drawEnd": this.config.position.start_angle + ((segmentRunningSize + this._segments.sizeList[i]) * this._arc.direction) - (this._segments.gap * this._arc.direction)};
         segmentRunningSize += this._segments.sizeList[i];
         if (this.dev.debug) console.log('colorstuff - COLORSTOPS++ segments', segmentRunningSize, this._segmentAngles[i]);
       }
@@ -3498,10 +3517,10 @@ class SegmentedArcTool extends BaseTool {
         // Cloning done. Now set specific scale options.
         scaleConfig.show.scale = false;
         scaleConfig.isScale = true;
-        scaleConfig.width = this.config.scale.width; //1.5;
-        scaleConfig.radius = this.config.radius - (this.config.width/2) + (scaleConfig.width/2) + (this.config.scale.offset);//(this.config.scale_offset);
-        scaleConfig.radius_x = (this.config.radius_x || this.config.radius) - (this.config.width/2) + (scaleConfig.width/2) + (this.config.scale.offset);//(this.config.scale_offset);
-        scaleConfig.radius_y = (this.config.radius_y || this.config.radius) - (this.config.width/2) + (scaleConfig.width/2) + (this.config.scale.offset);//(this.config.scale_offset);
+        scaleConfig.position.width = this.config.scale.width;
+        scaleConfig.position.radius = this.config.position.radius - (this.config.position.width/2) + (scaleConfig.position.width/2) + (this.config.scale.offset);
+        scaleConfig.position.radius_x = ((this.config.position.radius_x || this.config.position.radius)) - (this.config.position.width/2) + (scaleConfig.position.width/2) + (this.config.scale.offset);
+        scaleConfig.position.radius_y = ((this.config.position.radius_y || this.config.position.radius)) - (this.config.position.width/2) + (scaleConfig.position.width/2) + (this.config.scale.offset);
 
         //this._segmentedArcScale = new SegmentedArc(this._card, scaleConfig);
         this._segmentedArcScale = new SegmentedArcTool(this._card, scaleConfig, argPos);
@@ -3531,18 +3550,18 @@ class SegmentedArcTool extends BaseTool {
     }
     else {
       for (var i=0; i< this._arc.parts; i++) {
-        this._segmentAngles[i] = {"boundsStart": this.config.start_angle + (i * this.config.segments.dash * this._arc.direction),
-                                  "boundsEnd": this.config.start_angle + ((i + 1) * this.config.segments.dash * this._arc.direction),
-                                  "drawStart": this.config.start_angle + (i * this.config.segments.dash * this._arc.direction) + (this.config.segments.gap * this._arc.direction),
-                                  "drawEnd": this.config.start_angle + ((i + 1) * this.config.segments.dash * this._arc.direction) - (this.config.segments.gap * this._arc.direction)};
+        this._segmentAngles[i] = {"boundsStart": this.config.position.start_angle + (i * this.config.segments.dash * this._arc.direction),
+                                  "boundsEnd": this.config.position.start_angle + ((i + 1) * this.config.segments.dash * this._arc.direction),
+                                  "drawStart": this.config.position.start_angle + (i * this.config.segments.dash * this._arc.direction) + (this.config.segments.gap * this._arc.direction),
+                                  "drawEnd": this.config.position.start_angle + ((i + 1) * this.config.segments.dash * this._arc.direction) - (this.config.segments.gap * this._arc.direction)};
       }
       if (this._arc.partsPartialSize > 0) {
-        this._segmentAngles[i] = {"boundsStart": this.config.start_angle + (i * this.config.segments.dash * this._arc.direction),
-                                  "boundsEnd": this.config.start_angle + ((i + 0) * this.config.segments.dash * this._arc.direction) +
+        this._segmentAngles[i] = {"boundsStart": this.config.position.start_angle + (i * this.config.segments.dash * this._arc.direction),
+                                  "boundsEnd": this.config.position.start_angle + ((i + 0) * this.config.segments.dash * this._arc.direction) +
                                           (this._arc.partsPartialSize * this._arc.direction),
 
-                                  "drawStart": this.config.start_angle + (i * this.config.segments.dash * this._arc.direction) + (this.config.segments.gap * this._arc.direction),
-                                  "drawEnd": this.config.start_angle + ((i + 0) * this.config.segments.dash * this._arc.direction) +
+                                  "drawStart": this.config.position.start_angle + (i * this.config.segments.dash * this._arc.direction) + (this.config.segments.gap * this._arc.direction),
+                                  "drawEnd": this.config.position.start_angle + ((i + 0) * this.config.segments.dash * this._arc.direction) +
                                           (this._arc.partsPartialSize * this._arc.direction) - (this.config.segments.gap * this._arc.direction)};
       }
     }
@@ -3638,13 +3657,13 @@ class SegmentedArcTool extends BaseTool {
       // Here we can rebuild all needed. Much will be the same I guess...
 
       // Added temp vars. animation doesn't work!!!!
-      var arcStart = this.config.start_angle;
-      var arcEnd = this.config.end_angle;
-      var arcEndPrev = this.config.end_angle;
-      //var arcWidth = this.config.width;
+      var arcStart = this.config.position.start_angle;
+      var arcEnd = this.config.position.end_angle;
+      var arcEndPrev = this.config.position.end_angle;
+      //var arcWidth = this.config.position.width;
       var arcWidth = this.svg.width;
 
-      var arcEndFull = this.config.end_angle;
+      var arcEndFull = this.config.position.end_angle;
       var arcClockwise = arcEnd > arcStart;
       var arcPart = this.config.segments.dash;
       var arcDivider = this.config.segments.gap;
@@ -3661,10 +3680,10 @@ class SegmentedArcTool extends BaseTool {
       if (this.dev.debug) if (!this._stateValuePrev) console.log('*****UNDEFINED', this._stateValue, this._stateValuePrev, valPrev);
       if (val != valPrev) if (this.dev.debug) console.log('RENDERNEW _renderSegments diff value old new', this.toolId, valPrev, val);
 
-          arcEnd = (val * this._arc.size * this._arc.direction) + this.config.start_angle;
-          arcEndPrev = (valPrev * this._arc.size * this._arc.direction) + this.config.start_angle;
-      var arcSize = Math.abs(arcEnd - this.config.start_angle);
-      var arcSizePrev = Math.abs(arcEndPrev - this.config.start_angle);
+          arcEnd = (val * this._arc.size * this._arc.direction) + this.config.position.start_angle;
+          arcEndPrev = (valPrev * this._arc.size * this._arc.direction) + this.config.position.start_angle;
+      var arcSize = Math.abs(arcEnd - this.config.position.start_angle);
+      var arcSizePrev = Math.abs(arcEndPrev - this.config.position.start_angle);
 
       // // Styles are already converted to an Object {}...
       // if (!this.stylesFgStr) {
@@ -4189,7 +4208,7 @@ class devSwissArmyKnifeCard extends LitElement {
 
     return css`
       :host {
-        cursor: pointer;
+        cursor: default;
         font-size: ${FONT_SIZE}px;
       }
 
@@ -4611,6 +4630,14 @@ class devSwissArmyKnifeCard extends LitElement {
       .nam {
         alignment-baseline: central;
         fill: var(--primary-text-color);
+      }
+
+      // .state__uom:hover, .state__value:hover, .entity__name:hover, .entity__area:hover {
+        // cursor: pointer;
+      // }
+      
+      .hover {
+        cursor: pointer;
       }
 
       // .state__uom {
@@ -5265,6 +5292,12 @@ class devSwissArmyKnifeCard extends LitElement {
                   </div>
                 </ha-card>
                 `;
+      myHtml = html`
+                <ha-card class="container">
+                    ${this._renderSvg()}
+                </ha-card>
+                `;
+
     }
     // All cards have rendered, check if one of them needs another update in some time...
 
@@ -5924,7 +5957,8 @@ class devSwissArmyKnifeCard extends LitElement {
       this.lovelace = pages.querySelector('ha-panel-lovelace');
     } else { }
 
-    const returnColor = window.getComputedStyle(this.lovelace).getPropertyValue(newColor);
+    // const returnColor = window.getComputedStyle(this.lovelace).getPropertyValue(newColor);
+    const returnColor = window.getComputedStyle(this).getPropertyValue(newColor);
     return returnColor;
   }
 
