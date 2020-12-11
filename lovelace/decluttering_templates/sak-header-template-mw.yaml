@@ -30,7 +30,7 @@
 
 default:
   - font_color: var(--primary-text-color)
-  - font_size: 0.8em
+  - font_size: 3.5em
 card:
   type: 'custom:dev-swiss-army-knife-card'
 
@@ -53,8 +53,9 @@ card:
           cy: 2.5
         tools:
           - type: text
-            cx: 50
-            cy: 50
+            position:
+              cx: 50
+              cy: 50
             text: '[[content]]'
             styles:
               text:
