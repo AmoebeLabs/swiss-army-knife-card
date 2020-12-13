@@ -24,7 +24,8 @@
 
 import {
   LitElement, html, css, svg
-} from "https://unpkg.com/lit-element@2.4.0/lit-element.js?module";
+} from "https://unpkg.com/lit-element@2.3.0/lit-element.js?module";
+// } from "https://unpkg.com/lit-element@2.4.0/lit-element.js?module";
 
 import {
   unsafeHTML
@@ -692,7 +693,7 @@ class BaseTool {
           // Unknown operator. Just do nothing and return;
           isMatch = false;
       }
-      if (this.dev.debug) console.log('EntityStateTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
+      if (this.dev.debug) console.log('BaseTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
       if (!isMatch) return true;
 
       if (!this.animationStyle || !item.reuse) this.animationStyle = {};
@@ -711,6 +712,16 @@ class BaseTool {
       // this.item = Templates.getJsTemplateOrValue(this, this._stateValue, item);
     });
 
+    // if (!this.item) this.item = {};
+    // if (this.item.unit) {
+      // this.item.unit = 'undefined';
+      // this.derivedEntity.unit = 'undefined';
+    // } else {
+      // this.item.unit = '€';
+      // this.derivedEntity = {};
+      // this.derivedEntity.unit = '€';
+      // this.derivedEntity.state = state;
+    // }
     return true;
   }
 
@@ -2157,6 +2168,10 @@ class EntityIconTool extends BaseTool {
       }
     } else {
       this.iconSvg = this._card.lovelace.sakIconCache[icon];
+
+      // #WIP:
+      // this._card.pleaseReRender();
+
       // console.log("_renderIcon, icon from global cache!!, icon=", icon, "svg=", this.iconSvg);
     }
     
@@ -2286,8 +2301,10 @@ class BadgeTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_BADGE_CONFIG = {
-      ratio: 30,
-      divider: 30,
+      position: {
+        ratio: 30,
+        divider: 30,
+      },
       styles: {
         left: {
           "stroke-width": '0',
@@ -2305,15 +2322,15 @@ class BadgeTool extends BaseTool {
     this.svg.radius = 5;
     this.svg.leftXpos = this.svg.x;
     this.svg.leftYpos = this.svg.y;
-    this.svg.leftWidth = (this.config.ratio / 100) * this.svg.width;
-    this.svg.arrowSize = (this.svg.height * this.config.divider / 100) / 2;
-    this.svg.divSize = (this.svg.height * (100 - this.config.divider) / 100) / 2;
+    this.svg.leftWidth = (this.config.position.ratio / 100) * this.svg.width;
+    this.svg.arrowSize = (this.svg.height * this.config.position.divider / 100) / 2;
+    this.svg.divSize = (this.svg.height * (100 - this.config.position.divider) / 100) / 2;
 
     this.svg.rightXpos = this.svg.x + this.svg.leftWidth;
     this.svg.rightYpos = this.svg.y;
     this.svg.rightWidth = ((100 - this.config.ratio) / 100) * this.svg.width;
 
-    if (this.dev.debug) console.log('BadgeTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
+    if (this.dev.debug) console.log('BadgeTool constructor coords, dimensions', this.svg, this.config);
   }
 
  /*******************************************************************************
@@ -2443,6 +2460,12 @@ class EntityStateTool extends BaseTool {
       const localeTag = this.config.locale_tag || 'component.' + this._card._computeDomain(this._card.config.entities[this.config.entity_index].entity) + '.state._.'
       inState = this._card.toLocale(localeTag + inState.toLowerCase(), inState);
     }
+    
+    // return svg`
+      // <tspan class="state__value, hover" x="${this.svg.x}" y="${this.svg.y}"
+        // style="${styleMap(this.styles.state)}">
+        // ${this.config?.text?.before ? this.config.text.before : ''}${this._card.counter}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
+    // `;
 
     return svg`
       <tspan class="state__value, hover" x="${this.svg.x}" y="${this.svg.y}"
@@ -2506,10 +2529,12 @@ class EntityStateTool extends BaseTool {
 
     if (true || (this._card._computeDomain(this._card.entities[this.config.entity_index].entity_id) == 'sensor')) {
       return svg`
+      <g>
         <text @click=${e => this._card.handlePopup2(e, this._card.config.entities[this.config.entity_index])}>
           ${this._renderState()}
           ${this._renderUom()}
         </text>
+      </g>
       `;
     } else {
       // Not a sensor. Might be any other domain. Unit can only be specified using the units: in the configuration.
@@ -3863,7 +3888,7 @@ class SegmentedArcTool extends BaseTool {
                   fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                                            thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment+1]],
                                            value);
-                  console.log('runningsegment, runningcolor = ', fill, 'value=', value, 'ra= ', runningSegmentAngle, 'sa=', boundsStart, 'ea=', boundsEnd);
+                  // console.log('runningsegment, runningcolor = ', fill, 'value=', value, 'ra= ', runningSegmentAngle, 'sa=', boundsStart, 'ea=', boundsEnd);
                   
                   thisTool.styles.foreground[0]['fill'] = fill;
                   thisTool.as[0].style.fill = fill;
@@ -4820,6 +4845,9 @@ class devSwissArmyKnifeCard extends LitElement {
     // things around icons go wrong...
     // what if return is here..
       //return;
+    } else {
+      // #WIP
+      // this.requestUpdate();
     }
 
     if (!this.config.entities) {
@@ -4926,7 +4954,7 @@ class devSwissArmyKnifeCard extends LitElement {
     if (!entityHasChanged) {
       //console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
 
-      return;
+      // return;
     }
 
     if (this.toolsets) {
@@ -4937,6 +4965,7 @@ class devSwissArmyKnifeCard extends LitElement {
 
     // For now, always force update to render the card if any of the states or attributes have changed...
     if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
+    
     // this.requestUpdate();
 
     //console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
@@ -5162,7 +5191,8 @@ class devSwissArmyKnifeCard extends LitElement {
 //    }
     if (this.dev.debug) console.log('ConnectedCallback', this.cardId);
 
-    //this.requestUpdate();
+    // MUST request updates again, as no card is displayed otherwise as long as there is no data coming in...
+    this.requestUpdate();
     if (this.dev.performance) console.timeEnd("--> " + this.cardId + " PERFORMANCE card::connectedCallback");
   }
 
@@ -5200,6 +5230,10 @@ class devSwissArmyKnifeCard extends LitElement {
         item.firstUpdated(changedProperties);
       });
     }
+
+    // #WIP, testing updates...
+    // this.requestUpdate();
+
   }
 
 
@@ -5264,6 +5298,11 @@ class devSwissArmyKnifeCard extends LitElement {
 
 //  render({ config } = this) {
   render() {
+
+    // if (!this.counter) { this.counter = 1};
+    // this.counter++;
+    
+    // console.log('card::render', this.cardId);
     if (this.dev.performance) console.time("--> "+ this.cardId + " PERFORMANCE card::render");
     if (this.dev.debug) console.log('*****Event - render', this.cardId, new Date().getTime());
 
@@ -5292,11 +5331,11 @@ class devSwissArmyKnifeCard extends LitElement {
                   </div>
                 </ha-card>
                 `;
-      myHtml = html`
-                <ha-card class="container">
-                    ${this._renderSvg()}
-                </ha-card>
-                `;
+      // myHtml = html`
+                // <ha-card class="container">
+                    // ${this._renderSvg()}
+                // </ha-card>
+                // `;
 
     }
     // All cards have rendered, check if one of them needs another update in some time...
@@ -5399,10 +5438,25 @@ class devSwissArmyKnifeCard extends LitElement {
 
 //            <g id="toolsets" class="toolsets" style="filter:url(#nm-1);">
 
+    // this.counter++;
+
+            // <g id="toolsets" class="toolsets" style="${styleMap(this.config.layout?.styles?.toolsets || '')}">
+
+    // #WIP
+    // So it seams Safari can't have a style attribute on the next group??? It doesn't render anymore in some cases??
+    // test cards 0t and 5t have NO problems, but others do. WHY???????
+    //
+    // If filter is set one level higher:
+    // - safari OK
+    // - chrome uses other coordinates, so shadows are large!!
+    
+//                              style="${styleMap(this.config.layout?.styles?.toolsets)}"
+
     return svg`
-            <g id="toolsets" class="toolsets" style="${styleMap(this.config.layout?.styles?.toolsets)}">
-              ${this.toolsets.map(toolset => toolset.render())}
-            </g>
+              <g id="toolsets" class="toolsets"
+              >
+                ${this.toolsets.map(toolset => toolset.render())}
+              </g>
 
 
             <defs>
@@ -5707,10 +5761,21 @@ class devSwissArmyKnifeCard extends LitElement {
     // Card loops through all render groups and renders them with given style settings.
     // Default rendergroup, if none given, is "rg-default"
     //
-    svgItems.push(svg`<svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
-                  class="${cardFilter}"
-                  viewBox="0 0 ${this.viewBox.width} ${this.viewBox.height}">
-                  ${this._RenderToolsets()}`);
+    
+    // style="${styleMap(this.config.layout?.styles?.toolsets)}"
+    //
+    // The extra group is required for Safari to have filters work and updates are rendered.
+    // If group omitted, some cards do update, and some not!!!! Don't ask why!
+    
+    svgItems.push(svg`
+      <svg xmlns=http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
+       class="${cardFilter}"  
+       viewBox="0 0 ${this.viewBox.width} ${this.viewBox.height}"
+      >
+        <g style="${styleMap(this.config.layout?.styles?.toolsets)}">
+          ${this._RenderToolsets()}
+        </g>
+    `);
 
     return svg`${svgItems}`;
   }
@@ -5852,6 +5917,7 @@ class devSwissArmyKnifeCard extends LitElement {
   */
 
   _buildState(inState, entityConfig) {
+
     if (isNaN(inState))
       return inState;
 
