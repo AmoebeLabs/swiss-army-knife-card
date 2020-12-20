@@ -86,6 +86,13 @@ const FONT_SIZE = SVG_DEFAULT_DIMENSIONS / 100;
               if (Array.isArray(pVal) && Array.isArray(oVal)) {
                   /* eslint no-param-reassign: 0 */
                   // Only if pVal is empty???
+                  
+                  // #TODO:
+                  // Should check for .id to match both arrays ?!?!?!?!
+                  // Only concat if no ID or match found, otherwise mergeDeep ??
+                  //
+                  // concatenate and then reduce/merge the array based on id's if present??
+                  //
                   prev[key] = pVal.concat(...oVal);
               }
               else if (isObject(pVal) && isObject(oVal)) {
@@ -332,6 +339,7 @@ class Toolset {
       "segarc"    : SegmentedArcTool,
       "state"     : EntityStateTool,
       "slider"    : RangeSliderTool,
+      "switch"    : SwitchTool,
       "text"      : TextTool,
       "usersvg"   : UserSvgTool,
 
@@ -1288,20 +1296,20 @@ class LineTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_LINE_CONFIG = {
-        position: {
-          orientation: 'vertical',
-          length: '10',
-          cx: '50',
-          cy: '50',
-        },
-        styles: {
-          line: {
-            "stroke-linecap": 'round',
-            "stroke": 'var(--primary-text-color)',
-            "opacity": '1.0',
-            "stroke-width": '2',
-          }
+      position: {
+        orientation: 'vertical',
+        length: '10',
+        cx: '50',
+        cy: '50',
+      },
+      styles: {
+        line: {
+          "stroke-linecap": 'round',
+          "stroke": 'var(--primary-text-color)',
+          "opacity": '1.0',
+          "stroke-width": '2',
         }
+      }
     }
 
     super(argCard, Merge.mergeDeep(DEFAULT_LINE_CONFIG, argConfig), argPos);
@@ -1345,8 +1353,6 @@ class LineTool extends BaseTool {
   */
 
   _renderLine() {
-
-
     this.MergeColorFromState(this.styles.line);
     this.MergeAnimationStyleIfChanged();
 
@@ -1391,22 +1397,22 @@ class CircleTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_CIRCLE_CONFIG = {
-        position: {
-          cx: 50,
-          cy: 50,
-          radius: 50,
-        },
-        styles: {
-          circle: {
-          }
+      position: {
+        cx: 50,
+        cy: 50,
+        radius: 50,
+      },
+      styles: {
+        circle: {
         }
+      }
     }
 
     super(argCard, Merge.mergeDeep(DEFAULT_CIRCLE_CONFIG, argConfig), argPos);
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius)
     this.styles.circle = {};
-    if (this.dev.debug) console.log('CircleTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
+    if (this.dev.debug) console.log('CircleTool constructor config, svg', this.toolId, this.config, this.svg);
   }
 
  /*******************************************************************************
@@ -1467,6 +1473,247 @@ class CircleTool extends BaseTool {
 } // END of class
 
  /*******************************************************************************
+  * SwitchTool class
+  *
+  * Summary.
+  *
+  *
+  * NTS:
+  * - .mdc-switch__native-control uses:
+  *     - width: 68px, 17em
+  *     - height: 48px, 12em
+  * - and if checked (.mdc-switch--checked):
+  *     - transform: translateX(-20px)
+  *
+  * .mdc-switch.mdc-switch--checked .mdc-switch__thumb {
+  *  background-color: var(--switch-checked-button-color);
+  *  border-color: var(--switch-checked-button-color);
+  * 
+  * transition: transform 90ms cubic-bezier(0.4, 0, 0.2, 1) 0s, background-color 90ms cubic-bezier(0.4, 0, 0.2, 1) 0s, border-color 90ms cubic-bezier(0.4, 0, 0.2, 1) 0s;
+  *
+  *
+  * Label placement (optional, not yet implemented): Top, Start, Bottom, End --> Also for UOM!!!!!!!!!!!!!!!
+  */
+
+class SwitchTool extends BaseTool {
+  constructor(argCard, argConfig, argPos) {
+
+    const DEFAULT_SWITCH_CONFIG = {
+        position: {
+          cx: 50,
+          cy: 50,
+          orientation: 'horizontal',
+          track: {
+            width: 16,
+            height: 7,
+            radius: 3.5,
+          },
+          thumb: {
+            width: 9,
+            height: 9,
+            radius: 4.5,
+            offset: 4.5,
+          },
+        },
+        styles: {
+          track: {
+            "fill-opacity": 0.38,
+            "stroke-width": 0,
+            "stroke": 'var(--primary-text-color)',
+            "fill": 'var(--primary-background-color)',
+            "transition": 'all .5s ease',
+            "pointer-events": 'none',
+          },
+          thumb: {
+            "--thumb-stroke": 'var(--secondary-text-color)',
+            "stroke": 'var(--thumb-stroke)',
+            "fill": 'var(--primary-background-color)',
+            "transition": 'all .5s cubic-bezier(0.4, 0, 0.2, 1)',
+            "pointer-events": 'none',
+          }
+        }
+    }
+
+    const HORIZONTAL_SWITCH_CONFIG = {
+        animations: [
+          {
+            state: 'on',
+            id: 1,
+            styles: {
+              track: {
+                fill: 'var(--switch-checked-button-color)',
+                "pointer-events": 'auto',
+              },
+              thumb: {
+                fill: 'var(--switch-checked-button-color)',
+                transform: 'translateX(4.5em)',
+                "pointer-events": 'auto',
+              },
+            },
+          },
+          {
+            state: 'off',
+            id: 0,
+            styles: {
+              track: {
+                fill: 'var(--switch-unchecked-track-color)',
+                "pointer-events": 'auto',
+              },
+              thumb: {
+                transform: 'translateX(-4.5em)',
+                "pointer-events": 'auto',
+              },
+            }
+          }
+        ],
+    }
+
+    const VERTICAL_SWITCH_CONFIG = {
+        animations: [
+          {
+            state: 'on',
+            id: 1,
+            styles: {
+              track: {
+                fill: 'var(--switch-checked-button-color)',
+                "pointer-events": 'auto',
+              },
+              thumb: {
+                fill: 'var(--switch-checked-button-color)',
+                transform: 'translateY(-4.5em)',
+                "pointer-events": 'auto',
+              },
+            },
+          },
+          {
+            state: 'off',
+            id: 0,
+            styles: {
+              track: {
+                fill: 'var(--switch-unchecked-track-color)',
+                "pointer-events": 'auto',
+              },
+              thumb: {
+                transform: 'translateY(4.5em)',
+                "pointer-events": 'auto',
+              },
+            }
+          }
+        ],
+    }
+
+    super(argCard, Merge.mergeDeep(DEFAULT_SWITCH_CONFIG, argConfig), argPos);
+
+    this.svg.track = {};
+    this.svg.track.radius = Utils.calculateSvgDimension(this.config.position.track.radius);
+    
+    this.svg.thumb = {};
+    this.svg.thumb.radius = Utils.calculateSvgDimension(this.config.position.thumb.radius);
+    this.svg.thumb.offset = Utils.calculateSvgDimension(this.config.position.thumb.offset);
+
+    switch (this.config.position.orientation) {
+      default:
+      case 'horizontal':
+        this.config = Merge.mergeDeep(DEFAULT_SWITCH_CONFIG, HORIZONTAL_SWITCH_CONFIG, argConfig);
+
+        this.svg.track.width = Utils.calculateSvgDimension(this.config.position.track.width);
+        this.svg.track.height = Utils.calculateSvgDimension(this.config.position.track.height);
+        this.svg.thumb.width = Utils.calculateSvgDimension(this.config.position.thumb.width);
+        this.svg.thumb.height = Utils.calculateSvgDimension(this.config.position.thumb.height);
+
+        this.svg.track.x1 = this.svg.cx - this.svg.track.width/2;
+        this.svg.track.y1 = this.svg.cy - this.svg.track.height/2;
+
+        this.svg.thumb.x1 = this.svg.cx - this.svg.thumb.width/2;
+        this.svg.thumb.y1 = this.svg.cy - this.svg.thumb.height/2;
+        break;
+
+      case 'vertical':
+        this.config = Merge.mergeDeep(DEFAULT_SWITCH_CONFIG, VERTICAL_SWITCH_CONFIG, argConfig);
+
+        this.svg.track.width = Utils.calculateSvgDimension(this.config.position.track.height);
+        this.svg.track.height = Utils.calculateSvgDimension(this.config.position.track.width);
+        this.svg.thumb.width = Utils.calculateSvgDimension(this.config.position.thumb.height);
+        this.svg.thumb.height = Utils.calculateSvgDimension(this.config.position.thumb.width);
+
+        this.svg.track.x1 = this.svg.cx - this.svg.track.width/2;
+        this.svg.track.y1 = this.svg.cy - this.svg.track.height/2;
+
+        this.svg.thumb.x1 = this.svg.cx - this.svg.thumb.width/2;
+        this.svg.thumb.y1 = this.svg.cy - this.svg.thumb.height/2;
+        break;
+    }
+
+    this.styles.track = {};
+    this.styles.thumb = {};
+    if (this.dev.debug) console.log('SwitchTool constructor config, svg', this.toolId, this.config, this.svg);
+  }
+
+ /*******************************************************************************
+  * SwitchTool::value()
+  *
+  * Summary.
+  * Receive new state data for the entity this circle is linked to. Called from set hass;
+  *
+  */
+  set value(state) {
+    var changed = super.value = state;
+
+    return changed;
+  }
+
+ /**
+  * SwitchTool::_renderSwitch()
+  *
+  * Summary.
+  * Renders the switch using precalculated coordinates and dimensions.
+  * Only the runtime style is calculated before rendering the switch
+  *
+  */
+
+  _renderSwitch() {
+
+    // this.MergeColorFromState(this.styles);
+    this.MergeAnimationStyleIfChanged();
+
+    return svg`
+      <g>
+        <rect class="switch-track" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
+          width="${this.svg.track.width}" height="${this.svg.track.height}" rx="${this.svg.track.radius}"
+          style="${styleMap(this.styles.track)}"
+        />
+        <rect class="switch-thumb" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
+          width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+          style="${styleMap(this.styles.thumb)}"
+        />
+      </g>
+      `;
+  }
+
+ /*******************************************************************************
+  * SwitchTool::render()
+  *
+  * Summary.
+  * The render() function for this object.
+  *
+  * https://codepen.io/joegaffey/pen/vrVZaN
+  *
+  */
+//        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+
+  render() {
+
+    return svg`
+      <g "" id="toggle-${this.toolId}" class="toggle, hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+        @click=${e => this._card.handlePopup2(e, this._card.config.entities[this.config.entity_index])}>
+        ${this._renderSwitch()}
+      </g>
+    `;
+
+  }
+} // END of class
+
+ /*******************************************************************************
   * RegPolyTool class
   *
   * Summary.
@@ -1477,28 +1724,28 @@ class RegPolyTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_REGPOLY_CONFIG = {
-        position: {
-          cx: 50,
-          cy: 50,
-          radius: 50,
-          side_count: 6,
-          side_skip: 1,
-          angle_offset: 0,
-        },
-        styles: {
-          regpoly: {
-            "stroke": 'var(--primary-text-color)',
-            "fill": 'var(--primary-background-color)',
-            "fill-rule": 'nonzero',            
-          }
+      position: {
+        cx: 50,
+        cy: 50,
+        radius: 50,
+        side_count: 6,
+        side_skip: 1,
+        angle_offset: 0,
+      },
+      styles: {
+        regpoly: {
+          "stroke": 'var(--primary-text-color)',
+          "fill": 'var(--primary-background-color)',
+          "fill-rule": 'nonzero',            
         }
+      }
     }
 
     super(argCard, Merge.mergeDeep(DEFAULT_REGPOLY_CONFIG, argConfig), argPos);
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius)
     this.styles.regpoly = {};
-    if (this.dev.debug) console.log('RegPolyTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
+    if (this.dev.debug) console.log('RegPolyTool constructor config, svg', this.toolId, this.config, this.svg);
   }
 
  /*******************************************************************************
@@ -1598,16 +1845,16 @@ class UserSvgTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_USERSVG_CONFIG = {
-        position: {
-          cx: 50,
-          cy: 50,
-          height: 50,
-          width: 50,
-        },
-        styles: {
-          usersvg: {
-          }
+      position: {
+        cx: 50,
+        cy: 50,
+        height: 50,
+        width: 50,
+      },
+      styles: {
+        usersvg: {
         }
+      }
     }
 
     super(argCard, Merge.mergeDeep(DEFAULT_USERSVG_CONFIG, argConfig), argPos);
@@ -1620,7 +1867,7 @@ class UserSvgTool extends BaseTool {
     this.item = {};
     this.item.image = "face1";
     
-    if (this.dev.debug) console.log('UserSvgTool constructor coords, dimensions', this.svg, this.config);
+    if (this.dev.debug) console.log('UserSvgTool constructor config, svg', this.toolId, this.config, this.svg);
   }
 
  /*******************************************************************************
@@ -1700,29 +1947,29 @@ class RectangleTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_RECTANGLE_CONFIG = {
-        position: {
-          cx: 50,
-          cy: 50,
-          width: 50,
-          height: 50,
-          rx: 0,
-        }, 
-        styles: {
-          rectangle: {
-            "stroke-linecap": 'round',
-            "stroke": 'var(--primary-text-color)',
-            "opacity": '1.0',
-            "stroke-width": '2em',
-            "fill": 'var(--primary-background-color)',
-          }
+      position: {
+        cx: 50,
+        cy: 50,
+        width: 50,
+        height: 50,
+        rx: 0,
+      }, 
+      styles: {
+        rectangle: {
+          "stroke-linecap": 'round',
+          "stroke": 'var(--primary-text-color)',
+          "opacity": '1.0',
+          "stroke-width": '2em',
+          "fill": 'var(--primary-background-color)',
         }
+      }
     }
 
     super(argCard, Merge.mergeDeep(DEFAULT_RECTANGLE_CONFIG, argConfig), argPos);
     this.svg.rx = Utils.calculateSvgDimension(argConfig.position.rx)
     this.styles.rectangle = {};
 
-    if (this.dev.debug) console.log('RectangleTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
+    if (this.dev.debug) console.log('RectangleTool constructor config, svg', this.toolId, this.config, this.svg);
   }
 
  /*******************************************************************************
@@ -1789,24 +2036,24 @@ class RectangleToolEx extends BaseTool {
   constructor(argCard, argConfig, argPos) {
 
     const DEFAULT_RECTANGLEEX_CONFIG = {
-        position: {
-          cx: 50,
-          cy: 50,
-          width: 50,
-          height: 50,
-          radius: {
-            all: 0,
-          },
+      position: {
+        cx: 50,
+        cy: 50,
+        width: 50,
+        height: 50,
+        radius: {
+          all: 0,
         },
-        styles: {
-          rectex: {
-            "stroke-linecap": 'round',
-            "stroke": 'var(--primary-text-color)',
-            "opacity": '1.0',
-            "stroke-width": '0',
-            "fill": 'var(--primary-background-color)',
-          }
+      },
+      styles: {
+        rectex: {
+          "stroke-linecap": 'round',
+          "stroke": 'var(--primary-text-color)',
+          "opacity": '1.0',
+          "stroke-width": '0',
+          "fill": 'var(--primary-background-color)',
         }
+      }
     }
     super(argCard, Merge.mergeDeep(DEFAULT_RECTANGLEEX_CONFIG, argConfig), argPos);
 
@@ -1831,7 +2078,7 @@ class RectangleToolEx extends BaseTool {
     this.svg.radiusBottomRight = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
                               this.config.position.radius.bottom_right || this.config.position.radius.right || this.config.position.radius.bottom || radius))) || 0;
 
-    if (this.dev.debug) console.log('RectangleToolEx constructor coords, dimensions', this.toolId, this.svg, this.config);
+    if (this.dev.debug) console.log('RectangleToolEx constructor config, svg', this.toolId, this.config, this.svg);
   }
 
  /*******************************************************************************
@@ -2417,7 +2664,7 @@ class BadgeTool extends BaseTool {
 class EntityStateTool extends BaseTool {
   constructor(argCard, argConfig, argPos) {
     const DEFAULT_STATE_CONFIG = {
-      show: { uom: 'default' },
+      show: { uom: 'end' },
       styles: {
         state: {
           "font-size": '3em',
@@ -2499,20 +2746,20 @@ class EntityStateTool extends BaseTool {
 
       const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
-      // Check for location of uom. Default = next to state, below = below state ;-)
-      if (this.config.show.uom === 'default') {
+      // Check for location of uom. end = next to state, bottom = below state ;-), etc.
+      if (this.config.show.uom === 'end') {
         return svg`
           <tspan class="state__uom, hover" dx="-0.1em" dy="-0.35em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
-      } else if (this.config.show.uom === 'below') {
+      } else if (this.config.show.uom === 'bottom') {
         return svg`
           <tspan class="state__uom, hover" x="${this.svg.x}" dy="1.5em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
-      } else if (this.config.show.uom === 'above') {
+      } else if (this.config.show.uom === 'top') {
         return svg`
           <tspan class="state__uom, hover" x="${this.svg.x}" dy="-1.5em"
             style="${styleMap(this.styles.uom)}">
@@ -3990,7 +4237,7 @@ class SegmentedArcTool extends BaseTool {
           tween.runningAngle = arcEndPrev;
           // Render like an idiot the first time. Performs MUCH better @first load then having a zillion animations...
           // NOt so heavy on an average PC, but my iPad and iPhone need some more time for this!
-          tween.duration = Math.min(Math.max(this._initialDraw ? 10 : 500, this._initialDraw ? 10 : this.config.animation.duration * 1000), 5000);
+          tween.duration = Math.min(Math.max(this._initialDraw ? 10 : 500, this._initialDraw ? 16 : this.config.animation.duration * 1000), 5000);
           tween.startTime = null;
           if (this.dev.debug) console.log('RENDERNEW - tween', this.toolId, tween);
           this._initialDraw = false;
@@ -5840,6 +6087,7 @@ class devSwissArmyKnifeCard extends LitElement {
 
   handlePopup(e, entity) {
     e.stopPropagation();
+    e.preventDefault();
 
     // #TODO:
     // No check on attribute?? So wrong tap_action selected!! for a light and its brigtness!
@@ -5852,6 +6100,7 @@ class devSwissArmyKnifeCard extends LitElement {
 
   handlePopup2(e, entityCfg) {
     e.stopPropagation();
+    e.preventDefault();
 
     // #TODO:
     // No check on attribute?? So wrong tap_action selected!! for a light and its brigtness!
