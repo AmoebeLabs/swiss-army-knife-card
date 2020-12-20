@@ -904,6 +904,9 @@ cards:
 
 
           layout:
+            styles:
+              toolsets:
+                filter: url(#nm-1)
             toolsets:
               - toolset: humi
                 template:
@@ -2242,7 +2245,7 @@ cards:
                       cy: 45
                     entity_index: 0
                     show:
-                      uom: below
+                      uom: bottom
                     styles:
                       state:
                         text-anchor: middle
@@ -2272,8 +2275,10 @@ cards:
                     styles:
                       circle:
                         stroke: var(--theme-gradient-color-01)
+                        stroke:  Blue
                         stroke-width: 70
                         fill: var(--theme-gradient-color-04)
+                        fill: var(--primary-background-color)
                         # stroke-dasharray: 36
                         # stroke-linecap: square
                         # stroke-dasharray: 163
@@ -2289,7 +2294,10 @@ cards:
                       cy: 45
                     entity_index: 1
                     show:
-                      uom: below
+                      uom: bottom
+                    # Alternative, #TODO, #WIP. So not using show!!!!
+                    placement:
+                      uom: bottom
                     styles:
                       state:
                         text-anchor: middle
@@ -2307,8 +2315,10 @@ cards:
                     styles:
                       circle:
                         stroke: var(--theme-gradient-color-01)
+                        stroke: DarkOrange
                         stroke-width: 70
                         fill: var(--theme-gradient-color-06)
+                        fill: var(--primary-background-color)
                         stroke-dasharray: 52
                         stroke-dashoffset: 60
                         stroke-linecap: round
@@ -2319,7 +2329,7 @@ cards:
                       cx: 100
                       cy: 45
                     show:
-                      uom: below
+                      uom: bottom
                     entity_index: 2
                     styles:
                       state:
@@ -2338,9 +2348,11 @@ cards:
                     styles:
                       circle:
                         stroke: var(--theme-gradient-color-01)
+                        stroke: DarkGray
                         stroke-width: 70
                         fill: grey
                         fill: var(--theme-gradient-color-08)
+                        fill: var(--primary-background-color)
                         stroke-dasharray: 52
                         stroke-dashoffset: 90
                         stroke-linecap: round
@@ -2352,7 +2364,7 @@ cards:
                       cy: 45
                     entity_index: 3
                     show:
-                      uom: below
+                      uom: bottom
                     styles:
                       state:
                         text-anchor: middle
@@ -2433,6 +2445,39 @@ cards:
               toolsets:
                 filter: url(#nm-1)
             toolsets:
+              - toolset: switch
+                position:
+                  cx: 100
+                  cy: 50
+                tools:
+                  - type: switch
+                    position:
+                      cx: 50
+                      cy: 30
+                      # Vertical not yet working. merge.mergeDeep() can't correctly merge
+                      # animations, as they have no id, ie get concatenated!!
+                      # Also, there is a state of true ??? next to "on" and "off"
+                      #
+                      # merge arrays:
+                      # - do .concat();
+                      # - then reduce using id's, ie merge id's ??
+                      #
+                      # OR:
+                      # - while getting styles, check full array for state match, and overwrite
+                      #   the current style, then no merge is required.
+                      orientation: 'vertical'
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        id: 1
+                        styles:
+                          thumb:
+                            --thumb-stroke: 'var(--primary-background-color)'
+                    styles:
+                      thumb:
+                        --thumb-stroke: 'var(--primary-background-color)'
+                      
+
               - toolset: lamp1
                 position:
                   cx: 50
@@ -2461,10 +2506,12 @@ cards:
                         styles:
                           circle:
                             fill: darkorange
+                            transition: 'all .8s ease'
                       - state: 'off'
                         styles:
                           circle:
                             fill: lightgray
+                            transition: 'all .8s ease'
                     styles:
                       circle:
                         stroke-width: 0
@@ -2512,11 +2559,13 @@ cards:
                           icon:
                             color: darkorange
                             fill: darkorange
+                            transition: 'all .8s ease'
                       - state: 'off'
                         styles:
                           icon:
                             color: darkgrey
                             fill: darkgrey
+                            transition: 'all .8s ease'
                             opacity: 0.7
                     styles:
                       icon:
