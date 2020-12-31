@@ -339,10 +339,10 @@ class Toolset {
       "segarc"    : SegmentedArcTool,
       "state"     : EntityStateTool,
       "slider"    : RangeSliderTool,
+      "slider2"   : RangeSliderTool2,
       "switch"    : SwitchTool,
       "text"      : TextTool,
       "usersvg"   : UserSvgTool,
-
     }
 
     this.config.tools.map(toolConfig => {
@@ -436,6 +436,11 @@ class Toolset {
         }
 
         if (item.type == "slider") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling Slider firstUpdated');
+          item.tool.firstUpdated(changedProperties);
+        }
+
+        if (item.type == "slider2") {
           if (this.dev.debug) console.log('Toolset::firstUpdated - calling Slider firstUpdated');
           item.tool.firstUpdated(changedProperties);
         }
@@ -588,8 +593,8 @@ class BaseTool {
 
     // Get SVG coordinates.
     this.svg = {};
-    this.svg.cx = Utils.calculateSvgCoordinate(argConfig.position.cx, this.toolsetPos.cx);
-    this.svg.cy = Utils.calculateSvgCoordinate(argConfig.position.cy, this.toolsetPos.cy);
+    // this.svg.cx = Utils.calculateSvgCoordinate(argConfig.position.cx, this.toolsetPos.cx);
+    // this.svg.cy = Utils.calculateSvgCoordinate(argConfig.position.cy, this.toolsetPos.cy);
 
     this.svg.cx = Utils.calculateSvgCoordinate(argConfig.position.cx, 0);
     this.svg.cy = Utils.calculateSvgCoordinate(argConfig.position.cy, 0);
@@ -720,16 +725,6 @@ class BaseTool {
       // this.item = Templates.getJsTemplateOrValue(this, this._stateValue, item);
     });
 
-    // if (!this.item) this.item = {};
-    // if (this.item.unit) {
-      // this.item.unit = 'undefined';
-      // this.derivedEntity.unit = 'undefined';
-    // } else {
-      // this.item.unit = '€';
-      // this.derivedEntity = {};
-      // this.derivedEntity.unit = '€';
-      // this.derivedEntity.state = state;
-    // }
     return true;
   }
 
@@ -880,7 +875,7 @@ class RangeSliderTool extends BaseTool {
   }
 
   // svg coordinates to actual slider value
-  svgToValue(argThis, m) {
+  svgCoordinateToSliderValue(argThis, m) {
     // svg is within viewbox / slider size
     // length is argThis.svg.length
 
@@ -893,7 +888,7 @@ class RangeSliderTool extends BaseTool {
       var xposp = xpos / argThis.svg.length;
       var state = ((argThis.config.scale.max - argThis.config.scale.min) * xposp) + argThis.config.scale.min;
       //var state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, xposp);
-      if (this.dev.debug) console.log ('SLIDER - svgToValue results)', xpos, xposp, state);
+      if (this.dev.debug) console.log ('SLIDER - svgCoordinateToSliderValue results)', xpos, xposp, state);
       return state;
     } else if (argThis.config.position.orientation == 'vertical') {
       // y is calculated from lower y value. So slider is from bottom to top...
@@ -901,12 +896,12 @@ class RangeSliderTool extends BaseTool {
       var yposp = ypos / argThis.svg.length;
       var state = ((argThis.config.scale.max - argThis.config.scale.min) * yposp) + argThis.config.scale.min;
       //var state = Utils.calculateValueBetween(argThis.configscale.min, argThis.configscale.max, yposp);
-      if (this.dev.debug) console.log ('SLIDER - svgToValue results)', xpos, xposp, state);
+      if (this.dev.debug) console.log ('SLIDER - svgCoordinateToSliderValue results)', xpos, xposp, state);
       return state;
     }
   }
 
-  valueToSvg(argValue) {
+  valueToSvg(argThis, argValue) {
 
     if (this.config.position.orientation == 'horizontal') {
       var state = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, argValue);
@@ -969,8 +964,8 @@ class RangeSliderTool extends BaseTool {
         "transform",
         `translate(${m.x - this.svg.handle.width/2},${argThis.svg.y /*- argThis.svg.handle.popout/100*/ - argThis._value}) scale(1)`
       );
-      argThis.elements.text.textContent = Math.round(argThis.svgToValue(argThis, m));
-      if (this.dev.debug) console.log('SLIDER - updateLabel horizontal', m, argThis.svgToValue(argThis, m));
+      argThis.elements.text.textContent = Math.round(argThis.svgCoordinateToSliderValue(argThis, m));
+      if (this.dev.debug) console.log('SLIDER - updateLabel horizontal', m, argThis.svgCoordinateToSliderValue(argThis, m));
 
     } else if (argThis.config.position.orientation == 'vertical') {
       argThis.elements.label.setAttributeNS(
@@ -979,8 +974,8 @@ class RangeSliderTool extends BaseTool {
         `translate(${argThis.svg.x /*- argThis.svg.handle.popout*/ - argThis._value}, ${m.y - this.svg.handle.height/2}) scale(1)`
       );
 
-      argThis.elements.text.textContent = Math.round(argThis.svgToValue(argThis, m));
-      if (this.dev.debug) console.log('SLIDER - updateLabel vertical', m, argThis.svgToValue(argThis, m));
+      argThis.elements.text.textContent = Math.round(argThis.svgCoordinateToSliderValue(argThis, m));
+      if (this.dev.debug) console.log('SLIDER - updateLabel vertical', m, argThis.svgCoordinateToSliderValue(argThis, m));
     }
   }
 
@@ -1138,6 +1133,7 @@ class RangeSliderTool extends BaseTool {
 
     this.elements.svg.addEventListener("pointerdown", e => {
       this.dragging = true;
+
       this.m = this.oMousePosSVG(e);
       //this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
       //if (this.dev.debug) console.clear();
@@ -1192,7 +1188,7 @@ class RangeSliderTool extends BaseTool {
   set value(state) {
     var changed = super.value = state;
 
-    console.log('rangeslidertool, animation, set value', state);
+    // console.log('rangeslidertool, animation, set value', state);
 
     // What to do here??
     // We must know the domain or attribute to know what to do.
@@ -1284,6 +1280,551 @@ class RangeSliderTool extends BaseTool {
   }
 } // END of class
 
+ /*******************************************************************************
+  * RangeSliderTool2 class
+  *
+  * Summary.
+  *
+  */
+
+class RangeSliderTool2 extends BaseTool {
+  constructor(argCard, argConfig, argPos) {
+
+    const DEFAULT_RANGESLIDER_CONFIG = {
+        descr: 'none',
+        position: {
+          cx: 50,
+          cy: 50,
+          orientation: 'horizontal',
+          track: {
+            width: 16,
+            height: 7,
+            radius: 3.5,
+          },
+          thumb: {
+            width: 9,
+            height: 9,
+            radius: 4.5,
+            offset: 4.5,
+          },
+          label: {
+            placement: 'none',
+          },
+        },
+        styles: {
+          track: {
+            "fill-opacity": 0.38,
+            "stroke-width": 0,
+            "stroke": 'var(--primary-text-color)',
+            "fill": 'var(--switch-unchecked-track-color)',
+            "transition": 'all .5s ease',
+            "pointer-events": 'none',
+          },
+          thumb: {
+            "--thumb-stroke": 'var(--secondary-text-color)',
+            "stroke": 'var(--thumb-stroke)',
+            "fill": 'var(--primary-background-color)',
+            "pointer-events": 'none',
+          },
+          label: {
+            "fill": 'var(--primary-text-color)',
+            "font-size": '8em',
+            "font-weight": 400,
+            "transition": 'all .5s cubic-bezier(0.4, 0, 0.2, 1)',
+            "pointer-events": 'none',
+            "alignment-baseline": 'central',
+          }
+        }
+    }
+
+    super(argCard, Merge.mergeDeep(DEFAULT_RANGESLIDER_CONFIG, argConfig), argPos);
+
+    this.svg.track = {};
+    this.svg.track.radius = Utils.calculateSvgDimension(this.config.position.track.radius);
+    
+    this.svg.thumb = {};
+    this.svg.thumb.radius = Utils.calculateSvgDimension(this.config.position.thumb.radius);
+    this.svg.thumb.offset = Utils.calculateSvgDimension(this.config.position.thumb.offset);
+
+    this.svg.capture = {};
+
+    this.svg.label = {};
+    
+    switch (this.config.position.orientation) {
+      default:
+      case 'horizontal':
+      case 'vertical':
+        this.svg.capture.width = Utils.calculateSvgDimension(this.config.position.capture.width || 1.1 * this.config.position.track.width);
+        this.svg.capture.height = Utils.calculateSvgDimension(this.config.position.capture.height || 3 * this.config.position.thumb.height);
+
+        this.svg.track.width = Utils.calculateSvgDimension(this.config.position.track.width);
+        this.svg.track.height = Utils.calculateSvgDimension(this.config.position.track.height);
+
+        this.svg.thumb.width = Utils.calculateSvgDimension(this.config.position.thumb.width);
+        this.svg.thumb.height = Utils.calculateSvgDimension(this.config.position.thumb.height);
+
+        this.svg.capture.x1 = this.svg.cx - this.svg.capture.width/2;
+        this.svg.capture.y1 = this.svg.cy - this.svg.capture.height/2;
+
+        this.svg.track.x1 = this.svg.cx - this.svg.track.width/2;
+        this.svg.track.y1 = this.svg.cy - this.svg.track.height/2;
+
+        this.svg.thumb.x1 = this.svg.cx - this.svg.thumb.width/2;
+        this.svg.thumb.y1 = this.svg.cy - this.svg.thumb.height/2;
+        break;
+    }
+    switch (this.config.position.orientation) {
+      case 'vertical':
+        this.svg.track.y2 = this.svg.cy + this.svg.track.height/2;
+      break;
+    }
+    switch (this.config.position.label.placement) {
+      case 'position':
+        this.svg.label.cx = Utils.calculateSvgCoordinate(this.config.position.label.cx, 0);
+        this.svg.label.cy = Utils.calculateSvgCoordinate(this.config.position.label.cy, 0);
+        break;
+        
+      case 'thumb':
+        this.svg.label.cx = this.svg.cx;
+        this.svg.label.cy = this.svg.cy;
+        break;
+      
+      case 'none':
+        break;
+    }
+    
+    // Init styles
+    this.styles.track = {};
+    this.styles.thumb = {};
+    this.styles.label = {};
+
+    // Init scale
+    this.svg.scale = {};
+    this.svg.scale.min = this.valueToSvg(this, this.config.scale.min);
+    this.svg.scale.max = this.valueToSvg(this, this.config.scale.max);
+    this.svg.scale.step = this.config.scale.step;
+
+    if (this.dev.debug) console.log('RangeSliderTool2 constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
+  }
+
+ /*******************************************************************************
+  * RangeSliderTool2::svgCoordinateToSliderValue()
+  *
+  * Summary.
+  * svg coordinates to actual slider value
+  *
+  */
+
+  svgCoordinateToSliderValue(argThis, m) {
+
+    let state;
+    let scalePos;
+    
+    switch (argThis.config.position.orientation) {
+      case 'horizontal':
+        var xpos = m.x - argThis.svg.track.x1;
+        scalePos = xpos / argThis.svg.track.width;
+        console.log("svgCoordinateToSliderValue, m.x, ypos, scalePos", m.x, argThis.svg.track.x1, scalePos);
+        break;
+
+      case 'vertical':
+        // y is calculated from lower y value. So slider is from bottom to top...
+        var ypos = argThis.svg.track.y2 - m.y;
+        // ypos = argThis.svg.track.y1 + m.y;
+        scalePos = ypos / argThis.svg.track.height;
+        console.log("svgCoordinateToSliderValue, m.y, ypos, scalePos", m.y, argThis.svg.track.y1, scalePos);
+        break;
+    }
+    state = ((argThis.config.scale.max - argThis.config.scale.min) * scalePos) + argThis.config.scale.min;
+    state = Math.round(state / this.svg.scale.step) * this.svg.scale.step;
+    state = Math.max(Math.min(this.config.scale.max, state), this.config.scale.min);
+
+    return state;
+  }
+
+  valueToSvg(argThis, argValue) {
+
+    if (argThis.config.position.orientation == 'horizontal') {
+      var state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, argValue);
+
+      var xposp = state * argThis.svg.track.width;
+      var xpos = argThis.svg.track.x1 + xposp;
+      return xpos;
+    } else if (argThis.config.position.orientation == 'vertical') {
+      var state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, argValue);
+
+      var yposp = state * argThis.svg.track.height;
+      var ypos = argThis.svg.track.y2 - yposp;
+      return ypos;
+    }
+  }
+
+  updateValue(argThis, m) {
+
+    this._value = this.svgCoordinateToSliderValue(argThis, m);
+    // set dist to 0 to cancel aniumation frame
+    let dist = 0;
+    //improvement
+    if (Math.abs(dist) < 0.01) {
+      if (this.rid) {
+        window.cancelAnimationFrame(this.rid);
+        this.rid = null;
+      }
+    }
+  }
+  
+
+  updateThumb(argThis, m) {
+
+    switch (argThis.config.position.orientation) {
+      default:
+      case 'horizontal':
+        if (this.config.position.label.placement == 'thumb') {
+        }
+
+        if (this.dragging) {
+          const yUp = (this.config.position.label.placement == 'thumb') ? -50 : 0;
+          // const yUpStr = `translateY(${yUp}px)`;
+          const yUpStr = `translate(${m.x}px , ${yUp}px)`;
+          console.log('updateThumb', `translate(${m.x}px, ${yUp}px)`);
+
+          argThis.elements.thumbGroup.style.transform = yUpStr;
+        } else {
+          argThis.elements.thumbGroup.style.transform = `translate(${m.x}px, ${0}px)`;
+        }
+        break;
+
+      case 'vertical':
+        if (this.dragging) {
+          const xUp = (this.config.position.label.placement == 'thumb') ? -50 : 0;
+          // const yUpStr = `translateY(${yUp}px)`;
+          const xUpStr = `translate(${xUp}px, ${m.y}px)`;
+          argThis.elements.thumbGroup.style.transform = xUpStr;
+        } else {
+          argThis.elements.thumbGroup.style.transform = `translate(${0}px, ${m.y}px)`;
+        }
+        break;
+    }
+
+    argThis.updateLabel(argThis, m);
+    argThis.updateInput(m);
+  }
+  
+  updateLabel(argThis, m) {
+    console.log("updateLabel", argThis.elements.label);
+    if (this.dev.debug) console.log('SLIDER - updateLabel start', m, argThis.config.position.orientation);
+    argThis.labelValue2 = Math.round(argThis.svgCoordinateToSliderValue(argThis, m)).toString();//argThis._value;
+    argThis.elements.label.textContent = argThis.labelValue2;
+    // argThis.elements.label.nodeValue = argThis.labelValue;
+    
+  }
+
+  /*
+  * oMousePosSVG
+  *
+  * Translate mouse/touch client window coordinates to SVG window coordinates
+  *
+  */
+  oMousePosSVG(e) {
+    var p = this.elements.svg.createSVGPoint();
+    p.x = e.clientX;
+    p.y = e.clientY;
+    var ctm = this.elements.svg.getScreenCTM().inverse();
+    var p = p.matrixTransform(ctm);
+    return p;
+  }
+
+  callService()
+  {
+    if (typeof this.labelValue2 == 'undefined') return;
+    
+    if (this.labelValuePrev != this.labelValue2) {
+      this.labelValuePrev = this.labelValue2;
+
+      const [domain, service] = this.config.slider_action.service.split('.', 2);
+      var serviceData = { ...this.config.slider_action.service };
+      serviceData = {};
+      // serviceData[this.config.slider_action.parameter] = this._stateValue;
+      serviceData[this.config.slider_action.parameter] = this.labelValue2;
+      serviceData.entity_id = this._card.entities[this.config.entity_index].entity_id;
+      console.log("callService, data=", domain, service, serviceData);
+      this._card._hass.callService(domain, service, serviceData);
+    }
+
+    if (this.dragging) this.timeOutId = setTimeout(() => this.callService(), 250);
+  }
+  
+  firstUpdated(changedProperties)
+  {
+    const thisValue = this;
+    // this.dev.debug = true;
+    // this.pointerId = 12345;
+    this.labelValue = this._stateValue;
+
+    function Frame() {
+      thisValue.rid = window.requestAnimationFrame(Frame);
+      thisValue.updateValue(thisValue, thisValue.m);
+      thisValue.updateThumb(thisValue, thisValue.m);
+      console.log("Frame", thisValue.toolId);
+      // thisValue.updatePath(thisValue, thisValue.m);
+      //if (this.dev.debug) console.log('pointer in Frame', thisValue.m);
+    }
+
+    if (this.dev.debug) console.log('slider - firstUpdated');
+    // #TODO
+    // svg moet een svg object zijn, want er worden functies op uitgevoerd.
+    // dus deze slider moet een eigen svg element krijgen...
+    this.elements = {};
+    this.elements.svg = this._card.shadowRoot.getElementById("rangeslider-".concat(this.toolId));
+    this.elements.track = this.elements.svg.querySelector("#rs-track");
+    this.elements.thumbGroup = this.elements.svg.querySelector("#rs-thumb-group");
+    this.elements.thumb = this.elements.svg.querySelector("#rs-thumb");
+    this.elements.label = this.elements.svg.querySelector("#rs-label tspan");
+
+    console.log("firstupdated", this.elements);
+    
+    if (this.dev.debug) console.log('slider - firstUpdated svg = ', this.elements.svg, 'path=', this.elements.path, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
+
+//    this.inputElement = witness; ////
+
+
+    this.elements.svg.addEventListener("pointerdown", e => {
+      this.dragging = true;
+      this.timeOutId = setTimeout(() => this.callService(), 250);
+      this.m = this.oMousePosSVG(e);
+      // WHY again not working for Safari/iPad!!!!!
+      if ((!this.elements.svg.hasPointerCapture(e.pointerId)) && !(this._card.isSafari || this._card.iOS)) {
+        this.elements.svg.setPointerCapture(e.pointerId);
+      }
+      // if (!this.iOS) this.elements.svg.setPointerCapture(e.pointerId);
+      //this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
+      if (this.config.position.orientation == 'horizontal') {
+        this.m.x = Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step;
+      } else {
+        this.m.y = Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step;
+      }
+      console.log("pointerdown", this.svg.scale, this.m);
+      //if (this.dev.debug) console.clear();
+      if (this.dev.debug) console.log('pointerDOWN',Math.round(this.m.x * 100) / 100);
+      // this.target = this.svg.handle.popout;
+      Frame();
+    });
+
+    this.elements.svg.addEventListener("pointerup", e => {
+      this.dragging = false;
+      clearTimeout(this.timeOutId);
+      this.target = 0;
+      if ((!this.elements.svg.hasPointerCapture(e.pointerId)) && !(this._card.isSafari || this._card.iOS)) {
+        this.elements.svg.releasePointerCapture(e.pointerId);
+      }
+      if (this.dev.debug) console.log('pointerUP');
+      Frame();
+      //this.updatePath(m,deformation);
+      // cancelAnimationFrame(this.rid);
+      // Can this here???
+      this.callService();
+
+    });
+
+    // this.elements.svg.addEventListener("pointerout", () => {
+
+      // this.dragging = false;
+      // this.target = 0;
+      // if (this.dev.debug) console.log('pointerOUT');
+      // Frame();
+    // });
+
+    this.elements.svg.addEventListener("pointermove", e => {
+      let scaleValue;
+      
+      if (this.dragging) {
+        this.m = this.oMousePosSVG(e);
+
+        // Clip pointer to scale.
+        //this.m.x = Math.max(this.svg.scale.min, Math.min(this.m.x, this.svg.scale.max));
+        //this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
+        //this.m.x = Math.max(10, Math.min(this.m.x, 90.0));
+        //this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
+
+        switch (this.config.position.orientation) {
+          case 'horizontal':
+            const x1 = this.m.x;
+            scaleValue = this.svgCoordinateToSliderValue(this, this.m);
+            this.m.x = this.valueToSvg(this, scaleValue);
+            this.m.x = Math.max(this.svg.scale.min, Math.min(this.m.x, this.svg.scale.max));
+            const x2 = this.m.x;
+            this.m.x = Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step;
+            const x3 = this.m.x;
+
+            console.log("pointermove horizontal", this.m, scaleValue, x1, x2, x3);
+            break;
+
+          case 'vertical':
+            const y1 = this.m.y;
+            scaleValue = this.svgCoordinateToSliderValue(this, this.m);
+            this.m.y = this.valueToSvg(this, scaleValue);
+            // this.m.y = Math.max(this.svg.scale.min, Math.min(this.m.y, this.svg.scale.max));
+            const y2 = this.m.y;
+            this.m.y = Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step;
+            const y3 = this.m.y;
+
+            console.log("pointermove vertical", this.m, scaleValue, y1, y2, y3);
+          
+            break;
+        }
+
+        Frame();
+      }
+    });
+
+  }
+
+/*******************************************************************************
+  * RangeSliderTool2::value()
+  *
+  * Summary.
+  * Receive new state data for the entity this rangeslider is linked to. Called from set hass;
+  * Sets the brightness value of the slider. This is a value 0..255. We display %, so translate
+  *
+  */
+  set value(state) {
+    var changed = super.value = state;
+    if (!this.dragging) this.labelValue = this._stateValue;
+    return changed;
+  }
+
+ /*******************************************************************************
+  * RangeSliderTool2::_renderRangeSlider()
+  *
+  * Summary.
+  * Renders the range slider
+  *
+  */
+
+
+  _renderRangeSlider() {
+
+    if (this.dev.debug) console.log('slider - _renderRangeSlider');
+
+    // this.styles = Merge.mergeDeep(this.config.styles);
+    this.MergeColorFromState(this.styles);
+    this.MergeAnimationStyleIfChanged(this.styles);
+    console.log('_renderRangeSlider, styles=', this.styles);
+
+    this.renderValue = this._stateValue;
+    if (this.dragging) {
+      this.renderValue = this.labelValue2;
+    } else {
+      if (this.elements?.label) this.elements.label.textContent = this.renderValue;
+    }
+    
+    // const thumbPos = this.valueToSvg(Number(this.renderValue)) - this.svg.thumb.width/2;
+    
+    // Should use center x,y too for calculating cx,cy. Is not equal to this.renderValue if slider is not centered
+    // at 50,50 in configuration!!!!!!!!!!!!!!!!!!!!!!!!
+    let cx, cy;
+    switch (this.config.position.label.placement) {
+      case 'none':
+        this.styles.label["display"] = 'none';
+        break;
+      case 'position':
+        cx = (this.config.position.orientation == 'horizontal'
+          ? this.valueToSvg(this, Number(this.renderValue))
+          : this.svg.label.cx);
+        cy = (this.config.position.orientation == 'vertical'
+          ? this.valueToSvg(this, Number(this.renderValue))
+          : this.svg.label.cy);
+        break;
+
+      case 'thumb':
+        cx = (this.config.position.orientation == 'horizontal'
+          ? -this.svg.label.cx + this.valueToSvg(this, Number(this.renderValue))
+          : 0); //this.svg.label.cx);
+        cy = (this.config.position.orientation == 'vertical'
+          ? this.valueToSvg(this, Number(this.renderValue))
+          : 0)//this.svg.label.cy);
+        if (this.dragging) (this.config.position.orientation == 'horizontal') ? cy -= 50 : cx -=50;
+        break;
+    }
+    console.log('_renderRangeSlider descr=', this.config.descr, " cx/cy=", cx, cy, " state=", this._stateValue, " label=", this.renderValue);
+    
+    function renderThumbGroup() {
+
+      return svg`
+        <g id="rs-thumb-group" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}" style="transform:translate(${cx}px, ${cy}px)">
+          <rect id="rs-thumb" class="slider-thumb" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
+            width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+            style="${styleMap(this.styles.thumb)}"
+          />
+          ${renderLabel.call(this, true)} 
+        </g>
+      `;
+    }
+    
+    function renderLabel(argGroup) {
+      if ((this.config.position.label.placement == 'thumb') && argGroup) {
+
+        return svg`
+      <text id="rs-label">
+        <tspan x="${this.svg.label.cx}" y="${this.svg.label.cy}" style="${styleMap(this.styles.label)}">
+        ${this.renderValue}</tspan>
+        </text>
+        `;
+      }
+      if ((this.config.position.label.placement == 'position') && !argGroup) {
+        return svg`
+          <text id="rs-label">
+            <tspan class="slider-label" data-placement="position" x="${this.svg.label.cx}" y="${this.svg.label.cy}"
+            style="${styleMap(this.styles.label)}">${this.renderValue}</tspan>
+          </text>
+          `;
+      }
+    }
+    
+    if (!this.counter) this.counter = 1;
+    this.counter++;
+    this.counter = this.renderValue;
+    
+    const svgItems = [];
+    svgItems.push(svg`
+      <g>
+        <rect id="click" class="slider-click, hover" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
+          width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.track.radius}"
+          pointer-events="all" fill="none" 
+        />
+
+        <rect id="rs-track" class="slider-track" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
+          width="${this.svg.track.width}" height="${this.svg.track.height}" rx="${this.svg.track.radius}"
+          style="${styleMap(this.styles.track)}"
+        />
+
+        ${renderThumbGroup.call(this)}
+        ${renderLabel.call(this, false)}
+      </g>
+      `
+    );
+
+    return svgItems;
+  }
+
+ /*******************************************************************************
+  * RangeSliderTool2::render()
+  *
+  * Summary.
+  * The render() function for this object.
+  *
+  */
+  render() {
+    return svg`
+      <svg xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}" class="rangeslider"
+        pointer-events="all" overflow="visible"
+      >
+        ${this._renderRangeSlider()}
+      </svg>
+    `;
+
+  }
+} // END of class
 
  /*******************************************************************************
   * LineTool class
@@ -1699,12 +2240,11 @@ class SwitchTool extends BaseTool {
   * https://codepen.io/joegaffey/pen/vrVZaN
   *
   */
-//        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
 
   render() {
 
     return svg`
-      <g "" id="toggle-${this.toolId}" class="toggle, hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g "switch_group" id="switch-${this.toolId}" class="switch, hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
         @click=${e => this._card.handlePopup2(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderSwitch()}
       </g>
@@ -4416,7 +4956,7 @@ class devSwissArmyKnifeCard extends LitElement {
     this.iOS = (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
                 !window.MSStream;
-
+    // console.log('devSwissArmyKnifeCard, isSafari = ', this.isSafari, ' iOS = ', this.iOS);
     // Get Lovelace panel.
     // - Used for color calculations
     // - Used to access the sak templates in the global Lovelace config
@@ -5213,6 +5753,7 @@ class devSwissArmyKnifeCard extends LitElement {
     // For now, always force update to render the card if any of the states or attributes have changed...
     if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
     
+    // Force upate as test...
     // this.requestUpdate();
 
     //console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
