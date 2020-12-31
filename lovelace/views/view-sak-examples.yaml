@@ -149,6 +149,19 @@ cards:
                           25: '#f46d43'
                           30: '#d53e4f'
                           35: '#9e0142'
+                      colorstopsnew:
+                        gap: 0
+                        colors:
+                          - value: -30
+                            color: 'white'
+                            opacity: 1
+                          - value: -20
+                            color: '#5e4fa2'
+                            opacity: 1
+                          - value: -10
+                            color: '#3288bd'
+                            opacity: 1
+                      
                     styles:
                       foreground:
                         fill: var(--theme-gradient-color-01)
@@ -2430,6 +2443,12 @@ cards:
                 service: light.toggle
                 service_data: { "entity_id" : "light.livingroom_light_duo_right_light" }
 
+            - entity: light.livingroom_light_duo_left_light
+              name: Duo Links
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              attribute: brightness
+
           dev:
             debug: false
             ts: true
@@ -2445,10 +2464,243 @@ cards:
               toolsets:
                 filter: url(#nm-1)
             toolsets:
+              - toolset: slidertest1
+                position:
+                  cx: 145
+                  cy: 30
+                tools:
+                  - type: slider2
+                    descr: '#1 test slider'
+                    position:
+                      cx: 90
+                      cy: 50
+                      orientation: vertical
+                      capture:
+                        width: 15
+                        height: 40
+                      track:
+                        width: 2
+                        height: 30
+                        radius: 1
+                        # if orientation = arc/round...
+                        # start_angle: 0
+                        # end_angle: 360
+                      thumb:
+                        width: 20
+                        height: 10
+                        radius: 1
+                      # Instead of label, use value...
+                      # value:
+                      # scale:
+                        # majortickwidth: 2
+                        # minortickwidth: 1
+                        # radius: 40
+                      label:
+                        # placement can be none, thumb, position (cx,cy)
+                        placement: thumb
+                        cx: 80
+                        cy: 50
+                    entity_index: 2
+                    derived_entity:
+                      input : '[[[ return state ]]]'
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return;
+                          if (typeof(state) === 'undefined') return;
+                          
+                          var bri = Math.round(state / 2.55);
+                          return (bri ? bri : '0');
+                          
+                          if ('brightness' in entity.attributes)
+                          {
+                            if (entity.attributes
+                            && (state <= 255)) {
+                              var bri = Math.round(state / 2.55);
+                              // return (bri ? bri : '0') + '%';
+                              return (bri ? bri : '0');
+                            }
+                          }
+                        ]]]
+                      unit: >
+                        [[[
+                          if (typeof(state) === 'undefined') return undefined;
+                          return '%';
+                        ]]]
+                    slider_action:
+                      service: light.turn_on
+                      parameter: brightness_pct
+                    # use slider iso scale to configure the full slider in min/max/steps
+                    # then both the track AND the scale can use these start/stop/step values
+                    # slider:
+                    
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                      steps: '[1,2,5,6,7,8,9,20]'
+                      stepsnew:
+                        - stop: 0
+                          step: 1
+                        - stop: 10
+                          step: 5
+                    styles:
+                      label:
+                        text-anchor: middle
+                        font-size: 8em
+                        font-weight: 600
+                      # track:
+                      # thumb:
+              
+              - toolset: slidertest2
+                position:
+                  cx: 120
+                  cy: 40
+                tools:
+                  - type: slider2
+                    descr: '#2 test slider'
+                    position:
+                      cx: 50
+                      cy: 50
+                      capture:
+                        width: 60
+                        height: 15
+                      track:
+                        width: 50
+                        height: 1
+                        radius: .5
+                      thumb:
+                        width: 5
+                        height: 5
+                        radius: 2.5
+                      label:
+                        # placement can be none, thumb, position (cx,cy)
+                        placement: position
+                        cx: 80
+                        cy: 50
+                    entity_index: 2
+                    derived_entity:
+                      input : '[[[ return state ]]]'
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return;
+                          if (typeof(state) === 'undefined') return;
+                          
+                          var bri = Math.round(state / 2.55);
+                          return (bri ? bri : '0');
+                          
+                          if ('brightness' in entity.attributes)
+                          {
+                            if (entity.attributes
+                            && (state <= 255)) {
+                              var bri = Math.round(state / 2.55);
+                              // return (bri ? bri : '0') + '%';
+                              return (bri ? bri : '0');
+                            }
+                          }
+                        ]]]
+                      unit: >
+                        [[[
+                          if (typeof(state) === 'undefined') return undefined;
+                          return '%';
+                        ]]]
+                    slider_action:
+                      service: light.turn_on
+                      parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                      steps: '[1,2,5,6,7,8,9,20]'
+                      stepsnew:
+                        - stop: 0
+                          step: 1
+                        - stop: 10
+                          step: 5
+                    styles:
+                      label:
+                        text-anchor: middle
+                        font-size: 8em
+                        font-weight: 600
+                      # track:
+                      # thumb:
+
+              - toolset: slidertest3
+                position:
+                  cx: 120
+                  cy: 30
+                tools:
+                  - type: slider2
+                    descr: '#3 test slider'
+                    position:
+                      cx: 50
+                      cy: 50
+                      capture:
+                        width: 60
+                        height: 15
+                      track:
+                        width: 50
+                        height: 2
+                        radius: 1
+                      thumb:
+                        width: 5
+                        height: 10
+                        radius: 1
+                      label:
+                        # placement can be none, thumb, position (cx,cy)
+                        placement: position
+                        cx: 80
+                        cy: 50
+                    entity_index: 2
+                    derived_entity:
+                      input : '[[[ return state ]]]'
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return;
+                          if (typeof(state) === 'undefined') return;
+                          
+                          var bri = Math.round(state / 2.55);
+                          return (bri ? bri : '0');
+                          
+                          if ('brightness' in entity.attributes)
+                          {
+                            if (entity.attributes
+                            && (state <= 255)) {
+                              var bri = Math.round(state / 2.55);
+                              // return (bri ? bri : '0') + '%';
+                              return (bri ? bri : '0');
+                            }
+                          }
+                        ]]]
+                      unit: >
+                        [[[
+                          if (typeof(state) === 'undefined') return undefined;
+                          return '%';
+                        ]]]
+                    slider_action:
+                      service: light.turn_on
+                      parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                      steps: '[1,2,5,6,7,8,9,20]'
+                      stepsnew:
+                        - stop: 0
+                          step: 1
+                        - stop: 10
+                          step: 5
+                    styles:
+                      label:
+                        text-anchor: middle
+                        font-size: 8em
+                        font-weight: 600
+                      # track:
+                      # thumb:
+
               - toolset: switch
                 position:
                   cx: 100
-                  cy: 50
+                  cy: 30
                 tools:
                   - type: switch
                     position:
@@ -2466,6 +2718,103 @@ cards:
                       # - while getting styles, check full array for state match, and overwrite
                       #   the current style, then no merge is required.
                       orientation: 'vertical'
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        id: 1
+                        styles:
+                          thumb:
+                            --thumb-stroke: 'var(--primary-background-color)'
+                    styles:
+                      thumb:
+                        --thumb-stroke: 'var(--primary-background-color)'
+
+                  - type: switch
+                    position:
+                      cx: 80
+                      cy: 30
+                      # Vertical not yet working. merge.mergeDeep() can't correctly merge
+                      # animations, as they have no id, ie get concatenated!!
+                      # Also, there is a state of true ??? next to "on" and "off"
+                      #
+                      # merge arrays:
+                      # - do .concat();
+                      # - then reduce using id's, ie merge id's ??
+                      #
+                      # OR:
+                      # - while getting styles, check full array for state match, and overwrite
+                      #   the current style, then no merge is required.
+                      orientation: 'horizontal'
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        id: 1
+                        styles:
+                          thumb:
+                            --thumb-stroke: 'var(--primary-background-color)'
+                    styles:
+                      thumb:
+                        --thumb-stroke: 'var(--primary-background-color)'
+
+                  - type: switch
+                    position:
+                      cx: 100
+                      cy: 30
+                      track:
+                        radius: 1
+                      thumb:
+                        width: 5
+                        height: 5
+                        radius: 1
+                        offset: 2.5
+                      
+                      # Vertical not yet working. merge.mergeDeep() can't correctly merge
+                      # animations, as they have no id, ie get concatenated!!
+                      # Also, there is a state of true ??? next to "on" and "off"
+                      #
+                      # merge arrays:
+                      # - do .concat();
+                      # - then reduce using id's, ie merge id's ??
+                      #
+                      # OR:
+                      # - while getting styles, check full array for state match, and overwrite
+                      #   the current style, then no merge is required.
+                      orientation: 'horizontal'
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        id: 1
+                        styles:
+                          thumb:
+                            --thumb-stroke: 'var(--primary-background-color)'
+                    styles:
+                      thumb:
+                        --thumb-stroke: 'var(--primary-background-color)'
+
+                  - type: switch
+                    position:
+                      cx: 120
+                      cy: 30
+                      track:
+                        radius: 1
+                      thumb:
+                        width: 5
+                        height: 10
+                        radius: 1
+                        offset: 2.5
+                      
+                      # Vertical not yet working. merge.mergeDeep() can't correctly merge
+                      # animations, as they have no id, ie get concatenated!!
+                      # Also, there is a state of true ??? next to "on" and "off"
+                      #
+                      # merge arrays:
+                      # - do .concat();
+                      # - then reduce using id's, ie merge id's ??
+                      #
+                      # OR:
+                      # - while getting styles, check full array for state match, and overwrite
+                      #   the current style, then no merge is required.
+                      orientation: 'horizontal'
                     entity_index: 0
                     animations:
                       - state: 'on'
