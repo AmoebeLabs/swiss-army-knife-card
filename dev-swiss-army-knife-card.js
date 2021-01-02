@@ -1272,7 +1272,7 @@ class RangeSliderTool extends BaseTool {
 
     return svg`
       <g id="rangeslider-${this.toolId}" class="rangeslider"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderRangeSlider()}
       </g>
     `;
@@ -1311,6 +1311,9 @@ class RangeSliderTool2 extends BaseTool {
             placement: 'none',
           },
         },
+        show: {
+          uom: 'end',
+        },
         styles: {
           track: {
             "fill-opacity": 0.38,
@@ -1333,6 +1336,13 @@ class RangeSliderTool2 extends BaseTool {
             "transition": 'all .5s cubic-bezier(0.4, 0, 0.2, 1)',
             "pointer-events": 'none',
             "alignment-baseline": 'central',
+          },
+          uom: {
+            "fill": 'var(--primary-text-color)',
+            "text-anchor": 'middle',
+            "alignment-baseline": 'central',
+            "opacity": '0.7',
+            "letter-spacing": '0.05em',
           }
         }
     }
@@ -1507,7 +1517,7 @@ class RangeSliderTool2 extends BaseTool {
     }
 
     argThis.updateLabel(argThis, m);
-    argThis.updateInput(m);
+    // argThis.updateInput(m);
   }
   
   updateLabel(argThis, m) {
@@ -1557,8 +1567,6 @@ class RangeSliderTool2 extends BaseTool {
   firstUpdated(changedProperties)
   {
     const thisValue = this;
-    // this.dev.debug = true;
-    // this.pointerId = 12345;
     this.labelValue = this._stateValue;
 
     function Frame() {
@@ -1692,6 +1700,56 @@ class RangeSliderTool2 extends BaseTool {
     if (!this.dragging) this.labelValue = this._stateValue;
     return changed;
   }
+  _renderUom() {
+
+    if (this.config.show.uom === 'none') {
+      return svg``;
+    } else {
+      this.MergeColorFromState(this.styles.uom);
+      this.MergeAnimationStyleIfChanged();
+      
+      var fsuomStr = this.styles.label["font-size"];
+
+      var fsuomValue = 0.5;
+      var fsuomType = 'em';
+      const fsuomSplit = fsuomStr.match(/\D+|\d*\.?\d+/g);
+      if (fsuomSplit.length == 2) {
+        fsuomValue = Number(fsuomSplit[0]) * .6;
+        fsuomType = fsuomSplit[1];
+      }
+      else console.error('Cannot determine font-size for state/unit', fsuomStr);
+
+      fsuomStr = { "font-size": fsuomValue + fsuomType};
+
+      this.styles.uom = Merge.mergeDeep(this.config.styles.uom, fsuomStr);
+
+      const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+
+      // Check for location of uom. end = next to state, bottom = below state ;-), etc.
+      if (this.config.show.uom === 'end') {
+        return svg`
+          <tspan class="state__uom, hover" dx="-0.1em" dy="-0.35em"
+            style="${styleMap(this.styles.uom)}">
+            ${uom}</tspan>
+        `;
+      } else if (this.config.show.uom === 'bottom') {
+        return svg`
+          <tspan class="state__uom, hover" x="${this.svg.x}" dy="1.5em"
+            style="${styleMap(this.styles.uom)}">
+            ${uom}</tspan>
+        `;
+      } else if (this.config.show.uom === 'top') {
+        return svg`
+          <tspan class="state__uom, hover" x="${this.svg.x}" dy="-1.5em"
+            style="${styleMap(this.styles.uom)}">
+            ${uom}</tspan>
+        `;
+
+      } else {
+        return svg``
+      }
+    }
+  }
 
  /*******************************************************************************
   * RangeSliderTool2::_renderRangeSlider()
@@ -1700,7 +1758,6 @@ class RangeSliderTool2 extends BaseTool {
   * Renders the range slider
   *
   */
-
 
   _renderRangeSlider() {
 
@@ -1730,10 +1787,10 @@ class RangeSliderTool2 extends BaseTool {
       case 'position':
         cx = (this.config.position.orientation == 'horizontal'
           ? this.valueToSvg(this, Number(this.renderValue))
-          : this.svg.label.cx);
+          : 0);//this.svg.label.cx);
         cy = (this.config.position.orientation == 'vertical'
           ? this.valueToSvg(this, Number(this.renderValue))
-          : this.svg.label.cy);
+          : 0);//this.svg.label.cy);
         break;
 
       case 'thumb':
@@ -1768,6 +1825,7 @@ class RangeSliderTool2 extends BaseTool {
       <text id="rs-label">
         <tspan x="${this.svg.label.cx}" y="${this.svg.label.cy}" style="${styleMap(this.styles.label)}">
         ${this.renderValue}</tspan>
+        ${this._renderUom()}
         </text>
         `;
       }
@@ -1776,6 +1834,7 @@ class RangeSliderTool2 extends BaseTool {
           <text id="rs-label">
             <tspan class="slider-label" data-placement="position" x="${this.svg.label.cx}" y="${this.svg.label.cy}"
             style="${styleMap(this.styles.label)}">${this.renderValue}</tspan>
+            ${this._renderUom()}
           </text>
           `;
       }
@@ -1919,7 +1978,7 @@ class LineTool extends BaseTool {
 
     return svg`
       <g id="line-${this.toolId}" class="line, hover"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderLine()}
       </g>
     `;
@@ -2005,7 +2064,7 @@ class CircleTool extends BaseTool {
 
     return svg`
       <g "" id="circle-${this.toolId}" class="circle hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
-        @click=${e => this._card.handlePopup2(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderCircle()}
       </g>
     `;
@@ -2245,7 +2304,7 @@ class SwitchTool extends BaseTool {
 
     return svg`
       <g "switch_group" id="switch-${this.toolId}" class="switch, hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
-        @click=${e => this._card.handlePopup2(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderSwitch()}
       </g>
     `;
@@ -2366,7 +2425,7 @@ class RegPolyTool extends BaseTool {
 
     return svg`
       <g "" id="regpoly-${this.toolId}" class="regpoly, hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
-        @click=${e => this._card.handlePopup2(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderRegPoly()}
       </g>
     `;
@@ -2468,7 +2527,7 @@ class UserSvgTool extends BaseTool {
 
     return svg`
       <g "" id="circle-${this.toolId}" class="svg, hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderUserSvg()}
       </g>
     `;
@@ -2557,7 +2616,7 @@ class RectangleTool extends BaseTool {
 
     return svg`
       <g "" id="rectangle-${this.toolId}" class="rectangle" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderRectangle()}
       </g>
     `;
@@ -2679,7 +2738,7 @@ class RectangleToolEx extends BaseTool {
 
     return svg`
       <g id="rectex-${this.toolId}" class="rectex"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderRectangleEx()}
       </g>
     `;
@@ -2753,7 +2812,7 @@ class EllipseTool extends BaseTool {
 
     return svg`
       <g "" id="ellipse-${this.toolId}" class="ellipse"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderEllipse()}
       </g>
     `;
@@ -3066,9 +3125,19 @@ class EntityIconTool extends BaseTool {
 //       <g "" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale})"
 
   render() {
+
     return svg`
       <g "" id="icongrp-${this.toolId}" class="svgicon, hover"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])} >
+
+        ${this._renderIcon()}
+      </g>
+    `;
+
+
+    return svg`
+      <g "" id="icongrp-${this.toolId}" class="svgicon, hover"
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
 
         ${this._renderIcon()}
       </g>
@@ -3182,7 +3251,7 @@ class BadgeTool extends BaseTool {
 
     return svg`
       <g id="badge-${this.toolId}" class="badge"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderBadge()}
       </g>
     `;
@@ -3317,7 +3386,7 @@ class EntityStateTool extends BaseTool {
     if (true || (this._card._computeDomain(this._card.entities[this.config.entity_index].entity_id) == 'sensor')) {
       return svg`
       <g>
-        <text @click=${e => this._card.handlePopup2(e, this._card.config.entities[this.config.entity_index])}>
+        <text @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
           ${this._renderState()}
           ${this._renderUom()}
         </text>
@@ -3327,7 +3396,8 @@ class EntityStateTool extends BaseTool {
       // Not a sensor. Might be any other domain. Unit can only be specified using the units: in the configuration.
       // Still check for using an attribute value for the domain...
       return svg`
-        <text @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])}>
+        <text 
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
           <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}" dx="${dx}em" dy="${dy}em"
             style="${configStyleStr}">
             ${state}</tspan>
@@ -3421,7 +3491,7 @@ class EntityNameTool extends BaseTool {
 
     return svg`
       <g id="name-${this.toolId}" class="name hover"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderEntityName()}
       </g>
     `;
@@ -3514,7 +3584,7 @@ class EntityAreaTool extends BaseTool {
 
     return svg`
       <g id="area-${this.toolId}" class="area hover"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderEntityArea()}
       </g>
     `;
@@ -3586,7 +3656,7 @@ class TextTool extends BaseTool {
 
     return svg`
       <g id="text-${this.toolId}" class="text"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderText()}
       </g>
     `;
@@ -3882,7 +3952,7 @@ class HorseshoeTool extends BaseTool {
 
     return svg`
       <g "" id="horseshoe-${this.toolId}" class="horseshoe"
-        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderHorseShoe()}
       </g>
 
@@ -4094,7 +4164,7 @@ class SparklineBarChartTool extends BaseTool {
 
     return svg`
       <g "" id="barchart-${this.toolId}" class="barchart"
-         @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderBars()}
       </g>
     `;
@@ -5024,12 +5094,43 @@ class devSwissArmyKnifeCard extends LitElement {
         font-size: ${FONT_SIZE}px;
       }
 
+      /* Default settings for the card */
+      /* - default cursor */
+      /* - SVG overflow is not displayed, ie cutoff by the card edges */
+      ha-card {
+        cursor: default;
+        overflow: hidden;
+        
+        -webkit-touch-callout: none;  
+      }
+      
+      /* For disabled parts of tools/toolsets */
+      /* - No input */
+      ha-card.disabled {
+        pointer-events: none;
+        cursor: default;
+      }
+
+      /* For 'active' tools/toolsets */
+      /* - Show cursor as pointer */
+      .hover {
+        cursor: pointer;
+      }
+
+      /* For hidden tools/toolsets where state for instance is undefined */
+      .hidden {
+        opacity: 0;
+        visibility: hidden;
+        transition: visibility 0s 1s, opacity 1s linear;
+      }
+
       focus {
         outline: none;
       }
       focus-visible {
         outline: 3px solid blanchedalmond; /* That'll show 'em */
       }
+      
       
       @media (print), (prefers-reduced-motion: reduce) {
         .animated {
@@ -5448,9 +5549,6 @@ class devSwissArmyKnifeCard extends LitElement {
         // cursor: pointer;
       // }
       
-      .hover {
-        cursor: pointer;
-      }
 
       // .state__uom {
         // font-size: 20px;
@@ -6007,21 +6105,21 @@ class devSwissArmyKnifeCard extends LitElement {
   * card::firstUpdated()
   *
   * Summary.
+  * firstUpdated fires after the first time the card hs been updated using its render method,
+  * but before the browser has had a chance to paint.
   *
   */
-  firstUpdated(changedProperties) {
+  async firstUpdated(changedProperties) {
 
     if (this.dev.debug) console.log('*****Event - firstUpdated', this.cardId, new Date().getTime());
 
     if (this.toolsets) {
-      this.toolsets.map((item, index) => {
+      await Promise.all(this.toolsets.map( async (item, index) => {
+        // Give browser some change to paint cards between updates...
+        await new Promise((r) => setTimeout(r, 0));
         item.firstUpdated(changedProperties);
-      });
+      }));
     }
-
-    // #WIP, testing updates...
-    // this.requestUpdate();
-
   }
 
 
@@ -6585,13 +6683,17 @@ class devSwissArmyKnifeCard extends LitElement {
   _handleClick(node, hass, config, actionConfig, entityId) {
     let e;
     // eslint-disable-next-line default-case
+    
+    if (!actionConfig) return;
 
     console.log('_handleClick', config, actionConfig, entityId);
     switch (actionConfig.action) {
       case 'more-info': {
-        e = new Event('hass-more-info', { composed: true });
-        e.detail = { entityId };
-        node.dispatchEvent(e);
+        if (typeof entityId != 'undefined') {
+          e = new Event('hass-more-info', { composed: true });
+          e.detail = { entityId };
+          node.dispatchEvent(e);
+        }
         break;
       }
       case 'navigate': {
@@ -6626,32 +6728,24 @@ class devSwissArmyKnifeCard extends LitElement {
   *
   */
 
-  handlePopup(e, entity) {
-    e.stopPropagation();
-    e.preventDefault();
+  // handlePopup(e, entity) {
+    // e.stopPropagation();
+    // e.preventDefault();
 
-    // #TODO:
-    // No check on attribute?? So wrong tap_action selected!! for a light and its brigtness!
-    this._handleClick(this, this._hass, this.config,
-      this.config.entities[this.config.entities.findIndex(
-        // function(element, index, array){return element.entity == entity.entity_id})]
-        function(element, index, array){console.log('in handlePopup', element, entity);return (element.entity == entity.entity_id) && (element.attribute ? element.attribute == entity.attribute : true)})]
-          .tap_action, entity.entity_id);
-  }
-
-  handlePopup2(e, entityCfg) {
-    e.stopPropagation();
-    e.preventDefault();
-
-    // #TODO:
-    // No check on attribute?? So wrong tap_action selected!! for a light and its brigtness!
-    this._handleClick(this, this._hass, this.config,
-      entityCfg.tap_action, entityCfg.entity);
-
+    // // #TODO:
+    // // No check on attribute?? So wrong tap_action selected!! for a light and its brigtness!
+    // this._handleClick(this, this._hass, this.config,
       // this.config.entities[this.config.entities.findIndex(
         // // function(element, index, array){return element.entity == entity.entity_id})]
-        // function(element, index, array){console.log('in handlePopup2', element, entityCfg);return (element.entity == entityCfg.entity_id) && (entityCfg.attribute ? element.attribute == entityCfg.attribute : true)})]
+        // function(element, index, array){console.log('in handlePopup', element, entity);return (element.entity == entity.entity_id) && (element.attribute ? element.attribute == entity.attribute : true)})]
           // .tap_action, entity.entity_id);
+  // }
+
+  handleEvent(argEvent, argEntityConfig) {
+    argEvent.stopPropagation();
+    argEvent.preventDefault();
+
+    this._handleClick(this, this._hass, this.config, argEntityConfig?.tap_action, argEntityConfig?.entity);
   }
 
 
