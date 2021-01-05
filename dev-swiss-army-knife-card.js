@@ -23,8 +23,8 @@
 /*eslint no-undef: "console"*/
 
 import {
-  LitElement, html, css, svg
-} from "https://unpkg.com/lit-element@2.3.0/lit-element.js?module";
+  LitElement, html, css, svg, unsafeCSS
+} from "https://unpkg.com/lit-element/lit-element.js?module";
 // } from "https://unpkg.com/lit-element@2.4.0/lit-element.js?module";
 
 import {
@@ -34,6 +34,10 @@ import {
 import {
   unsafeSVG
 } from "https://unpkg.com/lit-html/directives/unsafe-svg.js?module";
+
+// import {
+  // unsafeCSS
+// } from "https://unpkg.com/lit-html/directives/unsafe-css.js?module";
 
 import { styleMap } from 'https://unpkg.com/lit-html/directives/style-map.js?module';
 
@@ -354,7 +358,7 @@ class Toolset {
 
       if (this.dev.debug) console.log("Toolset::constructor toolConfig", this.toolsetId, argConfig, argPos);
 
-      const newTool = new toolsNew[toolConfig.type](this._card, argConfig, argPos);
+      const newTool = new toolsNew[toolConfig.type](this, argConfig, argPos);
       this.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
 
     });
@@ -532,13 +536,13 @@ class Toolset {
       // Without this setting, objects are cut-off or become invisible while scaled!
       
       return svg`
-        <g id="toolset-${this.toolsetId}" class="toolset"
+        <g id="toolset-${this.toolsetId}" class="toolset__group-outer"
            transform="rotate(${this.transform.rotate.x}, ${this.svg.cx}, ${this.svg.cy})
                       scale(${this.transform.scale.x}, ${this.transform.scale.y})
                       "
            style="transform-origin:center;">
           <svg style="overflow:visible;">
-            <g class="toolset_position" transform="translate(${this.svg.cx/this.transform.scale.x}, ${this.svg.cy/this.transform.scale.y})">
+            <g class="toolset__group" transform="translate(${this.svg.cx/this.transform.scale.x}, ${this.svg.cy/this.transform.scale.y})">
               ${this.renderToolset()}
             </g>
             </svg>
@@ -554,11 +558,11 @@ class Toolset {
       // Note: rotate is done around the center of the bounding box. This might NOT be the toolsets center (cx,cy) position!
       //
       return svg`
-        <g id="toolset-${this.toolsetId}" class="toolset"
+        <g id="toolset-${this.toolsetId}" class="toolset__group-outer"
            transform="rotate(${this.transform.rotate.x}) scale(${this.transform.scale.x}, ${this.transform.scale.y})"
            style="transform-origin:center; transform-box:fill-box;">
           <svg style="overflow:visible;">
-            <g class="toolset_position" transform="translate(${this.svg.cx}, ${this.svg.cy})">
+            <g class="toolset__group" transform="translate(${this.svg.cx}, ${this.svg.cy})">
               ${this.renderToolset()}
             </g>
             </svg>
@@ -574,11 +578,12 @@ class Toolset {
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 class BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
 
     this.toolId = Math.random().toString(36).substr(2, 9);
-    this._card = argCard;
+    this.toolset = argToolset;
+    this._card = this.toolset._card;//argCard;
     this.config = argConfig;
 
     //console.time("--> "+ this.toolId + " PERFORMANCE BaseTool::constructor");
@@ -803,7 +808,7 @@ class BaseTool {
   */
 
 class RangeSliderTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_SLIDER_CONFIG = {
         position: {
@@ -820,7 +825,7 @@ class RangeSliderTool extends BaseTool {
         }
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_SLIDER_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_SLIDER_CONFIG, argConfig), argPos);
 
     this.svg.length = Utils.calculateSvgDimension(argConfig.position.length)
 
@@ -1288,7 +1293,7 @@ class RangeSliderTool extends BaseTool {
   */
 
 class RangeSliderTool2 extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_RANGESLIDER_CONFIG = {
         descr: 'none',
@@ -1315,39 +1320,41 @@ class RangeSliderTool2 extends BaseTool {
           uom: 'end',
         },
         styles: {
+          capture: {
+          },
           track: {
-            "fill-opacity": 0.38,
-            "stroke-width": 0,
-            "stroke": 'var(--primary-text-color)',
-            "fill": 'var(--switch-unchecked-track-color)',
-            "transition": 'all .5s ease',
-            "pointer-events": 'none',
+            // "fill-opacity": 0.38,
+            // "stroke-width": 0,
+            // "stroke": 'var(--primary-text-color)',
+            // "fill": 'var(--switch-unchecked-track-color)',
+            // "transition": 'all .5s ease',
+            // "pointer-events": 'none',
           },
           thumb: {
-            "--thumb-stroke": 'var(--secondary-text-color)',
-            "stroke": 'var(--thumb-stroke)',
-            "fill": 'var(--primary-background-color)',
-            "pointer-events": 'none',
+            // "--thumb-stroke": 'var(--secondary-text-color)',
+            // "stroke": 'var(--thumb-stroke)',
+            // "fill": 'var(--primary-background-color)',
+            // "pointer-events": 'none',
           },
           label: {
-            "fill": 'var(--primary-text-color)',
-            "font-size": '8em',
-            "font-weight": 400,
-            "transition": 'all .5s cubic-bezier(0.4, 0, 0.2, 1)',
-            "pointer-events": 'none',
-            "alignment-baseline": 'central',
+            // "fill": 'var(--primary-text-color)',
+            // "font-size": '8em',
+            // "font-weight": 400,
+            // "transition": 'all .5s cubic-bezier(0.4, 0, 0.2, 1)',
+            // "pointer-events": 'none',
+            // "alignment-baseline": 'central',
           },
           uom: {
-            "fill": 'var(--primary-text-color)',
-            "text-anchor": 'middle',
-            "alignment-baseline": 'central',
-            "opacity": '0.7',
-            "letter-spacing": '0.05em',
+            // "fill": 'var(--primary-text-color)',
+            // "text-anchor": 'middle',
+            // "alignment-baseline": 'central',
+            // "opacity": '0.7',
+            // "letter-spacing": '0.05em',
           }
         }
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_RANGESLIDER_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_RANGESLIDER_CONFIG, argConfig), argPos);
 
     this.svg.track = {};
     this.svg.track.radius = Utils.calculateSvgDimension(this.config.position.track.radius);
@@ -1404,9 +1411,11 @@ class RangeSliderTool2 extends BaseTool {
     }
     
     // Init styles
+    this.styles.capture = {};
     this.styles.track = {};
     this.styles.thumb = {};
     this.styles.label = {};
+    this.styles.uom = {};
 
     // Init scale
     this.svg.scale = {};
@@ -1728,19 +1737,19 @@ class RangeSliderTool2 extends BaseTool {
       // Check for location of uom. end = next to state, bottom = below state ;-), etc.
       if (this.config.show.uom === 'end') {
         return svg`
-          <tspan class="state__uom, hover" dx="-0.1em" dy="-0.35em"
+          <tspan class="sak-slider__uom hover" dx="-0.1em" dy="-0.35em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'bottom') {
         return svg`
-          <tspan class="state__uom, hover" x="${this.svg.x}" dy="1.5em"
+          <tspan class="sak-slider__uom hover" x="${this.svg.x}" dy="1.5em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'top') {
         return svg`
-          <tspan class="state__uom, hover" x="${this.svg.x}" dy="-1.5em"
+          <tspan class="sak-slider__uom hover" x="${this.svg.x}" dy="-1.5em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
@@ -1766,7 +1775,7 @@ class RangeSliderTool2 extends BaseTool {
     // this.styles = Merge.mergeDeep(this.config.styles);
     this.MergeColorFromState(this.styles);
     this.MergeAnimationStyleIfChanged(this.styles);
-    console.log('_renderRangeSlider, styles=', this.styles);
+    // console.log('_renderRangeSlider, styles=', this.styles);
 
     this.renderValue = this._stateValue;
     if (this.dragging) {
@@ -1803,13 +1812,13 @@ class RangeSliderTool2 extends BaseTool {
         if (this.dragging) (this.config.position.orientation == 'horizontal') ? cy -= 50 : cx -=50;
         break;
     }
-    console.log('_renderRangeSlider descr=', this.config.descr, " cx/cy=", cx, cy, " state=", this._stateValue, " label=", this.renderValue);
+    // console.log('_renderRangeSlider descr=', this.config.descr, " cx/cy=", cx, cy, " state=", this._stateValue, " label=", this.renderValue);
     
     function renderThumbGroup() {
 
       return svg`
         <g id="rs-thumb-group" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}" style="transform:translate(${cx}px, ${cy}px)">
-          <rect id="rs-thumb" class="slider-thumb" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
+          <rect id="rs-thumb" class="sak-slider__thumb" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
             width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
             style="${styleMap(this.styles.thumb)}"
           />
@@ -1823,7 +1832,7 @@ class RangeSliderTool2 extends BaseTool {
 
         return svg`
       <text id="rs-label">
-        <tspan x="${this.svg.label.cx}" y="${this.svg.label.cy}" style="${styleMap(this.styles.label)}">
+        <tspan class="sak-slider__value" x="${this.svg.label.cx}" y="${this.svg.label.cy}" style="${styleMap(this.styles.label)}">
         ${this.renderValue}</tspan>
         ${this._renderUom()}
         </text>
@@ -1832,7 +1841,7 @@ class RangeSliderTool2 extends BaseTool {
       if ((this.config.position.label.placement == 'position') && !argGroup) {
         return svg`
           <text id="rs-label">
-            <tspan class="slider-label" data-placement="position" x="${this.svg.label.cx}" y="${this.svg.label.cy}"
+            <tspan class="sak-slider__value" data-placement="position" x="${this.svg.label.cx}" y="${this.svg.label.cy}"
             style="${styleMap(this.styles.label)}">${this.renderValue}</tspan>
             ${this._renderUom()}
           </text>
@@ -1847,12 +1856,11 @@ class RangeSliderTool2 extends BaseTool {
     const svgItems = [];
     svgItems.push(svg`
       <g>
-        <rect id="click" class="slider-click, hover" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
-          width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.track.radius}"
-          pointer-events="all" fill="none" 
+        <rect id="click" class="sak-slider__capture hover" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
+          width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.track.radius}"          
         />
 
-        <rect id="rs-track" class="slider-track" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
+        <rect id="rs-track" class="sak-slider__track" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
           width="${this.svg.track.width}" height="${this.svg.track.height}" rx="${this.svg.track.radius}"
           style="${styleMap(this.styles.track)}"
         />
@@ -1875,8 +1883,7 @@ class RangeSliderTool2 extends BaseTool {
   */
   render() {
     return svg`
-      <svg xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}" class="rangeslider"
-        pointer-events="all" overflow="visible"
+      <svg xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}" class="sak-slider__group"
       >
         ${this._renderRangeSlider()}
       </svg>
@@ -1893,7 +1900,7 @@ class RangeSliderTool2 extends BaseTool {
   */
 
 class LineTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_LINE_CONFIG = {
       position: {
@@ -1904,15 +1911,15 @@ class LineTool extends BaseTool {
       },
       styles: {
         line: {
-          "stroke-linecap": 'round',
-          "stroke": 'var(--primary-text-color)',
-          "opacity": '1.0',
-          "stroke-width": '2',
+          // "stroke-linecap": 'round',
+          // "stroke": 'var(--primary-text-color)',
+          // "opacity": '1.0',
+          // "stroke-width": '2',
         }
       }
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_LINE_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_LINE_CONFIG, argConfig), argPos);
 
     if ((this.config.position.orientation == 'vertical') || (this.config.position.orientation == 'horizontal'))
         this.svg.length = Utils.calculateSvgDimension(argConfig.position.length);
@@ -1958,7 +1965,7 @@ class LineTool extends BaseTool {
 
     if (this.dev.debug) console.log('_renderLine', this.config.position.orientation, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
     return svg`
-      <line
+      <line class="sak-line__line"
         x1="${this.svg.x1}"
         y1="${this.svg.y1}"
         x2="${this.svg.x2}"
@@ -1977,7 +1984,7 @@ class LineTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="line-${this.toolId}" class="line, hover"
+      <g id="line-${this.toolId}" class="sak-line__group hover"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderLine()}
       </g>
@@ -1994,7 +2001,7 @@ class LineTool extends BaseTool {
   */
 
 class CircleTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_CIRCLE_CONFIG = {
       position: {
@@ -2008,7 +2015,7 @@ class CircleTool extends BaseTool {
       }
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_CIRCLE_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_CIRCLE_CONFIG, argConfig), argPos);
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius)
     this.styles.circle = {};
@@ -2043,7 +2050,7 @@ class CircleTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     return svg`
-      <circle ""
+      <circle class="sak-circle__circle"
         cx="${this.svg.cx}"% cy="${this.svg.cy}"% r="${this.svg.radius}"
         style="${styleMap(this.styles.circle)}"
       </circle>
@@ -2063,7 +2070,7 @@ class CircleTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="circle-${this.toolId}" class="circle hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g "" id="circle-${this.toolId}" class="sak-circle__group hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderCircle()}
       </g>
@@ -2096,7 +2103,7 @@ class CircleTool extends BaseTool {
   */
 
 class SwitchTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_SWITCH_CONFIG = {
         position: {
@@ -2117,19 +2124,19 @@ class SwitchTool extends BaseTool {
         },
         styles: {
           track: {
-            "fill-opacity": 0.38,
-            "stroke-width": 0,
-            "stroke": 'var(--primary-text-color)',
-            "fill": 'var(--primary-background-color)',
-            "transition": 'all .5s ease',
-            "pointer-events": 'none',
+            // "fill-opacity": 0.38,
+            // "stroke-width": 0,
+            // "stroke": 'var(--primary-text-color)',
+            // "fill": 'var(--primary-background-color)',
+            // "transition": 'all .5s ease',
+            // "pointer-events": 'none',
           },
           thumb: {
-            "--thumb-stroke": 'var(--secondary-text-color)',
-            "stroke": 'var(--thumb-stroke)',
-            "fill": 'var(--primary-background-color)',
-            "transition": 'all .5s cubic-bezier(0.4, 0, 0.2, 1)',
-            "pointer-events": 'none',
+            // "--thumb-stroke": 'var(--secondary-text-color)',
+            // "stroke": 'var(--thumb-stroke)',
+            // "fill": 'var(--primary-background-color)',
+            // "transition": 'all .5s cubic-bezier(0.4, 0, 0.2, 1)',
+            // "pointer-events": 'none',
           }
         }
     }
@@ -2202,7 +2209,7 @@ class SwitchTool extends BaseTool {
         ],
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_SWITCH_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_SWITCH_CONFIG, argConfig), argPos);
 
     this.svg.track = {};
     this.svg.track.radius = Utils.calculateSvgDimension(this.config.position.track.radius);
@@ -2278,11 +2285,11 @@ class SwitchTool extends BaseTool {
 
     return svg`
       <g>
-        <rect class="switch-track" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
+        <rect class="sak-switch__track" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
           width="${this.svg.track.width}" height="${this.svg.track.height}" rx="${this.svg.track.radius}"
           style="${styleMap(this.styles.track)}"
         />
-        <rect class="switch-thumb" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
+        <rect class="sak-switch__thumb" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
           width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
           style="${styleMap(this.styles.thumb)}"
         />
@@ -2303,7 +2310,7 @@ class SwitchTool extends BaseTool {
   render() {
 
     return svg`
-      <g "switch_group" id="switch-${this.toolId}" class="switch, hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g id="switch-${this.toolId}" class="sak-switch__group hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderSwitch()}
       </g>
@@ -2320,7 +2327,7 @@ class SwitchTool extends BaseTool {
   */
 
 class RegPolyTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_REGPOLY_CONFIG = {
       position: {
@@ -2333,14 +2340,14 @@ class RegPolyTool extends BaseTool {
       },
       styles: {
         regpoly: {
-          "stroke": 'var(--primary-text-color)',
-          "fill": 'var(--primary-background-color)',
-          "fill-rule": 'nonzero',            
+          // "stroke": 'var(--primary-text-color)',
+          // "fill": 'var(--primary-background-color)',
+          // "fill-rule": 'nonzero',            
         }
       }
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_REGPOLY_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_REGPOLY_CONFIG, argConfig), argPos);
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius)
     this.styles.regpoly = {};
@@ -2405,7 +2412,7 @@ class RegPolyTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     return svg`
-      <path
+      <path class="sak-polygon__regpoly"
         d="${generatePoly(this.config.position.side_count, this.config.position.side_skip, this.svg.radius, this.config.position.angle_offset, this.svg.cx, this.svg.cy)}"
         style="${styleMap(this.styles.regpoly)}"
       />
@@ -2424,7 +2431,7 @@ class RegPolyTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="regpoly-${this.toolId}" class="regpoly, hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g "" id="regpoly-${this.toolId}" class="sak-polygon__group hover" transform-origin="${this.svg.cx} ${this.svg.cy}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderRegPoly()}
       </g>
@@ -2441,7 +2448,7 @@ class RegPolyTool extends BaseTool {
   */
 
 class UserSvgTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_USERSVG_CONFIG = {
       position: {
@@ -2456,7 +2463,7 @@ class UserSvgTool extends BaseTool {
       }
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_USERSVG_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_USERSVG_CONFIG, argConfig), argPos);
 
     this.images = {};
     this.images = Object.assign({}, ...this.config.images);
@@ -2493,6 +2500,7 @@ class UserSvgTool extends BaseTool {
 
   _renderUserSvg() {
 
+    
     this.MergeAnimationStyleIfChanged();
 
     // #TODO:
@@ -2509,9 +2517,8 @@ class UserSvgTool extends BaseTool {
       // `;
     // })
 
-    
     return svg`
-      <svg x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
+      <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
         <image href="${this.images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
       </svg>
       `;
@@ -2526,7 +2533,14 @@ class UserSvgTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="circle-${this.toolId}" class="svg, hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g id="usersvg-${this.toolId}" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        ${this._renderUserSvg()}
+      </g>
+    `;
+
+    return svg`
+      <g id="usersvg-${this.toolId}" class="sak-usersvg__group hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderUserSvg()}
       </g>
@@ -2543,7 +2557,7 @@ class UserSvgTool extends BaseTool {
   */
 
 class RectangleTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_RECTANGLE_CONFIG = {
       position: {
@@ -2555,16 +2569,16 @@ class RectangleTool extends BaseTool {
       }, 
       styles: {
         rectangle: {
-          "stroke-linecap": 'round',
-          "stroke": 'var(--primary-text-color)',
-          "opacity": '1.0',
-          "stroke-width": '2em',
-          "fill": 'var(--primary-background-color)',
+          // "stroke-linecap": 'round',
+          // "stroke": 'var(--primary-text-color)',
+          // "opacity": '1.0',
+          // "stroke-width": '2em',
+          // "fill": 'var(--primary-background-color)',
         }
       }
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_RECTANGLE_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_RECTANGLE_CONFIG, argConfig), argPos);
     this.svg.rx = Utils.calculateSvgDimension(argConfig.position.rx)
     this.styles.rectangle = {};
 
@@ -2599,7 +2613,7 @@ class RectangleTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     return svg`
-      <rect ""
+      <rect class="sak-rectangle__rectangle"
         x="${this.svg.x}" y="${this.svg.y}" width="${this.svg.width}" height="${this.svg.height}" rx="${this.svg.rx}"
         style="${styleMap(this.styles.rectangle)}"/>
       `;
@@ -2615,7 +2629,7 @@ class RectangleTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="rectangle-${this.toolId}" class="rectangle" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
+      <g id="rectangle-${this.toolId}" class="sac-rectangle__group" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderRectangle()}
       </g>
@@ -2632,7 +2646,7 @@ class RectangleTool extends BaseTool {
   */
 
 class RectangleToolEx extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_RECTANGLEEX_CONFIG = {
       position: {
@@ -2646,15 +2660,15 @@ class RectangleToolEx extends BaseTool {
       },
       styles: {
         rectex: {
-          "stroke-linecap": 'round',
-          "stroke": 'var(--primary-text-color)',
-          "opacity": '1.0',
-          "stroke-width": '0',
-          "fill": 'var(--primary-background-color)',
+          // "stroke-linecap": 'round',
+          // "stroke": 'var(--primary-text-color)',
+          // "opacity": '1.0',
+          // "stroke-width": '0',
+          // "fill": 'var(--primary-background-color)',
         }
       }
     }
-    super(argCard, Merge.mergeDeep(DEFAULT_RECTANGLEEX_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_RECTANGLEEX_CONFIG, argConfig), argPos);
 
     this.styles.rectex = {};
     
@@ -2709,7 +2723,7 @@ class RectangleToolEx extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     svgItems = svg`
-      <g "" id="rectex-${this.toolId}">
+      <g class="sak-rectex__rectex" id="rectex-${this.toolId}">
         <path  d="
             M ${this.svg.x + this.svg.radiusTopLeft} ${this.svg.y}
             h ${this.svg.width - this.svg.radiusTopLeft - this.svg.radiusTopRight}
@@ -2737,7 +2751,7 @@ class RectangleToolEx extends BaseTool {
   render() {
 
     return svg`
-      <g id="rectex-${this.toolId}" class="rectex"
+      <g id="rectex-${this.toolId}" class="sak-rectex__group hover"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderRectangleEx()}
       </g>
@@ -2754,7 +2768,7 @@ class RectangleToolEx extends BaseTool {
   */
 
 class EllipseTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_ELLIPSE_CONFIG = {
         position: {
@@ -2769,7 +2783,7 @@ class EllipseTool extends BaseTool {
         }
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_ELLIPSE_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_ELLIPSE_CONFIG, argConfig), argPos);
 
     this.svg.radiusx = Utils.calculateSvgDimension(argConfig.position.radiusx)
     this.svg.radiusy = Utils.calculateSvgDimension(argConfig.position.radiusy)
@@ -2794,7 +2808,7 @@ class EllipseTool extends BaseTool {
     if (this.dev.debug) console.log('EllipseTool - renderEllipse', this.svg.cx, this.svg.cy, this.svg.radiusx, this.svg.radiusy);
 
     return svg`
-      <ellipse ""
+      <ellipse class="sak-ellipse__ellipse"
         cx="${this.svg.cx}"% cy="${this.svg.cy}"%
         rx="${this.svg.radiusx}" ry="${this.svg.radiusy}"
         style="${styleMap(this.styles.ellipse)}"/>
@@ -2811,7 +2825,7 @@ class EllipseTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="ellipse-${this.toolId}" class="ellipse"
+      <g id="ellipse-${this.toolId}" class="sak-ellipse__group hover"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderEllipse()}
       </g>
@@ -2829,21 +2843,21 @@ class EllipseTool extends BaseTool {
   */
 
 class EntityIconTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_ICON_CONFIG = {
         styles: {
           icon: {
-            "--mdc-icon-size": '100%',
-            "align-self": 'center',
-            "height": '100%',
-            "width": '100%',
-            "fill": 'var(--primary-text-color)',
-            "color": 'var(--primary-text-color)',
+            // "--mdc-icon-size": '100%',
+            // "align-self": 'center',
+            // "height": '100%',
+            // "width": '100%',
+            // "fill": 'var(--primary-text-color)',
+            // "color": 'var(--primary-text-color)',
           }
         }
     }
-    super(argCard, Merge.mergeDeep(DEFAULT_ICON_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_ICON_CONFIG, argConfig), argPos);
 
 // from original
     // this.config.entity = this.config.entity ? this.config.entity : 0;
@@ -3070,7 +3084,7 @@ class EntityIconTool extends BaseTool {
         // Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required to position the icon on its desired location.
         // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
         return svg`
-          <g id="icon-${this.toolId}" class="hover" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
+          <g id="icon-${this.toolId}" class="sak-icon__icon hover" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
             <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke="yellow" stroke-width="0px" opacity="50%" fill="none"></rect>
             <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
           <g>
@@ -3081,7 +3095,7 @@ class EntityIconTool extends BaseTool {
             <body>
               <div class="div__icon, hover" xmlns="http://www.w3.org/1999/xhtml"
                   style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-                  <ha-icon icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.styles.icon)}";></ha-icon>
+                  <ha-icon icon=${icon} id="icon-${this.toolId}" class="sak-icon__icon" style="${styleMap(this.styles.icon)}";></ha-icon>
               </div>
             </body>
           </foreignObject>
@@ -3093,7 +3107,7 @@ class EntityIconTool extends BaseTool {
                         >
           <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
                 style="line-height:${this.svg.iconPixels}px;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-            <ha-icon icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.styles.icon)}"></ha-icon>
+            <ha-icon class="sak-icon__icon" icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.styles.icon)}"></ha-icon>
           </div>
         </foreignObject>
         `;
@@ -3127,7 +3141,7 @@ class EntityIconTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="icongrp-${this.toolId}" class="svgicon, hover"
+      <g "" id="icongrp-${this.toolId}" class="hover"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])} >
 
         ${this._renderIcon()}
@@ -3136,7 +3150,7 @@ class EntityIconTool extends BaseTool {
 
 
     return svg`
-      <g "" id="icongrp-${this.toolId}" class="svgicon, hover"
+      <g "" id="icongrp-${this.toolId}" class="hover"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
 
         ${this._renderIcon()}
@@ -3154,7 +3168,7 @@ class EntityIconTool extends BaseTool {
   */
 
 class BadgeTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_BADGE_CONFIG = {
       position: {
@@ -3163,16 +3177,16 @@ class BadgeTool extends BaseTool {
       },
       styles: {
         left: {
-          "stroke-width": '0',
-          "fill": 'grey',
+          // "stroke-width": '0',
+          // "fill": 'grey',
         },
         right: {
-          "stroke-width": '0',
-          "fill": 'var(--theme-gradient-color-03)',
+          // "stroke-width": '0',
+          // "fill": 'var(--theme-gradient-color-03)',
         }
       }
     }
-    super(argCard, Merge.mergeDeep(DEFAULT_BADGE_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_BADGE_CONFIG, argConfig), argPos);
 
     // Coordinates from left and right part.
     this.svg.radius = 5;
@@ -3209,7 +3223,7 @@ class BadgeTool extends BaseTool {
 
     svgItems = svg`
       <g  id="badge-${this.toolId}">
-        <path "" d="
+        <path class="sak-badge__right" d="
             M ${this.svg.rightXpos} ${this.svg.rightYpos}
             h ${this.svg.rightWidth - this.svg.radius}
             a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} ${this.svg.radius}
@@ -3221,7 +3235,7 @@ class BadgeTool extends BaseTool {
             "
             style="${styleMap(this.styles.right)}"/>
 
-        <path "" d="
+        <path class="sak-badge__left" d="
             M ${this.svg.leftXpos + this.svg.radius} ${this.svg.leftYpos}
             h ${this.svg.leftWidth - this.svg.radius}
             v ${this.svg.divSize}
@@ -3250,7 +3264,7 @@ class BadgeTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="badge-${this.toolId}" class="badge"
+      <g id="badge-${this.toolId}" class="sak-badge__group hover"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderBadge()}
       </g>
@@ -3271,28 +3285,28 @@ class BadgeTool extends BaseTool {
   */
 
 class EntityStateTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
     const DEFAULT_STATE_CONFIG = {
       show: { uom: 'end' },
       styles: {
         state: {
-          "font-size": '3em',
-          "fill": 'var(--primary-text-color)',
-          "opacity": '1.0',
-          "text-anchor": 'middle',
-          "alignment-baseline": 'central',
-          "letter-spacing": '0.05em',
+          // "font-size": '3em',
+          // "fill": 'var(--primary-text-color)',
+          // "opacity": '1.0',
+          // "text-anchor": 'middle',
+          // "alignment-baseline": 'central',
+          // "letter-spacing": '0.05em',
         },
         uom: {
-          "fill": 'var(--primary-text-color)',
-          "text-anchor": 'middle',
-          "alignment-baseline": 'central',
-          "opacity": '0.7',
-          "letter-spacing": '0.05em',
+          // "fill": 'var(--primary-text-color)',
+          // "text-anchor": 'middle',
+          // "alignment-baseline": 'central',
+          // "opacity": '0.7',
+          // "letter-spacing": '0.05em',
         }
       }
     }
-    super(argCard, Merge.mergeDeep(DEFAULT_STATE_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_STATE_CONFIG, argConfig), argPos);
     this.styles.state = {};
     this.styles.uom = {};
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
@@ -3324,7 +3338,7 @@ class EntityStateTool extends BaseTool {
     // `;
 
     return svg`
-      <tspan class="state__value, hover" x="${this.svg.x}" y="${this.svg.y}"
+      <tspan class="sak-state__value user-state__value" x="${this.svg.x}" y="${this.svg.y}"
         style="${styleMap(this.styles.state)}">
         ${this.config?.text?.before ? this.config.text.before : ''}${inState}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
     `;
@@ -3358,19 +3372,19 @@ class EntityStateTool extends BaseTool {
       // Check for location of uom. end = next to state, bottom = below state ;-), etc.
       if (this.config.show.uom === 'end') {
         return svg`
-          <tspan class="state__uom, hover" dx="-0.1em" dy="-0.35em"
+          <tspan class="sak-state__uom" dx="-0.1em" dy="-0.35em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'bottom') {
         return svg`
-          <tspan class="state__uom, hover" x="${this.svg.x}" dy="1.5em"
+          <tspan class="sak-state__uom" x="${this.svg.x}" dy="1.5em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'top') {
         return svg`
-          <tspan class="state__uom, hover" x="${this.svg.x}" dy="-1.5em"
+          <tspan class="sak-state__uom" x="${this.svg.x}" dy="-1.5em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
@@ -3385,7 +3399,7 @@ class EntityStateTool extends BaseTool {
 
     if (true || (this._card._computeDomain(this._card.entities[this.config.entity_index].entity_id) == 'sensor')) {
       return svg`
-      <g>
+      <g class="sak-state__group hover">
         <text @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
           ${this._renderState()}
           ${this._renderUom()}
@@ -3418,23 +3432,23 @@ class EntityStateTool extends BaseTool {
   */
 
 class EntityNameTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     // See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/alignment-baseline
     const DEFAULT_NAME_CONFIG = {
       styles: {
         name: {
-          "font-size": '3em',
-          "fill": 'var(--primary-text-color)',
-          "opacity": '1.0',
-          "text-anchor": 'middle',
-          "alignment-baseline": 'central',
-          "letter-spacing": '0.05em',
+          // "font-size": '3em',
+          // "fill": 'var(--primary-text-color)',
+          // "opacity": '1.0',
+          // "text-anchor": 'middle',
+          // "alignment-baseline": 'central',
+          // "letter-spacing": '0.05em',
         }
       }
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_NAME_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_NAME_CONFIG, argConfig), argPos);
     
     this._name = {};
     this.styles.name = {};
@@ -3475,7 +3489,7 @@ class EntityNameTool extends BaseTool {
 
     return svg`
         <text>
-          <tspan class="entity__name hover" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.name)}">${name}</tspan>
+          <tspan class="sak-name__name" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.name)}">${name}</tspan>
         </text>
       `;
   }
@@ -3490,7 +3504,7 @@ class EntityNameTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="name-${this.toolId}" class="name hover"
+      <g id="name-${this.toolId}" class="sak-name__group hover"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderEntityName()}
       </g>
@@ -3513,22 +3527,16 @@ class EntityNameTool extends BaseTool {
   */
 
 class EntityAreaTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_AREA_CONFIG = {
       styles: {
         area: {
-          "font-size": '3em',
-          "fill": 'var(--primary-text-color)',
-          "opacity": '1.0',
-          "text-anchor": 'middle',
-          "alignment-baseline": 'central',
-          "letter-spacing": '0.05em',
         }
       }
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_AREA_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_AREA_CONFIG, argConfig), argPos);
 
     // Text is rendered in its own context. No need for SVG coordinates.
     this.styles.area = {};
@@ -3567,8 +3575,9 @@ class EntityAreaTool extends BaseTool {
     const area = this._buildArea(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
 
     return svg`
-        <text class="entity__area hover">
-          <tspan class="entity__area" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.area)}">${area}</tspan>
+        <text class="hover">
+          <tspan class="sak-area__area"
+          x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.area)}">${area}</tspan>
         </text>
       `;
   }
@@ -3583,7 +3592,7 @@ class EntityAreaTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="area-${this.toolId}" class="area hover"
+      <g id="area-${this.toolId}" class="sak-area__group hover"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderEntityArea()}
       </g>
@@ -3603,21 +3612,21 @@ class EntityAreaTool extends BaseTool {
   */
 
 class TextTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_TEXT_CONFIG = {
       styles: {
         text: {
-          'font-size': '3em',
-          'fill': 'var(--primary-text-color)',
-          'opacity': '1.0',
-          'text-anchor': 'middle',
-          'alignment-baseline': 'central',
+          // 'font-size': '3em',
+          // 'fill': 'var(--primary-text-color)',
+          // 'opacity': '1.0',
+          // 'text-anchor': 'middle',
+          // 'alignment-baseline': 'central',
         }
       }
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_TEXT_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_TEXT_CONFIG, argConfig), argPos);
 
     this.text = this.config.text;
     this.styles.text = {};
@@ -3639,8 +3648,8 @@ class TextTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     return svg`
-        <text class="text">
-          <tspan class="text" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.text)}">${this.text}</tspan>
+        <text class="hover">
+          <tspan class="sak-text__text" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.text)}">${this.text}</tspan>
         </text>
       `;
   }
@@ -3655,7 +3664,7 @@ class TextTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="text-${this.toolId}" class="text"
+      <g id="text-${this.toolId}" class="sak-text__group"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderText()}
       </g>
@@ -3680,7 +3689,7 @@ class HorseshoeTool extends BaseTool {
     // zero degrees is at 3 o'clock.
 
 
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_HORSESHOE_CONFIG = {
       position: {
@@ -3701,7 +3710,7 @@ class HorseshoeTool extends BaseTool {
     }
 
 
-    super(argCard, Merge.mergeDeep(DEFAULT_HORSESHOE_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_HORSESHOE_CONFIG, argConfig), argPos);
 
     // Next consts are now variable. Should be calculated!!!!!!
     this.HORSESHOE_RADIUS_SIZE = 0.45 * SVG_VIEW_BOX;
@@ -3920,7 +3929,7 @@ class HorseshoeTool extends BaseTool {
   if (!this.config.show.horseshoe) return;
 
   return svg`
-      <g id="horseshoe__svg__group" class="horseshoe__svg__group">
+      <g id="horseshoe__group-inner" class="horseshoe__group-inner">
         <circle id="horseshoe__scale" class="horseshoe__scale" cx="${this.svg.cx}" cy="${this.svg.cy}" r="${this.svg.radius}"
           fill="${this.fill || 'rgba(0, 0, 0, 0)'}"
           stroke="${this.config.horseshoe_scale.color || '#000000'}"
@@ -3951,7 +3960,7 @@ class HorseshoeTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="horseshoe-${this.toolId}" class="horseshoe"
+      <g "" id="horseshoe-${this.toolId}" class="horseshoe__group-outer"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderHorseShoe()}
       </g>
@@ -3972,7 +3981,7 @@ class HorseshoeTool extends BaseTool {
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 class SparklineBarChartTool extends BaseTool {
-  constructor (argCard, argConfig, argPos) {
+  constructor (argToolset, argConfig, argPos) {
 
     const DEFAULT_BARCHART_CONFIG = {
       position: {
@@ -3988,15 +3997,15 @@ class SparklineBarChartTool extends BaseTool {
       color: 'var(--primary-color)',
       styles: {
         bar: {
-          "stroke-linecap": 'round',
-          "stroke-linejoin": 'round',
+          // "stroke-linecap": 'round',
+          // "stroke-linejoin": 'round',
         }
       },
       colorstops: [],
       show: {style: 'fixedcolor'}
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_BARCHART_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_BARCHART_CONFIG, argConfig), argPos);
     
     this.svg.margin = Utils.calculateSvgDimension(this.config.position.margin);
     const theWidth = (this.config.position.orientation == 'vertical') ?  this.svg.width : this.svg.height;
@@ -4092,6 +4101,7 @@ class SparklineBarChartTool extends BaseTool {
         _bars[index].x2 = _bars[index].x1;
         _bars[index].y1 = this.svg.y + this.svg.height;
         _bars[index].y2 = _bars[index].y1 - this._bars[index].length;
+        _bars[index].dataLength = this._bars[index].length;
       });
       // HORIZONTAL
     } else if (this.config.position.orientation == 'horizontal') {
@@ -4103,6 +4113,7 @@ class SparklineBarChartTool extends BaseTool {
         _bars[index].y2 = _bars[index].y1;
         _bars[index].x1 = this.svg.x;
         _bars[index].x2 = _bars[index].x1 + this._bars[index].length;
+        _bars[index].dataLength = this._bars[index].length;
       });
     } else {
       if (this.dev.debug) console.log("SparklineBarChartTool - unknown barchart orientation (horizontal or vertical)");
@@ -4132,15 +4143,14 @@ class SparklineBarChartTool extends BaseTool {
       if (!this.stylesBar[index])
         this.stylesBar[index] = {...this.config.styles.bar};
 
-      // this.stylesBar[index]['stroke'] = stroke;
-      
       svgItems.push(svg`
-        <line id="line-segment-${this.toolId}-${index}" class="line__segment"
+        <line id="line-segment-${this.toolId}-${index}" class="sak-barchart__line"
                   style="${styleMap(this.stylesBar[index])}"
                   x1="${this._bars[index].x1}"
                   x2="${this._bars[index].x2}"
                   y1="${this._bars[index].y1}"
                   y2="${this._bars[index].y2}"
+                  data-length="${this._bars[index].dataLength}"
                   stroke="${stroke}"
                   stroke-width="${this.svg.barWidth}"
                   />
@@ -4163,7 +4173,7 @@ class SparklineBarChartTool extends BaseTool {
     //if (!this._needsRendering) return;
 
     return svg`
-      <g "" id="barchart-${this.toolId}" class="barchart"
+      <g id="barchart-${this.toolId}" class="sak-barchart__group hover"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderBars()}
       </g>
@@ -4183,7 +4193,7 @@ class SparklineBarChartTool extends BaseTool {
   */
 
 class SegmentedArcTool extends BaseTool {
-  constructor(argCard, argConfig, argPos) {
+  constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_SEGARC_CONFIG = {
       position: {
@@ -4196,19 +4206,19 @@ class SegmentedArcTool extends BaseTool {
       color: 'var(--primary-color)',
       styles: { 
         foreground: {
-          "stroke-linecap": 'round',
-          "fill": 'var(--primary-color)',
-          "stroke": 'none',
-          "stroke-width": '0.5',
-          "fill-rule": 'evenodd',
-          "stroke-linejoin": 'round',
+          // "stroke-linecap": 'round',
+          // "fill": 'var(--primary-color)',
+          // "stroke": 'none',
+          // "stroke-width": '0.5',
+          // "fill-rule": 'evenodd',
+          // "stroke-linejoin": 'round',
         },
         background: {
-          "stroke-linecap": 'round',
-          "fill": 'var(--primary-background-color)',
-          "stroke-width": '0',
-          "fill-rule": 'evenodd',
-          "stroke-linejoin": 'round',
+          // "stroke-linecap": 'round',
+          // "fill": 'var(--primary-background-color)',
+          // "stroke-width": '0',
+          // "fill-rule": 'evenodd',
+          // "stroke-linejoin": 'round',
         },
       },
       segments: {},
@@ -4229,7 +4239,7 @@ class SegmentedArcTool extends BaseTool {
       },
     }
 
-    super(argCard, Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig), argPos);
+    super(argToolset, Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig), argPos);
 
     if (this.dev.performance) console.time("--> "+ this.toolId + " PERFORMANCE SegmentedArcTool::constructor");
 
@@ -4405,7 +4415,7 @@ class SegmentedArcTool extends BaseTool {
         scaleConfig.position.radius_y = ((this.config.position.radius_y || this.config.position.radius)) - (this.config.position.width/2) + (scaleConfig.position.width/2) + (this.config.scale.offset);
 
         //this._segmentedArcScale = new SegmentedArc(this._card, scaleConfig);
-        this._segmentedArcScale = new SegmentedArcTool(this._card, scaleConfig, argPos);
+        this._segmentedArcScale = new SegmentedArcTool(this, scaleConfig, argPos);
         const scaleId = this._segmentedArcScale.objectId;
       } else {
         this._segmentedArcScale = null;
@@ -4591,7 +4601,7 @@ class SegmentedArcTool extends BaseTool {
           d = this.buildArcPath(this._segmentAngles[k].drawStart, this._segmentAngles[k].drawEnd,
                                 this._arc.clockwise, this.svg.radiusX, this.svg.radiusY, this.svg.width);
 
-          svgItems.push(svg`<path id="arc-segment-bg-${this.toolId}-${k}" class="arc__segment"
+          svgItems.push(svg`<path id="arc-segment-bg-${this.toolId}-${k}" class="sak-segarc__background"
                               style="${styleMap(this.config.styles.background)}"
                               d="${d}"
                               />`);
@@ -4640,7 +4650,7 @@ class SegmentedArcTool extends BaseTool {
 
 //                             style="${styleMap(this.config.styles.foreground)}"
 
-          svgItems.push(svg`<path id="arc-segment-${this.toolId}-${index}" class="arc__segment"
+          svgItems.push(svg`<path id="arc-segment-${this.toolId}-${index}" class="sak-segarc__foreground"
                             style="${styleMap(this.styles.foreground[index])}"
                             d="${d}"
                             />`);
@@ -5075,19 +5085,7 @@ class devSwissArmyKnifeCard extends LitElement {
     }
   }
 */
- /*******************************************************************************
-  * card::styles()
-  *
-  * Summary.
-  * Returns the static CSS styles for the lit-element
-  *
-  * Note:
-  * - The BEM (http://getbem.com/naming/) naming style for CSS is used
-  *   Of course, if no mistakes are made ;-)
-  *
-  */
-  static get styles() {
-
+  static getSystemStyles() {
     return css`
       :host {
         cursor: default;
@@ -5111,6 +5109,11 @@ class devSwissArmyKnifeCard extends LitElement {
         cursor: default;
       }
 
+      .disabled {
+        pointer-events: none !important;
+        cursor: default !important;
+      }
+
       /* For 'active' tools/toolsets */
       /* - Show cursor as pointer */
       .hover {
@@ -5121,7 +5124,7 @@ class devSwissArmyKnifeCard extends LitElement {
       .hidden {
         opacity: 0;
         visibility: hidden;
-        transition: visibility 0s 1s, opacity 1s linear;
+        transition: visibility 0s 1s, opacity 0.5s linear;
       }
 
       focus {
@@ -5140,6 +5143,248 @@ class devSwissArmyKnifeCard extends LitElement {
         }
       }
 
+      /* Area tool */
+      .sak-area__group {
+      }
+      .sak-area__area {
+        font-size: 3em;
+        fill: var(--primary-text-color);
+        opacity: 1.0;
+        text-anchor: middle;
+        alignment-baseline: central;
+        letter-spacing: 0.05em;
+      }
+
+      /* Badge tool */
+      .sak-badge__group {
+      }
+      .sak-badge__left {
+        stroke-width: 0;
+        fill: grey;
+      }
+      .sak-badge__right {
+        stroke-width: 0;
+        fill: var(--theme-gradient-color-03, darkgrey);
+      }
+
+      /* Barchart tool */
+      .sak-barchart__group {
+      }
+      .sak-barchart__line {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* Circle tool */
+      .sak-circle__group {
+      }
+      .sak-circle__circle {
+        fill: var(--primary-background-color);
+      }
+
+      /* Ellipse tool */
+      .sak-ellipse__group {
+      }
+      .sak-ellipse__ellipse {
+        fill: var(--primary-background-color);
+      }
+
+      /* Horseshoe tool */
+      .sak-horseshoe__group {
+      }
+      .sak-horseshoe__todo {
+      }
+
+      /* Icon tool */
+      .sak-icon__group {
+      }
+      .sak-icon__icon {
+        --mdc-icon-size: 100%;
+        align-self: center;
+        height: 100%;
+        width: 100%;
+        fill: var(--primary-text-color);
+        color: var(--primary-text-color);
+      }
+
+      /* Line tool */
+      .sak-line__group {
+      }
+      .sak-line__line {
+        stroke-linecap: round;
+        stroke: var(--primary-text-color);
+        opacity: 1.0;
+        stroke-width: 2;
+      }
+
+      /* Entity Name tool */
+      .sak-name__group {
+      }
+      .sak-name__name {
+        font-size": '3em',
+        fill: var(--primary-text-color);
+        opacity: 1.0;
+        text-anchor: middle;
+        alignment-baseline: central;
+        letter-spacing: 0.05em;
+      }
+
+      /* Polygon tool */
+      .sak-polygon__group {
+        overflow: visible;
+      }
+      .sak-polygon__regpoly {
+        stroke: var(--primary-text-color);
+        fill: var(--primary-background-color);
+        fill-rule: nonzero;
+      }
+
+      /* Rectangle tool */
+      .sak-rectangle__group {
+      }
+      .sak-rectangle__rectangle {
+        stroke-linecap: round;
+        stroke: var(--primary-text-color);
+        opacity: 1.0;
+        stroke-width: 2em;
+        fill: var(--primary-background-color);
+      }
+      
+      /* RectEx tool */
+      .sak-rectex__group {
+      }
+      .sak-rectex__rectex {
+        stroke-linecap: round;
+        stroke: var(--primary-text-color);
+        opacity: 1.0;
+        stroke-width: 0;
+        fill: var(--primary-background-color);
+      }
+
+      /* Segmented arc tool */
+      .sak-segarc__group {
+      }
+      .sak-segarc__background {
+        stroke-linecap: round;
+        fill: var(--primary-background-color);
+        stroke-width: 0;
+        fill-rule: evenodd;
+        stroke-linejoin: round;
+      }
+      .sak-segarc__foreground {
+        stroke-linecap: round;
+        fill: var(--primary-color);
+        stroke: none;
+        stroke-width: 0.5;
+        fill-rule: evenodd;
+        stroke-linejoin: round;
+      }
+
+      /* Slider tool */
+      .sak-slider__group {
+        pointer-events: all;
+        overflow: visible;
+      }
+      .sak-slider__capture {
+        pointer-events: all;
+        fill: none;
+        stroke-width: 0;
+      }
+      .sak-slider__track {
+        fill-opacity: 0.38;
+        stroke-width: 0;
+        stroke: var(--primary-text-color);
+        fill: var(--switch-unchecked-track-color);
+        transition: all .5s ease;
+        pointer-events: none;
+      }
+      .sak-slider__thumb {
+        --thumb-stroke: var(--secondary-text-color);
+        stroke: var(--thumb-stroke);
+        fill: var(--primary-background-color);
+        pointer-events: none;
+      }
+      .sak-slider__value {
+        fill: var(--primary-text-color);
+        font-size: 8em;
+        font-weight: 400;
+        transition: all .5s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+        alignment-baseline: central;
+      }
+      .sak-slider__uom {
+        fill: var(--primary-text-color);
+        text-anchor: middle;
+        alignment-baseline: central;
+        opacity: 0.7;
+        letter-spacing: 0.05em;
+      }
+      
+      /* Entity state/units tool */
+      .sak-state__group {
+      }
+      .sak-state__value {
+        --descr: original;
+        font-size: 3em;
+        fill: var(--primary-text-color);
+        opacity: 1.0;
+        text-anchor: middle;
+        alignment-baseline: central;
+        letter-spacing: 0.05em;
+      }
+      .sak-state__uom {
+        fill: var(--primary-text-color);
+        text-anchor: middle;
+        alignment-baseline: central;
+        opacity: 0.7;
+        letter-spacing: 0.05em;
+      }
+
+      // .user-state__value {
+        // font-size: 8em;
+        // fill: green;
+        // opacity: 0.6;
+        // text-anchor: end;
+        // alignment-baseline: central;
+        // letter-spacing: 0.25em;
+      // }
+
+      /* Switch tool */
+      .sak-switch__group {
+      }
+      .sak-switch__track {
+        fill-opacity: 0.38;
+        stroke-width: 0;
+        stroke: var(--primary-text-color);
+        fill: var(--primary-background-color);
+        transition: all .5s ease;
+        pointer-events: none;
+      }
+      .sak-switch__thumb {
+        --thumb-stroke: var(--secondary-text-color);
+        stroke: var(--thumb-stroke);
+        fill: var(--primary-background-color);
+        transition: all .5s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+      }
+
+      /* Text tool */
+      .sak-text__group {
+      }
+      .sak-text__text {
+        font-size: 3em;
+        fill: var(--primary-text-color);
+        opacity: 1.0;
+        text-anchor: middle;
+        alignment-baseline: central;
+      }
+
+      /* Usersvg tool */
+      .sak-usersvg__group {
+      }
+      .sak-usersvg__image {
+      }
+      
       @keyframes blinkingText {
         0%{   opacity: 0%;   }
         49%{  opacity: 0%;   }
@@ -5540,10 +5785,10 @@ class devSwissArmyKnifeCard extends LitElement {
         // flex-direction: column;
       // }
 
-      .nam {
-        alignment-baseline: central;
-        fill: var(--primary-text-color);
-      }
+      // .nam {
+        // alignment-baseline: central;
+        // fill: var(--primary-text-color);
+      // }
 
       // .state__uom:hover, .state__value:hover, .entity__name:hover, .entity__area:hover {
         // cursor: pointer;
@@ -5682,29 +5927,238 @@ class devSwissArmyKnifeCard extends LitElement {
         transform: translateY(15%);
       }
 
-      .line__horizontal {
-        stroke: var(--primary-text-color);
-        opacity: 0.3;
-        stroke-width: 2;
-      }
+      // .line__horizontal {
+        // stroke: var(--primary-text-color);
+        // opacity: 0.3;
+        // stroke-width: 2;
+      // }
 
-      .line__vertical {
-        stroke: var(--primary-text-color);
-        opacity: 0.3;
-        stroke-width: 2;
-      }
+      // .line__vertical {
+        // stroke: var(--primary-text-color);
+        // opacity: 0.3;
+        // stroke-width: 2;
+      // }
 
-      .svg__dot {
-        fill: var(--primary-text-color);
-        opacity: 0.5;
-        align-self: center;
-        transform-origin: 50% 50%;
-      }
+      // .svg__dot {
+        // fill: var(--primary-text-color);
+        // opacity: 0.5;
+        // align-self: center;
+        // transform-origin: 50% 50%;
+      // }
 
-      .icon {
-        align: center;
-      }
+      // .icon {
+        // align: center;
+      // }
 
+    `;
+  }
+  
+ /*******************************************************************************
+  * card::getUserStyles()
+  *
+  * Summary.
+  * Returns the user defined CSS styles for the card in sak_templates config
+  * section in lovelace configuration.
+  *
+  */
+  // static getUserStyles() {
+    // var cssItems = [];
+
+    // this.cssItems = [];
+    // var piet = [];
+    // var someContent;
+    
+    // var cssString = "";
+    // const root = document.querySelector('home-assistant');
+    // const main = root.shadowRoot.querySelector('home-assistant-main');
+    // const drawer_layout = main.shadowRoot.querySelector('app-drawer-layout');
+    // const pages = drawer_layout.querySelector('partial-panel-resolver');
+    // const lovelace = pages.querySelector('ha-panel-lovelace');
+
+    // if (!lovelace) console.error("card::constructor - Can't get Lovelace panel");
+    
+    // if ((lovelace.lovelace.config.sak_templates) &&
+        // (lovelace.lovelace.config.sak_templates.user_css_definitions)) {
+      // cssItems = [];
+
+      // lovelace.lovelace.config.sak_templates.user_css_definitions.map((cssItem, index) => {
+        // console.log('getUserStylesCss, css item', index, cssItem);
+        // // this.cssItems.push(unsafeCSS`.sak-state__value {--descr: fixed-css-def; background: aquamarine;}`);
+        // const cs = '.sak-state__value {--descr: fixed-css-def-2; background: yellow;}';
+        // const cs2 = '' + cssItem.content;
+        // this.cssItems.push(unsafeCSS(cs2));
+        
+        // someContent = cssItem.content.replace(/[\r\n]+/gm, "").trim();
+        // console.log("getUserStylesCss, someContent, piet", someContent);
+        // this.cssItems.push(unsafeCSS`${someContent}`);
+        // // this.cssItems.push(unsafeCSS(someContent));
+
+
+        // // piet[index] = cssItem.content.replace(/[\r\n]+/gm, "").trim();
+        // // console.log('getUserStylesCss, piet regexed', piet);
+        // // cssItems.push(unsafeCSS`${piet}`);
+        
+        // // piet = unsafeCSS`.fuck-state__value {--descr: fixed-css-def-var; background: aquamarine; stroke-width: 2; fill: yellow; opacity: 0.4;}`;
+        // // console.log('getUserStylesCss, piet unsafeCSS', piet);
+        // // cssItems.push(unsafeCSS`${piet}`);
+        // // cssItems.push(css`${cssItem.content}`);  
+        // // cssItems.push(unsafeCSS`${piet}`);
+        // console.log('getUserStylesCss, after push, piet', this.cssItems);
+      // });
+    // }
+    // // return css(cssItems);
+    // return unsafeCSS(this.cssItems);
+    // // return unsafeCSS`${cssItems}`;
+    // console.log('getUserStyesCss, cssItems, piet', this.cssItems);
+    // return unsafeCSS`${cssItems}`;
+  // }
+
+  // static getUserStyles2() {
+    // // var cssItems = [];
+
+    // this.cssItems = [];
+    // var piet = [];
+    // var someContent;
+    // this.someContent = "";
+    
+    // var cssString = "";
+    // const root = document.querySelector('home-assistant');
+    // const main = root.shadowRoot.querySelector('home-assistant-main');
+    // const drawer_layout = main.shadowRoot.querySelector('app-drawer-layout');
+    // const pages = drawer_layout.querySelector('partial-panel-resolver');
+    // const lovelace = pages.querySelector('ha-panel-lovelace');
+
+    // if (!lovelace) console.error("card::constructor - Can't get Lovelace panel");
+    
+    // if ((lovelace.lovelace.config.sak_templates) &&
+        // (lovelace.lovelace.config.sak_templates.user_css_definitions)) {
+      // // cssItems = [];
+
+      // lovelace.lovelace.config.sak_templates.user_css_definitions.map((cssItem, index) => {
+        // console.log('getUserStylesCss2, css item', index, cssItem);
+        // this.someContent += cssItem.content;
+        // console.log("getUserStylesCss2, someContent, piet", this.someContent);
+      // });
+    // }
+    // someContent = unsafeCSS(this.someContent);
+    // return css`${someContent}`;
+    // // return unsafeCSS(this.someContent);
+    // // return unsafeCSS`${cssItems}`;
+    // // console.log('getUserStyesCss2, cssItems, piet', this.someContent);
+    // // return css`${this.someContent}`;
+  // }
+
+  // static getUserStyles3() {
+    // // var cssItems = [];
+
+    // this.cssItems = [];
+    // var piet = [];
+    // var someContent;
+    
+    // var cssString = "";
+    // const root = document.querySelector('home-assistant');
+    // const main = root.shadowRoot.querySelector('home-assistant-main');
+    // const drawer_layout = main.shadowRoot.querySelector('app-drawer-layout');
+    // const pages = drawer_layout.querySelector('partial-panel-resolver');
+    // const lovelace = pages.querySelector('ha-panel-lovelace');
+
+    // if (!lovelace) console.error("card::constructor - Can't get Lovelace panel");
+    
+    // if ((lovelace.lovelace.config.sak_templates) &&
+        // (lovelace.lovelace.config.sak_templates.user_css_definitions)) {
+
+      // lovelace.lovelace.config.sak_templates.user_css_definitions.map((cssItem, index) => {
+        // console.log('getUserStylesCss3, css item', index, cssItem);
+        // this.cssItems.push(unsafeCSS(cssItem.content.replace(/[\r\n]+/gm, "").trim()));
+        // console.log("getUserStylesCss3, someContent, piet", this.cssItems[index]);
+      // });
+    // }
+    // var allcss = unsafeCSS(this.cssItems);
+    // console.log("getUserStyesCss3, allcss", this.cssItems, allcss);
+    // return unsafeCSS(this.cssItems[2]);
+    // // return css`${this.cssItems}`;
+  // }
+
+  static getUserStyles4() {
+
+    // var someContent;
+    this.someContent = "";
+    
+    const root = document.querySelector('home-assistant');
+    const main = root.shadowRoot.querySelector('home-assistant-main');
+    const drawer_layout = main.shadowRoot.querySelector('app-drawer-layout');
+    const pages = drawer_layout.querySelector('partial-panel-resolver');
+    const lovelace = pages.querySelector('ha-panel-lovelace');
+
+    if (!lovelace) console.error("card::constructor - Can't get Lovelace panel");
+    
+    if ((lovelace.lovelace.config.sak_templates) &&
+        (lovelace.lovelace.config.sak_templates.user_css_definitions)) {
+      this.someContent = lovelace.lovelace.config.sak_templates.user_css_definitions.reduce((accumulator, currentValue) => {
+        console.log("getUserStyles4, accu", accumulator, currentValue.content);
+        return accumulator + currentValue.content;
+      }, "");
+    }
+    return css`${unsafeCSS(this.someContent)}`;
+    // someContent = unsafeCSS(this.someContent);
+    // return css`${someContent}`;
+    // return unsafeCSS(this.someContent);
+    // return unsafeCSS`${cssItems}`;
+    // console.log('getUserStyesCss2, cssItems, piet', this.someContent);
+    // return css`${this.someContent}`;
+  }
+
+
+  // static getUserStylesHtml() {
+    // var cssItems = [];
+
+    // // return html``;
+
+    // var cssString = "";
+    // const root = document.querySelector('home-assistant');
+    // const main = root.shadowRoot.querySelector('home-assistant-main');
+    // const drawer_layout = main.shadowRoot.querySelector('app-drawer-layout');
+    // const pages = drawer_layout.querySelector('partial-panel-resolver');
+    // const lovelace = pages.querySelector('ha-panel-lovelace');
+
+    // if (!lovelace) console.error("card::constructor - Can't get Lovelace panel");
+    
+    // if ((lovelace.lovelace.config.sak_templates) &&
+        // (lovelace.lovelace.config.sak_templates.user_css_definitions)) {
+
+      // lovelace.lovelace.config.sak_templates.user_css_definitions.map((cssItem, index) => {
+        // console.log('getUserStylesHtml, css item', index, cssItem);
+        // // cssItems.push(unsafeCSS`.whatever { background: aquamarine; stroke-width: 2; stroke: yellow; opacity: 0.2; }`);
+        // // var piet = cssItem.content;
+        // // cssItems.push(unsafeCSS`${piet}`);
+        // // cssItems.push(css`${cssItem.content}`);  
+        // cssItems.push(html`${cssItem.content}`);
+      // });
+    // }
+    // return html`${cssItems}`;
+    // console.log('getUserStyesHtml, cssItems', cssItems);
+    // return unsafeCSS`${cssItems}`;
+  // }
+
+ /*******************************************************************************
+  * card::styles()
+  *
+  * Summary.
+  * Returns the static CSS styles for the lit-element
+  *
+  * Note:
+  * - The BEM (http://getbem.com/naming/) naming style for CSS is used
+  *   Of course, if no mistakes are made ;-)
+  *
+  */
+  static get styles() {
+    // var cssItems = [];
+    
+    // return css`${this.getSystemStyles()}`;
+    
+    return css`
+      ${this.getSystemStyles()}
+      ${this.getUserStyles4()}
     `;
   }
 
@@ -6203,26 +6657,40 @@ class devSwissArmyKnifeCard extends LitElement {
 
     var myHtml;
 
-    if (this.config.disable_card) {
-      myHtml = html`
-                <div class="container" id="container">
-                  ${this._renderSvg()}
-                </div>
-                `;
-    } else {
-      myHtml = html`
-                <ha-card>
+    try {
+      if (this.config.disable_card) {
+        myHtml = html`
                   <div class="container" id="container">
                     ${this._renderSvg()}
                   </div>
-                </ha-card>
-                `;
-      // myHtml = html`
-                // <ha-card class="container">
-                    // ${this._renderSvg()}
-                // </ha-card>
-                // `;
+                  `;
+      } else {
+        // const myStyles = 
+        // myHtml = html`
+                  // <ha-card>
+                    // <div class="container" id="container">
+                      // <style>${devSwissArmyKnifeCard.getUserStylesHtml()}</style>
+                      // ${this._renderSvg()}
+                    // </div>
+                  // </ha-card>
+                  // `;
+        myHtml = html`
+                  <ha-card>
+                    <div class="container" id="container">
+                      ${this._renderSvg()}
+                    </div>
+                  </ha-card>
+                  `;
 
+        // myHtml = html`
+                  // <ha-card class="container">
+                      // ${this._renderSvg()}
+                  // </ha-card>
+                  // `;
+
+      }
+    } catch (error) {
+      console.error(error);
     }
     // All cards have rendered, check if one of them needs another update in some time...
 
@@ -6339,7 +6807,7 @@ class devSwissArmyKnifeCard extends LitElement {
 //                              style="${styleMap(this.config.layout?.styles?.toolsets)}"
 
     return svg`
-              <g id="toolsets" class="toolsets"
+              <g id="toolsets" class="toolsets__group"
               >
                 ${this.toolsets.map(toolset => toolset.render())}
               </g>
@@ -6571,37 +7039,37 @@ class devSwissArmyKnifeCard extends LitElement {
                   </feMerge>
               </filter>
 
-            <!-- flood-color="#d1cdc7" -->
-            <!-- flood-color="#FFFFFF" -->
-            <filter id="nm-11" x="-50%" y="-50%" width="300%" height="300%">
-              <feDropShadow stdDeviation="5" in="SourceGraphic"
-                dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"
-              </feDropShadow>
-              <feDropShadow stdDeviation="4.5" in="SourceGraphic"
-                dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-              <feMerge result="merge">
-                <feMergeNode in="dropShadow1"/>
-                <feMergeNode in="dropShadow"/>
-              </feMerge>
-            </filter>
+              <!-- flood-color="#d1cdc7" -->
+              <!-- flood-color="#FFFFFF" -->
+              <filter id="nm-11" x="-50%" y="-50%" width="300%" height="300%">
+                <feDropShadow stdDeviation="5" in="SourceGraphic"
+                  dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"
+                </feDropShadow>
+                <feDropShadow stdDeviation="4.5" in="SourceGraphic"
+                  dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+                <feMerge result="merge">
+                  <feMergeNode in="dropShadow1"/>
+                  <feMergeNode in="dropShadow"/>
+                </feMerge>
+              </filter>
 
-            <filter id="nm-1" x="-50%" y="-50%" width="300%" height="300%">
-              <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
-              <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-              <feMerge result="merge">
-                <feMergeNode in="dropShadow1"/>
-                <feMergeNode in="dropShadow"/>
-              </feMerge>
-            </filter>
+              <filter id="nm-1" x="-50%" y="-50%" width="300%" height="300%">
+                <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+                <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+                <feMerge result="merge">
+                  <feMergeNode in="dropShadow1"/>
+                  <feMergeNode in="dropShadow"/>
+                </feMerge>
+              </filter>
 
-            <filter id="nm-1-reverse" x="-50%" y="-50%" width="300%" height="300%">
-              <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
-              <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-              <feMerge result="merge">
-                <feMergeNode in="dropShadow1"/>
-                <feMergeNode in="dropShadow"/>
-              </feMerge>
-            </filter>
+              <filter id="nm-1-reverse" x="-50%" y="-50%" width="300%" height="300%">
+                <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+                <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+                <feMerge result="merge">
+                  <feMergeNode in="dropShadow1"/>
+                  <feMergeNode in="dropShadow"/>
+                </feMerge>
+              </filter>
 
             </defs>
     `;
