@@ -21,32 +21,62 @@
 # sak-card-cs list...
 # sak-toolset-cs list...
 
-sak_filter_definitions:
-  filters:
-    - filter: nm-1-reverse
-      content: |
-        <filter id="nm-1-reverse" x="-50%" y="-50%" width="300%" height="300%">
-          <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
-          <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-          <feMerge result="merge">
-            <feMergeNode in="dropShadow1"/>
-            <feMergeNode in="dropShadow"/>
-          </feMerge>
-        </filter>
+user_svg_definitions:
+  - descr: nm-1-reverse
+    content: |
+      <filter id="nm-1-reverse" x="-50%" y="-50%" width="300%" height="300%">
+        <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+        <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+        <feMerge result="merge">
+          <feMergeNode in="dropShadow1"/>
+          <feMergeNode in="dropShadow"/>
+        </feMerge>
+      </filter>
 
-user_filter_definitions:
-  filters:
-    - filter: nm-1-reverse
-      content: |
-        <filter id="nm-1-reverse" x="-50%" y="-50%" width="300%" height="300%">
-          <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
-          <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-          <feMerge result="merge">
-            <feMergeNode in="dropShadow1"/>
-            <feMergeNode in="dropShadow"/>
-          </feMerge>
-        </filter>
+  - descr: user-nm-1-reverse
+    content: |
+      <filter id="nm-1-reverse" x="-50%" y="-50%" width="300%" height="300%">
+        <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+        <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+        <feMerge result="merge">
+          <feMergeNode in="dropShadow1"/>
+          <feMergeNode in="dropShadow"/>
+        </feMerge>
+      </filter>
 
+user_css_definitions:
+  - descr: class for whatever
+    content: >
+      .whatever {
+        --descr: extra-css--whatever;
+        background: orange;
+        stroke-width: 2;
+        fill: green;
+        stroke: yellow;
+        opacity: 0.2;
+      }
+      
+  - descr: class for whoever
+    content: >
+      .whoever {
+        --descr: extra-css--whoever;
+        color: green !important;
+      }
+
+  - descr: sak-overwrite
+    content: >
+      .sak-state__value {
+        --descr: extra-css;
+        letter-spacing: 0.05em;
+      }
+
+  - descr: class for whoever
+    content: >
+      .crazy {
+        --descr: extra-css--crazy;
+        color: red !important;
+      }
+      
 # The default colorswatch is ALWAYS loaded for the card!
 # NOTE:
 # - colorswatch or color palette? Latter seems the best one. Swatch is more colors/combintions??
@@ -146,7 +176,6 @@ colorstops_lux:
     defaults:
       - thegap: 1
   colorstops:
-    # colorstops:
     gap: '[[thegap]]'
     colors:
       0: 'grey'
@@ -163,7 +192,6 @@ colorstops_pressure:
     defaults:
       - thegap: 1
   colorstops:
-    # colorstops:
     gap: '[[thegap]]'
     colors:
       980: 'lightgrey'
@@ -176,7 +204,6 @@ colorstops_temperature_inside:
     defaults:
       - thegap: 1
   colorstops:
-    # colorstops:
     gap: '[[thegap]]'
     colors:
       17: 'PowderBlue'
@@ -189,107 +216,11 @@ colorstops_humidity:
     defaults:
       - thegap: 1
   colorstops:
-    # colorstops:
     gap: '[[thegap]]'
     colors:
       00: 'var(--theme-gradient-color-02)'
       35: 'DarkSeaGreen'
       65: 'PowderBlue'
-
-tools_segarc_icon_state_OLD:
-  type: toolset
-  defaults: 
-    - entity: 0
-    - show_scale: false
-  toolset:
-    position:
-      cx: 25
-      cy: 50
-      scale: 1
-    colorswatch:
-      - template:
-          name: color_palette_default_gradient_white_orange
-    tools:
-      - type: circle
-        id: 10
-        position:
-          cx: 50
-          cy: 50
-          radius: 27.5
-        styles:
-          circle:
-            fill: var(--primary-background-color)
-            stroke-width: 0
-            # filter: url(#nm-1)          
-        
-      - type: segarc
-        id: 0
-        entity_index: '[[entity]]'
-        position:
-          cx: 50
-          cy: 50
-          start_angle: 0
-          end_angle: 360
-          width: 5
-          radius: 25
-        scale:
-          min: 0
-          max: 100
-        show:
-          scale: '[[show_scale]]'
-          style: 'colorlist'
-        segments:
-          colorlist:
-            gap: 1
-            colors:
-              - 'var(--theme-gradient-color-01)'
-        animation:
-          duration: 5
-        styles:
-          foreground:
-            fill: var(--theme-gradient-color-01)
-          background:
-            # fill: var(--primary-background-color)
-            # fill: lightgray
-            # #efeeee
-            # fill: var(--secondary-background-color)
-            fill: var(--cs-theme-default-darken-15)
-              #dedddd
-            filter: url(#is-1)
-
-      - type: icon
-        id: 1
-        entity_index: '[[entity]]'
-        position:
-          cx: 50
-          cy: 42
-          align: center
-          icon_size: 15
-        styles:
-          icon:
-            filter: url(#is-1)
-            fill: lightgray
-            color: lightgray
-            # color: var(--primary-text-color)
-            # fill: var(--primary-text-color)
-            # opacity: 0.8
-            
-            # color: var(--cs-theme-default-icon-primary, --primary-text-color)
-            # fill: var(--cs-theme-default-icon-primary, --primary-text-color)
-
-
-      - type: state
-        id: 2
-        entity_index: '[[entity]]'
-        position:
-          cx: 50
-          cy: 56
-        styles:
-          state:
-            text-anchor: middle
-            font-size: 10em
-            color: var(--primary-text-color)
-            fill: var(--primary-text-color)
 
 tools_segarc_icon_state:
   template:
@@ -349,12 +280,7 @@ tools_segarc_icon_state:
           foreground:
             fill: var(--theme-gradient-color-01)
           background:
-            # fill: var(--primary-background-color)
-            # fill: lightgray
-            # #efeeee
-            # fill: var(--secondary-background-color)
             fill: var(--cs-theme-default-darken-15)
-              #dedddd
             filter: url(#is-1)
 
       - type: icon
@@ -364,20 +290,12 @@ tools_segarc_icon_state:
           cx: 50
           cy: 42
           align: center
-          #60px for width/height, so what is 15 then for number, times 4. Is it 15% ??
           icon_size: 15
         styles:
           icon:
             filter: url(#is-1)
             fill: lightgray
             color: lightgray
-            # color: var(--primary-text-color)
-            # fill: var(--primary-text-color)
-            # opacity: 0.8
-            
-            # color: var(--cs-theme-default-icon-primary, --primary-text-color)
-            # fill: var(--cs-theme-default-icon-primary, --primary-text-color)
-
 
       - type: state
         id: 2
@@ -388,7 +306,6 @@ tools_segarc_icon_state:
         styles:
           state:
             text-anchor: middle
-            #40px
             font-size: 10em
             color: var(--primary-text-color)
             fill: var(--primary-text-color)
@@ -407,15 +324,6 @@ toolset_arc180_sparklinebar24:
       cx: '[[cx]]'
       cy: '[[cy]]'
     tools:
-      # - type: 'area'
-        # id: 0
-        # entity_index: '[[entity]]'
-        # cx: 50
-        # cy: 98
-        # styles:
-          # font-size: 2em
-          # text-anchor: middle
-
       - type: 'name'
         id: 1
         entity_index: '[[entity]]'
@@ -749,9 +657,7 @@ toolset_light_button_nm:
       - type: circle
         position:
           cx: 50
-          # cy: 35
           cy: 40
-          # radius: 28
           radius: 31
         styles:
           circle:
@@ -763,37 +669,30 @@ toolset_light_button_nm:
       - type: circle
         position:
           cx: 50
-          # cy: 35
           cy: 40
-          # radius: 25
           radius: 28
         entity_index: '[[entity_light]]'
         animations:
           - state: 'on'
             styles:
               circle:
-                # fill: darkorange
                 fill: var(--cs-orange-lighten-20)
           - state: 'off'
             styles:
               circle:
-                # fill: var(--secondary-background-color)
-                # fill: var(--cs-theme-default-darken-15)
-                # color: var(--primary-text-color)
                 fill: var(--primary-text-color)
                 opacity: 0.7
         styles:
           circle:
             stroke-width: 0
             pointer-events: none
+            transition: 'all .8s ease'
 
       # Actual "button"
       - type: circle
         position:
           cx: 50
-          # cy: 35
           cy: 40
-          # radius: 24
           radius: 27
         entity_index: '[[entity_light]]'
         # Note, 2020.11.07
@@ -812,44 +711,31 @@ toolset_light_button_nm:
           - state: 'off'
             styles:
               circle:
-                # stroke: lightgray
                 filter: none
         styles:
           circle:
             stroke-width: 0
             fill: var(--primary-background-color)
+            transition: 'all .8s ease'
 
       # Light/Switch icon
       - type: icon
         position:
           cx: 50
-          # cy: 35
           cy: 40
           align: center
-          # icon_size: 36
           icon_size: 39
         entity_index: '[[entity_light]]'
         animations:
           - state: 'on'
             styles:
               icon:
-                # color: darkorange
-                # fill: darkorange
                 color: var(--cs-orange-lighten-20)
                 fill: var(--cs-orange-lighten-20)
-
-                # color: var(--accent-color)
-                # fill: var(--accent-color)
                 opacity: 1
-
           - state: 'off'
             styles:
               icon:
-                # color: var(--secondary-background-color)
-                # fill: var(--secondary-background-color)
-                # color: var(--cs-theme-default-darken-15)
-                # fill: var(--cs-theme-default-darken-15)
-                # opacity: 0.7
                 color: var(--primary-text-color)
                 fill: var(--primary-text-color)
                 opacity: 0.7
@@ -857,6 +743,7 @@ toolset_light_button_nm:
           icon:
             pointer-events: none
             filter: url(#is-1)
+            transition: 'all .8s ease'
 
       # Name of entity
       - type: name
@@ -867,7 +754,6 @@ toolset_light_button_nm:
         entity_index: '[[entity_light]]'
         styles:
           name:
-            # 36px
             font-size: 9em
             font-weight: 700
             text-anchor: start
@@ -881,29 +767,8 @@ toolset_light_button_nm:
           cy: 91
         styles:
           area:
-            #28.8px
             font-size: 7.5em
             text-anchor: start
-
-      # # State of entity
-      # - type: state
-        # cx: 5
-        # cy: 95
-        # id: 6
-        # entity_index: '[[entity_light]]'
-        # animations:
-          # - state: 'on'
-            # styles:
-              # fill: var(--theme-gradient-color-08)
-              # opacity: 0.9
-          # - state: 'off'
-            # reuse: true
-            # styles:
-              # fill: var(--theme-gradient-color-01)
-              # opacity: 0.7
-        # styles:
-          # font-size: 1.8em
-          # text-anchor: start
 
       # Brightness of entity
       - type: state
@@ -970,9 +835,400 @@ toolset_light_button_nm:
                 opacity: 0.7
         styles:
           state:
-            #36px
             font-size: 9em
             text-anchor: end
+
+###############################################
+
+toolset_light_button_slider_nm:
+  template:
+    type: toolset
+    defaults: 
+      - entity_light: 0
+      - entity_brightness: 1
+  toolset:
+    toolset: light-button-slider-nm
+    position:
+      cx: 50
+      cy: 50
+      scale: 1
+      rotate: 0
+    tools:
+      # Surface 
+      - type: circle
+        position:
+          cx: 50
+          cy: 40
+          radius: 31
+        styles:
+          circle:
+            pointer-events: none
+            stroke-width: 5
+            fill: var(--primary-background-color)
+
+      # Activation ring
+      - type: circle
+        position:
+          cx: 50
+          cy: 40
+          radius: 28
+        entity_index: '[[entity_light]]'
+        animations:
+          - state: 'on'
+            styles:
+              circle:
+                fill: var(--cs-orange-lighten-20)
+          - state: 'off'
+            styles:
+              circle:
+                fill: var(--primary-text-color)
+                opacity: 0.7
+        styles:
+          circle:
+            stroke-width: 0
+            pointer-events: none
+            transition: 'all .8s ease'
+
+      # Actual "button"
+      - type: circle
+        position:
+          cx: 50
+          cy: 40
+          radius: 27
+        entity_index: '[[entity_light]]'
+        # Note, 2020.11.07
+        # Safari (again) can't handle modifications in the filter url:
+        # - from none to some filter is ok
+        # - from some filter to none is ok
+        # - but from some filter to another filter doesn't change the filter!!!!
+        # Refreshing page works, but that is not the point...
+        # ?!?!?!?!?!?
+        # At some moment it just started working, and then again not. WEIRD!!
+        animations:
+          - state: 'on'
+            styles:
+              circle:
+                filter: url(#filter)
+          - state: 'off'
+            styles:
+              circle:
+                filter: none
+        styles:
+          circle:
+            stroke-width: 0
+            fill: var(--primary-background-color)
+            transition: 'all .8s ease'
+
+      # Light/Switch icon
+      - type: icon
+        position:
+          cx: 50
+          cy: 40
+          align: center
+          icon_size: 39
+        entity_index: '[[entity_light]]'
+        animations:
+          - state: 'on'
+            styles:
+              icon:
+                color: var(--cs-orange-lighten-20)
+                fill: var(--cs-orange-lighten-20)
+                opacity: 1
+          - state: 'off'
+            styles:
+              icon:
+                color: var(--primary-text-color)
+                fill: var(--primary-text-color)
+                opacity: 0.7
+        styles:
+          icon:
+            pointer-events: none
+            filter: url(#is-1)
+            transition: 'all .8s ease'
+
+      # Name of entity
+      - type: name
+        position:
+          cx: 5
+          cy: 92
+        id: 4
+        entity_index: '[[entity_light]]'
+        styles:
+          name:
+            font-size: 9em
+            font-weight: 700
+            text-anchor: start
+
+      # # Area of entity
+      # - type: area
+        # entity_index: 0
+        # id: 5
+        # position:
+          # cx: 5
+          # cy: 91
+        # styles:
+          # area:
+            # font-size: 7.5em
+            # text-anchor: start
+
+      # # Brightness of entity
+      # - type: state
+        # position:
+          # cx: 95
+          # cy: 91
+        # id: 7
+        # derived_entity:
+          # input : '[[[ return state ]]]'
+          # state: >
+            # [[[
+              # if (typeof(entity) === 'undefined') return;
+              # if (typeof(state) === 'undefined') return;
+              
+              # var bri = Math.round(state / 2.55);
+              # return (bri ? bri : '0');
+            # ]]]
+          # unit: >
+            # [[[
+              # if (typeof(state) === 'undefined') return undefined;
+              # return '%';
+            # ]]]
+        # entity_index: '[[entity_brightness]]'
+        # # Animation can run on the entities 'state', or on the custom_value.
+        # # so - state: 'on', or for example - custom_value: '10%' in this case for light.
+        # # Something must be done still, to make sure that presentation is with uom formatted, so must know uom.
+        # animations:
+          # - state: 'on'
+            # entity_index: '[[entity_light]]'
+            # styles:
+              # state:
+                # fill: var(--theme-gradient-color-08)
+                # opacity: 0.9
+          # - state: 'off'
+            # entity_index: '[[entity_light]]'
+            # reuse: true
+            # styles:
+              # state:
+                # fill: var(--theme-gradient-color-01)
+                # opacity: 0.7
+        # styles:
+          # state:
+            # font-size: 9em
+            # text-anchor: end
+
+###############################################
+
+toolset_light_button_slider2_nm:
+  template:
+    type: toolset
+    defaults: 
+      - entity_light: 0
+      - entity_brightness: 1
+  toolset:
+    toolset: light-button-slider-nm
+    position:
+      cx: 50
+      cy: 50
+      scale: 1
+      rotate: 0
+    tools:
+      # Small circle for brightness, right above the light button
+      - type: circle
+        position:
+          cx: 83
+          cy: 17
+          radius: 13
+          # cx: 86
+          # cy: 14
+          # radius: 11
+        styles:
+          circle:
+            stroke-width: 0
+            fill: var(--primary-background-color)
+
+      # Surface 
+      - type: circle
+        position:
+          cx: 50
+          cy: 40
+          radius: 31
+        styles:
+          circle:
+            pointer-events: none
+            stroke-width: 5
+            fill: var(--primary-background-color)
+
+      # Activation ring
+      - type: circle
+        position:
+          cx: 50
+          cy: 40
+          radius: 28
+        entity_index: '[[entity_light]]'
+        animations:
+          - state: 'on'
+            styles:
+              circle:
+                fill: var(--cs-orange-lighten-20)
+          - state: 'off'
+            styles:
+              circle:
+                fill: var(--primary-text-color)
+                opacity: 0.7
+        styles:
+          circle:
+            stroke-width: 0
+            pointer-events: none
+            transition: 'all .8s ease'
+
+      # Actual "button"
+      - type: circle
+        position:
+          cx: 50
+          cy: 40
+          radius: 27
+        entity_index: '[[entity_light]]'
+        # Note, 2020.11.07
+        # Safari (again) can't handle modifications in the filter url:
+        # - from none to some filter is ok
+        # - from some filter to none is ok
+        # - but from some filter to another filter doesn't change the filter!!!!
+        # Refreshing page works, but that is not the point...
+        # ?!?!?!?!?!?
+        # At some moment it just started working, and then again not. WEIRD!!
+        animations:
+          - state: 'on'
+            styles:
+              circle:
+                filter: url(#filter)
+          - state: 'off'
+            styles:
+              circle:
+                filter: none
+        styles:
+          circle:
+            stroke-width: 0
+            fill: var(--primary-background-color)
+            transition: 'all .8s ease'
+
+      # Light/Switch icon
+      - type: icon
+        position:
+          cx: 50
+          cy: 40
+          align: center
+          icon_size: 39
+        entity_index: '[[entity_light]]'
+        animations:
+          - state: 'on'
+            styles:
+              icon:
+                color: var(--cs-orange-lighten-20)
+                fill: var(--cs-orange-lighten-20)
+                opacity: 1
+          - state: 'off'
+            styles:
+              icon:
+                color: var(--primary-text-color)
+                fill: var(--primary-text-color)
+                opacity: 0.7
+        styles:
+          icon:
+            pointer-events: none
+            filter: url(#is-1)
+            transition: 'all .8s ease'
+
+      # Name of entity
+      - type: name
+        position:
+          cx: 5
+          cy: 92
+        id: 4
+        entity_index: '[[entity_light]]'
+        styles:
+          name:
+            font-size: 9em
+            font-weight: 700
+            text-anchor: start
+
+      # # Area of entity
+      # - type: area
+        # entity_index: 0
+        # id: 5
+        # position:
+          # cx: 5
+          # cy: 91
+        # styles:
+          # area:
+            # font-size: 7.5em
+            # text-anchor: start
+
+      # # Brightness of entity
+      # - type: state
+        # position:
+          # cx: 95
+          # cy: 91
+        # id: 7
+        # derived_entity:
+        # # derived_entity: >
+            # # [[[
+              # # if (typeof(entity) === 'undefined') return;
+              
+              # # if ('brightness' in entity.attributes)
+              # # {
+                # # if (entity.attributes
+                # # && (entity.attributes.brightness <= 255)) {
+                  # # var bri = Math.round(entity.attributes.brightness / 2.55);
+                  # # return (bri ? bri : '0') + '%';
+                # # }
+              # # }
+            # # ]]]
+
+          # input : '[[[ return state ]]]'
+          # state: >
+            # [[[
+              # if (typeof(entity) === 'undefined') return;
+              # if (typeof(state) === 'undefined') return;
+              
+              # var bri = Math.round(state / 2.55);
+              # return (bri ? bri : '0');
+              
+              # if ('brightness' in entity.attributes)
+              # {
+                # if (entity.attributes
+                # && (state <= 255)) {
+                  # var bri = Math.round(state / 2.55);
+                  # // return (bri ? bri : '0') + '%';
+                  # return (bri ? bri : '0');
+                # }
+              # }
+            # ]]]
+          # unit: >
+            # [[[
+              # if (typeof(state) === 'undefined') return undefined;
+              # return '%';
+            # ]]]
+        # entity_index: '[[entity_brightness]]'
+        # # Animation can run on the entities 'state', or on the custom_value.
+        # # so - state: 'on', or for example - custom_value: '10%' in this case for light.
+        # # Something must be done still, to make sure that presentation is with uom formatted, so must know uom.
+        # animations:
+          # - state: 'on'
+            # entity_index: '[[entity_light]]'
+            # styles:
+              # state:
+                # fill: var(--theme-gradient-color-08)
+                # opacity: 0.9
+          # - state: 'off'
+            # entity_index: '[[entity_light]]'
+            # reuse: true
+            # styles:
+              # state:
+                # fill: var(--theme-gradient-color-01)
+                # opacity: 0.7
+        # styles:
+          # state:
+            # font-size: 9em
+            # text-anchor: end
 
 ##########################
 toolset_sensor_history:
@@ -1075,6 +1331,4 @@ toolset_sensor_history:
             max: '[[bar_color_max]]'
         styles:
           bar:
-            # stroke: '[[bar_color]]'
-            # stroke-opacity: 0.5
             stroke-linecap: round
