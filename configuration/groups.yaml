@@ -1,0 +1,26 @@
+# Group livingroom lights
+#
+# #######################
+  livingroom_lights:
+    entities:
+      - light.livingroom_light_duo_left_light
+      - light.livingroom_light_duo_right_light
+      - light.livingroom_light_front_right_light
+      - light.livingroom_light_gasheater_light
+      - light.livingroom_light_cupboard_light
+      - light.livingroom_light_couch_tv_left_light
+      - light.livingroom_light_couch_tv_right_light
+
+# Group kitchen lights
+#
+# #######################
+  kitchen_lights:
+    entities:
+      - light.kitchen_light_fridge_light
+
+# Group outside lights
+#
+# #######################    
+  outside_lights:
+    entities:
+      - light.backyard_light_backdoor_light
