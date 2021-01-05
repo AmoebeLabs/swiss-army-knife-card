@@ -2587,16 +2587,6 @@ cards:
                           
                           var bri = Math.round(state / 2.55);
                           return (bri ? bri : '0');
-                          
-                          if ('brightness' in entity.attributes)
-                          {
-                            if (entity.attributes
-                            && (state <= 255)) {
-                              var bri = Math.round(state / 2.55);
-                              // return (bri ? bri : '0') + '%';
-                              return (bri ? bri : '0');
-                            }
-                          }
                         ]]]
                       unit: >
                         [[[
@@ -2922,3 +2912,429 @@ cards:
                         filter: url(#is-1)
 
 #######
+    - type: horizontal-stack
+      cards:
+        ##- !include card-blank-card.yaml
+        # Example 44T::
+        #
+        # Light buttons, new look... Must be on separate circle for filtering globally
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+
+          entities: 
+            - entity: light.livingroom_light_duo_left_light
+              name: Duo Links
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.livingroom_light_duo_left_light" }
+                haptic: light
+
+            - entity: light.livingroom_light_duo_left_light
+              name: Duo Links
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              attribute: brightness
+              unit_of_measurement: "%"
+              tap_action:
+                action: more-info
+                haptic: success
+
+            # Entity used for menu... Should be changed in the future...
+            - entity: light.livingroom_light_duo_left_light
+              icon: mdi:menu
+              attribute: brightness
+              tap_action:
+                action: more-info
+                haptic: success
+
+          dimensions: 1/1
+          dev:
+            debug: false
+          
+          layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
+            toolsets:
+              # ==============================================================================
+              # Menu for more-info. Use third entity for this now...
+              - toolset: menu
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: icon
+                    position:
+                      cx: 10
+                      cy: 10
+                      align: center
+                      icon_size: 15
+                    entity_index: 2
+                    styles:
+                      icon:
+                        fill: var(--primary-text-color)
+                        color: var(--primary-text-color)
+              
+              # Using Neumorphic ligth button design
+              - toolset: light-button
+                template:
+                  name: toolset_light_button_slider_nm
+                position:
+                  cx: 50
+                  cy: 50
+
+              - toolset: slidertest3
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: slider2
+                    descr: '#3 test slider'
+                    position:
+                      cx: 40
+                      cy: 81
+                      capture:
+                        width: 80
+                        height: 15
+                      track:
+                        width: 70
+                        height: 2
+                        radius: 1
+                      thumb:
+                        width: 5
+                        height: 10
+                        radius: 1
+                      label:
+                        # placement can be none, thumb, position (cx,cy)
+                        placement: position
+                        cx: 95
+                        cy: 81
+                    entity_index: 1
+                    derived_entity:
+                      input : '[[[ return state ]]]'
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return;
+                          if (typeof(state) === 'undefined') return;
+                          
+                          var bri = Math.round(state / 2.55);
+                          return (bri ? bri : '0');
+                        ]]]
+                      unit: >
+                        [[[
+                          if (typeof(state) === 'undefined') return undefined;
+                          return '%';
+                        ]]]
+                    slider_action:
+                      service: light.turn_on
+                      parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                      steps: '[1,2,5,6,7,8,9,20]'
+                      stepsnew:
+                        - stop: 0
+                          step: 1
+                        - stop: 10
+                          step: 5
+                    styles:
+                      label:
+                        text-anchor: end
+                        font-size: 10em
+                        font-weight: 600
+                      # track:
+                      thumb:
+                        stroke-width: 0.5em
+                        stroke: var(--primary-text-color)
+                        stroke-opacity: 0.8
+
+###############################################
+        - type: 'custom:dev-swiss-army-knife-card'
+
+          entities: 
+            - entity: light.livingroom_light_duo_right_light
+              name: Duo Rechts
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.livingroom_light_duo_right_light" }
+                haptic: light
+
+            - entity: light.livingroom_light_duo_right_light
+              name: Duo Rechts
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              attribute: brightness
+              unit_of_measurement: "%"
+              tap_action:
+                action: more-info
+                haptic: success
+
+            # Entity used for menu... Should be changed in the future...
+            - entity: light.livingroom_light_duo_right_light
+              icon: mdi:dots-vertical
+              attribute: brightness
+              tap_action:
+                action: more-info
+                haptic: success
+
+          dimensions: 1/1
+          dev:
+            debug: false
+          
+          layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
+            toolsets:
+              # ==============================================================================
+              # Menu for more-info. Use third entity for this now...
+              - toolset: menu
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: icon
+                    position:
+                      cx: 10
+                      cy: 10
+                      align: center
+                      icon_size: 15
+                    entity_index: 2
+                    styles:
+                      icon:
+                        fill: var(--primary-text-color)
+                        color: var(--primary-text-color)
+              
+              # Using Neumorphic ligth button design
+              - toolset: light-button
+                template:
+                  name: toolset_light_button_slider2_nm
+                position:
+                  cx: 50
+                  cy: 50
+
+              - toolset: slidertest3
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: slider2
+                    descr: '#3 test slider'
+                    position:
+                      cx: 50
+                      cy: 81
+                      capture:
+                        width: 90
+                        height: 15
+                      track:
+                        width: 90
+                        height: 2
+                        radius: 1
+                      thumb:
+                        width: 5
+                        height: 5
+                        radius: 2.5
+                      label:
+                        # placement can be none, thumb, position (cx,cy)
+                        placement: position
+                        cx: 83
+                        cy: 17
+                    entity_index: 1
+                    derived_entity:
+                      input : '[[[ return state ]]]'
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return;
+                          if (typeof(state) === 'undefined') return;
+                          
+                          var bri = Math.round(state / 2.55);
+                          return (bri ? bri : '0');
+                        ]]]
+                      unit: >
+                        [[[
+                          if (typeof(state) === 'undefined') return undefined;
+                          return '%';
+                        ]]]
+                    slider_action:
+                      service: light.turn_on
+                      parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                      steps: '[1,2,5,6,7,8,9,20]'
+                      stepsnew:
+                        - stop: 0
+                          step: 1
+                        - stop: 10
+                          step: 5
+                    styles:
+                      label:
+                        text-anchor: middle
+                        font-size: 10em
+                        font-weight: 600
+                      # track:
+                      thumb:
+                        stroke-width: 0.5em
+                        stroke: var(--primary-text-color)
+                        stroke-opacity: 0.8
+
+###############################################
+        - type: 'custom:dev-swiss-army-knife-card'
+
+          entities: 
+            - entity: light.livingroom_light_duo_left_light
+              name: Duo Links
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.livingroom_light_duo_left_light" }
+                haptic: light
+
+            - entity: light.livingroom_light_duo_left_light
+              name: Duo Links
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              attribute: brightness
+              unit_of_measurement: "%"
+              tap_action:
+                action: more-info
+                haptic: success
+
+            # Entity used for menu... Should be changed in the future...
+            - entity: light.livingroom_light_duo_left_light
+              icon: mdi:dots-vertical
+              attribute: brightness
+              tap_action:
+                action: more-info
+                haptic: success
+
+          dimensions: 1/1
+          dev:
+            debug: false
+          
+          layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
+            toolsets:
+              # ==============================================================================
+              # Menu for more-info. Use third entity for this now...
+              - toolset: menu
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: icon
+                    position:
+                      cx: 10
+                      cy: 10
+                      align: center
+                      icon_size: 15
+                    entity_index: 2
+                    styles:
+                      icon:
+                        fill: var(--primary-text-color)
+                        color: var(--primary-text-color)
+              
+              # Using Neumorphic ligth button design
+              - toolset: light-button
+                template:
+                  name: toolset_light_button_slider2_nm
+                position:
+                  cx: 50
+                  cy: 50
+
+              - toolset: slidertest3
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: slider2
+                    descr: '#3 test slider'
+                    position:
+                      cx: 50
+                      cy: 81
+                      capture:
+                        width: 90
+                        height: 15
+                      track:
+                        width: 90
+                        height: 2
+                        radius: 1
+                      thumb:
+                        width: 7
+                        height: 7
+                        radius: 3.5
+                      label:
+                        # placement can be none, thumb, position (cx,cy)
+                        placement: position
+                        cx: 83
+                        cy: 17
+                    entity_index: 1
+                    derived_entity:
+                      input : '[[[ return state ]]]'
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return;
+                          if (typeof(state) === 'undefined') return;
+                          
+                          var bri = Math.round(state / 2.55);
+                          return (bri ? bri : '0');
+                        ]]]
+                      unit: >
+                        [[[
+                          if (typeof(state) === 'undefined') return undefined;
+                          return '%';
+                        ]]]
+                    slider_action:
+                      service: light.turn_on
+                      parameter: brightness_pct
+                    # As actions map or array? So you can call multiple services? usefull?
+                    actions:
+                      slider_action:
+                        service: light.turn_on
+                        parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                      steps: '[1,2,5,6,7,8,9,20]'
+                      stepsnew:
+                        - stop: 0
+                          step: 1
+                        - stop: 10
+                          step: 5
+                    styles:
+                      toolset:
+                        overflow: visible
+                      tool:
+                        overflow: visible
+                      label:
+                        text-anchor: middle
+                        font-size: 10em
+                        font-weight: 600
+                      track:
+                        fill-opacity: .7
+                        filter: url(#is-1)
+                        fill: var(--primary-background-color)
+                      thumb:
+                        stroke-width: 3em
+                        stroke: var(--primary-background-color)
+                        fill: var(--primary-text-color)
+                        filter: url(#filter)
+                    
