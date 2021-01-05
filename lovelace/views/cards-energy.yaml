@@ -1,0 +1,150 @@
+type: vertical-stack
+cards:
+  - type: custom:decluttering-card
+    template: button_quick_menu_generic
+    variables:
+      - lb_name: Verlichting
+      - lb_icon: lightbulb
+      - lb_path: lights
+  - type: custom:decluttering-card
+    template: divider_template
+
+  - type: custom:decluttering-card
+    template: header_template
+    variables:
+      - content: '### Energie'
+  - type: horizontal-stack
+    cards:
+      - !include card-blank-card.yaml
+      - type: custom:decluttering-card
+        template: mini_graph_card_template
+        variables:
+          - entity: dsmr_reading_electricity_currently_delivered
+          - name: Stroom nu
+          - line_color: 'red'
+          - align_header: center
+          - align_state: center
+          - show:
+              extrema: true
+              fill: true
+              graph: bar
+              icon: false
+#            - icon: 'mdi:flash'
+          - show:
+              icon: false
+          - color_thresholds:
+              - value: 100
+                color: var(--theme-gradient-color-01)
+              - value: 200
+                color: var(--theme-gradient-color-02)
+              - value: 300
+                color: var(--theme-gradient-color-03)
+              - value: 400
+                color: var(--theme-gradient-color-04)
+              - value: 500
+                color: var(--theme-gradient-color-05)
+              - value: 600
+                color: var(--theme-gradient-color-06)
+              - value: 700
+                color: var(--theme-gradient-color-07)
+              - value: 1000
+                color: var(--theme-gradient-color-08)
+              - value: 1500
+                color: var(--theme-gradient-color-09)
+              - value: 2000
+                color: var(--theme-gradient-color-10)
+
+          - decimals: 3
+      - type: custom:decluttering-card
+        template: mini_graph_card_template
+        variables:
+          - entity: pv_700wp_energy_power
+          - name: PV nu
+          - line_color: '#27C24C'
+          - align_header: center
+          - align_state: center
+          - show:
+              extrema: true
+              fill: true
+              graph: bar
+              icon: false
+          - icon: 'mdi:solar-power'
+          - decimals: 0
+          - color_thresholds:
+              - value: 25
+                color: var(--theme-gradient-color-01)
+              - value: 50
+                color: var(--theme-gradient-color-02)
+              - value: 75
+                color: var(--theme-gradient-color-03)
+              - value: 100
+                color: var(--theme-gradient-color-04)
+              - value: 150
+                color: var(--theme-gradient-color-05)
+              - value: 200
+                color: var(--theme-gradient-color-06)
+              - value: 300
+                color: var(--theme-gradient-color-07)
+              - value: 350
+                color: var(--theme-gradient-color-08)
+              - value: 400
+                color: var(--theme-gradient-color-09)
+              - value: 450
+                color: var(--theme-gradient-color-10)
+      - !include card-blank-card.yaml
+
+  - type: horizontal-stack
+    cards:
+      - !include card-blank-card.yaml
+      - type: custom:decluttering-card
+        template: mini_graph_card_template
+        variables:
+          - entity: dsmr_day_consumption_electricity_merged
+          - name: Stroom Vandaag
+          - show:
+              graph: false
+          - icon: 'mdi:counter'
+          - decimals: 2
+      - type: custom:decluttering-card
+        template: mini_graph_card_template
+        variables:
+          - entity: pv_700wp_energy_today
+          - name: PV Vandaag
+          - show:
+              graph: false
+              icon: false
+          - icon: 'mdi:counter'
+          - decimals: 2
+      - !include card-blank-card.yaml
+
+  - type: horizontal-stack
+    cards:
+      - !include card-blank-card.yaml
+      - type: custom:decluttering-card
+        template: mini_graph_card_template
+        variables:
+          - entity: dsmr_day_consumption_gas
+          - name: Gas Vandaag
+          - line_color: 'DarkOrange'
+          - show:
+              extrema: false
+              fill: true
+              graph: bar
+              icon: false
+          - icon: 'mdi:fire'
+          - decimals: 1
+      - type: custom:decluttering-card
+        template: mini_graph_card_template
+        variables:
+          - entity: ww_vandaag_min
+          - name: WW Vandaag
+          - line_color: 'SteelBlue'
+          - show:
+              extrema: false
+              fill: true
+              graph: bar
+              icon: false
+          - icon: 'mdi:shower'
+          - decimals: 0
+      - !include card-blank-card.yaml
+
