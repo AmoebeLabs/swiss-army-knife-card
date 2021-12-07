@@ -37,7 +37,7 @@ card:
   # entities: 
     # - entity: sun.sun
 
-  dimensions: 1/0.05
+  aspectratio: 1/0.05
   dev:
     debug: false
 

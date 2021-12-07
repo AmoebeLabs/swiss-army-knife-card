@@ -28,7 +28,7 @@ card:
         action: more-info
         haptic: success
 
-  dimensions: 1/1
+  aspectratio: 1/1
   dev:
     debug: false
     ts: true

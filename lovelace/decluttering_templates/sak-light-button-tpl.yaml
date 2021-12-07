@@ -22,7 +22,7 @@ card:
       attribute: brightness
       unit_of_measurement: "%"
 
-  dimensions: 1/1
+  aspectratio: 1/1
   dev:
     debug: false
     ts: true
