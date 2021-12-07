@@ -1,0 +1,120 @@
+#################################################################
+#                                                               #
+#             Home Assistant NEW configuration file             #
+#                                                               #
+#             Created: 2020.09.20                               #
+#                                                               #
+#################################################################
+  
+# default config
+# =============
+# Configure a default setup of Home Assistant (frontend, api, etc)
+# - https://www.home-assistant.io/integrations/default_config/ for all the integrations loaded by this setting.
+default_config:
+
+# Enable logger
+logger:
+  default: warning
+  logs:
+    homeassistant.components.opentherm_gw: info
+
+# AirVisual
+# =========
+# - https://www.home-assistant.io/integrations/airvisual/
+# 2021.01.15
+# - Configuration via UI, so removed here... 
+# airvisual:
+  # api_key: !secret airvisual_api_key
+  # geographies:
+    # city: eindhoven
+    # country: netherlands
+    # state: north-brabant   
+
+
+# frontend
+# ========
+# Enables the frontend to define themes
+# - https://www.home-assistant.io/integrations/frontend/#defining-themes
+frontend:
+  themes: !include themes/themes.yaml
+  
+# hacs settings
+# =============
+# - https://hacs.xyz/docs/installation/manual
+#
+# 2019.07.19
+# - Add HACS instead of custom updater
+hacs:
+  token: !secret hacs_token
+  sidepanel_title: "Store" 
+  sidepanel_icon: "mdi:alpha-c-box"
+  theme: true
+  appdaemon: true
+  python_script: true
+
+# http settings
+# =============
+# - https://www.home-assistant.io/integrations/http/
+#
+# 2021.10.27
+# - Update HTTP integration to latest specifications
+# - Must add trusted proxies, forwarded for, etc.
+# 2020.09.20
+# - This config is the new config, so must run on another port than the default 8123
+http:
+  server_port: 8123
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.2.180
+
+# lovelace 
+# ========
+# - https://www.home-assistant.io/lovelace/dashboards-and-views/
+#
+# 2019.08.02
+# Switch lovelace to yaml mode again, so I can use includes and reuse stuff
+# But also, make it much more manageble with include per view
+#
+# 2021.01.15
+# Move resource include from ui-lovelace.yaml to configuration.
+lovelace:
+  mode: yaml
+  resources: !include lovelace/resources/resources.yaml
+
+  dashboards:
+    sak-examples:
+      mode: yaml
+      filename: sak-examples-dashboard.yaml
+      title: Swiss Army Knife Examples
+      icon: mdi:hospital-box
+      show_in_sidebar: true
+      
+# panel iframe
+# - https://www.home-assistant.io/integrations/panel_iframe/
+panel_iframe:
+  networkmap:
+    title: 'Zigbee Map'
+    url: '/local/community/zigbee2mqtt_networkmap/map.html'
+    icon: 'mdi:graphql'
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+# webhook
+webhook:
+
+# zigbee2mqtt networkmap
+# - community integration via hacs
+zigbee2mqtt_networkmap:
+  topic: common/gateway/zigbee2mqtt
+
+     
+
+# Include list for sensors, groups, etc.
+# - https://www.home-assistant.io/docs/configuration/yaml/#including-entire-files
+automation: !include configuration/automations.yaml
+group: !include configuration/groups.yaml
+sensor: !include configuration/sensors.yaml
+scene: !include configuration/scenes.yaml
+script: !include configuration/scripts.yaml
