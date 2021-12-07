@@ -1,7 +1,7 @@
 #
 # Theme     : nm-01-gonsboro.yaml
 # Project   : Home Assistant
-# Repository: https://github.com/AmoebeLabs/Styx_Theme-Teal_Teal
+# Repository: https://github.com/AmoebeLabs/l
 #
 # Author    : Mars @ AmoebeLabs.com
 # 
@@ -9,49 +9,22 @@
 #
 # -----
 # Description:
-#   Nyx Night theme with primary darkslategrey (grey/green) background and 
-#   wheat-like color as the primary foreground colors.
+#   Neumorphic theme with gonsboro as the main background color (light grey)
 #
 # Refs:
-#   - https://github.com/AmoebeLabs/Material-Design-Theme-Colors
-#   - http://mcg.mbitson.com
+#   - https://neumorphism.io/#efeeee
 #   
 ###############################################################################
 #
 #Neumorphic - Gonsboro
 
   #
-  # Theming the box-shadow for a card.
-  # ----------------------------------
-  # 
-  # My decluttering templates use this for box-shadows. In that way I can control the box-shadow from the theme.
-  #
-  # Default home assistant stuff looks like:
-  # - --shadow-elevation-2dp_-_box-shadow <-- DEFAULT
-  # - --shadow-elevation-3dp_-_box-shadow
-  # - --shadow-elevation-4dp_-_box-shadow
-  # - --shadow-elevation-6dp_-_box-shadow
-  # - --shadow-elevation-8dp_-_box-shadow
-  # - --shadow-elevation-12dp_-_box-shadow
-  # - --shadow-elevation-16dp_-_box-shadow
-  # - --shadow-elevation-24dp_-_box-shadow
-  #
-  # Custom setup: hor offset, vert offset, blur radius, spread radius, color
-  #
-  # To disable: theme-card-box-shadow: 'none'
-  # Shadow only on lowerside: theme-card-box-shadow: '0px 6px 6px -6px rgba(0, 0, 0, 0.4)'
-  #
-  # theme-card-box-shadow: '3px 6px 9px 1px rgba(0, 0, 0, 0.4)'
-  # ha-card-box-shadow: '6px 6px 12px var(--cs-theme-shadow-darker), -3px -3px 12px var(--cs-theme-shadow-lighter)'
+  # Theming the box-shadow for a card using Neumorphic guidelines.
+  # --------------------------------------------------------------
   ha-card-box-shadow: '3px 3px 6px var(--cs-theme-shadow-darker), -3px -3px 6px var(--cs-theme-shadow-lighter)'
 
   # Make it an inset shadow. Looks very nice combined with the neumorphic design!!!!
-  # ha-card-box-shadow: 'inset 3px 3px 6px var(--cs-theme-shadow-darker), inset -3px -3px 6px var(--cs-theme-shadow-lighter)'
   theme-card-box-shadow: 'var(--shadow-elevation-2dp_-_box-shadow)'
-
-  # Define global ha-homekit alike border radius 
-  # https://9elements.github.io/fancy-border-radius/full-control.html#38.28.75.48-58.75.84.86-.
-  # ha-card-border-radius : '48% 52% 70% 30% / 30% 79% 21% 70%'
 
   #
   # Theming the default gradient.
@@ -64,7 +37,6 @@
   #
   # Gradient is from the primary color (orange) to the secondary text color (blue)
   #
-
   # Color set via http://mcg.mbitson.com/#!?mcgpalette0=%23ffb414
 
   theme-graph-default-graph-color: '#ffb414'
@@ -92,25 +64,6 @@
   theme-gradient-color-09: '#FF9C0B' 
   theme-gradient-color-10: '#FF8C06' 
   theme-gradient-color-11: '#FF8305' 
-
-  # Define colors returned by color-picker and used for this theme.
-  # Original picked colors from example: #455356 and #373f42
-  # cs-theme-default-lighten-50: '#E9EAEB'
-  # cs-theme-default-lighten-40: '#C7CBCC'
-  # cs-theme-default-lighten-30: '#A2A9AB'
-  # cs-theme-default-lighten-20: '#7D8789'
-  # cs-theme-default-lighten-10: '#616D6F'
-  # cs-theme-default-base: '#455356'
-  # cs-theme-default-darken-10: '#3E4C4F'
-  # cs-theme-default-darken-20: '#364245'
-  # cs-theme-default-darken-30: '#2E393C'
-  # cs-theme-default-darken-40: '#1F292B'
-  # cs-theme-default-accent-10: '#74E6FF'
-  # cs-theme-default-accent-20: '#41DDFF'
-  # cs-theme-default-accent-40: '#0ED3FF'
-  # cs-theme-default-accent-70: '#00C8F4'
-  
-  # cs-theme-default-lighten-05: '#525f62'
 
   # http://mcg.mbitson.com/#!?mcgpalette0=%23efeeee
   cs-theme-default-lighten-50: '#FDFDFD'
@@ -223,12 +176,6 @@
 
   # Card with state = 'on'
   theme-button-card-color-state-on: 'var(--paper-card-background-color)'
-  # Changed 2019.08.25 to normal background          'var(--cs-theme-default-darken-10)'
-  #'rgba(255, 255, 255, 0.23)'
-  #theme-button-card-color-state-on: 'var(--paper-dialog-background-color)'
-  #          'var(--primary-color)'
-  #'var(--paper-dialog-background-color)'
-  #'var(--dark-primary-color)'
   theme-button-area-color-state-on:          'var(--secondary-background-color)'
   theme-button-area-color-state-on:          'var(--primary-text-color)'
 
@@ -387,20 +334,6 @@
   # Sidebar
   sidebar-icon-color: 'var(--cs-grey-lighten-1)'
 
-  ## Notes on Backgrounds
-  #
-  # Elevation Level White Overlay Transparency
-  # 00dp  0% --> primary-background-color
-  # 01dp  5%
-  # 02dp  7% --> paper-card-background-color 
-  # 03dp  8%
-  # 04dp  9% --> paper-dialog-background-color
-  # 06dp  11%
-  # 08dp  12%
-  # 12dp  14%
-  # 16dp  15%
-  # 24dp  16%
-
   # Background colors
   # Primary is background, secondary is for menu
   primary-background-color: 'var(--cs-theme-default-background-primary)'
@@ -421,10 +354,6 @@
   # Paper card background color is on primary-background-color
   paper-card-header-color: 'var(--light-primary-color)'
 
-  # Set to 02dp - 7% of primary-background-color
-  # Primary is set to cs-grey-darken-4, ie rgb(13, 13, 13).
-  # Assumption is that paper-card is ALWAYS on primary background.
-
   # 2020.09.23
   # The latest versions of hass us this color also for popup and overlay windows.
   # This means you can't use rgba colors, as the background is visible
@@ -432,13 +361,6 @@
   
   #paper-card-background-color: 'rgba(255, 255, 255, 0.07)'
   paper-card-background-color: 'var(--cs-theme-default-background-primary)'
-
-  # Used to be fixed:
-  #paper-card-background-color: 'var(--cs-grey-darken-3)'
-
-  # primary dark in rgb is (90, 32, 0)
-  # primary light in rgb is (255, 204, 128)
-  # paper-card-background-color: 'rgba(255,204, 128, 0.08)'
 
   # Used to be fixed:
   # paper-dialog-background-color: 'rgba(255, 255, 255, 0.09)'
@@ -456,7 +378,7 @@
   label-badge-text-color: 'var(--primary-text-color)'
   # Find name of text on label. It is not the previous one label-badge-text-color... That is the value of the badge.
   ha-label-badge-label-color: 'var(--cs-grey-darken-40)'
-  label-badge-background-color: 'var(--cs-grey-darken-40)'
+  #label-badge-background-color: 'var(--cs-grey-darken-40)'
 
   # Switches
   paper-toggle-button-checked-button-color: 'var(--light-primary-color)'
