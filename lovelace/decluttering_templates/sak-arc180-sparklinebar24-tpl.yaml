@@ -18,7 +18,7 @@ card:
       icon: '[[icon]]'
       area: '[[area]]'
 
-  dimensions: 1/1
+  aspectratio: 1/1
   dev:
     debug: false
   
