@@ -1,0 +1,28 @@
+#################################################################
+#                                                               # 
+#             Swiss Army Knife examples dashboard               #
+#                                                               #
+#             Created: 2021.12.05                               #
+#                                                               #
+#################################################################
+  
+# Decluttering Templates
+decluttering_templates:
+  !include lovelace/decluttering_templates/decluttering_templates.yaml
+
+# Swiss Army Knife Templates
+sak_templates:
+  !include lovelace/sak_templates/sak_templates.yaml
+
+title: Swiss Army Knife Examples
+views:
+
+  # Swiss Army Knife example views...
+  - !include lovelace/views/view-sake1.yaml
+  - !include lovelace/views/view-sake2.yaml
+  - !include lovelace/views/view-sake3.yaml
+  - !include lovelace/views/view-sake4.yaml
+  - !include lovelace/views/view-sake5.yaml
+  - !include lovelace/views/view-sake6.yaml
+  - !include lovelace/views/view-sake7.yaml
+  - !include lovelace/views/view-sake8.yaml

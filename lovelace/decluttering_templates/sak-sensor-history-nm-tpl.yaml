@@ -14,15 +14,15 @@ card:
       name: '[[name]]'
       icon: '[[icon]]'
       decimals: '[[decimals]]'
+    - entity: weather.zoefdehaas
 
-  dimensions: 1/1
+  aspectratio: 1/1
   dev:
     debug: false
     ts: true
   
   layout:
     styles:
-      card:
       toolsets:
         filter: url(#nm-1)
     toolsets:

@@ -1,7 +1,7 @@
 #
-# Theme     : nm-01-gonsboro.yaml
+# Theme     : nm-02-steelblue.yaml
 # Project   : Home Assistant
-# Repository: https://github.com/AmoebeLabs/Styx_Theme-Teal_Teal
+# Repository: https://github.com/AmoebeLabs/
 #
 # Author    : Mars @ AmoebeLabs.com
 # 
@@ -9,8 +9,7 @@
 #
 # -----
 # Description:
-#   Nyx Night theme with primary darkslategrey (grey/green) background and 
-#   wheat-like color as the primary foreground colors.
+#   Steelblue Neumorphic theme.
 #
 # Refs:
 #   - https://github.com/AmoebeLabs/Material-Design-Theme-Colors
@@ -49,7 +48,7 @@
 #   
 ###############################################################################
 #
-#Neumorphic - Gonsboro
+#Neumorphic - Steelblue
 
   #
   # Theming the box-shadow for a card.
@@ -57,28 +56,8 @@
   # 
   # My decluttering templates use this for box-shadows. In that way I can control the box-shadow from the theme.
   #
-  # Default home assistant stuff looks like:
-  # - --shadow-elevation-2dp_-_box-shadow <-- DEFAULT
-  # - --shadow-elevation-3dp_-_box-shadow
-  # - --shadow-elevation-4dp_-_box-shadow
-  # - --shadow-elevation-6dp_-_box-shadow
-  # - --shadow-elevation-8dp_-_box-shadow
-  # - --shadow-elevation-12dp_-_box-shadow
-  # - --shadow-elevation-16dp_-_box-shadow
-  # - --shadow-elevation-24dp_-_box-shadow
-  #
-  # Custom setup: hor offset, vert offset, blur radius, spread radius, color
-  #
-  # To disable: theme-card-box-shadow: 'none'
-  # Shadow only on lowerside: theme-card-box-shadow: '0px 6px 6px -6px rgba(0, 0, 0, 0.4)'
-  #
-  # theme-card-box-shadow: '3px 6px 9px 1px rgba(0, 0, 0, 0.4)'
   ha-card-box-shadow: '6px 6px 12px var(--cs-theme-shadow-darker), -6px -6px 12px var(--cs-theme-shadow-lighter)'
   theme-card-box-shadow: 'var(--shadow-elevation-2dp_-_box-shadow)'
-
-  # Define global ha-homekit alike border radius 
-  # https://9elements.github.io/fancy-border-radius/full-control.html#38.28.75.48-58.75.84.86-.
-  # ha-card-border-radius : '48% 52% 70% 30% / 30% 79% 21% 70%'
 
   #
   # Theming the default gradient.
@@ -119,26 +98,6 @@
   theme-gradient-color-09: '#FF9C0B' 
   theme-gradient-color-10: '#FF8C06' 
   theme-gradient-color-11: '#FF8305' 
-
-  # Define colors returned by color-picker and used for this theme.
-  # Original picked colors from example: #438499 and #397082
-  # cs-theme-default-lighten-50: '#E8F0F3'
-  # cs-theme-default-lighten-40: '#C7DAE0'
-  # cs-theme-default-lighten-30: '#A1C2CC'
-  # cs-theme-default-lighten-20: '#7BA9B8'
-  # cs-theme-default-lighten-10: '#5F96A8'
-  # cs-theme-default-base: '#438499'
-  # cs-theme-default-darken-10: '#3D7C91'
-  # cs-theme-default-darken-20: '#347186'
-  # cs-theme-default-darken-30: '#2C677C'
-  # cs-theme-default-darken-40: '#1E546B'
-  # cs-theme-default-accent-10: '#A8E4FF'
-  # cs-theme-default-accent-20: '#75D4FF'
-  # cs-theme-default-accent-40: '#42C4FF'
-  # cs-theme-default-accent-70: '#29BCFF'
-  
-  # cs-theme-default-lighten-05: '#525f62'
-
 
   # http://mcg.mbitson.com/#!?mcgpalette0=%23efeeee
   cs-theme-default-lighten-50: '#E8F0F3'
@@ -195,20 +154,6 @@
 
   md-grey-0:   '#FFFFFFF'
   md-grey-30:  '#FCFCFC'
-#  cs-grey-lighten-50:  '#FAFAFA'
-#  cs-grey-lighten-40: '#F5F5F5'
-#  cs-grey-lighten-38: '#F3F3F3'
-#  cs-grey-lighten-35: '#F0F0F0'
-#  cs-grey-lighten-30: '#EEEEEE'
-#  cs-grey-lighten-20: '#E0E0E0'
-#  cs-grey-lighten-10: '#BDBDBD'
-#  cs-grey-base: '#9E9E9E'
-#  cs-grey-darken-10: '#757575'
-#  cs-grey-darken-20: '#616161'
-#  cs-grey-darken-30: '#424242'
-#  cs-grey-darken-35: '#303030'
-#  cs-grey-darken-40: '#212121'
-#  cs-grey-darken-45: '#111111'
 
   cs-grey-lighten-50:  '#edf4f6'
   cs-grey-lighten-40: '#edf4f6'

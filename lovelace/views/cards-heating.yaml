@@ -1,0 +1,260 @@
+type: vertical-stack
+cards:
+  - type: custom:decluttering-card
+    template: button_quick_menu_generic
+    variables:
+      - lb_name: Verlichting
+      - lb_icon: lightbulb
+      - lb_path: lights
+
+  # - type: custom:decluttering-card
+    # template: divider_template
+# #    variables:
+# #      - font_color: 'rgb(255, 255, 255, 0.12)'
+
+  # - type: custom:decluttering-card
+    # template: header_template
+    # variables:
+      # - content: "### Verwarming"
+
+  # - type: custom:decluttering-card
+    # template: header_template
+    # variables:
+      # - content: '#### Thermostaat'
+      # - font_color: var(--secondary-text-color)
+
+  - type: horizontal-stack
+    cards:
+      # - !include card-blank-card.yaml
+
+      - type: custom:decluttering-card
+        template: thermostat_dark_card_template
+        variables:
+          - entity: calenta
+      # - !include card-blank-card.yaml
+
+  # - type: horizontal-stack
+    # cards:
+      # - !include card-blank-card.yaml
+
+      # - type: thermostat
+        # entity: climate.thermostaat
+      # - !include card-blank-card.yaml
+
+  - type: horizontal-stack
+    cards:
+      - !include card-blank-card.yaml
+
+      - type: custom:decluttering-card
+        template: mini_graph_card_template
+        style: |
+          .graph__container {
+            margin: 20px;
+          }
+
+        variables:
+          - name: Kamertemperatuur
+          - entity: room_temp_thermostat_calenta
+          - font_size: 130
+          - align_header: center
+          - group: false
+          - show:
+              graph: bar
+              fill: true
+              icon: false
+              labels: true
+          - color_thresholds:
+              - value: 21
+                color: var(--theme-gradient-color-01)
+              - value: 21.1
+                color: var(--theme-gradient-color-02)
+              - value: 21.2
+                color: var(--theme-gradient-color-03)
+              - value: 21.3
+                color: var(--theme-gradient-color-04)
+              - value: 21.4
+                color: var(--theme-gradient-color-05)
+              - value: 21.5
+                color: var(--theme-gradient-color-06)
+              - value: 21.6
+                color: var(--theme-gradient-color-07)
+              - value: 21.7
+                color: var(--theme-gradient-color-08)
+              - value: 21.8
+                color: var(--theme-gradient-color-09)
+              - value: 22
+                color: var(--theme-gradient-color-10)
+
+      - !include card-blank-card.yaml
+#"#f39c12"
+
+  # - type: horizontal-stack
+    # cards:
+      # - !include card-blank-card.yaml
+
+      # - type: custom:circle-sensor-card
+        # entity: sensor.room_temp_thermostat_calenta
+        # secondary: sensor.livingroom_iaq_humidity
+        # tertiary : sensor.studym_movement_illuminance
+        # name: 'Binnen'
+        # area: "Woonkamer"
+        # show_card: true
+        # fill: 'rgb(0,0,0,0.0)'
+        # min: 14
+        # max: 27
+        # stroke_color: 'var(--theme-gradient-color-01)'
+        # stroke_back: 'var(--primary-background-color)'
+        # #'var(--adc-graph-color-lighten-40-10pct)'
+        # #'var(--primary-background-color)'
+        # decimals: 1
+        # color_stops:
+          # 16: 'var(--theme-gradient-color-01)'
+          # 17: 'var(--theme-gradient-color-02)'
+          # 18: 'var(--theme-gradient-color-03)'
+          # 19: 'var(--theme-gradient-color-04)'
+          # 20: 'var(--theme-gradient-color-05)'
+          # 21: 'var(--theme-gradient-color-06)'
+          # 22: 'var(--theme-gradient-color-07)'
+          # 23: 'var(--theme-gradient-color-08)'
+          # 24: 'var(--theme-gradient-color-09)'
+          # 25: 'var(--theme-gradient-color-10)'
+        # # Gradients don't work if value/state is less then color_stops list
+        # # if list until 23, and value is 22.01 -> crash. If value is until 22, then ok.
+        # gradient: false
+        # show_max: false
+        # style: |
+          # ha-card {
+            # padding: 15px 15px 0px 15px;
+          # }
+# #            margin: 10px 0px 10px 0px;
+# #          #name {
+# #            font-size: 80%;
+# #            font-weight: 300;
+# #          }
+# #          #name, #label {
+# #            margin: 3% 0;
+# #          }
+
+# weggehaald. name ws erg groot. descr pastte niet.
+#        font_style:
+#          font-size: 2.2em
+
+      # - type: custom:circle-sensor-card
+        # entity: weather.dark_sky
+        # attribute: 'temperature'
+        # name: 'Buiten'
+        # fill: 'rgb(0,0,0,0.0)'
+        # min: -10
+        # max: 30
+        # area: "De Maan"
+        # show_card: true
+        # units: '°C'
+        # decimals: 1
+        # stroke_color: 'var(--theme-gradient-color-06)'
+        # stroke_back: 'var(--primary-background-color)'
+        # color_stops:
+          # -15: 'var(--theme-gradient-color-01)'
+          # -10: 'var(--theme-gradient-color-02)'
+          # -5: 'var(--theme-gradient-color-03)'
+          # 0: 'var(--theme-gradient-color-04)'
+          # 5: 'var(--theme-gradient-color-05)'
+          # 10: 'var(--theme-gradient-color-06)'
+          # 15: 'var(--theme-gradient-color-07)'
+          # 20: 'var(--theme-gradient-color-08)'
+          # 25: 'var(--theme-gradient-color-09)'
+          # 30: 'var(--theme-gradient-color-10)'
+          # 35: 'var(--theme-gradient-color-11)'
+        # gradient: false
+        # show_max: false
+        # font_style:
+          # font-size: 2.2em
+        # style: |
+          # ha-card {
+            # padding: 15px 15px 0px 15px;
+          # }
+          # tspan.area { text-transform: uppercase; }
+
+      # - !include card-blank-card.yaml
+
+  # - type: horizontal-stack
+    # cards:
+      # - !include card-blank-card.yaml
+
+      # - type: custom:circle-sensor-card
+        # entity: sensor.ch_room_temperature
+        # secondary: sensor.livingroom_iaq_humidity
+        # tertiary : sensor.studym_movement_illuminance
+        # name: 'Binnen'
+        # area: "Woonkamer"
+        # show_card: true
+        # fill: 'rgb(0,0,0,0.0)'
+        # min: 14
+        # max: 27
+        # stroke_color: 'var(--theme-gradient-color-01)'
+        # stroke_back: 'var(--primary-background-color)'
+        # #'var(--adc-graph-color-lighten-40-10pct)'
+        # #'var(--primary-background-color)'
+        # decimals: 1
+        # color_stops:
+          # 16: 'var(--theme-gradient-color-01)'
+          # 17: 'var(--theme-gradient-color-02)'
+          # 18: 'var(--theme-gradient-color-03)'
+          # 19: 'var(--theme-gradient-color-04)'
+          # 20: 'var(--theme-gradient-color-05)'
+          # 21: 'var(--theme-gradient-color-06)'
+          # 22: 'var(--theme-gradient-color-07)'
+          # 23: 'var(--theme-gradient-color-08)'
+          # 24: 'var(--theme-gradient-color-09)'
+          # 25: 'var(--theme-gradient-color-10)'
+        # # Gradients don't work if value/state is less then color_stops list
+        # # if list until 23, and value is 22.01 -> crash. If value is until 22, then ok.
+        # gradient: false
+        # show_max: false
+        # style: |
+          # ha-card {
+            # padding: 15px 15px 0px 15px;
+          # }
+      # - !include card-blank-card.yaml
+
+
+  # - type: custom:decluttering-card
+    # template: header_template
+    # variables:
+      # - content: '#### Ketel'
+      # - font_color: var(--secondary-text-color)
+
+  - type: horizontal-stack
+    cards:
+      # - !include card-blank-card.yaml
+
+      - type: custom:decluttering-card
+        template: glance_card_template
+        variables:
+          - title: Remeha Calenta
+          - columns: 3
+          - entities:
+              - entity: binary_sensor.slave_ch_active_boiler_calenta
+                icon: 'mdi:radiator'
+                name: Warmtevraag?
+              - entity: binary_sensor.slave_dhw_active_boiler_calenta
+                icon: 'mdi:shower'
+                name: WW vraag?
+              - entity: binary_sensor.slave_flame_on_boiler_calenta
+                icon: 'mdi:fire'
+                name: Brander Aan?
+              - entity: sensor.control_setpoint_boiler_calenta
+                name: Water setpoint
+              - entity: sensor.ch_water_temp_boiler_calenta
+                name: Water temp
+              - entity: sensor.return_water_temp_boiler_calenta
+                name: Retour temp
+              - entity: sensor.room_setpoint_thermostat_calenta
+                icon: 'mdi:thermostat-box'
+                name: Gewenst
+              - entity: sensor.room_temp_thermostat_calenta
+                name: Actueel
+
+      # - !include card-blank-card.yaml
+
+#-------------------------------------------------------------------------------------
+

@@ -1,3 +1,4 @@
+
 /*
 *
 * Card      : dev-swiss-army-knife-card.js
@@ -21,31 +22,44 @@
 /*jshint esversion: 9 */
 /*jshint -W033 */
 /*eslint no-undef: "console"*/
+/*jslint todo: true */
+
+// Note @2021.10.31
+// Use compatible lit-* stuff, ie lit-element@2 and lit-html@1.
+// Combining other versions may lead to incompatibility, and thus lots of errors and tools not working anymore!
+//
+// Problems where caused by 8 months not working on this card, and using @latest, and new versions of lit-* !!
 
 import {
   LitElement, html, css, svg, unsafeCSS
-} from "https://unpkg.com/lit-element/lit-element.js?module";
-// } from "https://unpkg.com/lit-element@2.4.0/lit-element.js?module";
+// } from "https://unpkg.com/lit-element/lit-element.js?module";
+} from "https://unpkg.com/lit-element@2/lit-element.js?module";
 
 import {
   unsafeHTML
-} from "https://unpkg.com/lit-html/directives/unsafe-html.js?module";
+} from "https://unpkg.com/lit-html@1/directives/unsafe-html.js?module";
 
 import {
   unsafeSVG
-} from "https://unpkg.com/lit-html/directives/unsafe-svg.js?module";
+} from "https://unpkg.com/lit-html@1/directives/unsafe-svg.js?module";
 
 // import {
   // unsafeCSS
 // } from "https://unpkg.com/lit-html/directives/unsafe-css.js?module";
 
-import { styleMap } from 'https://unpkg.com/lit-html/directives/style-map.js?module';
+import { styleMap } from 'https://unpkg.com/lit-html@1/directives/style-map.js?module';
+import { classMap } from 'https://unpkg.com/lit-html@1/directives/class-map.js?module';
+
+import { selectUnit} from 'https://unpkg.com/@formatjs/intl-utils/lib/index.js?module';
+import {shouldPolyfill} from 'https://unpkg.com/@formatjs/intl-relativetimeformat/lib/should-polyfill.js?module';
+
+import { stateIcon, getLovelace } from 'https://unpkg.com/custom-card-helpers@1.8.0/dist/index.m.js?module';
 
 import 'https://cdn.skypack.dev/@ctrl/tinycolor';
 //++ Consts ++++++++++
 
 console.info(
-  `%c  SWISS ARMY KNIFE CARD  \n%c    Version 0.x.y-dev    `,
+  `%c  SWISS ARMY KNIFE CARD  \n%c    BETA DEV Version     `,
   'color: yellow; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
@@ -61,6 +75,142 @@ const SVG_VIEW_BOX = SVG_DEFAULT_DIMENSIONS;//200;
 const FONT_SIZE = SVG_DEFAULT_DIMENSIONS / 100;
 
 //--
+
+// 2021.11.21
+// #TODO
+// Direct import of custom-card-helpers v 1.8.0 from https://cdn.jsdelivr.net/npm/custom-card-helpers@1.8.0/dist/index.js
+
+// const coverIcon = (state) => {
+  // const open = state.state !== "closed";
+  // switch (state.attributes.device_class) {
+    // case "garage":
+      // return open ? "hass:garage-open" : "hass:garage";
+    // case "door":
+      // return open ? "hass:door-open" : "hass:door-closed";
+    // case "shutter":
+      // return open ? "hass:window-shutter-open" : "hass:window-shutter";
+    // case "blind":
+      // return open ? "hass:blinds-open" : "hass:blinds";
+    // case "window":
+      // return open ? "hass:window-open" : "hass:window-closed";
+    // default:
+      // return domainIcon("cover", state.state);
+  // }
+// };
+
+// const binarySensorIcon = (state) => {
+  // const activated = state.state && state.state === "off";
+  // switch (state.attributes.device_class) {
+    // case "battery":
+      // return activated ? "hass:battery" : "hass:battery-outline";
+    // case "cold":
+      // return activated ? "hass:thermometer" : "hass:snowflake";
+    // case "connectivity":
+      // return activated ? "hass:server-network-off" : "hass:server-network";
+    // case "door":
+      // return activated ? "hass:door-closed" : "hass:door-open";
+    // case "garage_door":
+      // return activated ? "hass:garage" : "hass:garage-open";
+    // case "gas":
+    // case "power":
+    // case "problem":
+    // case "safety":
+    // case "smoke":
+      // return activated ? "hass:shield-check" : "hass:alert";
+    // case "heat":
+      // return activated ? "hass:thermometer" : "hass:fire";
+    // case "light":
+      // return activated ? "hass:brightness-5" : "hass:brightness-7";
+    // case "lock":
+      // return activated ? "hass:lock" : "hass:lock-open";
+    // case "moisture":
+      // return activated ? "hass:water-off" : "hass:water";
+    // case "motion":
+      // return activated ? "hass:walk" : "hass:run";
+    // case "occupancy":
+      // return activated ? "hass:home-outline" : "hass:home";
+    // case "opening":
+      // return activated ? "hass:square" : "hass:square-outline";
+    // case "plug":
+      // return activated ? "hass:power-plug-off" : "hass:power-plug";
+    // case "presence":
+      // return activated ? "hass:home-outline" : "hass:home";
+    // case "sound":
+      // return activated ? "hass:music-note-off" : "hass:music-note";
+    // case "vibration":
+      // return activated ? "hass:crop-portrait" : "hass:vibrate";
+    // case "window":
+      // return activated ? "hass:window-closed" : "hass:window-open";
+    // default:
+      // return activated ? "hass:radiobox-blank" : "hass:checkbox-marked-circle";
+  // }
+// };
+
+// const DEFAULT_DOMAIN_ICON = "hass:bookmark";
+
+// const fixedDeviceClassIcons = {
+  // humidity: "hass:water-percent",
+  // illuminance: "hass:brightness-5",
+  // temperature: "hass:thermometer",
+  // pressure: "hass:gauge",
+  // power: "hass:flash",
+  // signal_strength: "hass:wifi",
+// };
+
+// const sensorIcon = (state) => {
+  // const dclass = state.attributes.device_class;
+
+  // if (dclass && dclass in fixedDeviceClassIcons) {
+    // return fixedDeviceClassIcons[dclass];
+  // }
+  // if (dclass === "battery") {
+    // const battery = Number(state.state);
+    // if (isNaN(battery)) {
+      // return "hass:battery-unknown";
+    // }
+    // const batteryRound = Math.round(battery / 10) * 10;
+    // if (batteryRound >= 100) {
+      // return "hass:battery";
+    // }
+    // if (batteryRound <= 0) {
+      // return "hass:battery-alert";
+    // }
+    // // Will return one of the following icons: (listed so extractor picks up)
+    // // hass:battery-10
+    // // hass:battery-20
+    // // hass:battery-30
+    // // hass:battery-40
+    // // hass:battery-50
+    // // hass:battery-60
+    // // hass:battery-70
+    // // hass:battery-80
+    // // hass:battery-90
+    // // We obscure 'hass' in iconname so this name does not get picked up
+    // return `${"hass"}:battery-${batteryRound}`;
+  // }
+// };
+
+// const domainIcons = {
+  // binary_sensor: binarySensorIcon,
+  // cover: coverIcon,
+  // sensor: sensorIcon,
+  // // input_datetime: inputDateTimeIcon,
+// };
+// const stateIcon = (state) => {
+  // if (!state) {
+    // return DEFAULT_DOMAIN_ICON;
+  // }
+  // if (state.attributes.icon) {
+    // return state.attributes.icon;
+  // }
+
+  // const domain = this._computeDomain(state.entity_id);
+
+  // if (domain in domainIcons) {
+    // return domainIcons[domain](state);
+  // }
+  // return domainIcon(domain, state.state);
+// };
 
 //++ Class ++++++++++
 
@@ -125,15 +275,25 @@ class Utils {
   *
   * Summary.
   * Clips the val value between start and end, and returns the between value ;-)
+  * Returned value is a fractional value between 0 and 1.
   *
-  * Note:
+  * Note 1:
   * At start, state values are set to 'null' to make sure it has no value!
   * If such a value is detected, return 0(%) as the relative value.
   * In normal cases, this happens to be the _valuePrev, so 0% is ok!!!!
+  *
+  * Note 2:
+  * !xyz checks for "", null, undefined, false and number 0
+  * An extra check for NaN guards the result of this function ;-)
   */
 
   static calculateValueBetween(argStart, argEnd, argVal) {
+
+    // Check for valid argVal values and return 0 if invalid.
+    if (isNaN(argVal)) return 0;
     if (!argVal) return 0;
+
+    // Valid argVal value: calculate fraction between 0 and 1
     return (Math.min(Math.max(argVal, argStart), argEnd) - argStart) / (argEnd - argStart);
   }
 
@@ -377,22 +537,57 @@ class Toolset {
   // #TODO:
   // Update only the changed entity_index, not all indexes. Now ALL tools are updated...
   updateValues() {
+    if (this.dev.performance) console.time("--> "+ this.toolsetId + " PERFORMANCE Toolset::updateValues");
     if (this.tools) {
       this.tools.map((item, index) => {
         if (true || item.type == "segarc") {
-          if (this.dev.debug) console.log('Toolset::updateValues', item, index);
+          // if (this.dev.debug) console.log('Toolset::updateValues', item, index);
           if ((item.tool.config.hasOwnProperty('entity_index')))
           {
+            if (this.dev.debug) console.log('Toolset::updateValues', item, index);
             //if (this.dev.debug) console.log('Toolset::updateValues', typeof item.tool._stateValue);
 
+            // #IDEA @2021.11.20
+            // What if for attribute and secondaryinfo the entity state itself is also passsed automatically
+            // In that case that state is always present and can be used in animations by default.
+            // No need to pass an extra entity_index.
+            // A tool using the light brightness can also use the state (on/off) in that case for styling.
+            //
+            // Test can be done on 'state', 'attr', or 'secinfo' for default entity_index.
+            //
+            // Should pass a record in here orso as value { state : xx, attr: yy }
+            
             item.tool.value = this._card.attributesStr[item.tool.config.entity_index]
                                                 ? this._card.attributesStr[item.tool.config.entity_index]
+                                                : this._card.secondaryInfoStr[item.tool.config.entity_index]
+                                                ? this._card.secondaryInfoStr[item.tool.config.entity_index]
                                                 : this._card.entitiesStr[item.tool.config.entity_index];
           }
 
+          // #TODO @2021.11.22
+          // Future extension to use multiple entity indexes (array of entity_index values) for animation/styling...
+          // NOT used yet...
+          if ((item.tool.config.hasOwnProperty('entity_indexes')))
+          {
+            // Update list of entities in single record and pass that to the tool
+            // The first entity is used as the state, additional entities can help with animations,
+            // (used for formatting classes/styles) or can be used in a derived entity 
+            
+            var valueList = {};
+            for (let index = 0; index < item.tool.config.entity_indexes.length; ++index) {
+              valueList[index] = this._card.attributesStr[item.tool.config.entity_indexes[index]]
+                                                ? this._card.attributesStr[item.tool.config.entity_indexes[index]]
+                                                : this._card.secondaryInfoStr[item.tool.config.entity_indexes[index]]
+                                                ? this._card.secondaryInfoStr[item.tool.config.entity_indexes[index]]
+                                                : this._card.entitiesStr[item.tool.config.entity_indexes[index]];
+            }
+            
+            item.tool.values = valueList;
+          }
         }
       });
     }
+    if (this.dev.performance) console.timeEnd("--> "+ this.toolsetId + " PERFORMANCE Toolset::updateValues");
   }
 /*******************************************************************************
   * Toolset::connectedCallback()
@@ -611,7 +806,17 @@ class BaseTool {
     this.svg.x = (this.svg.cx) - (this.svg.width / 2);
     this.svg.y = (this.svg.cy) - (this.svg.height / 2);
     
+    this.classes = {};
+    this.classes.toolset = {};
+    this.classes.tool = {};
+
     this.styles = {};
+    this.styles.toolset = {};
+    this.styles.tool = {};
+
+    this.animationClass = {};
+    this.animationClassHasChanged = true;
+
     this.animationStyle = {};
     this.animationStyleHasChanged = true;
     
@@ -644,6 +849,8 @@ class BaseTool {
   */
   set value(state) {
 
+//    console.log("set value (state)", state);
+    
     let localState = state;
 
     if (this.dev.debug) console.log('BaseTool set value(state)', localState);
@@ -660,10 +867,11 @@ class BaseTool {
     this._stateValuePrev = this._stateValue || localState;
     this._stateValue = localState;
     this._stateValueIsDirty = true;
+    
 
     // If animations defined, calculate style for current state.
 
-    if (this._stateValue == 'undefined') return;
+    if (this._stateValue == undefined) return;
     if (typeof(this._stateValue) === 'undefined') return;
 
     var isMatch = false;
@@ -714,6 +922,11 @@ class BaseTool {
       if (this.dev.debug) console.log('BaseTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
       if (!isMatch) return true;
 
+      if (!this.animationClass || !item.reuse) this.animationClass = {};
+      if (item.classes) {
+        this.animationClass = Merge.mergeDeep(this.animationClass, item.classes)
+      }
+
       if (!this.animationStyle || !item.reuse) this.animationStyle = {};
       if (item.styles) {
         this.animationStyle = Merge.mergeDeep(this.animationStyle, item.styles)
@@ -748,6 +961,28 @@ class BaseTool {
         this.styles = Merge.mergeDeep(argDefaultStyles, this.config.styles, this.animationStyle);
       } else {
         this.styles = Merge.mergeDeep(this.config.styles, this.animationStyle);
+      }
+    }
+  }
+
+ /*******************************************************************************
+  * BaseTool::MergeAnimationClassIfChanged()
+  *
+  * Summary.
+  * Merge changed animationclass with configured static styles.
+  *
+  */
+  MergeAnimationClassIfChanged(argDefaultClasses) {
+
+    // Hack
+    this.animationClassHasChanged = true;
+    
+    if (this.animationClassHasChanged) {
+      this.animationClassHasChanged = false;
+      if (argDefaultClasses) {
+        this.classes = Merge.mergeDeep(argDefaultClasses, this.config.classes, this.animationClass);
+      } else {
+        this.classes = Merge.mergeDeep(this.config.classes, this.animationClass);
       }
     }
   }
@@ -1319,37 +1554,39 @@ class RangeSliderTool2 extends BaseTool {
         show: {
           uom: 'end',
         },
+        classes: {
+          tool: {
+            "sak-slider": true,
+            "hover": true,
+          },
+          capture: {
+            "sak-slider__capture": true,
+          },
+          track: {
+            "sak-slider__track": true,
+          },
+          thumb: {
+            "sak-slider__thumb": true,
+          },
+          label: {
+            "sak-slider__value": true,
+          },
+          uom: {
+            "sak-slider__uom": true,
+          }
+        },
         styles: {
+          tool: {
+          },
           capture: {
           },
           track: {
-            // "fill-opacity": 0.38,
-            // "stroke-width": 0,
-            // "stroke": 'var(--primary-text-color)',
-            // "fill": 'var(--switch-unchecked-track-color)',
-            // "transition": 'all .5s ease',
-            // "pointer-events": 'none',
           },
           thumb: {
-            // "--thumb-stroke": 'var(--secondary-text-color)',
-            // "stroke": 'var(--thumb-stroke)',
-            // "fill": 'var(--primary-background-color)',
-            // "pointer-events": 'none',
           },
           label: {
-            // "fill": 'var(--primary-text-color)',
-            // "font-size": '8em',
-            // "font-weight": 400,
-            // "transition": 'all .5s cubic-bezier(0.4, 0, 0.2, 1)',
-            // "pointer-events": 'none',
-            // "alignment-baseline": 'central',
           },
           uom: {
-            // "fill": 'var(--primary-text-color)',
-            // "text-anchor": 'middle',
-            // "alignment-baseline": 'central',
-            // "opacity": '0.7',
-            // "letter-spacing": '0.05em',
           }
         }
     }
@@ -1410,6 +1647,13 @@ class RangeSliderTool2 extends BaseTool {
         break;
     }
     
+    // Init classes
+    this.classes.capture = {};
+    this.classes.track = {};
+    this.classes.thumb = {};
+    this.classes.label = {};
+    this.classes.uom = {};
+
     // Init styles
     this.styles.capture = {};
     this.styles.track = {};
@@ -1443,7 +1687,7 @@ class RangeSliderTool2 extends BaseTool {
       case 'horizontal':
         var xpos = m.x - argThis.svg.track.x1;
         scalePos = xpos / argThis.svg.track.width;
-        console.log("svgCoordinateToSliderValue, m.x, ypos, scalePos", m.x, argThis.svg.track.x1, scalePos);
+        console.log("svgCoordinateToSliderValue, m.x, xpos, scalePos", m.x, argThis.svg.track.x1, scalePos);
         break;
 
       case 'vertical':
@@ -1491,7 +1735,6 @@ class RangeSliderTool2 extends BaseTool {
       }
     }
   }
-  
 
   updateThumb(argThis, m) {
 
@@ -1598,7 +1841,7 @@ class RangeSliderTool2 extends BaseTool {
     this.elements.thumb = this.elements.svg.querySelector("#rs-thumb");
     this.elements.label = this.elements.svg.querySelector("#rs-label tspan");
 
-    console.log("firstupdated", this.elements);
+    // console.log("firstupdated", this.elements);
     
     if (this.dev.debug) console.log('slider - firstUpdated svg = ', this.elements.svg, 'path=', this.elements.path, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
 
@@ -1709,6 +1952,7 @@ class RangeSliderTool2 extends BaseTool {
     if (!this.dragging) this.labelValue = this._stateValue;
     return changed;
   }
+  
   _renderUom() {
 
     if (this.config.show.uom === 'none') {
@@ -1737,19 +1981,19 @@ class RangeSliderTool2 extends BaseTool {
       // Check for location of uom. end = next to state, bottom = below state ;-), etc.
       if (this.config.show.uom === 'end') {
         return svg`
-          <tspan class="sak-slider__uom hover" dx="-0.1em" dy="-0.35em"
+          <tspan class="${classMap(this.classes.uom)}" dx="-0.1em" dy="-0.35em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'bottom') {
         return svg`
-          <tspan class="sak-slider__uom hover" x="${this.svg.x}" dy="1.5em"
+          <tspan class="${classMap(this.classes.uom)}" x="${this.svg.x}" dy="1.5em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'top') {
         return svg`
-          <tspan class="sak-slider__uom hover" x="${this.svg.x}" dy="-1.5em"
+          <tspan class="${classMap(this.classes.uom)}" x="${this.svg.x}" dy="-1.5em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
@@ -1773,6 +2017,7 @@ class RangeSliderTool2 extends BaseTool {
     if (this.dev.debug) console.log('slider - _renderRangeSlider');
 
     // this.styles = Merge.mergeDeep(this.config.styles);
+    this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles);
     this.MergeAnimationStyleIfChanged(this.styles);
     // console.log('_renderRangeSlider, styles=', this.styles);
@@ -1818,7 +2063,7 @@ class RangeSliderTool2 extends BaseTool {
 
       return svg`
         <g id="rs-thumb-group" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}" style="transform:translate(${cx}px, ${cy}px)">
-          <rect id="rs-thumb" class="sak-slider__thumb" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
+          <rect id="rs-thumb" class="${classMap(this.classes.thumb)}" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
             width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
             style="${styleMap(this.styles.thumb)}"
           />
@@ -1832,7 +2077,7 @@ class RangeSliderTool2 extends BaseTool {
 
         return svg`
       <text id="rs-label">
-        <tspan class="sak-slider__value" x="${this.svg.label.cx}" y="${this.svg.label.cy}" style="${styleMap(this.styles.label)}">
+        <tspan class="${classMap(this.classes.label)}" x="${this.svg.label.cx}" y="${this.svg.label.cy}" style="${styleMap(this.styles.label)}">
         ${this.renderValue}</tspan>
         ${this._renderUom()}
         </text>
@@ -1841,7 +2086,7 @@ class RangeSliderTool2 extends BaseTool {
       if ((this.config.position.label.placement == 'position') && !argGroup) {
         return svg`
           <text id="rs-label">
-            <tspan class="sak-slider__value" data-placement="position" x="${this.svg.label.cx}" y="${this.svg.label.cy}"
+            <tspan class="${classMap(this.classes.label)}" data-placement="position" x="${this.svg.label.cx}" y="${this.svg.label.cy}"
             style="${styleMap(this.styles.label)}">${this.renderValue}</tspan>
             ${this._renderUom()}
           </text>
@@ -1855,21 +2100,35 @@ class RangeSliderTool2 extends BaseTool {
     
     const svgItems = [];
     svgItems.push(svg`
-      <g>
-        <rect id="click" class="sak-slider__capture hover" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
-          width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.track.radius}"          
-        />
+      <rect id="capture" class="${classMap(this.classes.capture)}" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
+        width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.track.radius}"          
+      />
 
-        <rect id="rs-track" class="sak-slider__track" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
-          width="${this.svg.track.width}" height="${this.svg.track.height}" rx="${this.svg.track.radius}"
-          style="${styleMap(this.styles.track)}"
-        />
+      <rect id="rs-track" class="${classMap(this.classes.track)}" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
+        width="${this.svg.track.width}" height="${this.svg.track.height}" rx="${this.svg.track.radius}"
+        style="${styleMap(this.styles.track)}"
+      />
 
-        ${renderThumbGroup.call(this)}
-        ${renderLabel.call(this, false)}
-      </g>
+      ${renderThumbGroup.call(this)}
+      ${renderLabel.call(this, false)}
       `
     );
+    // svgItems.push(svg`
+      // <g overflow="visible">
+        // <rect id="capture" class="${classMap(this.classes.capture)}" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
+          // width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.track.radius}"          
+        // />
+
+        // <rect id="rs-track" class="${classMap(this.classes.track)}" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
+          // width="${this.svg.track.width}" height="${this.svg.track.height}" rx="${this.svg.track.radius}"
+          // style="${styleMap(this.styles.track)}"
+        // />
+
+        // ${renderThumbGroup.call(this)}
+        // ${renderLabel.call(this, false)}
+      // </g>
+      // `
+    // );
 
     return svgItems;
   }
@@ -1878,17 +2137,44 @@ class RangeSliderTool2 extends BaseTool {
   * RangeSliderTool2::render()
   *
   * Summary.
-  * The render() function for this object.
+  * The render() function for this object. The conversion of pointer events need
+  * an SVG as grouping object!
+  *
+  * NOTE:
+  * It is imperative that the style overflow=visible is set on the svg.
+  * The weird thing is that if using an svg as grouping object, AND a class, the overflow=visible
+  * seems to be ignored by both chrome and safari. If the overflow=visible is directly set as style,
+  * the setting works.
+  *
+  * Works on svg with direct styling:
+  * ---
+  *  return svg`
+  *    <svg xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}"
+  *      pointer-events="all" overflow="visible"
+  *    >
+  *      ${this._renderRangeSlider()}
+  *    </svg>
+  *  `;
+  *
+  * Does NOT work on svg with class styling:
+  * ---
+  *  return svg`
+  *    <svg xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}" class="${classMap(this.classes.tool)}"
+  *    >
+  *      ${this._renderRangeSlider()}
+  *    </svg>
+  *  `;
+  * where the class has the overflow=visible setting...
   *
   */
   render() {
+
     return svg`
-      <svg xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}" class="sak-slider__group"
+      <svg xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}" overflow="visible" pointer-events="all"
       >
         ${this._renderRangeSlider()}
       </svg>
     `;
-
   }
 } // END of class
 
@@ -1909,12 +2195,19 @@ class LineTool extends BaseTool {
         cx: '50',
         cy: '50',
       },
-      styles: {
+      classes: {
+        tool: {
+          "sak-line": true,
+          "hover": true,
+        },
         line: {
-          // "stroke-linecap": 'round',
-          // "stroke": 'var(--primary-text-color)',
-          // "opacity": '1.0',
-          // "stroke-width": '2',
+          "sak-line__line": true,
+        }
+      },
+      styles: {
+        tool: {
+        },
+        line: {
         }
       }
     }
@@ -1947,6 +2240,10 @@ class LineTool extends BaseTool {
       this.svg.x2 = this.svg.x2;
       this.svg.y2 = this.svg.y2;
     }
+    
+    this.classes.line = {};
+    this.styles.line = {};
+    
     if (this.dev.debug) console.log('LineTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -1960,12 +2257,13 @@ class LineTool extends BaseTool {
   */
 
   _renderLine() {
+    this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles.line);
     this.MergeAnimationStyleIfChanged();
 
     if (this.dev.debug) console.log('_renderLine', this.config.position.orientation, this.svg.x1, this.svg.y1, this.svg.x2, this.svg.y2);
     return svg`
-      <line class="sak-line__line"
+      <line class="${classMap(this.classes.line)}"
         x1="${this.svg.x1}"
         y1="${this.svg.y1}"
         x2="${this.svg.x2}"
@@ -1984,7 +2282,7 @@ class LineTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="line-${this.toolId}" class="sak-line__group hover"
+      <g id="line-${this.toolId}" class="${classMap(this.styles.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderLine()}
       </g>
@@ -2009,7 +2307,18 @@ class CircleTool extends BaseTool {
         cy: 50,
         radius: 50,
       },
+      classes: {
+        tool: {
+          "sak-circle": true,
+          "hover": true,
+        },
+        circle: {
+          "sak-circle__circle": true,
+        }
+      },
       styles: {
+        tool: {
+        },
         circle: {
         }
       }
@@ -2018,6 +2327,8 @@ class CircleTool extends BaseTool {
     super(argToolset, Merge.mergeDeep(DEFAULT_CIRCLE_CONFIG, argConfig), argPos);
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius)
+    
+    this.classes.circle = {};
     this.styles.circle = {};
     if (this.dev.debug) console.log('CircleTool constructor config, svg', this.toolId, this.config, this.svg);
   }
@@ -2046,11 +2357,12 @@ class CircleTool extends BaseTool {
 
   _renderCircle() {
 
+    this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles.circle);
     this.MergeAnimationStyleIfChanged();
 
     return svg`
-      <circle class="sak-circle__circle"
+      <circle class="${classMap(this.classes.circle)}"
         cx="${this.svg.cx}"% cy="${this.svg.cy}"% r="${this.svg.radius}"
         style="${styleMap(this.styles.circle)}"
       </circle>
@@ -2070,7 +2382,7 @@ class CircleTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="circle-${this.toolId}" class="sak-circle__group hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g "" id="circle-${this.toolId}" class="${classMap(this.classes.tool)}" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderCircle()}
       </g>
@@ -2122,21 +2434,24 @@ class SwitchTool extends BaseTool {
             offset: 4.5,
           },
         },
-        styles: {
+        classes: {
+          tool: {
+            "sak-switch": true,
+            "hover": true,
+          },
           track: {
-            // "fill-opacity": 0.38,
-            // "stroke-width": 0,
-            // "stroke": 'var(--primary-text-color)',
-            // "fill": 'var(--primary-background-color)',
-            // "transition": 'all .5s ease',
-            // "pointer-events": 'none',
+            "sak-switch__track": true,
           },
           thumb: {
-            // "--thumb-stroke": 'var(--secondary-text-color)',
-            // "stroke": 'var(--thumb-stroke)',
-            // "fill": 'var(--primary-background-color)',
-            // "transition": 'all .5s cubic-bezier(0.4, 0, 0.2, 1)',
-            // "pointer-events": 'none',
+            "sak-switch__thumb": true,
+          }
+        },
+        styles: {
+          tool: {
+          },
+          track: {
+          },
+          thumb: {
           }
         }
     }
@@ -2148,7 +2463,7 @@ class SwitchTool extends BaseTool {
             id: 1,
             styles: {
               track: {
-                fill: 'var(--switch-checked-button-color)',
+                fill: 'var(--switch-checked-track-color)',
                 "pointer-events": 'auto',
               },
               thumb: {
@@ -2182,7 +2497,7 @@ class SwitchTool extends BaseTool {
             id: 1,
             styles: {
               track: {
-                fill: 'var(--switch-checked-button-color)',
+                fill: 'var(--switch-checked-track-color)',
                 "pointer-events": 'auto',
               },
               thumb: {
@@ -2251,6 +2566,9 @@ class SwitchTool extends BaseTool {
         break;
     }
 
+    this.classes.track = {};
+    this.classes.thumb = {};
+
     this.styles.track = {};
     this.styles.thumb = {};
     if (this.dev.debug) console.log('SwitchTool constructor config, svg', this.toolId, this.config, this.svg);
@@ -2280,16 +2598,17 @@ class SwitchTool extends BaseTool {
 
   _renderSwitch() {
 
+    this.MergeAnimationClassIfChanged();
     // this.MergeColorFromState(this.styles);
     this.MergeAnimationStyleIfChanged();
 
     return svg`
       <g>
-        <rect class="sak-switch__track" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
+        <rect class="${classMap(this.classes.track)}" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
           width="${this.svg.track.width}" height="${this.svg.track.height}" rx="${this.svg.track.radius}"
           style="${styleMap(this.styles.track)}"
         />
-        <rect class="sak-switch__thumb" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
+        <rect class="${classMap(this.classes.thumb)}" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
           width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
           style="${styleMap(this.styles.thumb)}"
         />
@@ -2310,7 +2629,7 @@ class SwitchTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="switch-${this.toolId}" class="sak-switch__group hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g id="switch-${this.toolId}" class="${classMap(this.classes.tool)}" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderSwitch()}
       </g>
@@ -2338,11 +2657,19 @@ class RegPolyTool extends BaseTool {
         side_skip: 1,
         angle_offset: 0,
       },
-      styles: {
+      classes: {
+        tool: {
+          "sak-polygon": true,
+          "hover": true,
+        },
         regpoly: {
-          // "stroke": 'var(--primary-text-color)',
-          // "fill": 'var(--primary-background-color)',
-          // "fill-rule": 'nonzero',            
+          "sak-polygon__regpoly": true,
+        }
+      },
+      styles: {
+        tool: {
+        },
+        regpoly: {
         }
       }
     }
@@ -2350,6 +2677,8 @@ class RegPolyTool extends BaseTool {
     super(argToolset, Merge.mergeDeep(DEFAULT_REGPOLY_CONFIG, argConfig), argPos);
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius)
+
+    this.classes.regpoly = {};
     this.styles.regpoly = {};
     if (this.dev.debug) console.log('RegPolyTool constructor config, svg', this.toolId, this.config, this.svg);
   }
@@ -2372,8 +2701,8 @@ class RegPolyTool extends BaseTool {
   * RegPolyTool::_renderRegPoly()
   *
   * Summary.
-  * Renders the circle using precalculated coordinates and dimensions.
-  * Only the runtime style is calculated before rendering the circle
+  * Renders the regular polygon using precalculated coordinates and dimensions.
+  * Only the runtime style is calculated before rendering the regular polygon
   *
   */
 
@@ -2412,7 +2741,7 @@ class RegPolyTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     return svg`
-      <path class="sak-polygon__regpoly"
+      <path class="${classMap(this.classes.regpoly)}"
         d="${generatePoly(this.config.position.side_count, this.config.position.side_skip, this.svg.radius, this.config.position.angle_offset, this.svg.cx, this.svg.cy)}"
         style="${styleMap(this.styles.regpoly)}"
       />
@@ -2431,7 +2760,7 @@ class RegPolyTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="regpoly-${this.toolId}" class="sak-polygon__group hover" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g "" id="regpoly-${this.toolId}" class="${classMap(this.classes.tool)}" transform-origin="${this.svg.cx} ${this.svg.cy}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderRegPoly()}
       </g>
@@ -2471,7 +2800,7 @@ class UserSvgTool extends BaseTool {
     // #TODO:
     // Select first key in k/v store. HOw??
     this.item = {};
-    this.item.image = "face1";
+    this.item.image = "default";
     
     if (this.dev.debug) console.log('UserSvgTool constructor config, svg', this.toolId, this.config, this.svg);
   }
@@ -2567,19 +2896,25 @@ class RectangleTool extends BaseTool {
         height: 50,
         rx: 0,
       }, 
+      classes: {
+        tool: {
+          "sak-rectangle": true,
+          "hover": true,
+        },
+        rectangle: {
+          "sak-rectangle__rectangle": true,
+        }
+      },
       styles: {
         rectangle: {
-          // "stroke-linecap": 'round',
-          // "stroke": 'var(--primary-text-color)',
-          // "opacity": '1.0',
-          // "stroke-width": '2em',
-          // "fill": 'var(--primary-background-color)',
         }
       }
     }
 
     super(argToolset, Merge.mergeDeep(DEFAULT_RECTANGLE_CONFIG, argConfig), argPos);
     this.svg.rx = Utils.calculateSvgDimension(argConfig.position.rx)
+
+    this.classes.rectangle = {};
     this.styles.rectangle = {};
 
     if (this.dev.debug) console.log('RectangleTool constructor config, svg', this.toolId, this.config, this.svg);
@@ -2609,11 +2944,12 @@ class RectangleTool extends BaseTool {
 
   _renderRectangle() {
 
+    this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles.rectangle);
     this.MergeAnimationStyleIfChanged();
 
     return svg`
-      <rect class="sak-rectangle__rectangle"
+      <rect class="${classMap(this.classes.rectangle)}"
         x="${this.svg.x}" y="${this.svg.y}" width="${this.svg.width}" height="${this.svg.height}" rx="${this.svg.rx}"
         style="${styleMap(this.styles.rectangle)}"/>
       `;
@@ -2629,7 +2965,7 @@ class RectangleTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="rectangle-${this.toolId}" class="sac-rectangle__group" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
+      <g id="rectangle-${this.toolId}" class="${classMap(this.classes.tool)}" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderRectangle()}
       </g>
@@ -2658,18 +2994,23 @@ class RectangleToolEx extends BaseTool {
           all: 0,
         },
       },
+      classes: {
+        tool: {
+          "sak-rectex": true,
+          "hover": true,
+        },
+        rectex: {
+          "sak-rectex__rectex": true,
+        }
+      },
       styles: {
         rectex: {
-          // "stroke-linecap": 'round',
-          // "stroke": 'var(--primary-text-color)',
-          // "opacity": '1.0',
-          // "stroke-width": '0',
-          // "fill": 'var(--primary-background-color)',
         }
       }
     }
     super(argToolset, Merge.mergeDeep(DEFAULT_RECTANGLEEX_CONFIG, argConfig), argPos);
 
+    this.classes.rectex = {};
     this.styles.rectex = {};
     
     // #TODO:
@@ -2717,13 +3058,12 @@ class RectangleToolEx extends BaseTool {
 
   _renderRectangleEx() {
 
-    var svgItems = [];
-
+    this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles.rectex);
     this.MergeAnimationStyleIfChanged();
 
-    svgItems = svg`
-      <g class="sak-rectex__rectex" id="rectex-${this.toolId}">
+    const svgItems = svg`
+      <g class="${classMap(this.classes.rectex)}" id="rectex-${this.toolId}">
         <path  d="
             M ${this.svg.x + this.svg.radiusTopLeft} ${this.svg.y}
             h ${this.svg.width - this.svg.radiusTopLeft - this.svg.radiusTopRight}
@@ -2751,7 +3091,7 @@ class RectangleToolEx extends BaseTool {
   render() {
 
     return svg`
-      <g id="rectex-${this.toolId}" class="sak-rectex__group hover"
+      <g id="rectex-${this.toolId}" class="${classMap(this.classes.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderRectangleEx()}
       </g>
@@ -2771,23 +3111,35 @@ class EllipseTool extends BaseTool {
   constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_ELLIPSE_CONFIG = {
-        position: {
-          cx: 50,
-          cy: 50,
-          radiusx: 50,
-          radiusy: 25,
+      position: {
+        cx: 50,
+        cy: 50,
+        radiusx: 50,
+        radiusy: 25,
+      },
+      classes: {
+        tool: {
+          "sak-ellipse": true,
+          "hover": true,
         },
-        styles: {
-          ellipse: {
-          }
+        ellipse: {
+          "sak-ellipse__ellipse": true,
         }
+      },
+      styles: {
+        ellipse: {
+        }
+      }
     }
 
     super(argToolset, Merge.mergeDeep(DEFAULT_ELLIPSE_CONFIG, argConfig), argPos);
 
     this.svg.radiusx = Utils.calculateSvgDimension(argConfig.position.radiusx)
     this.svg.radiusy = Utils.calculateSvgDimension(argConfig.position.radiusy)
+
+    this.classes.ellipse = {};
     this.styles.ellipse = {};
+
     if (this.dev.debug) console.log('EllipseTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -2802,13 +3154,14 @@ class EllipseTool extends BaseTool {
 
   _renderEllipse() {
 
+    this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles.ellipse);
     this.MergeAnimationStyleIfChanged();
 
     if (this.dev.debug) console.log('EllipseTool - renderEllipse', this.svg.cx, this.svg.cy, this.svg.radiusx, this.svg.radiusy);
 
     return svg`
-      <ellipse class="sak-ellipse__ellipse"
+      <ellipse class="${classMap(this.classes.ellipse)}"
         cx="${this.svg.cx}"% cy="${this.svg.cy}"%
         rx="${this.svg.radiusx}" ry="${this.svg.radiusy}"
         style="${styleMap(this.styles.ellipse)}"/>
@@ -2825,7 +3178,7 @@ class EllipseTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="ellipse-${this.toolId}" class="sak-ellipse__group hover"
+      <g id="ellipse-${this.toolId}" class="${classMap(this.classes.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderEllipse()}
       </g>
@@ -2846,16 +3199,19 @@ class EntityIconTool extends BaseTool {
   constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_ICON_CONFIG = {
-        styles: {
-          icon: {
-            // "--mdc-icon-size": '100%',
-            // "align-self": 'center',
-            // "height": '100%',
-            // "width": '100%',
-            // "fill": 'var(--primary-text-color)',
-            // "color": 'var(--primary-text-color)',
-          }
+      classes: {
+        tool: {
+          "sak-icon": true,
+          "hover": true,
+        },
+        icon: {
+          "sak-icon__icon": true,
         }
+      },
+      styles: {
+        icon: {
+        }
+      }
     }
     super(argToolset, Merge.mergeDeep(DEFAULT_ICON_CONFIG, argConfig), argPos);
 
@@ -2905,6 +3261,7 @@ class EntityIconTool extends BaseTool {
       this.svg.xpx = this.svg.xpx - (this.svg.iconPixels * adjust);
       this.svg.ypx = this.svg.ypx - (this.svg.iconPixels * 0.5) - (this.svg.iconPixels * 0.25);
     }
+    this.classes.icon = {};
     this.styles.icon = {};
     if (this.dev.debug) console.log('EntityIconTool constructor coords, dimensions, config', this.coords, this.dimensions, this.config);
   }
@@ -2926,6 +3283,7 @@ class EntityIconTool extends BaseTool {
 */
   _renderIcon() {
 
+    this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles.icon);
     this.MergeAnimationStyleIfChanged();
 
@@ -3084,7 +3442,7 @@ class EntityIconTool extends BaseTool {
         // Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required to position the icon on its desired location.
         // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
         return svg`
-          <g id="icon-${this.toolId}" class="sak-icon__icon hover" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
+          <g id="icon-${this.toolId}" class="${classMap(this.classes.icon)}" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
             <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke="yellow" stroke-width="0px" opacity="50%" fill="none"></rect>
             <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
           <g>
@@ -3095,7 +3453,7 @@ class EntityIconTool extends BaseTool {
             <body>
               <div class="div__icon, hover" xmlns="http://www.w3.org/1999/xhtml"
                   style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-                  <ha-icon icon=${icon} id="icon-${this.toolId}" class="sak-icon__icon" style="${styleMap(this.styles.icon)}";></ha-icon>
+                  <ha-icon icon=${icon} id="icon-${this.toolId}" class="${classMap(this.classes.icon)}" style="${styleMap(this.styles.icon)}";></ha-icon>
               </div>
             </body>
           </foreignObject>
@@ -3107,7 +3465,7 @@ class EntityIconTool extends BaseTool {
                         >
           <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
                 style="line-height:${this.svg.iconPixels}px;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-            <ha-icon class="sak-icon__icon" icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.styles.icon)}"></ha-icon>
+            <ha-icon class="${classMap(this.classes.icon)}" icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.styles.icon)}"></ha-icon>
           </div>
         </foreignObject>
         `;
@@ -3141,7 +3499,7 @@ class EntityIconTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="icongrp-${this.toolId}" class="hover"
+      <g "" id="icongrp-${this.toolId}" class="${classMap(this.classes.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])} >
 
         ${this._renderIcon()}
@@ -3150,7 +3508,7 @@ class EntityIconTool extends BaseTool {
 
 
     return svg`
-      <g "" id="icongrp-${this.toolId}" class="hover"
+      <g "" id="icongrp-${this.toolId}" class="${classMap(this.classes.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
 
         ${this._renderIcon()}
@@ -3175,14 +3533,22 @@ class BadgeTool extends BaseTool {
         ratio: 30,
         divider: 30,
       },
-      styles: {
+      classes: {
+        tool: {
+          "sak-badge": true,
+          "hover": true,
+        },
         left: {
-          // "stroke-width": '0',
-          // "fill": 'grey',
+          "sak-badge__left": true,
         },
         right: {
-          // "stroke-width": '0',
-          // "fill": 'var(--theme-gradient-color-03)',
+          "sak-badge__right": true,
+        }
+      },
+      styles: {
+        left: {
+        },
+        right: {
         }
       }
     }
@@ -3200,6 +3566,10 @@ class BadgeTool extends BaseTool {
     this.svg.rightYpos = this.svg.y;
     this.svg.rightWidth = ((100 - this.config.ratio) / 100) * this.svg.width;
 
+    this.classes.left = {};
+    this.classes.right = {};
+    this.styles.left = {};
+    this.styles.right = {};
     if (this.dev.debug) console.log('BadgeTool constructor coords, dimensions', this.svg, this.config);
   }
 
@@ -3219,11 +3589,12 @@ class BadgeTool extends BaseTool {
 
     var svgItems = [];
 
+    this.MergeAnimationClassIfChanged();
     this.MergeAnimationStyleIfChanged();
 
     svgItems = svg`
       <g  id="badge-${this.toolId}">
-        <path class="sak-badge__right" d="
+        <path class="${classMap(this.classes.right)}" d="
             M ${this.svg.rightXpos} ${this.svg.rightYpos}
             h ${this.svg.rightWidth - this.svg.radius}
             a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} ${this.svg.radius}
@@ -3235,7 +3606,7 @@ class BadgeTool extends BaseTool {
             "
             style="${styleMap(this.styles.right)}"/>
 
-        <path class="sak-badge__left" d="
+        <path class="${classMap(this.classes.left)}" d="
             M ${this.svg.leftXpos + this.svg.radius} ${this.svg.leftYpos}
             h ${this.svg.leftWidth - this.svg.radius}
             v ${this.svg.divSize}
@@ -3264,7 +3635,7 @@ class BadgeTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="badge-${this.toolId}" class="sak-badge__group hover"
+      <g id="badge-${this.toolId}" class="${classMap(this.classes.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderBadge()}
       </g>
@@ -3288,25 +3659,30 @@ class EntityStateTool extends BaseTool {
   constructor(argToolset, argConfig, argPos) {
     const DEFAULT_STATE_CONFIG = {
       show: { uom: 'end' },
-      styles: {
+      classes: {
+        tool: {
+          "sak-state": true,
+          "hover": true,
+        },
         state: {
-          // "font-size": '3em',
-          // "fill": 'var(--primary-text-color)',
-          // "opacity": '1.0',
-          // "text-anchor": 'middle',
-          // "alignment-baseline": 'central',
-          // "letter-spacing": '0.05em',
+          "sak-state__value": true,
         },
         uom: {
-          // "fill": 'var(--primary-text-color)',
-          // "text-anchor": 'middle',
-          // "alignment-baseline": 'central',
-          // "opacity": '0.7',
-          // "letter-spacing": '0.05em',
+          "sak-state__uom": true,
+        }
+      },
+      styles: {
+        state: {
+        },
+        uom: {
         }
       }
     }
     super(argToolset, Merge.mergeDeep(DEFAULT_STATE_CONFIG, argConfig), argPos);
+
+    this.classes.state = {};
+    this.classes.uom = {};
+
     this.styles.state = {};
     this.styles.uom = {};
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
@@ -3322,11 +3698,12 @@ class EntityStateTool extends BaseTool {
 
   _renderState() {
 
+    this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles.state);
     this.MergeAnimationStyleIfChanged();
 
     var inState = this._stateValue;
-    if (inState && isNaN(inState)) {
+    if ((inState) && isNaN(inState)) {
       const localeTag = this.config.locale_tag || 'component.' + this._card._computeDomain(this._card.config.entities[this.config.entity_index].entity) + '.state._.'
       inState = this._card.toLocale(localeTag + inState.toLowerCase(), inState);
     }
@@ -3338,7 +3715,7 @@ class EntityStateTool extends BaseTool {
     // `;
 
     return svg`
-      <tspan class="sak-state__value user-state__value" x="${this.svg.x}" y="${this.svg.y}"
+      <tspan class="${classMap(this.classes.state)}" x="${this.svg.x}" y="${this.svg.y}"
         style="${styleMap(this.styles.state)}">
         ${this.config?.text?.before ? this.config.text.before : ''}${inState}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
     `;
@@ -3372,19 +3749,19 @@ class EntityStateTool extends BaseTool {
       // Check for location of uom. end = next to state, bottom = below state ;-), etc.
       if (this.config.show.uom === 'end') {
         return svg`
-          <tspan class="sak-state__uom" dx="-0.1em" dy="-0.35em"
+          <tspan class="${classMap(this.classes.uom)}" dx="-0.1em" dy="-0.35em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'bottom') {
         return svg`
-          <tspan class="sak-state__uom" x="${this.svg.x}" dy="1.5em"
+          <tspan class="${classMap(this.classes.uom)}" x="${this.svg.x}" dy="1.5em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
       } else if (this.config.show.uom === 'top') {
         return svg`
-          <tspan class="sak-state__uom" x="${this.svg.x}" dy="-1.5em"
+          <tspan class="${classMap(this.classes.uom)}" x="${this.svg.x}" dy="-1.5em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
@@ -3399,7 +3776,7 @@ class EntityStateTool extends BaseTool {
 
     if (true || (this._card._computeDomain(this._card.entities[this.config.entity_index].entity_id) == 'sensor')) {
       return svg`
-      <g class="sak-state__group hover">
+    <g class="${classMap(this.classes.tool)}">
         <text @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
           ${this._renderState()}
           ${this._renderUom()}
@@ -3434,16 +3811,20 @@ class EntityStateTool extends BaseTool {
 class EntityNameTool extends BaseTool {
   constructor(argToolset, argConfig, argPos) {
 
-    // See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/alignment-baseline
     const DEFAULT_NAME_CONFIG = {
-      styles: {
+      classes: {
+        tool: {
+          "sak-name": true,
+          "hover": true,
+        },
         name: {
-          // "font-size": '3em',
-          // "fill": 'var(--primary-text-color)',
-          // "opacity": '1.0',
-          // "text-anchor": 'middle',
-          // "alignment-baseline": 'central',
-          // "letter-spacing": '0.05em',
+          "sak-name__name": true,
+        }
+      },
+      styles: {
+        tool: {
+        },
+        name: {
         }
       }
     }
@@ -3451,6 +3832,11 @@ class EntityNameTool extends BaseTool {
     super(argToolset, Merge.mergeDeep(DEFAULT_NAME_CONFIG, argConfig), argPos);
     
     this._name = {};
+    // Init classes
+    this.classes.tool = {};
+    this.classes.name = {};
+
+    // Init styles
     this.styles.name = {};
     if (this.dev.debug) console.log('EntityName constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -3482,11 +3868,18 @@ class EntityNameTool extends BaseTool {
 
   _renderEntityName() {
 
+    this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles.name);
     this.MergeAnimationStyleIfChanged();
 
-    const name = this._buildName(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+    const name = this._buildName(this._card.entities[this.config.entity_index],
+                                 this._card.config.entities[this.config.entity_index]);
 
+    return svg`
+        <text>
+          <tspan class="${classMap(this.classes.name)}" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.name)}">${name}</tspan>
+        </text>
+      `;
     return svg`
         <text>
           <tspan class="sak-name__name" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.name)}">${name}</tspan>
@@ -3504,7 +3897,7 @@ class EntityNameTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="name-${this.toolId}" class="sak-name__group hover"
+      <g id="name-${this.toolId}" class="${classMap(this.classes.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderEntityName()}
       </g>
@@ -3522,15 +3915,23 @@ class EntityNameTool extends BaseTool {
   *
   * Summary.
   *
-  * #TODO
-  * - Convert to class using baseclass. Not yet done !!!!!!!!!!!!!!!!
   */
 
 class EntityAreaTool extends BaseTool {
   constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_AREA_CONFIG = {
+      classes: {
+        tool: {
+        },
+        area: {
+          "sak-area__area": true,
+          "hover": true,
+        }
+      },
       styles: {
+        tool: {
+        },
         area: {
         }
       }
@@ -3539,6 +3940,7 @@ class EntityAreaTool extends BaseTool {
     super(argToolset, Merge.mergeDeep(DEFAULT_AREA_CONFIG, argConfig), argPos);
 
     // Text is rendered in its own context. No need for SVG coordinates.
+    this.classes.area = {};
     this.styles.area = {};
     if (this.dev.debug) console.log('EntityAreaTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -3569,14 +3971,16 @@ class EntityAreaTool extends BaseTool {
 
   _renderEntityArea() {
 
+    this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles.area);
     this.MergeAnimationStyleIfChanged();
 
-    const area = this._buildArea(this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+    const area = this._buildArea(this._card.entities[this.config.entity_index],
+                                 this._card.config.entities[this.config.entity_index]);
 
     return svg`
-        <text class="hover">
-          <tspan class="sak-area__area"
+        <text>
+          <tspan class="${classMap(this.classes.area)}"
           x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.area)}">${area}</tspan>
         </text>
       `;
@@ -3592,7 +3996,7 @@ class EntityAreaTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="area-${this.toolId}" class="sak-area__group hover"
+      <g id="area-${this.toolId}" class="${classMap(this.classes.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderEntityArea()}
       </g>
@@ -3615,13 +4019,19 @@ class TextTool extends BaseTool {
   constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_TEXT_CONFIG = {
-      styles: {
+      classes: {
+        tool: {
+          "sak-text": true,
+        },
         text: {
-          // 'font-size': '3em',
-          // 'fill': 'var(--primary-text-color)',
-          // 'opacity': '1.0',
-          // 'text-anchor': 'middle',
-          // 'alignment-baseline': 'central',
+          "sak-text__text": true,
+          "hover": true,
+        }
+      },
+      styles: {
+        tool: {
+        },
+        text: {
         }
       }
     }
@@ -3644,12 +4054,13 @@ class TextTool extends BaseTool {
 
   _renderText() {
 
+    this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles.text);
     this.MergeAnimationStyleIfChanged();
 
     return svg`
-        <text class="hover">
-          <tspan class="sak-text__text" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.text)}">${this.text}</tspan>
+        <text>
+          <tspan class="${classMap(this.classes.text)}" x="${this.svg.cx}" y="${this.svg.cy}" style="${styleMap(this.styles.text)}">${this.text}</tspan>
         </text>
       `;
   }
@@ -3664,7 +4075,7 @@ class TextTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="text-${this.toolId}" class="sak-text__group"
+      <g id="text-${this.toolId}" class="${classMap(this.classes.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderText()}
       </g>
@@ -3995,10 +4406,24 @@ class SparklineBarChartTool extends BaseTool {
       hours: 24,
       barhours: 1,
       color: 'var(--primary-color)',
-      styles: {
+      classes: {
+        tool: {
+          "sak-barchart": true,
+          "hover": true,
+        },
         bar: {
-          // "stroke-linecap": 'round',
-          // "stroke-linejoin": 'round',
+        },
+        line: {
+          "sak-barchart__line": true,
+          "hover": true,
+        }
+      },
+      styles: {
+        tool: {
+        },
+        line: {
+        },
+        bar: {
         }
       },
       colorstops: [],
@@ -4017,6 +4442,10 @@ class SparklineBarChartTool extends BaseTool {
     this._scale = {};
     this._needsRendering = false;
 
+    this.classes.bar = {};
+    
+    this.styles.tool = {};
+    this.styles.line = {};
     this.stylesBar = {};
     
     if (this.dev.debug) console.log('SparkleBarChart constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
@@ -4096,7 +4525,7 @@ class SparklineBarChartTool extends BaseTool {
       if (this.dev.debug) console.log('bar is vertical');
       this._series.forEach((item, index) => {
         if (!_bars[index]) _bars[index] = {};
-        _bars[index].length = ((item - this._scale.min) / (this._scale.size)) * this.svg.height;
+        _bars[index].length = (this._scale.size == 0) ? 0 : ((item - this._scale.min) / (this._scale.size)) * this.svg.height;
         _bars[index].x1 = this.svg.x + this.svg.barWidth/2 + ((this.svg.barWidth + this.svg.margin) * index);
         _bars[index].x2 = _bars[index].x1;
         _bars[index].y1 = this.svg.y + this.svg.height;
@@ -4108,7 +4537,8 @@ class SparklineBarChartTool extends BaseTool {
       if (this.dev.debug) console.log('bar is horizontal');
       this._data.forEach((item, index) => {
         if (!_bars[index]) _bars[index] = {};
-        _bars[index].length = ((item - this._scale.min) / (this._scale.size)) * this.svg.width;
+        // if (!item || isNaN(item)) item = this._scale.min;
+        _bars[index].length = (this._scale.size == 0) ? 0 : ((item - this._scale.min) / (this._scale.size)) * this.svg.width;
         _bars[index].y1 = this.svg.y + this.svg.barWidth/2 + ((this.svg.barWidth + this.svg.margin) * index);
         _bars[index].y2 = _bars[index].y1;
         _bars[index].x1 = this.svg.x;
@@ -4143,8 +4573,15 @@ class SparklineBarChartTool extends BaseTool {
       if (!this.stylesBar[index])
         this.stylesBar[index] = {...this.config.styles.bar};
 
+      // NOTE @ 2021.10.27
+      // Lijkt dat this.classes niet gevuld wordt. geen merge enzo. is dat een bug?
+      // Nu tijdelijk opgelost door this.config te gebruiken, maar hoort niet natuurlijk als je kijkt
+      // naar de andere tools...
+      
+      // Safeguard...
+      if (!(this._bars[index].y2)) console.log('sparklebarchart y2 invalid', this._bars[index]);
       svgItems.push(svg`
-        <line id="line-segment-${this.toolId}-${index}" class="sak-barchart__line"
+        <line id="line-segment-${this.toolId}-${index}" class="${classMap(this.config.classes.line)}"
                   style="${styleMap(this.stylesBar[index])}"
                   x1="${this._bars[index].x1}"
                   x2="${this._bars[index].x2}"
@@ -4173,7 +4610,7 @@ class SparklineBarChartTool extends BaseTool {
     //if (!this._needsRendering) return;
 
     return svg`
-      <g id="barchart-${this.toolId}" class="sak-barchart__group hover"
+      <g id="barchart-${this.toolId}" class="${classMap(this.classes.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderBars()}
       </g>
@@ -4204,21 +4641,18 @@ class SegmentedArcTool extends BaseTool {
         margin: 1.5,
       },
       color: 'var(--primary-color)',
-      styles: { 
+      classes: { 
+        tool: {
+        },
         foreground: {
-          // "stroke-linecap": 'round',
-          // "fill": 'var(--primary-color)',
-          // "stroke": 'none',
-          // "stroke-width": '0.5',
-          // "fill-rule": 'evenodd',
-          // "stroke-linejoin": 'round',
         },
         background: {
-          // "stroke-linecap": 'round',
-          // "fill": 'var(--primary-background-color)',
-          // "stroke-width": '0',
-          // "fill-rule": 'evenodd',
-          // "stroke-linejoin": 'round',
+        },
+      },
+      styles: { 
+        foreground: {
+        },
+        background: {
         },
       },
       segments: {},
@@ -4241,10 +4675,12 @@ class SegmentedArcTool extends BaseTool {
 
     super(argToolset, Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig), argPos);
 
+//this.dev.debug = true;
+
     if (this.dev.performance) console.time("--> "+ this.toolId + " PERFORMANCE SegmentedArcTool::constructor");
 
     // Extra for use of styleMap
-    this.styles = {};
+    // this.styles = {};
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius);
     this.svg.radiusX = Utils.calculateSvgDimension(argConfig.position.radius_x || argConfig.position.radius);
@@ -4304,9 +4740,9 @@ class SegmentedArcTool extends BaseTool {
     // New template testing for colorstops
     if (this.config.segments.colorlist?.template) {
         colorlist = this.config.segments.colorlist;
-        if (this._card.lovelace.lovelace.config.sak_templates[colorlist.template.name]) {
+        if (this._card.lovelace.__lovelace.config.sak_templates[colorlist.template.name]) {
           if (this.dev.debug) console.log('SegmentedArcTool::constructor - templates colorlist found', colorlist.template.name);
-          tcolorlist = Templates.replaceVariables2(colorlist.template.variables, this._card.lovelace.lovelace.config.sak_templates[colorlist.template.name]);
+          tcolorlist = Templates.replaceVariables2(colorlist.template.variables, this._card.lovelace.__lovelace.config.sak_templates[colorlist.template.name]);
           this.config.segments.colorlist = tcolorlist;
         }
     }
@@ -4476,6 +4912,7 @@ class SegmentedArcTool extends BaseTool {
     if (this.dev.debug) console.log('SegmentedArcTool - set value IN');
 
     if (this.config.isScale) return false;
+
     if (this._stateValue == state) return false;
 
     var changed = super.value = state;
@@ -4483,7 +4920,7 @@ class SegmentedArcTool extends BaseTool {
 //    this._stateValuePrev = this._stateValue || state;
 //    this._stateValue = state;
 //    this._stateValueIsDirty = true;
-    return true;
+    return changed;
   }
 
   // SegmentedArcTool::firstUpdated
@@ -4577,6 +5014,12 @@ class SegmentedArcTool extends BaseTool {
       var arcSize = Math.abs(arcEnd - this.config.position.start_angle);
       var arcSizePrev = Math.abs(arcEndPrev - this.config.position.start_angle);
 
+      // Safeguard. Why is this happening...
+      // if (!arcEnd) {
+        // console.log('arcEnd invalid', arcEnd, val, this._stateValue);
+        // arcEnd = this.config.position.start_angle;
+      // }
+      
       // // Styles are already converted to an Object {}...
       // if (!this.stylesFgStr) {
         // let configStyleFg = {...this.config.styles.foreground};
@@ -4689,7 +5132,7 @@ class SegmentedArcTool extends BaseTool {
                 : ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
 
             if (frameSegment == -1) {
-              if (thisTool.debug) console.log('RENDERNEW animateSegments frameAngle not found', tween, thisTool._segmentAngles);
+              /*if (thisTool.debug)*/ console.log('RENDERNEW animateSegments frameAngle not found', tween, thisTool._segmentAngles);
             }
 
             // Check where we actually are now. This might be in a different segment...
@@ -4697,6 +5140,9 @@ class SegmentedArcTool extends BaseTool {
                 thisTool._arc.clockwise
                 ? ((tween.runningAngle <= currentValue.boundsEnd) && (tween.runningAngle >= currentValue.boundsStart))
                 : ((tween.runningAngle <= currentValue.boundsStart) && (tween.runningAngle >= currentValue.boundsEnd)));
+
+            // Weird stuff. runningSegment is sometimes -1. Ie not FOUND !! WTF??
+            // if (runningSegment == -1) runningSegment = 0;
 
             // Do render segments until the animation angle is at the requested animation frame angle.
             do {
@@ -4838,8 +5284,15 @@ class SegmentedArcTool extends BaseTool {
         var mySelf = this;
         var arcCur = arcEndPrev;
 
+        // 2021.10.31
+        // Edge case where brightness percentage is set to undefined (attribute is gone) if light is set to off.
+        // Now if light is switched on again, the brightness is set to old value, and val and valPrev are the same again, so NO drawing!!!!!
+        //
+        // Remove test for val/valPrev...
+        
         // Check if values changed and we should animate to another target then previously rendered
-        if ((val != valPrev) && (this._card.connected == true) && (this._renderTo != this._stateValue)) {
+        if ( /*(val != valPrev) &&*/ (this._card.connected == true) && (this._renderTo != this._stateValue)) {
+        // if ( (val != valPrev) && (this._card.connected == true) && (this._renderTo != this._stateValue)) {
           this._renderTo = this._stateValue;
           //if (this.dev.debug) console.log('RENDERNEW val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
 
@@ -4855,15 +5308,26 @@ class SegmentedArcTool extends BaseTool {
           tween.fromAngle = arcEndPrev;
           tween.toAngle = arcEnd;
           tween.runningAngle = arcEndPrev;
-          // Render like an idiot the first time. Performs MUCH better @first load then having a zillion animations...
-          // NOt so heavy on an average PC, but my iPad and iPhone need some more time for this!
-          tween.duration = Math.min(Math.max(this._initialDraw ? 10 : 500, this._initialDraw ? 16 : this.config.animation.duration * 1000), 5000);
-          tween.startTime = null;
-          if (this.dev.debug) console.log('RENDERNEW - tween', this.toolId, tween);
-          this._initialDraw = false;
-          this.rAFid = requestAnimationFrame(function(timestamp){
-                                              animateSegmentsNEW(timestamp, mySelf)
-          })
+          
+          // @2021.10.31
+          // Handle edge case where - for some reason - arcEnd and arcEndPrev are equal.
+          // Do NOT render anything in this case to prevent errors...
+          
+          // The check is removed temporarily. Brightness is again nog shown for light. Still the same problem...
+
+          if (true || !(arcEnd == arcEndPrev)) {
+            // Render like an idiot the first time. Performs MUCH better @first load then having a zillion animations...
+            // NOt so heavy on an average PC, but my iPad and iPhone need some more time for this!
+
+            tween.duration = Math.min(Math.max(this._initialDraw ? 100 : 500, this._initialDraw ? 16 : this.config.animation.duration * 1000), 5000);
+            tween.startTime = null;
+            if (this.dev.debug) console.log('RENDERNEW - tween', this.toolId, tween);
+            // this._initialDraw = false;
+            this.rAFid = requestAnimationFrame(function(timestamp){
+                                                animateSegmentsNEW(timestamp, mySelf)
+                                              })
+            this._initialDraw = false;
+          }
         }
 
 
@@ -4998,6 +5462,7 @@ class devSwissArmyKnifeCard extends LitElement {
     this.entities = [];
     this.entitiesStr = [];
     this.attributesStr = [];
+    this.secondaryInfoStr = [];
     this.viewBoxSize = SVG_VIEW_BOX;
     this.viewBox = {"width": SVG_VIEW_BOX, "height": SVG_VIEW_BOX};
 
@@ -5143,552 +5608,7 @@ class devSwissArmyKnifeCard extends LitElement {
         }
       }
 
-      /* Area tool */
-      .sak-area__group {
-      }
-      .sak-area__area {
-        font-size: 3em;
-        fill: var(--primary-text-color);
-        opacity: 1.0;
-        text-anchor: middle;
-        alignment-baseline: central;
-        letter-spacing: 0.05em;
-      }
-
-      /* Badge tool */
-      .sak-badge__group {
-      }
-      .sak-badge__left {
-        stroke-width: 0;
-        fill: grey;
-      }
-      .sak-badge__right {
-        stroke-width: 0;
-        fill: var(--theme-gradient-color-03, darkgrey);
-      }
-
-      /* Barchart tool */
-      .sak-barchart__group {
-      }
-      .sak-barchart__line {
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-
-      /* Circle tool */
-      .sak-circle__group {
-      }
-      .sak-circle__circle {
-        fill: var(--primary-background-color);
-      }
-
-      /* Ellipse tool */
-      .sak-ellipse__group {
-      }
-      .sak-ellipse__ellipse {
-        fill: var(--primary-background-color);
-      }
-
-      /* Horseshoe tool */
-      .sak-horseshoe__group {
-      }
-      .sak-horseshoe__todo {
-      }
-
-      /* Icon tool */
-      .sak-icon__group {
-      }
-      .sak-icon__icon {
-        --mdc-icon-size: 100%;
-        align-self: center;
-        height: 100%;
-        width: 100%;
-        fill: var(--primary-text-color);
-        color: var(--primary-text-color);
-      }
-
-      /* Line tool */
-      .sak-line__group {
-      }
-      .sak-line__line {
-        stroke-linecap: round;
-        stroke: var(--primary-text-color);
-        opacity: 1.0;
-        stroke-width: 2;
-      }
-
-      /* Entity Name tool */
-      .sak-name__group {
-      }
-      .sak-name__name {
-        font-size": '3em',
-        fill: var(--primary-text-color);
-        opacity: 1.0;
-        text-anchor: middle;
-        alignment-baseline: central;
-        letter-spacing: 0.05em;
-      }
-
-      /* Polygon tool */
-      .sak-polygon__group {
-        overflow: visible;
-      }
-      .sak-polygon__regpoly {
-        stroke: var(--primary-text-color);
-        fill: var(--primary-background-color);
-        fill-rule: nonzero;
-      }
-
-      /* Rectangle tool */
-      .sak-rectangle__group {
-      }
-      .sak-rectangle__rectangle {
-        stroke-linecap: round;
-        stroke: var(--primary-text-color);
-        opacity: 1.0;
-        stroke-width: 2em;
-        fill: var(--primary-background-color);
-      }
       
-      /* RectEx tool */
-      .sak-rectex__group {
-      }
-      .sak-rectex__rectex {
-        stroke-linecap: round;
-        stroke: var(--primary-text-color);
-        opacity: 1.0;
-        stroke-width: 0;
-        fill: var(--primary-background-color);
-      }
-
-      /* Segmented arc tool */
-      .sak-segarc__group {
-      }
-      .sak-segarc__background {
-        stroke-linecap: round;
-        fill: var(--primary-background-color);
-        stroke-width: 0;
-        fill-rule: evenodd;
-        stroke-linejoin: round;
-      }
-      .sak-segarc__foreground {
-        stroke-linecap: round;
-        fill: var(--primary-color);
-        stroke: none;
-        stroke-width: 0.5;
-        fill-rule: evenodd;
-        stroke-linejoin: round;
-      }
-
-      /* Slider tool */
-      .sak-slider__group {
-        pointer-events: all;
-        overflow: visible;
-      }
-      .sak-slider__capture {
-        pointer-events: all;
-        fill: none;
-        stroke-width: 0;
-      }
-      .sak-slider__track {
-        fill-opacity: 0.38;
-        stroke-width: 0;
-        stroke: var(--primary-text-color);
-        fill: var(--switch-unchecked-track-color);
-        transition: all .5s ease;
-        pointer-events: none;
-      }
-      .sak-slider__thumb {
-        --thumb-stroke: var(--secondary-text-color);
-        stroke: var(--thumb-stroke);
-        fill: var(--primary-background-color);
-        pointer-events: none;
-      }
-      .sak-slider__value {
-        fill: var(--primary-text-color);
-        font-size: 8em;
-        font-weight: 400;
-        transition: all .5s cubic-bezier(0.4, 0, 0.2, 1);
-        pointer-events: none;
-        alignment-baseline: central;
-      }
-      .sak-slider__uom {
-        fill: var(--primary-text-color);
-        text-anchor: middle;
-        alignment-baseline: central;
-        opacity: 0.7;
-        letter-spacing: 0.05em;
-      }
-      
-      /* Entity state/units tool */
-      .sak-state__group {
-      }
-      .sak-state__value {
-        --descr: original;
-        font-size: 3em;
-        fill: var(--primary-text-color);
-        opacity: 1.0;
-        text-anchor: middle;
-        alignment-baseline: central;
-        letter-spacing: 0.05em;
-      }
-      .sak-state__uom {
-        fill: var(--primary-text-color);
-        text-anchor: middle;
-        alignment-baseline: central;
-        opacity: 0.7;
-        letter-spacing: 0.05em;
-      }
-
-      // .user-state__value {
-        // font-size: 8em;
-        // fill: green;
-        // opacity: 0.6;
-        // text-anchor: end;
-        // alignment-baseline: central;
-        // letter-spacing: 0.25em;
-      // }
-
-      /* Switch tool */
-      .sak-switch__group {
-      }
-      .sak-switch__track {
-        fill-opacity: 0.38;
-        stroke-width: 0;
-        stroke: var(--primary-text-color);
-        fill: var(--primary-background-color);
-        transition: all .5s ease;
-        pointer-events: none;
-      }
-      .sak-switch__thumb {
-        --thumb-stroke: var(--secondary-text-color);
-        stroke: var(--thumb-stroke);
-        fill: var(--primary-background-color);
-        transition: all .5s cubic-bezier(0.4, 0, 0.2, 1);
-        pointer-events: none;
-      }
-
-      /* Text tool */
-      .sak-text__group {
-      }
-      .sak-text__text {
-        font-size: 3em;
-        fill: var(--primary-text-color);
-        opacity: 1.0;
-        text-anchor: middle;
-        alignment-baseline: central;
-      }
-
-      /* Usersvg tool */
-      .sak-usersvg__group {
-      }
-      .sak-usersvg__image {
-      }
-      
-      @keyframes blinkingText {
-        0%{   opacity: 0%;   }
-        49%{  opacity: 0%;   }
-        60%{  opacity: 100%; }
-        99%{  opacity: 100%; }
-        100%{ opacity: 0%;   }
-      }
-
-      @keyframes zoomOut {
-        from {
-          opacity: 1;
-        }
-
-        50% {
-          opacity: 0;
-          transform: scale3d(0.3, 0.3, 0.3);
-        }
-
-        to {
-          opacity: 0;
-        }
-      }
-
-      @keyframes bounce {
-        from,
-        20%,
-        53%,
-        80%,
-        to {
-        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-        transform: translate3d(0, 0, 0);
-        }
-
-        40%,
-        43% {
-        animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
-        transform: translate3d(0, -30px, 0);
-        }
-
-        70% {
-        animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
-        transform: translate3d(0, -15px, 0);
-        }
-
-        90% {
-        transform: translate3d(0, -4px, 0);
-        }
-      }
-
-      @keyframes flash {
-        from,
-        50%,
-        to {
-        opacity: 1;
-        }
-
-        25%,
-        75% {
-        opacity: 0;
-        }
-      }
-
-      @keyframes headShake {
-        0% {
-        transform: translateX(0);
-        }
-
-        6.5% {
-        transform: translateX(-6px) rotateY(-9deg);
-        }
-
-        18.5% {
-        transform: translateX(5px) rotateY(7deg);
-        }
-
-        31.5% {
-        transform: translateX(-3px) rotateY(-5deg);
-        }
-
-        43.5% {
-        transform: translateX(2px) rotateY(3deg);
-        }
-
-        50% {
-        transform: translateX(0);
-        }
-      }
-
-      @keyframes heartBeat {
-        0% {
-        transform: scale(1);
-        }
-
-        14% {
-        transform: scale(1.3);
-        }
-
-        28% {
-        transform: scale(1);
-        }
-
-        42% {
-        transform: scale(1.3);
-        }
-
-        70% {
-        transform: scale(1);
-        }
-      }
-
-      @keyframes jello {
-        from,
-        11.1%,
-        to {
-        transform: translate3d(0, 0, 0);
-        }
-
-        22.2% {
-        transform: skewX(-12.5deg) skewY(-12.5deg);
-        }
-
-        33.3% {
-        transform: skewX(6.25deg) skewY(6.25deg);
-        }
-
-        44.4% {
-        transform: skewX(-3.125deg) skewY(-3.125deg);
-        }
-
-        55.5% {
-        transform: skewX(1.5625deg) skewY(1.5625deg);
-        }
-
-        66.6% {
-        transform: skewX(-0.78125deg) skewY(-0.78125deg);
-        }
-
-        77.7% {
-        transform: skewX(0.390625deg) skewY(0.390625deg);
-        }
-
-        88.8% {
-        transform: skewX(-0.1953125deg) skewY(-0.1953125deg);
-        }
-      }
-
-      @keyframes pulse {
-        from {
-        transform: scale3d(1, 1, 1);
-        }
-
-        50% {
-        transform: scale3d(1.05, 1.05, 1.05);
-        }
-
-        to {
-        transform: scale3d(1, 1, 1);
-        }
-      }
-
-      @keyframes rubberBand {
-        from {
-        transform: scale3d(1, 1, 1);
-        }
-
-        30% {
-        transform: scale3d(1.25, 0.75, 1);
-        }
-
-        40% {
-        transform: scale3d(0.75, 1.25, 1);
-        }
-
-        50% {
-        transform: scale3d(1.15, 0.85, 1);
-        }
-
-        65% {
-        transform: scale3d(0.95, 1.05, 1);
-        }
-
-        75% {
-        transform: scale3d(1.05, 0.95, 1);
-        }
-
-        to {
-        transform: scale3d(1, 1, 1);
-        }
-      }
-
-      @keyframes shake {
-        from,
-        to {
-        transform: translate3d(0, 0, 0);
-        }
-
-        10%,
-        30%,
-        50%,
-        70%,
-        90% {
-        transform: translate3d(-10px, 0, 0);
-        }
-
-        20%,
-        40%,
-        60%,
-        80% {
-        transform: translate3d(10px, 0, 0);
-        }
-      }
-
-      @keyframes swing {
-        20% {
-        transform: rotate3d(0, 0, 1, 15deg);
-        }
-
-        40% {
-        transform: rotate3d(0, 0, 1, -10deg);
-        }
-
-        60% {
-        transform: rotate3d(0, 0, 1, 5deg);
-        }
-
-        80% {
-        transform: rotate3d(0, 0, 1, -5deg);
-        }
-
-        to {
-        transform: rotate3d(0, 0, 1, 0deg);
-        }
-      }
-
-      @keyframes tada {
-        from {
-        transform: scale3d(1, 1, 1);
-        }
-        10%,
-        20% {
-        transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
-        }
-        30%,
-        50%,
-        70%,
-        90% {
-        transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
-        }
-        40%,
-        60%,
-        80% {
-        transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
-        }
-        to {
-        transform: scale3d(1, 1, 1);
-        }
-      }
-
-
-      @keyframes wobble {
-        from {
-        transform: translate3d(0, 0, 0);
-        }
-        15% {
-        transform: translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg);
-        }
-        30% {
-        transform: translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg);
-        }
-        45% {
-        transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg);
-        }
-        60% {
-        transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg);
-        }
-        75% {
-        transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg);
-        }
-        to {
-        transform: translate3d(0, 0, 0);
-        }
-      }
-
-      @keyframes spin {
-        100% {
-          -webkit-transform: -webkit-rotate(360deg);
-          transform: rotate(360deg);
-        }
-      }
-
-      @-webkit-keyframes spin {
-        100% {
-          -webkit-transform: -webkit-rotate(360deg);
-          transform: rotate(360deg);
-        }
-      }
-
-      @keyframes spin-stop {
-        100% {
-          -webkit-transform: -webkit-rotate(0deg);
-          transform: rotate(0deg);
-        }
-      }
-
       /* Set default host font-size to 10 pixels.
        * In that case 1em = 10 pixels = 1% of 100x100 matrix used
        */
@@ -5752,81 +5672,6 @@ class devSwissArmyKnifeCard extends LitElement {
       #label, #name {
         margin: 3% 0;
       }
-
-      // .text {
-        // font-size: 100%;
-      // }
-
-      // #name {
-      // font-size: 80%;
-      // font-weight: 300;
-      // }
-
-      // .unit {
-        // font-size: 65%;
-        // font-weight: normal;
-        // opacity: 0.6;
-        // line-height: 2em;
-        // vertical-align: bottom;
-        // margin-left: 0.25rem;
-      // }
-
-      // .entity__area {
-        // position: absolute;
-        // top: 70%;
-        // font-size: 120%;
-        // opacity: 0.6;
-        // display: flex;
-        // line-height: 1;
-        // align-items: center;
-        // justify-content: center;
-        // width: 100%;
-        // height: 20%;
-        // flex-direction: column;
-      // }
-
-      // .nam {
-        // alignment-baseline: central;
-        // fill: var(--primary-text-color);
-      // }
-
-      // .state__uom:hover, .state__value:hover, .entity__name:hover, .entity__area:hover {
-        // cursor: pointer;
-      // }
-      
-
-      // .state__uom {
-        // font-size: 20px;
-        // opacity: 0.7;
-        // margin: 0;
-        // fill : var(--primary-text-color);
-      // }
-
-      // .state__value {
-        // font-size: 3em;
-        // opacity: 1;
-        // fill : var(--primary-text-color);
-        // text-anchor: middle;
-      // }
-      // .entity__name {
-        // text-anchor: middle;
-        // overflow: hidden;
-        // opacity: 0.8;
-        // fill : var(--primary-text-color);
-        // font-size: 1.5em;
-        // /*text-transform: uppercase;*/
-        // letter-spacing: 0.05em;
-      // }
-
-      // .entity__area {
-        // font-size: 12px;
-        // opacity: 0.7;
-        // overflow: hidden;
-        // fill : var(--primary-text-color);
-        // text-anchor: middle;
-        // /*text-transform: uppercase;*/
-        // letter-spacing: 0.05em;
-      // }
 
       .shadow {
         font-size: 30px;
@@ -5926,29 +5771,6 @@ class devSwissArmyKnifeCard extends LitElement {
       .horseshoe__svg__group {
         transform: translateY(15%);
       }
-
-      // .line__horizontal {
-        // stroke: var(--primary-text-color);
-        // opacity: 0.3;
-        // stroke-width: 2;
-      // }
-
-      // .line__vertical {
-        // stroke: var(--primary-text-color);
-        // opacity: 0.3;
-        // stroke-width: 2;
-      // }
-
-      // .svg__dot {
-        // fill: var(--primary-text-color);
-        // opacity: 0.5;
-        // align-self: center;
-        // transform-origin: 50% 50%;
-      // }
-
-      // .icon {
-        // align: center;
-      // }
 
     `;
   }
@@ -6081,8 +5903,8 @@ class devSwissArmyKnifeCard extends LitElement {
 
   static getUserStyles4() {
 
-    // var someContent;
-    this.someContent = "";
+    // var userContent;
+    this.userContent = "";
     
     const root = document.querySelector('home-assistant');
     const main = root.shadowRoot.querySelector('home-assistant-main');
@@ -6092,22 +5914,39 @@ class devSwissArmyKnifeCard extends LitElement {
 
     if (!lovelace) console.error("card::constructor - Can't get Lovelace panel");
     
-    if ((lovelace.lovelace.config.sak_templates) &&
-        (lovelace.lovelace.config.sak_templates.user_css_definitions)) {
-      this.someContent = lovelace.lovelace.config.sak_templates.user_css_definitions.reduce((accumulator, currentValue) => {
-        console.log("getUserStyles4, accu", accumulator, currentValue.content);
+    if ((lovelace.__lovelace.config.sak_templates) &&
+        (lovelace.__lovelace.config.sak_templates.user_css_definitions)) {
+      this.userContent = lovelace.__lovelace.config.sak_templates.user_css_definitions.reduce((accumulator, currentValue) => {
+        // console.log("getUserStyles4, accu", accumulator, currentValue.content);
         return accumulator + currentValue.content;
       }, "");
     }
-    return css`${unsafeCSS(this.someContent)}`;
-    // someContent = unsafeCSS(this.someContent);
-    // return css`${someContent}`;
-    // return unsafeCSS(this.someContent);
-    // return unsafeCSS`${cssItems}`;
-    // console.log('getUserStyesCss2, cssItems, piet', this.someContent);
-    // return css`${this.someContent}`;
+    return css`${unsafeCSS(this.userContent)}`;
   }
 
+
+  static getSakStyles4() {
+
+    // var sakContent;
+    this.sakContent = "";
+    
+    const root = document.querySelector('home-assistant');
+    const main = root.shadowRoot.querySelector('home-assistant-main');
+    const drawer_layout = main.shadowRoot.querySelector('app-drawer-layout');
+    const pages = drawer_layout.querySelector('partial-panel-resolver');
+    const lovelace = pages.querySelector('ha-panel-lovelace');
+
+    if (!lovelace) console.error("card::constructor - Can't get Lovelace panel");
+    
+    if ((lovelace.__lovelace.config.sak_templates) &&
+        (lovelace.__lovelace.config.sak_templates.sak_css_definitions)) {
+      this.sakContent = lovelace.__lovelace.config.sak_templates.sak_css_definitions.reduce((accumulator, currentValue) => {
+        // console.log("getSystemStyles4, accu", accumulator, currentValue.content);
+        return accumulator + currentValue.content;
+      }, "");
+    }
+    return css`${unsafeCSS(this.sakContent)}`;
+  }
 
   // static getUserStylesHtml() {
     // var cssItems = [];
@@ -6158,6 +5997,7 @@ class devSwissArmyKnifeCard extends LitElement {
     
     return css`
       ${this.getSystemStyles()}
+      ${this.getSakStyles4()}
       ${this.getUserStyles4()}
     `;
   }
@@ -6174,7 +6014,7 @@ class devSwissArmyKnifeCard extends LitElement {
     //console.time("--> "+ this.cardId + " PERFORMANCE card::hass");
 
     // Set ref to hass, use "_"for the name ;-)
-    if (this.dev.debug) console.log('*****Event - set hass', this.cardId, new Date().getTime());
+    if (this.dev.debug) console.log('*****Event - card::set hass', this.cardId, new Date().getTime());
     this._hass = hass;
 
     if (!this.connected) {
@@ -6199,12 +6039,28 @@ class devSwissArmyKnifeCard extends LitElement {
     // Only if changed, continue and force render
     var value;
     var index = 0;
+
+    var secInfoSet = false;
+    var newSecInfoState;
+    var newSecInfoStateStr;
+
     var attrSet = false;
     var newStateStr;
     for (value of this.config.entities) {
       this.entities[index] = hass.states[this.config.entities[index].entity];
 
-      
+      // Get secondary info state if specified and available
+      if (this.config.entities[index].secondary_info) {
+        secInfoSet = true;
+        newSecInfoState = this.entities[index][this.config.entities[index].secondary_info];
+        newSecInfoStateStr = this._buildSecondaryInfo(newSecInfoState, this.config.entities[index]);
+
+        if (newSecInfoStateStr != this.secondaryInfoStr[index]) {
+          this.secondaryInfoStr[index] = newSecInfoStateStr;
+          entityHasChanged = true;
+        }
+      }
+
       // Get attribute state if specified and available
       if (this.config.entities[index].attribute) {
 
@@ -6237,7 +6093,6 @@ class devSwissArmyKnifeCard extends LitElement {
           
           // Fetch state
           attributeState = this.entities[index].attributes[attribute][arrayIdx][arrayMap];
-            
           // console.log('set hass, attributes with array/map', this.config.entities[index].attribute, attribute, attrMore, arrayIdx, arrayMap, attributeState);
           
         } else if (dotPos != -1) {
@@ -6255,13 +6110,24 @@ class devSwissArmyKnifeCard extends LitElement {
           attributeState = this.entities[index].attributes[attribute];
         }
 
-        if (attributeState) {
+        if (true) {//(typeof attributeState != 'undefined') {
           newStateStr = this._buildState(attributeState, this.config.entities[index]);
           if (newStateStr != this.attributesStr[index]) {
             this.attributesStr[index] = newStateStr;
             entityHasChanged = true;
           }
           attrSet = true;
+        }
+        // 2021.10.30
+        // Due to change in light percentage, check for undefined.
+        // If bulb is off, NO percentage is given anymore, so is probably 'undefined'.
+        // Any tool should still react to a percentag going from a valid value to undefined!
+        else {
+          if (undefined != this.attributesStr[index]) {
+            this.attributesStr[index] = undefined;
+            entityHasChanged = true;
+            console.log('changed attribute is undefined for entity', this.entities[index].entity_id);
+          }
         }
           
 
@@ -6275,7 +6141,7 @@ class devSwissArmyKnifeCard extends LitElement {
           // if (this.dev.debug) console.log("set hass - attrSet=true", this.cardId, new Date().getSeconds().toString() + '.'+ new Date().getMilliseconds().toString(), newStateStr);
         // }
       }
-      if (!attrSet) {
+      if ((!attrSet) && (!secInfoSet)) {
         newStateStr = this._buildState(this.entities[index].state, this.config.entities[index]);
         if (newStateStr != this.entitiesStr[index]) {
           this.entitiesStr[index] = newStateStr;
@@ -6293,7 +6159,7 @@ class devSwissArmyKnifeCard extends LitElement {
     if (!entityHasChanged) {
       //console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
 
-      // return;
+      return;
     }
 
     if (this.toolsets) {
@@ -6335,11 +6201,11 @@ class devSwissArmyKnifeCard extends LitElement {
       // return;
     // }
 
-    this.dimensions = "1/1";
+    this.aspectratio = "1/1";
 
-    if (config.dimensions) this.dimensions = config.dimensions;
+    if (config.aspectratio) this.aspectratio = config.aspectratio;
 
-    var ar = config.dimensions.trim().split("/");
+    var ar = config.aspectratio.trim().split("/");
     if (!this.viewBox) this.viewBox = {};
     this.viewBox.width = ar[0] * SVG_DEFAULT_DIMENSIONS;
     this.viewBox.height= ar[1] * SVG_DEFAULT_DIMENSIONS;
@@ -6388,7 +6254,7 @@ class devSwissArmyKnifeCard extends LitElement {
       // Filtering out properties
       // console.log("findTemplate, key=", key, "value=", value);
       if (value.template) {
-        const template = thisMe.lovelace.lovelace.config.sak_templates[value.template.name];
+        const template = thisMe.lovelace.__lovelace.config.sak_templates[value.template.name];
         var replacedValue = Templates.replaceVariables3(value.template.variables, template);
         // Hmm. cannot add .template var. object is not extensible...
         // replacedValue.template = 'replaced';
@@ -6565,7 +6431,7 @@ class devSwissArmyKnifeCard extends LitElement {
   */
   async firstUpdated(changedProperties) {
 
-    if (this.dev.debug) console.log('*****Event - firstUpdated', this.cardId, new Date().getTime());
+    if (this.dev.debug) console.log('*****Event - card::firstUpdated', this.cardId, new Date().getTime());
 
     if (this.toolsets) {
       await Promise.all(this.toolsets.map( async (item, index) => {
@@ -6919,7 +6785,26 @@ class devSwissArmyKnifeCard extends LitElement {
               <!-- Optional Border: #fff at 20% Alpha -->
               <!-- Dark Shadow was: 0d2750 -->
               
-              <filter id="is-1" x="-50%" y="-50%" width="200%" height="200%">
+              <!-- 2021.11.17 -->
+              <!-- Performance with inset shadow and width/height=150% seems to be optimal setting -->
+              <!-- Smaller settings give clipping, and larger settings performance hits -->
+              <!-- Absolute settings (userSpaceOnUse) seem to be difficult to find right settings -->
+              <filter id="is-1" x="-25%" y="-25%" width="150%" height="150%">
+                <feComponentTransfer in=SourceAlpha>
+                  <feFuncA type="table" tableValues="1 0" />
+                </feComponentTransfer>
+                <feGaussianBlur stdDeviation="1"/>
+                <feOffset dx="2" dy="2" result="offsetblur"/>
+                <feFlood flood-color="#0d2750" flood-opacity="0.5" result="color"/>
+                <feComposite in2="offsetblur" operator="in"/>
+                <feComposite in2="SourceAlpha" operator="in" />
+                <feMerge>
+                  <feMergeNode in="SourceGraphic" />
+                  <feMergeNode />
+                </feMerge>
+              </filter>
+
+              <filter id="is-1b" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1000" height="1000">
                 <feComponentTransfer in=SourceAlpha>
                   <feFuncA type="table" tableValues="1 0" />
                 </feComponentTransfer>
@@ -6977,8 +6862,32 @@ class devSwissArmyKnifeCard extends LitElement {
                   </feMerge>
               </filter>
 
+              <!-- 2021.11.15 -->
+              <!-- For some reason, changing the filter width/height from 160% to 600% improves performance on iOS 15 -->
+
               <!-- second try... -->
-              <filter id="filter" x="-50%" y="-50%" width="160%" height="160%">
+              <filter id="filter" x="-50%" y="-50%" width="300%" height="300%">
+                <feFlood flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="flood2"/>
+                <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
+                <feOffset dx="-6" dy="-6" in="composite5" result="offset1"/>
+                <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
+                <feComposite in="blur2" in2="SourceAlpha" operator="in"  result="composite7"/>
+
+                <!-- flood-color="#777777" -->
+                <feFlood flood-color="var(--cs-theme-shadow-darker)" flood-opacity="1" result="flood4"/>
+                <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
+                <feOffset dx="6" dy="6" in="composite8" result="offset2"/>
+                <feGaussianBlur stdDeviation="15" in="offset2" edgeMode="none" result="blur3"/>
+                <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
+
+                <feMerge result="merge3">
+                  <feMergeNode in="SourceGraphic"/>
+                  <feMergeNode in="composite7"/>
+                  <feMergeNode in="composite9"/>
+                  </feMerge>
+              </filter>
+
+              <filter id="filterb" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1000" height="1000">
                 <feFlood flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="flood2"/>
                 <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
                 <feOffset dx="-6" dy="-6" in="composite5" result="offset1"/>
@@ -7053,7 +6962,15 @@ class devSwissArmyKnifeCard extends LitElement {
                 </feMerge>
               </filter>
 
-              <filter id="nm-1" x="-50%" y="-50%" width="300%" height="300%">
+              <!-- 2021.11.15 -->
+              <!-- For some reason, changing the filter width/height from 300% to 600% improves performance on iOS 15 -->
+              <!-- Changing this value to 3000% improves performance also, but pixelates some of the views, so unusable! -->
+              <!-- A value of 1000% seems to be a good value too! Switching views is now instant again for some reason! -->
+              <!-- However, some views (sake5) becomes very, very, very slow. Views sake4 and sake6 are very fast. -->
+              <!-- 2021.11.17 -->
+              <!-- Let's settle for now with x/y=-10% and width/height=120%. This is actually the default for svg filters... -->
+
+              <filter id="sak-nm-default" x="-10%" y="-10%" width="120%" height="120%">
                 <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
                 <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
                 <feMerge result="merge">
@@ -7062,7 +6979,43 @@ class devSwissArmyKnifeCard extends LitElement {
                 </feMerge>
               </filter>
 
-              <filter id="nm-1-reverse" x="-50%" y="-50%" width="300%" height="300%">
+              <filter id="nm-1" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+                <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+                <feMerge result="merge">
+                  <feMergeNode in="dropShadow1"/>
+                  <feMergeNode in="dropShadow"/>
+                </feMerge>
+              </filter>
+
+              <filter id="sak-nm-default-b" filterUnits="userSpaceOnUse" x="-100" y="-100" width="5000" height="800">
+                <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+                <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+                <feMerge result="merge">
+                  <feMergeNode in="dropShadow1"/>
+                  <feMergeNode in="dropShadow"/>
+                </feMerge>
+              </filter>
+
+              <filter id="nm-1b" filterUnits="userSpaceOnUse" x="-200" y="-200" width="2000" height="2000">
+                <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+                <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+                <feMerge result="merge">
+                  <feMergeNode in="dropShadow1"/>
+                  <feMergeNode in="dropShadow"/>
+                </feMerge>
+              </filter>
+
+              <filter id="nm-1-reverse" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
+                <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
+                <feMerge result="merge">
+                  <feMergeNode in="dropShadow1"/>
+                  <feMergeNode in="dropShadow"/>
+                </feMerge>
+              </filter>
+
+              <filter id="nm-1b-reverse" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000">
                 <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
                 <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
                 <feMerge result="merge">
@@ -7154,7 +7107,7 @@ class devSwissArmyKnifeCard extends LitElement {
     
     if (!actionConfig) return;
 
-    console.log('_handleClick', config, actionConfig, entityId);
+    if (this.dev.debug) console.log('_handleClick', config, actionConfig, entityId);
     switch (actionConfig.action) {
       case 'more-info': {
         if (typeof entityId != 'undefined') {
@@ -7229,10 +7182,33 @@ class devSwissArmyKnifeCard extends LitElement {
   * entityAnimation.icon orso...
   */
   _buildIcon(entityState, entityConfig) {
-    return (
-      entityConfig.icon
-      || entityState.attributes.icon
-    );
+    
+    var thisIcon = entityConfig.icon
+      || entityState.attributes.icon;
+      
+    if (thisIcon) return (thisIcon);
+    
+    // 2021.11.21
+    // #TODO
+    // First of device class supported state Icons.
+    // Can't for some reason import the custom-card-helpers which does this lookup
+    // So did copy part of the code for binary sensors...
+    
+    return (stateIcon(entityState));
+    // const domain = this._computeDomain(entityState.entity_id);
+    // if (domain in domainIcons) {
+      // return domainIcons[domain](entityState);
+    // }
+
+    // // return stateIcon(entityState);
+    
+    // if (domain == 'binary_sensor') {
+      // return binarySensorIcon(entityState);
+    // }
+    // return (
+      // entityConfig.icon
+      // || entityState.attributes.icon
+    // );
   }
 
  /*******************************************************************************
@@ -7266,6 +7242,8 @@ class devSwissArmyKnifeCard extends LitElement {
   * If state is not a number, the state is returned AS IS, otherwise the state
   * is build according to the specified number of decimals.
   *
+  * NOTE:
+  * - a number value of "-0" is translated to "0". The sign is gone...
   */
 
   _buildState(inState, entityConfig) {
@@ -7274,14 +7252,106 @@ class devSwissArmyKnifeCard extends LitElement {
       return inState;
 
     const state = Number(inState);
+    const sign = Math.sign(inState);
 
     if (entityConfig.decimals === undefined || Number.isNaN(entityConfig.decimals) || Number.isNaN(state))
-      return (Math.round(state * 100) / 100).toString();
+      return (sign == "-0" ? "-" + (Math.round(state * 100) / 100).toString() : (Math.round(state * 100) / 100).toString());
 
     const x = 10 ** entityConfig.decimals;
-    return (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString();
+    return (sign == "-0" ? "-" + (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString() :
+                                 (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString());
   }
 
+
+/*******************************************************************************
+  * _buildSecondaryInfo()
+  *
+  * Summary.
+  * Builds the SecondaryInfo string.
+  *
+  */
+
+// async polyfill(locale) {
+  // if (!shouldPolyfill(locale)) {
+    // return
+  // }
+  // // Load the polyfill 1st BEFORE loading data
+  // await import('https://unpkg.com/@formatjs/intl-relativetimeformat/lib/polyfill')
+
+  // switch (locale) {
+    // default:
+      // await import('https://unpkg.com/@formatjs/intl-relativetimeformat/locale-data/en')
+      // break
+    // case 'nl-nl':
+      // await import('@formatjs/intl-relativetimeformat/locale-data/fr')
+      // break
+  // }
+// }
+  _buildSecondaryInfo(inSecInfoState, entityConfig) {
+
+    const leftPad = (num) => (num < 10 ? `0${num}` : num);
+    
+    function secondsToDuration(d) {
+      const h = Math.floor(d / 3600);
+      const m = Math.floor((d % 3600) / 60);
+      const s = Math.floor((d % 3600) % 60);
+
+      if (h > 0) {
+        return `${h}:${leftPad(m)}:${leftPad(s)}`;
+      }
+      if (m > 0) {
+        return `${m}:${leftPad(s)}`;
+      }
+      if (s > 0) {
+        return "" + s;
+      }
+      return null;
+    }
+
+    const lang = this._hass.selectedLanguage || this._hass.language;
+    
+    // this.polyfill(lang);
+    
+    if (['relative', 'total', 'date', 'time', 'datetime'].includes(entityConfig.format)) {
+      const timestamp = new Date(inSecInfoState);
+      if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
+          return inSecInfoState;
+      }
+
+      var retValue;
+      // return date/time according to formatting...
+      switch (entityConfig.format) {
+        case 'relative':
+          const diff = selectUnit(timestamp, new Date());
+          retValue = new Intl.RelativeTimeFormat(lang, { numeric: "auto" }).format(diff.value, diff.unit);
+          break;
+        case 'total':
+        case 'precision':
+          retValue = 'Not Yet Supported';
+          break;
+        case 'date':
+          retValue = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'numeric', day: 'numeric'}).format(timestamp);
+          break;
+        case 'time':
+          retValue = new Intl.DateTimeFormat(lang, { hour: 'numeric', minute: 'numeric', second: 'numeric'}).format(timestamp);
+          break;
+        case 'datetime':
+          retValue = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'}).format(timestamp);
+          break;
+      }
+      return retValue;
+    }
+
+    if (isNaN(parseFloat(inSecInfoState)) || !isFinite(inSecInfoState)) {
+        return inSecInfoState;
+    }
+    if (config.format === 'brightness') {
+        return `${Math.round((inSecInfoState / 255) * 100)} %`;
+    }
+    if (config.format === 'duration') {
+        return secondsToDuration(inSecInfoState);
+    }
+  }
 
  /*******************************************************************************
   * _computeState()

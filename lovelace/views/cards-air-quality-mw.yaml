@@ -82,13 +82,13 @@
             - entity: weather.zoefdehaas
 
 
-          dimensions: 3/2
+          aspectratio: 3/2
 
           disable_card: false
 
           dev:
             debug: false
-            ts: true
+            # ts: true
             
           layout:
             styles:
@@ -190,58 +190,6 @@
                             return (state + '-day');
                           ]]]
                         
-                    # animationss:
-                      # - state: 'clear-night-night'
-                        # image: 'clear-night'
-                      # - state: 'cloudy-day'
-                        # image: 'cloudy-day'
-                      # - state: 'cloudy-night'
-                        # image: 'cloudy-night'
-                      # - state: 'fog-day'
-                        # image: 'fog-day'
-                      # - state: 'fog-night'
-                        # image: 'fog-night'
-                      # - state: 'hail-day'
-                        # image: 'hail-day'
-                      # - state: 'hail-night'
-                        # image: 'hail-night'
-                      # - state: 'lightning-day'
-                        # image: 'lightning-day'
-                      # - state: 'lightning-night'
-                        # image: 'lightning-night'
-                      # - state: 'partlycloudy-day'
-                        # image: 'partlycloudy-day'
-                      # - state: 'partlycloudy-night'
-                        # image: 'partlycloudy-night'
-                      # - state: 'pouring-day'
-                        # image: 'pouring-day'
-                      # - state: 'pouring-night'
-                        # image: 'pouring-night'
-                      # - state: 'rainy-day'
-                        # image: 'rainy-day'
-                      # - state: 'rainy-night'
-                        # image: 'rainy-night'
-                      # - state: 'snowy-day'
-                        # image: 'snowy-day'
-                      # - state: 'snowy-night'
-                        # image: 'snowy-night'
-                      # - state: 'snowy-rainy-day'
-                        # image: 'snowy-rainy-day'
-                      # - state: 'snowy-rainy-night'
-                        # image: 'snowy-rainy-night'
-                      # - state: 'sunny-day'
-                        # image: 'sunny-day'
-                      # - state: 'sunny-night'
-                        # image: 'sunny-night'
-                      # - state: 'windy-day'
-                        # image: 'windy-day'
-                      # - state: 'windy-night'
-                        # image: 'windy-night'
-                      # - state: 'windy-variant-day'
-                        # image: 'windy-variant-night'
-                      # - state: 'windy-variant-day'
-                        # image: 'windy-variant-night'
-              
               - toolset: weather-temperature
                 position:
                   cx: 255
@@ -422,19 +370,19 @@
                       fill: true
                       colors:
                         0: '#A8E05F'
-                        50: '#FDD74B'
-                        100: '#FE9B57'
-                        150: '#FE6A69'
-                        200: '#A97ABC'
-                        300: '#A87383'
+                        51: '#FDD74B'
+                        101: '#FE9B57'
+                        151: '#FE6A69'
+                        201: '#A97ABC'
+                        301: '#A87383'
                     styles:
                       rectex:
                         stroke: var(--primary-background-color)
                         stroke-width: 5em
                         opacity: 1
                         transition: fill 0.5s
-                        fill: >-
-                          #A8E05F
+                        # fill: >-
+                          # #A8E05F
                   # State / AQI
                   - type: 'state'
                     id: 6
@@ -443,7 +391,7 @@
                       cy: 60
                     entity_index: 0
                     show:
-                      uom: default
+                      uom: end
                     styles:
                       state:
                         font-size: 26em
@@ -458,13 +406,6 @@
                       cx: 87.5
                       cy: 95
                     entity_index: 2
-                    # text:
-                      # before:
-                        # content: 'text before state'
-                        # position: above
-                      # after:
-                        # content: 'text after state'
-                        # position: below
                     styles:
                       state:
                         font-size: 12.5em
@@ -511,11 +452,11 @@
                       fill: true
                       colors:
                         0: '#A8E05F'
-                        50: '#FDD74B'
-                        100: '#FE9B57'
-                        150: '#FE6A69'
-                        200: '#A97ABC'
-                        300: '#A87383'
+                        51: '#FDD74B'
+                        101: '#FE9B57'
+                        151: '#FE6A69'
+                        201: '#A97ABC'
+                        301: '#A87383'
                     styles:
                       circle:
                         fill: var(--primary-background-color)
@@ -585,11 +526,6 @@
                         150: '#FE6A69'
                         200: '#A97ABC'
                         300: '#A87383'
-                    # Ook hier uitbreiden, zodat bar ook labels kan stylen
-                    # styles:
-                    #   bar:
-                    #   label_min:
-                    #   label_max:
                     styles:
                       bar:
                         stroke-linecap: round
@@ -781,7 +717,7 @@
             - entity: weather.zoefdehaas
               attribute: wind_bearing
 
-          dimensions: 2/2.3
+          aspectratio: 2/2.3
 
           disable_card: false
 
@@ -997,56 +933,6 @@
                             if (states["sun.sun"].state == 'below_horizon') return (state + '-night');
                             return (state + '-day');
                           ]]]
-                      # - state: 'clear-night-night'
-                        # image: 'clear-night-night'
-                      # - state: 'cloudy-day'
-                        # image: 'cloudy-day'
-                      # - state: 'cloudy-night'
-                        # image: 'cloudy-night'
-                      # - state: 'fog-day'
-                        # image: 'fog-day'
-                      # - state: 'fog-night'
-                        # image: 'fog-night'
-                      # - state: 'hail-day'
-                        # image: 'hail-day'
-                      # - state: 'hail-night'
-                        # image: 'hail-night'
-                      # - state: 'lightning-day'
-                        # image: 'lightning-day'
-                      # - state: 'lightning-night'
-                        # image: 'lightning-night'
-                      # - state: 'partlycloudy-day'
-                        # image: 'partlycloudy-day'
-                      # - state: 'partlycloudy-night'
-                        # image: 'partlycloudy-night'
-                      # - state: 'pouring-day'
-                        # image: 'pouring-day'
-                      # - state: 'pouring-night'
-                        # image: 'pouring-night'
-                      # - state: 'rainy-day'
-                        # image: 'rainy-day'
-                      # - state: 'rainy-night'
-                        # image: 'rainy-night'
-                      # - state: 'snowy-day'
-                        # image: 'snowy-day'
-                      # - state: 'snowy-night'
-                        # image: 'snowy-night'
-                      # - state: 'snowy-rainy-day'
-                        # image: 'snowy-rainy-day'
-                      # - state: 'snowy-rainy-night'
-                        # image: 'snowy-rainy-night'
-                      # - state: 'sunny-day'
-                        # image: 'sunny-day'
-                      # - state: 'sunny-night'
-                        # image: 'sunny-night'
-                      # - state: 'windy-day'
-                        # image: 'windy-day'
-                      # - state: 'windy-night'
-                        # image: 'windy-night'
-                      # - state: 'windy-variant-day'
-                        # image: 'windy-variant-night'
-                      # - state: 'windy-variant-day'
-                        # image: 'windy-variant-night'
                     styles:
                       usersvg:
                         filter: url(#is-1)
@@ -2186,7 +2072,7 @@
               unit: 'hPa'
               icon: mdi:gauge
 
-          dimensions: 2/1
+          aspectratio: 2/1
 
           disable_card: false
 
@@ -2246,8 +2132,8 @@
                     scale:
                       min: -20
                       max: 40
-                      width: 2
-                      offset: -9
+                      # width: 2
+                      offset: -4.5
                     show:
                       scale: true
                       style: 'colorstops'
@@ -2266,7 +2152,7 @@
                           - '#d53e4f'
                           - '#9e0142'
                       colorstops:
-                        gap: 0
+                        gap: 1
                         colors:
                           -30: 'white'
                           -20: '#5e4fa2'
@@ -2283,8 +2169,8 @@
                       foreground:
                         fill: var(--theme-gradient-color-01)
                       background:
-                        # fill: var(--primary-background-color)
-                        fill: var(--cs-theme-default-darken-15)
+                        fill: var(--primary-background-color)
+                        # fill: var(--cs-theme-default-darken-15)
                         filter: url(#is-1)
 
                   - type: 'state'
@@ -2363,7 +2249,8 @@
                       foreground:
                         fill: var(--theme-gradient-color-02)
                       background:
-                        fill: var(--cs-theme-default-darken-15)
+                        # fill: var(--cs-theme-default-darken-15)
+                        fill: var(--primary-background-color)
                         filter: url(#is-1)
 
                   - type: 'state'
@@ -2415,7 +2302,7 @@
                       style: 'colorstops'
                     segments:
                       colorstops:
-                        gap: 0
+                        gap: 1
                         colors:
                           980: 'lightgrey'
                           990: 'var(--theme-gradient-color-01)'
@@ -2424,7 +2311,8 @@
                       foreground:
                         fill: var(--theme-gradient-color-03)
                       background:
-                        fill: var(--cs-theme-default-darken-15)
+                        # fill: var(--cs-theme-default-darken-15)
+                        fill: var(--primary-background-color)
                         filter: url(#is-1)
 
                   - type: 'state'
@@ -2482,7 +2370,7 @@
               unit: 'hPa'
               icon: mdi:gauge
 
-          dimensions: 2/1
+          aspectratio: 2/1
 
           disable_card: false
 
@@ -2617,7 +2505,7 @@
                       cx: 38
                       cy: 50
                     show:
-                      uom: below
+                      uom: bottom
                     styles:
                       state:
                         text-anchor: middle
@@ -2710,7 +2598,7 @@
                       cx: 62
                       cy: 50
                     show:
-                      uom: below
+                      uom: bottom
                     styles:
                       state:
                         text-anchor: middle
@@ -2845,7 +2733,7 @@
                       cx: 50
                       cy: 50
                     show:
-                      uom: below
+                      uom: bottom
                     styles:
                       state:
                         text-anchor: middle
@@ -2911,7 +2799,7 @@
               unit: 'hPa'
               icon: mdi:gauge
 
-          dimensions: 2/1
+          aspectratio: 2/1
 
           disable_card: false
 
@@ -3106,7 +2994,7 @@
             # explictly enable the use of the usersvg tool.
             usersvg : true
           
-          dimensions: 3/1
+          aspectratio: 3/1
 
           layout:
             styles:
@@ -3461,9 +3349,15 @@
             - entity: sensor.studym_iaq_temperature
             - name: Werk Achter
             - icon: mdi:thermometer
-        - type: custom:button-card
-          color_type: blank-card
-          aspect_ratio: 1/1
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.bathroom_2f_iaq_temperature
+            - name: Badkamer Bad
+            - icon: mdi:thermometer
+        # - type: custom:button-card
+          # color_type: blank-card
+          # aspect_ratio: 1/1
         # - !include card-blank-card.yaml
 
 ##
@@ -3535,9 +3429,15 @@
             - entity: sensor.studym_iaq_humidity
             - name: Werk Achter
             - icon: mdi:water-percent
-        - type: custom:button-card
-          color_type: blank-card
-          aspect_ratio: 1/1
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.bathroom_2f_iaq_humidity
+            - name: Badkamer Bad
+            - icon: mdi:water-percent
+        # - type: custom:button-card
+          # color_type: blank-card
+          # aspect_ratio: 1/1
         # - !include card-blank-card.yaml
                 
 ##

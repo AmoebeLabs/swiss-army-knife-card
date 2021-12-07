@@ -1,0 +1,69 @@
+#
+# File      : colorstops-template.yaml
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/Home-Assistant-Config
+#
+# Author: Mars @ AmoebeLabs.com
+# 
+# License: CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Swiss Army Knife colorstops template definition
+#
+#   This template defines all sorts of colorstops to be used in cards and/or
+#   tools templates.
+#
+###############################################################################
+
+colorstops_lux:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
+  colorstops:
+    gap: '[[thegap]]'
+    colors:
+      0: 'grey'
+      50: 'var(--theme-gradient-color-01)'
+      75: 'var(--theme-gradient-color-02)'
+      100: 'var(--theme-gradient-color-03)'
+      125: 'var(--theme-gradient-color-04)'
+      150: 'var(--theme-gradient-color-05)'
+      175: 'var(--theme-gradient-color-06)'
+
+colorstops_pressure:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
+  colorstops:
+    gap: '[[thegap]]'
+    colors:
+      980: 'lightgrey'
+      990: 'var(--theme-gradient-color-01)'
+      1020: 'var(--theme-gradient-color-05)'
+
+colorstops_temperature_inside:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
+  colorstops:
+    gap: '[[thegap]]'
+    colors:
+      17: 'PowderBlue'
+      19: 'var(--theme-gradient-color-01)'
+      21: 'var(--theme-gradient-color-04)'
+
+colorstops_humidity:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
+  colorstops:
+    gap: '[[thegap]]'
+    colors:
+      00: 'var(--theme-gradient-color-02)'
+      35: 'DarkSeaGreen'
+      65: 'PowderBlue'

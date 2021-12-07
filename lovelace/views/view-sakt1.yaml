@@ -1,0 +1,983 @@
+#
+#
+# View			: swiss-army-knife-card-examples (sake) SMALL
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   The Flexible Horseshoe Card examples view.
+#   See: https://github.com/AmoebeLabs/flex-layout-card/tree/master/examples
+#
+# Refs:
+#   - https://github.com/AmoebeLabs/flex-layout-card
+#   
+# Them colors are replaced with hardcoded colors:
+# - theme-gradient-color-01: '#FFF6E3'
+# - theme-gradient-color-02: '#FFE9B9'
+# - theme-gradient-color-03: '#FFDA8A'
+# - theme-gradient-color-04: '#FFCB5B' 
+# - theme-gradient-color-05: '#FFBF37' 
+# - theme-gradient-color-06: '#ffb414' 
+# - theme-gradient-color-07: '#FFAD12' 
+# - theme-gradient-color-08: '#FFA40E' 
+# - theme-gradient-color-09: '#FF9C0B' 
+# - theme-gradient-color-10: '#FF8C06' 
+# - theme-gradient-color-11: '#FF8305' 
+#
+###############################################################################
+
+title: SAKT1
+path: sakt1
+panel: false
+cards:
+#------------------------------------------------------------------------------
+#- type: vertical-stack
+#  cards:
+
+    - type: horizontal-stack
+      cards:
+        ##- !include card-blank-card.yaml
+        # Example 9::
+        #
+        # Badge tester
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            # Humidity
+            - entity: sensor.livingroom_iaq_humidity
+              decimals: 0
+              name: 'Livingroom'
+              area: '9: Livingroom'
+              icon: mdi:water-percent
+            # Temperature
+            - entity: sensor.livingroom_iaq_temperature
+              decimals: 1
+              icon: mdi:thermometer
+              name: 'Woonkamer'
+            # Presssure
+            - entity: sensor.livingroom_iaq_pressure
+              decimals: 0
+              icon: mdi:gauge
+            # Lux
+            - entity: sensor.livingroom_movement_illuminance
+              decimals: 0
+              icon: mdi:alarm-light-outline
+            # dummy for icon use
+            - entity: sensor.livingroom_movement_illuminance
+              icon: mdi:white-balance-sunny
+
+          show:
+            horseshoe: false
+            horseshoe_style: 'lineargradient'
+          
+          debug: false
+          
+          # maak hiervan aspectratio: dan duidelijker: is dus 2x2 dan!!
+          aspectratio: 2/2
+          
+          layout:
+            toolsets:
+              # ==============================================================================
+              - toolset: toolset9
+                position:
+                  cx: 80
+                  cy: 20
+                # wat als je bij delen een ander object kunt opgeven als context, dus als formaat.
+                # als je bij de vbars kunt zetten: context: badge.1 bijv.
+                # als nu alle cx en cy die bij argPos worden opgegeven deze badge zijn, dan kun je dus zonder
+                # iets verder te wijzigen, kun je alles relatief maken binnen de badge in dit geval. Alsof alle delen
+                # IN de badge zitten, of gerendered worden vanuit de badge. Dat zou helemaal mooi zijn als dat kan,
+                # want dan kun je heb ginnen een svg toolset doen, en dus ook clippen: een barchart kan dan helemaal
+                # in de hoek gezet worden zondar dat de randen eroverheen gaan.
+                tools:
+                  - type: 'badge'
+                    id: 1
+                    entity_index: 1
+                    position:
+                      cx: 50
+                      cy: 50
+                      height: 40
+                      width: 160
+                      ratio: 40
+
+                  - type: 'bar'
+                    id: 2
+                    entity_index: 1
+                    position:
+                      orientation: vertical
+                      cx: 2
+                      cy: 50
+                      width: 50
+                      height: 30
+                    hours: 24
+                    barhours: 2
+                    show:
+                      style: 'minmaxgradient'
+                    minmaxgradient:
+                      colors:
+                        min: 'green'
+                        max: 'yellow'
+                    colorstops:
+                      colors:
+                        19: 'green'
+                        19.5: 'yellow'
+                        20: 'red'
+                    styles:
+                      bar:
+                        # stroke: var(--theme-gradient-color-01)
+                        stroke-linecap: butt
+
+                  - type: 'name'
+                    id: 3
+                    entity_index: 1
+                    position:
+                      cx: 82
+                      cy: 42
+                    styles:
+                      name:
+                        text-anchor: center
+                        font-size: 1.5em
+                        fill: black
+
+                  - type: 'state'
+                    id: 4
+                    entity_index: 1
+                    position:
+                      cx: 82
+                      cy: 67
+                    styles:
+                      state:
+                        text-anchor: center
+                        font-size: 1.9em
+                        font-weight: 700
+                        fill: black
+                      
+                  - type: 'slider'
+                    id: 10
+                    position:
+                      cx: 40
+                      cy: 90
+                      length: 40
+                      orientation: 'horizontal'
+                    entity_index: 1
+                    scale:
+                      min: 15
+                      max: 25
+                    handle:
+                      width: 20
+                      height: 12
+                      popout: 27.5
+                    slide_action:
+                      service: climate.set_temperature
+                      parameter: temperature
+                      # service: light.turn_on
+                      # parameter: brightness_pct
+                    styles:
+                      slider:
+                        fill: var(--theme-gradient-color-03)
+                        stroke: var(--theme-gradient-color-01)
+                        stroke-width: 2
+                      handle:
+                        font-size: 1.2em
+                        font-weight: 700
+                        fill: black
+
+                  - type: 'slider'
+                    id: 11
+                    position:
+                      cx: 90
+                      cy: 90
+                      length: 100
+                      orientation: 'vertical'
+                    entity_index: 1
+                    scale:
+                      min: 50
+                      max: 200
+                    handle:
+                      width: 20
+                      height: 12
+                      popout: 30
+                    slide_action:
+                      service: climate.set_temperature
+                      parameter: temperature
+                      # service: light.turn_on
+                      # parameter: brightness_pct
+                    styles:
+                      slider:
+                        fill: var(--theme-gradient-color-03)
+                        stroke: var(--theme-gradient-color-01)
+                        stroke-width: 2
+                      handle:
+                        font-size: 1.2em
+                        font-weight: 700
+                        fill: black
+              
+        ##- !include card-blank-card.yaml
+
+    - type: horizontal-stack
+      cards:
+        - !include card-blank-card.yaml
+        # Example 11::
+        #
+        # button alike tester
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            # Humidity
+            - entity: sensor.livingroom_iaq_humidity
+              decimals: 0
+              name: 'Livingroom'
+              area: '11: Livingroom'
+              icon: mdi:water-percent
+            # Temperature
+            - entity: sensor.livingroom_iaq_temperature
+              decimals: 2
+              icon: mdi:thermometer
+              name: 'Woonkamer'
+            # Presssure
+            - entity: sensor.livingroom_iaq_pressure
+              decimals: 0
+              icon: mdi:gauge
+            # Lux
+            - entity: sensor.livingroom_movement_illuminance
+              decimals: 0
+              icon: mdi:alarm-light-outline
+            # dummy for icon use
+            - entity: sensor.livingroom_movement_illuminance
+              icon: mdi:white-balance-sunny
+            # load for horseshoe...
+            - entity: sensor.load_1m
+              decimals: 2
+              unit: '1m'
+            - entity: light.1st_floor_hall_light              
+              name: 'hall'
+              icon: mdi:lightbulb
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.1st_floor_hall_light" }
+          debug: false
+          
+          # maak hiervan aspectratio: dan duidelijker: is dus 2x2 dan!!
+          aspectratio: 2/1
+          
+          # toolset 11 was 50/50, now 100/50 due to 2/1 dimension!!
+          layout:
+            toolsets:
+              # ==============================================================================
+              - toolset: toolset11
+                position:
+                  cx: 100
+                  cy: 50
+                  scale: 1
+                # wat als je bij delen een ander object kunt opgeven als context, dus als formaat.
+                # als je bij de vbars kunt zetten: context: badge.1 bijv.
+                # als nu alle cx en cy die bij argPos worden opgegeven deze badge zijn, dan kun je dus zonder
+                # iets verder te wijzigen, kun je alles relatief maken binnen de badge in dit geval. Alsof alle delen
+                # IN de badge zitten, of gerendered worden vanuit de badge. Dat zou helemaal mooi zijn als dat kan,
+                # want dan kun je heb ginnen een svg toolset doen, en dus ook clippen: een barchart kan dan helemaal
+                # in de hoek gezet worden zondar dat de randen eroverheen gaan.
+                tools:
+                  - type: circle
+                    id: 1
+                    position:
+                      cx: 55
+                      cy: 85
+                      radius: 8
+                    entity_index: 6
+                    styles:
+                      stroke: white
+                      stroke-width: 5
+                      fill: black
+                    animations:
+                      - state: 'on'
+                        styles:
+                          circle:
+                            fill: var(--theme-gradient-color-08)
+                            opacity: 0.9
+                            animation: jello 1s ease-in-out both
+                            transform-origin: center
+                      - state: 'off'
+                        reuse: true
+                        styles:
+                          circle:
+                            transform-origin: center
+                            animation: zoomOut 1s ease-out both
+                  - type: circle
+                    id: 2
+                    position:
+                      cx: 85
+                      cy: 85
+                      radius: 6
+                    styles:
+                      circle:
+                        stroke: white
+                        stroke-width: 5
+                        fill: none
+                  - type: 'line'
+                    id: 1
+                    position:
+                      orientation: horizontal
+                      cx: 50
+                      cy: 50
+                      length: 90
+
+                  - type: 'line'
+                    id: 2
+                    position:
+                      orientation: horizontal
+                      cx: 50
+                      cy: 70
+                      length: 90
+
+                  - type: 'line'
+                    id: 3
+                    position:
+                      orientation: fromto
+                      x1: -10
+                      y1: 70
+                      x2: 40
+                      y2: 50
+
+                  - type: 'ellipse'
+                    id: 10
+                    position:
+                      cx: 50
+                      cy: 20
+                      radiusx: 80
+                      radiusy: 20
+                    styles:
+                      ellipse:
+                        stroke: white
+                        stroke-width: 5
+                        fill: none
+
+                  - type: 'name'
+                    id: 3
+                    entity_index: 1
+                    position:
+                      cx: 5
+                      cy: 62.5
+                    styles:
+                      name:
+                        text-anchor: start
+                        font-size: 1.5em
+
+                  - type: 'state'
+                    id: 4
+                    entity_index: 1
+                    position:
+                      cx: 5
+                      cy: 90
+                    styles:
+                      state:
+                        text-anchor: start
+                        font-size: 1.9em
+                        font-weight: 700
+                      
+                  - type: 'horseshoe'
+                    id: 10
+                    position:
+                      cx: 120
+                      cy: 30
+                      radius: 30
+                    entity_index: 5
+                    show:
+                      horseshoe: true
+                      horseshoe_style: 'lineargradient'
+                      scale_tickmarks: true
+                    horseshoe_scale:
+                      min: 0
+                      max: 2
+                    color_stops:
+                      16: '#FFF6E3'
+                      25: '#FF8C06' 
+
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
+        # - !include card-blank-card.yaml
+
+    - type: horizontal-stack
+      cards:
+        - !include card-blank-card.yaml
+        # Example 10::
+        #
+        # Circle with system cpu monitoring. NIce for easy CPU changes in graph
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            # Memory
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              decimals: 2
+              name: 'NUC'
+              area: '10: NUC'
+              icon: mdi:flash
+            # Disk
+            - entity: sensor.disk_use_percent
+              decimals: 0
+              icon: mdi:harddisk
+            # CPU
+            - entity: sensor.processor_use
+              decimals: 0
+              icon: mdi:memory
+            # ...
+            - entity: sensor.load_1m
+              decimals: 2
+              unit: '1m'
+            # dummy for icon use
+            - entity: sensor.livingroom_movement_illuminance
+              icon: mdi:white-balance-sunny
+
+          aspectratio: 2/1
+
+          debug: false
+          
+          show:
+            # explictly enable the use of the usersvg tool.
+            usersvg : true
+          
+          # deze templates kunnen in een file. die je bijv. sak_templates noemt. ergens includen in lovelace, en dan 
+          # kun je ze vanuit lovelace benaderen. zie decluttering_templates.
+          # dan kun je templates dus werkelijk binnen deze card hergebruiken. dat is fijn...
+          # dus geen card template, maar wat dan wel. dc kent ook element templates. even goed kijken, voordat ik iets
+          # maak wat er al is!
+          #
+          # toch maar apart zie ik doen. dus dan kan ik groepen met tools definieren. en die hergebruiken.
+          # eerst kijken of dat werken kan...
+          templates:
+            - template: #poep
+              name: poep
+              defaults: 
+                - entity0: 0
+                - entity1: 1
+                - entity2: 2
+              tools:
+                - type: state
+                  id: '[[id0]]'
+                  entity_index: '[[entity0]]'
+                  position:
+                    cx: 50
+                    cy: 5
+                - type: state
+                  id: '[[id1]]'
+                  position:
+                    cx: 50
+                    cy: 10
+                  entity_index: '[[entity1]]'
+                - type: state
+                  id: '[[id2]]'
+                  position:
+                    cx: 50
+                    cy: 15
+                  entity_index: '[[entity2]]'
+
+          # toolsets:
+            # - toolset: pietjepuk
+              # template: poep
+              # position:
+                # cx: 25
+                # cy: 60
+                # scale: 1
+
+            # - toolset: jantjepuk
+              # template: poep
+              # position:
+                # cx: 12.5
+                # cy: 60
+                # scale: 1
+              # variables:
+                # - entity0: 3
+                # - entity1: 4
+                # - entity2: 5
+                
+          # svgs:
+            # - svg: 0
+              # width: 200
+              # height: 200
+              # scale: 50
+              # cx: 50
+              # cy: 50
+              # data: |
+                # <rect rx="20" ry="1" id="svg_1" height="50" width="200" y="91.453125" x="39" stroke-width="2" stroke="#fff" fill="#aaa"/>
+                # <path d="m 0 0 h 50 v 10 l 5 5 l -5 5 l 0 10 h -50 z " stroke-width="2" stroke="#fff" fill="#aaa"/>
+                # <rect rx="5" ry="5" id="svg_1" height="30" width="150" y="0" x="100" stroke-width="0" stroke="#fff" fill="blue"/>
+                # <path d="m 100 0 h 45 v 8 l 7 7 l -7 7 l 0 8 h -45 a -5 -5 0 0 1 -5 -5 v -20 a 5 5 0 0 1 5 -5" stroke-width="0" stroke="#fff" fill="gray"/>
+                # <text x="105" y="20" fill="white">20%</text>
+                # <text x="160" y="20" fill="white">HUMIDITY</text>
+
+            # - svg: 1
+              # data: |
+                # <rect rx="20" ry="1" id="svg_1" height="50" width="200" y="91.453125" x="39" stroke-width="2" stroke="#fff" fill="#aaa"/>
+
+          # statetoolset 12.5/50 to 25/50.
+          layout:
+            toolsets:
+              # ==============================================================================
+              # - toolset: pietjepuk
+                # template: #poep
+                  # name: poep
+                # position:
+                  # cx: 25
+                  # cy: 50
+                  # scale: 1
+                # variables:
+                  # - id0: 4
+                  # - id1: 5
+                  # - id2: 6
+                # tools:
+                  # - type: name
+                    # id: 5
+                    # position:
+                      # cx: 50
+                      # cy: 90
+                    # entity_index: 3
+                    # fuckyou: 'yes'
+                  # - id: 6
+                    # # For icons, can I change them according to the state??? ie other MDI icon, and other color?????
+                    # # The current implementation is only styling, but an icon is not a style, is it??
+                    # # WOuld be nice: for icon animations!!! Nice for batteries: show icon per percentage!!
+                    # # In that case: operator: '%'. Then automatic icon selection??
+                    # #
+                    # # More: if changing properties is possible (icon), then changing name should also be nice??
+                    # #       or for a texttool, the text for the tool. Default = as defined, rest is specific??
+                    # #
+                    # # The IconTool's set value could do this. Specific animations per class.
+                    # # Using different operators, specific per class. The basetool ignore's them, doesn't do anything!!
+                    # # must add this to the github issue, not here!!
+                    # animations:
+                      # - state: '25'
+                        # operator: '>='
+                        # styles:
+                          # name:
+                            # fill: red
+                            # transform-origin: center
+                            # animation: blinkingText 1.2s infinite
+                      # - state: '10'
+                        # operator: '>='
+                        # styles:
+                          # name:
+                            # fill: yellow
+                            # transform-origin: center
+                            # animation: flash 5s infinite
+                      # - state: '0'
+                        # operator: '>='
+                        # styles:
+                          # name:
+                            # fill: DarkSeaGreen
+                            # opacity: 0.9
+                            # animation: pulse 1s ease-in-out both
+                            # transform-origin: center
+                  
+
+              # ==============================================================================
+              - toolset: statetoolset
+                position:
+                  cx: 25
+                  cy: 50
+                  scale: 1
+                tools:
+                  - type: segarc
+                    id: 0
+                    entity_index: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 5
+                      radius: 25
+                    scale:
+                      min: 0
+                      max: 2
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      #dash: 360
+                      gap: 1
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - 'var(--theme-gradient-color-01)'
+
+                    animation:
+                      duration: 5
+                    styles:
+                      foreground:
+                        fill: var(--theme-gradient-color-01)
+                        # marker-end: url(#markerArrow)
+                      background:
+                        fill: var(--primary-background-color)
+
+                  - type: state
+                  # States 0 refers to the first entity in the list, ie index 0
+                  # font-size was 1.7em. Test with 2.5em
+                    id: 4
+                    entity_index: 0
+                    position:
+                      cx: 50
+                      cy: 60
+                    styles:
+                      state:
+                        text-anchor: center
+                        font-size: 1.7em
+                        color: var(--theme-gradient-color-01)
+                  # 2020.10.01 ycx/cy of Widgets are not calculated correctly it seems.
+                  # the positions defined below specify the coords, independant of toolset position?!?!?!?!?!
+                  # was 12,5 / 45. Should be 50 / 45??
+                  - type: icon
+                    id: 5
+                    entity_index: 0
+                    position:
+                      cx: 50
+                      cy: 42
+                      align: center
+                      icon_size: 15
+
+              # ==============================================================================
+              - toolset: areatoolset
+                position:
+                  cx: 100
+                  cy: 95
+                  scale: 1
+                tools:
+                  # Areas 0 refers to the first entity in the list, ie index 0
+                  - type: area
+                    id: 0
+                    entity_index: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                    styles:
+                      area:
+                        font-size: 1.5em
+              
+
+              # ==============================================================================
+              # 36.25/25 -> 72.5/25
+              - toolset: statetoolset2
+                position:
+                  cx: 72.50
+                  cy: 25
+                  scale: 1
+                tools:
+                  # States 1 refers to the second entity in the list, ie index 1
+                  - type: segarc
+                    id: 1
+                    entity_index: 1
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 5
+                      radius: 25
+                    scale:
+                      min: 0
+                      max: 100
+                    show:
+                      scale: true
+                      style: 'colorstops'
+                    segments:
+                      dash: 360
+                      gap: 1
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - 'var(--theme-gradient-color-02)'
+                      colorstops:
+                        gap: 0
+                        # arc can be 'followcolorstop', or 'followvalue'
+                        arc_color: 'followcolorstop'
+                        colors:
+                          00: 'DarkSeaGreen'
+                          70: 'yellow'
+                          80: 'orange'
+                          90: 'red'
+                    animation:
+                      duration: 5
+                    styles:
+                      foreground:
+                        fill: var(--theme-gradient-color-02)
+                        # marker-end: url(#markerArrow)
+                      background:
+                        fill: var(--primary-background-color)
+
+                  - type: state
+                    id: 5
+                    entity_index: 1
+                    position:
+                      cx: 50
+                      cy: 60
+                    styles:
+                      state:
+                        text-anchor: center
+                        font-size: 1.7em
+                        color: var(--theme-gradient-color-02)
+                  - type: icon
+                    id: 1
+                    entity_index: 1
+                    # was 36.25 / 20. Nu 50 / 35
+                    position:
+                      cx: 50
+                      cy: 42
+                      align: center
+                      icon_size: 15
+
+
+              # 63.76/25 -> 127.5/25
+              # ==============================================================================
+              - toolset: statetoolset3
+                position:
+                  cx: 127.50
+                  cy: 25
+                  scale: 1
+                tools:
+                  - type: segarc
+                    id: 2
+                    entity_index: 2
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 5
+                      radius: 25
+                    scale:
+                      min: 0
+                      max: 100
+                    show:
+                      scale: true
+                      style: "colorstops"
+                    segments:
+                      dash: 36
+                      gap: 1
+                      colorstops:
+                        gap: 1
+                        colors:
+                          00: '#FFF6E3'
+                          10: '#FFE9B9'
+                          15: '#FFDA8A'
+                          20: '#FFCB5B'
+                          22.5: '#FFBF37'
+                          25: '#ffb414'
+                          60: '#FFAD12'
+                          70: '#FFA40E'
+                          80: '#FF9C0B' 
+                          90: '#FF8C06' 
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - '#FFF6E3'
+                          - '#FFE9B9'
+                          - '#FFDA8A'
+                          - '#FFCB5B'
+                          - '#FFBF37'
+                          - '#ffb414'
+                          - '#FFAD12'
+                          - '#FFA40E'
+                          - '#FF9C0B' 
+                          - '#FF8C06' 
+                    color_stops:
+                      00: '#FFF6E3'
+                      10: '#FFE9B9'
+                      20: '#FFDA8A'
+                      30: '#FFCB5B'
+                      40: '#FFBF37'
+                      50: '#ffb414'
+                      60: '#FFAD12'
+                      70: '#FFA40E'
+                      80: '#FF9C0B' 
+                      90: '#FF8C06' 
+                    colorstops:
+                      - '#FFF6E3'
+                      - '#FFE9B9'
+                      - '#FFDA8A'
+                      - '#FFCB5B'
+                      - '#FFBF37'
+                      - '#ffb414'
+                      - '#FFAD12'
+                      - '#FFA40E'
+                      - '#FF9C0B' 
+                      - '#FF8C06' 
+                    
+                    animation:
+                      duration: 5
+                    styles:
+                      foreground:
+                        fill: var(--theme-gradient-color-03)
+                        #marker-end: url(#markerArrow)
+                      background:
+                        fill: var(--primary-background-color)
+
+                  - type: state
+                    id: 6
+                    entity_index: 2
+                    position:
+                      cx: 50
+                      cy: 60
+                    styles:
+                      state:
+                        text-anchor: center
+                        font-size: 1.7em
+                        color: var(--theme-gradient-color-01)
+                  - type: icon
+                    id: 2
+                    entity_index: 2
+                    # was 63.75 / 20. Nu 50/35
+                    position:
+                      cx: 50
+                      cy: 42
+                      align: center
+                      icon_size: 15
+
+              # 87.5/50 -> 175/50
+              # ==============================================================================
+              - toolset: statetoolset4
+                position:
+                  cx: 175
+                  cy: 50
+                  scale: 1
+                tools:
+                  # States 1 refers to the second entity in the list, ie index 1
+                  - type: segarc
+                    id: 3
+                    entity_index: 3
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 5
+                      radius: 25
+                    scale:
+                      min: 0
+                      max: 2
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    animation:
+                      duration: 5
+                    segments:
+                      dash: 360
+                      gap: 1
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - 'var(--theme-gradient-color-01)'
+                          - 'var(--theme-gradient-color-02)'
+                          - 'var(--theme-gradient-color-03)'
+                          - 'var(--theme-gradient-color-04)'
+                    styles:
+                      foreground:
+                        fill: var(--theme-gradient-color-04)
+                        # marker-end: url(#markerCircle)
+                      background:
+                        fill: var(--primary-background-color)
+
+                  - type: state
+                    id: 7
+                    entity_index: 3
+                    position:
+                      cx: 50
+                      cy: 60
+                    styles:
+                      state:
+                        text-anchor: center
+                        font-size: 1.7em
+                        color: var(--theme-gradient-color-02)
+                  - type: icon
+                    id: 3
+                    entity_index: 3
+                    # was 87.5 / 45. Nu 50 / 35
+                    position:
+                      cx: 50
+                      cy: 42
+                      align: center
+                      icon_size: 15
+
+              # Thse circles that are largely offscreen cause a 0.5-1sec delay while switching to this panel on the iPad.
+              # PC / Chrome has no problems. It works, but makes initial rendering slow. No idea why!!!! But now I know, that it is NOT the card itself
+              # and the sheer number of tools displayed! It is just Safari again!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+              #
+              # BUT, BUT, BUT
+              # The older version - flexibile card - also shows those circles, even two cards, but performs very well (on old version of hass btw).
+              # Is this hass, or a problem/change with the view and/or card software that is done different from the sak card??????
+              #
+              # YEP, flce(s) performs good with two of these NUC like cards. So what is the real problem????????
+
+              # ==============================================================================
+              # - toolset: circletoolset
+                # position:
+                  # cx: 100
+                  # cy: 140
+                  # scale: 1
+                # tools:
+                  # - type: circle
+                    # id: 0
+                    # cx: 50
+                    # cy: 50
+                    # radius: 75
+                    # styles:
+                      # stroke: var(--theme-gradient-color-01)
+                      # stroke-width: 10
+                      # fill: none
+
+                  # - type: circle 
+                    # id: 3
+                    # cx: 50
+                    # cy: 50
+                    # radius: 75
+                    # styles:
+                      # stroke: var(--theme-gradient-color-02)
+                      # stroke-width: 40
+                      # fill: none
+                      # stroke-dasharray: 5 67
+                      # stroke-dashoffset: 54
+
+                  # - type: circle
+                    # id: 1
+                    # cx: 50
+                    # cy: 52
+                    # radius: 67.5
+                    # styles:
+                      # stroke: var(--theme-gradient-color-02)
+                      # stroke-width: 10
+                      # fill: none
+
+#
+# https://css-tricks.com/almanac/properties/s/stroke-linecap/
+#
+# regarding css settings:
+# This will override a presentation attribute <path stroke-linecap="square" ... />
+# This will not override an inline style e.g. <path style="stroke-linecap: square" ... />
+                
+
+        - !include card-blank-card.yaml
