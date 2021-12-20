@@ -1333,9 +1333,9 @@ cards:
                     animations:
                       - state: '[[[ return (state); ]]]'
                         image: '[[[ return (state); ]]]'
-                    styles:
-                      usersvg:
-                        filter: url(#nm-1)
+                    # styles:
+                      # usersvg:
+                        # filter: url(#nm-1)
 
                   # temperature
                   - type: state
@@ -1456,9 +1456,9 @@ cards:
                     animations:
                       - state: '[[[ return (state); ]]]'
                         image: '[[[ return (state); ]]]'
-                    styles:
-                      usersvg:
-                        filter: url(#nm-1)
+                    # styles:
+                      # usersvg:
+                        # filter: url(#nm-1)
 
                   # temperature
                   - type: state
@@ -1579,9 +1579,9 @@ cards:
                     animations:
                       - state: '[[[ return (state); ]]]'
                         image: '[[[ return (state); ]]]'
-                    styles:
-                      usersvg:
-                        filter: url(#nm-1)
+                    # styles:
+                      # usersvg:
+                        # filter: url(#nm-1)
 
                   # temperature
                   - type: state
@@ -1702,9 +1702,9 @@ cards:
                     animations:
                       - state: '[[[ return (state); ]]]'
                         image: '[[[ return (state); ]]]'
-                    styles:
-                      usersvg:
-                        filter: url(#nm-1)
+                    # styles:
+                      # usersvg:
+                        # filter: url(#nm-1)
 
                   # temperature
                   - type: state
@@ -1825,9 +1825,9 @@ cards:
                     animations:
                       - state: '[[[ return (state); ]]]'
                         image: '[[[ return (state); ]]]'
-                    styles:
-                      usersvg:
-                        filter: url(#nm-1)
+                    # styles:
+                      # usersvg:
+                        # filter: url(#nm-1)
 
                   # temperature
                   - type: state

@@ -207,7 +207,6 @@ cards:
                       orientation: vertical
                     styles:
                       line:
-                        stroke: var(--theme-gradient-color-04)
                         stroke: black
                         stroke-opacity: 0.5
                         stroke-width: 3
@@ -355,7 +354,6 @@ cards:
                       orientation: vertical
                     styles:
                       line:
-                        stroke: var(--theme-gradient-color-04)
                         stroke: black
                         stroke-opacity: 0.5
                         stroke-width: 3
@@ -514,7 +512,6 @@ cards:
                       orientation: vertical
                     styles:
                       line:
-                        stroke: var(--theme-gradient-color-04)
                         stroke: black
                         stroke-opacity: 0.5
                         stroke-width: 3

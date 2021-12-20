@@ -361,12 +361,12 @@ cards:
                   - type: rectex
                     position:
                       cx: 50
-                      cy: 50
+                      cy: 3
                       width: 100
-                      height: 100
+                      height: 6
                       radius:
                         top: 2
-                        bottom: 2
+                        bottom: 0
                     entity_index: 0
                     
                     # Let background go to white with 70% opacity when movement detected
@@ -374,20 +374,22 @@ cards:
                     # the attention of the user, if anyone is watching ;-)
                     animations:
                       - state: 'on'
-                        styles:
+                        classes:
                           rectex:
-                            fill: 'white'
-                            opacity: 0.7
-                            animation: flash 2s ease-in-out both
+                            sak-alert--active: true
+                        # styles:
+                          # rectex:
+                            # fill: var(--md-bg-color)
+                            # opacity: 0.7
+                            # animation: flash 2s ease-in-out both
                       - state: 'off'
-                        styles:
+                        classes:
                           rectex:
-                            opacity: 0
-                            fill: none
-                    styles:
-                      rectex:
-                        opacity: 0
-                        fill: none
+                            sak-alert--clear: true
+                    # styles:
+                      # rectex:
+                        # opacity: 0
+                        # fill: none
 
                   - type: icon
                     position:
@@ -408,8 +410,10 @@ cards:
                       - state: 'on'
                         styles:
                           icon:
-                            fill: 'darkorange'
-                            color: 'darkorange'
+                            # fill: 'darkorange'
+                            # color: 'darkorange'
+                            fill: var(--md-fg-color--alert)
+                            color: var(--md-fg-color--alert)
                             animation: jello 2s ease-in-out both
                       - state: 'off'
                         styles:
@@ -621,7 +625,6 @@ cards:
                     position:
                       cx: 10
                       cy: 70
-                    entity_index: 0
                     entity_index: 0
                     classes:
                       area:

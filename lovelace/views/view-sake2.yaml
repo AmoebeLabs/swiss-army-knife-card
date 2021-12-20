@@ -292,7 +292,7 @@ cards:
                         height: 15
                       track:
                         width: 90
-                        height: 2
+                        height: 4
                         radius: 1
                       thumb:
                         width: 5
@@ -337,11 +337,17 @@ cards:
                         text-anchor: middle
                         font-size: 10em
                         font-weight: 600
-                      # track:
+                      track:
+                        fill: url(#light-color-temperature-gradient)
+                        fill-opacity: 1
+                        stroke-width: 0.1em
+                        stroke: white
                       thumb:
-                        stroke-width: 0.5em
-                        stroke: var(--primary-text-color)
-                        stroke-opacity: 0.8
+                        stroke-width: 1.2em
+                        stroke: var(--primary-background-color)
+                        stroke-opacity: 1
+                        fill: var(--primary-text-color)
+                        fill-opacity: 0.8
 
 ###############################################
         - type: 'custom:dev-swiss-army-knife-card'
@@ -485,9 +491,10 @@ cards:
                         font-size: 10em
                         font-weight: 600
                       track:
-                        fill-opacity: .7
+                        fill-opacity: 1
                         filter: url(#is-1)
                         fill: var(--primary-background-color)
+                        # fill: url(#light-color-temperature-gradient)
                       thumb:
                         stroke-width: 3em
                         stroke: var(--primary-background-color)

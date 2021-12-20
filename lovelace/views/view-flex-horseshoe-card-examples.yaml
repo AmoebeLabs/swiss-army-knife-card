@@ -787,7 +787,6 @@ cards:
               name: '11: One Bulb'
               area: Hestia
               unit: W
-              decimals: 0
               tap_action:
                 action: more-info
             - entity: light.livingroom_light_duo_left_light
@@ -916,7 +915,6 @@ cards:
               name: '12: Two Bulbs'
               area: Hestia
               unit: W
-              decimals: 0
               tap_action:
                 action: more-info
             - entity: light.livingroom_light_duo_left_light

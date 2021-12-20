@@ -2841,8 +2841,6 @@
                     styles:
                       regpoly:
                         fill-rule: nonzero
-                        fill: var(--primary-background-color)
-                        stroke: var(--primary-background-color)
                         fill: gray
                         stroke: gray
                         opacity: 0.05

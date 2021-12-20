@@ -1672,7 +1672,6 @@ cards:
                       orientation: vertical
                     styles:
                       line:
-                        stroke: var(--theme-gradient-color-04)
                         stroke: black
                         stroke-opacity: 0.5
                         stroke-width: 3
@@ -1929,7 +1928,6 @@ cards:
                       orientation: vertical
                     styles:
                       line:
-                        stroke: var(--theme-gradient-color-04)
                         stroke: black
                         stroke-opacity: 0.5
                         stroke-width: 3
@@ -2052,13 +2050,9 @@ cards:
                       radius: 25
                     styles:
                       circle:
-                        # stroke: var(--theme-gradient-color-01)
-                        stroke: var(--primary-background-color)
-                        stroke: DarkSeaGreen
                         stroke: DarkOliveGreen
                         stroke-width: 70
                         # fill: var(--theme-gradient-color-03)
-                        fill: lightgray
                         fill: var(--primary-background-color)
                         stroke-dasharray: 52
                         stroke-dashoffset: 0
@@ -2102,10 +2096,8 @@ cards:
                       radius: 25
                     styles:
                       circle:
-                        stroke: var(--theme-gradient-color-01)
                         stroke:  Blue
                         stroke-width: 70
-                        fill: var(--theme-gradient-color-04)
                         fill: var(--primary-background-color)
                         # stroke-dasharray: 36
                         # stroke-linecap: square
@@ -2153,10 +2145,8 @@ cards:
                       radius: 25
                     styles:
                       circle:
-                        stroke: var(--theme-gradient-color-01)
                         stroke: DarkOrange
                         stroke-width: 70
-                        fill: var(--theme-gradient-color-06)
                         fill: var(--primary-background-color)
                         stroke-dasharray: 52
                         stroke-dashoffset: 60
@@ -3369,7 +3359,6 @@ cards:
                       orientation: vertical
                     styles:
                       line:
-                        stroke: var(--theme-gradient-color-04)
                         stroke: black
                         stroke-opacity: 0.5
                         stroke-width: 3
