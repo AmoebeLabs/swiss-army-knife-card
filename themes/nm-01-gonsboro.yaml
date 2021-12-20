@@ -176,16 +176,12 @@
 
   # Card with state = 'on'
   theme-button-card-color-state-on: 'var(--paper-card-background-color)'
-  theme-button-area-color-state-on:          'var(--secondary-background-color)'
   theme-button-area-color-state-on:          'var(--primary-text-color)'
 
   # As per the button documentation, the button will set the color of the icon according to the light value 
   # Does not work always strange enough when set from the light template?!?
   theme-button-icon-color-state-on:          'var(--paper-item-icon-active-color)'
   theme-button-label-color-state-on:         'var(--primary-color)'
-
-  theme-button-lock-color-state-on:          'var(--secondary-background-color)'
-  theme-button-name-color-state-on:          'var(--secondary-background-color)'
 
   theme-button-lock-color-state-on:          'var(--primary-text-color)'
   theme-button-name-color-state-on:          'var(--primary-text-color)'
