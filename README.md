@@ -1,8 +1,14 @@
 # ![](docs/images/swiss-army-knife24.png) Swiss Army Knife Card
-2nd generation flex-horseshoe-card: more flexibility, more control, more tools/widgets, and templating & grouping for easier configuration
+Check https://swiss-army-knife.docs.amoebelabs.com/ for the documentation!
 
-Early screenshots:
+![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/sak-frontpage.png)
 
-![](https://github.com/AmoebeLabs/swiss-army-knife-card/blob/develop/screenshots/689847fe-bfa3-4dcf-9b79-b05640798762.png)
+An overview of all the example
+| | |
+| :------------: | :------------: |
+| ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-1b.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-2.png) | 
+| ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-3.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-4.png) | 
+| ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-5.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-6.png) | 
+| ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-7.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-8.png) | 
+| ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-9.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-10.png) | 
 
-![](https://github.com/AmoebeLabs/swiss-army-knife-card/blob/develop/screenshots/Aantekening%202019-09-30%20120615.png)
