@@ -32,7 +32,6 @@
 
 import {
   LitElement, html, css, svg, unsafeCSS
-// } from "https://unpkg.com/lit-element/lit-element.js?module";
 } from "https://unpkg.com/lit-element@2/lit-element.js?module";
 
 import {
@@ -43,7 +42,7 @@ import {
   unsafeSVG
 } from "https://unpkg.com/lit-html@1/directives/unsafe-svg.js?module";
 
-import {repeat} from "https://unpkg.com/lit-html@1/directives/repeat.js?module";
+// import {repeat} from "https://unpkg.com/lit-html@1/directives/repeat.js?module";
 import {ifDefined} from "https://unpkg.com/lit-html@1/directives/if-defined?module";
 
 // import {
@@ -53,12 +52,15 @@ import {ifDefined} from "https://unpkg.com/lit-html@1/directives/if-defined?modu
 import { styleMap } from 'https://unpkg.com/lit-html@1/directives/style-map.js?module';
 import { classMap } from 'https://unpkg.com/lit-html@1/directives/class-map.js?module';
 
-import { selectUnit} from 'https://unpkg.com/@formatjs/intl-utils/lib/index.js?module';
-import {shouldPolyfill} from 'https://unpkg.com/@formatjs/intl-relativetimeformat/lib/should-polyfill.js?module';
+import { selectUnit} from 'https://unpkg.com/@formatjs/intl-utils@3.8.4/lib/index.js?module';
+// import {shouldPolyfill} from 'https://unpkg.com/@formatjs/intl-relativetimeformat@9.3.3/lib/should-polyfill.js?module';
+
+// Note: version 9.4.0 is broken and prevents this card from loading...
+// import {shouldPolyfill} from 'https://unpkg.com/@formatjs/intl-relativetimeformat@9.4.0/lib/should-polyfill.js?module';
 
 import { stateIcon, getLovelace } from 'https://unpkg.com/custom-card-helpers@1.8.0/dist/index.m.js?module';
 
-import 'https://cdn.skypack.dev/@ctrl/tinycolor';
+// import 'https://cdn.skypack.dev/@ctrl/tinycolor';
 //++ Consts ++++++++++
 
 console.info(
@@ -74,146 +76,9 @@ console.info(
 // for font-size, 1em = 1%
 const SCALE_DIMENSIONS = 2
 const SVG_DEFAULT_DIMENSIONS = 200 * SCALE_DIMENSIONS;
-const SVG_VIEW_BOX = SVG_DEFAULT_DIMENSIONS;//200;
+const SVG_DEFAULT_DIMENSIONS_HALF = SVG_DEFAULT_DIMENSIONS / 2;
+const SVG_VIEW_BOX = SVG_DEFAULT_DIMENSIONS;
 const FONT_SIZE = SVG_DEFAULT_DIMENSIONS / 100;
-
-//--
-
-// 2021.11.21
-// #TODO
-// Direct import of custom-card-helpers v 1.8.0 from https://cdn.jsdelivr.net/npm/custom-card-helpers@1.8.0/dist/index.js
-
-// const coverIcon = (state) => {
-  // const open = state.state !== "closed";
-  // switch (state.attributes.device_class) {
-    // case "garage":
-      // return open ? "hass:garage-open" : "hass:garage";
-    // case "door":
-      // return open ? "hass:door-open" : "hass:door-closed";
-    // case "shutter":
-      // return open ? "hass:window-shutter-open" : "hass:window-shutter";
-    // case "blind":
-      // return open ? "hass:blinds-open" : "hass:blinds";
-    // case "window":
-      // return open ? "hass:window-open" : "hass:window-closed";
-    // default:
-      // return domainIcon("cover", state.state);
-  // }
-// };
-
-// const binarySensorIcon = (state) => {
-  // const activated = state.state && state.state === "off";
-  // switch (state.attributes.device_class) {
-    // case "battery":
-      // return activated ? "hass:battery" : "hass:battery-outline";
-    // case "cold":
-      // return activated ? "hass:thermometer" : "hass:snowflake";
-    // case "connectivity":
-      // return activated ? "hass:server-network-off" : "hass:server-network";
-    // case "door":
-      // return activated ? "hass:door-closed" : "hass:door-open";
-    // case "garage_door":
-      // return activated ? "hass:garage" : "hass:garage-open";
-    // case "gas":
-    // case "power":
-    // case "problem":
-    // case "safety":
-    // case "smoke":
-      // return activated ? "hass:shield-check" : "hass:alert";
-    // case "heat":
-      // return activated ? "hass:thermometer" : "hass:fire";
-    // case "light":
-      // return activated ? "hass:brightness-5" : "hass:brightness-7";
-    // case "lock":
-      // return activated ? "hass:lock" : "hass:lock-open";
-    // case "moisture":
-      // return activated ? "hass:water-off" : "hass:water";
-    // case "motion":
-      // return activated ? "hass:walk" : "hass:run";
-    // case "occupancy":
-      // return activated ? "hass:home-outline" : "hass:home";
-    // case "opening":
-      // return activated ? "hass:square" : "hass:square-outline";
-    // case "plug":
-      // return activated ? "hass:power-plug-off" : "hass:power-plug";
-    // case "presence":
-      // return activated ? "hass:home-outline" : "hass:home";
-    // case "sound":
-      // return activated ? "hass:music-note-off" : "hass:music-note";
-    // case "vibration":
-      // return activated ? "hass:crop-portrait" : "hass:vibrate";
-    // case "window":
-      // return activated ? "hass:window-closed" : "hass:window-open";
-    // default:
-      // return activated ? "hass:radiobox-blank" : "hass:checkbox-marked-circle";
-  // }
-// };
-
-// const DEFAULT_DOMAIN_ICON = "hass:bookmark";
-
-// const fixedDeviceClassIcons = {
-  // humidity: "hass:water-percent",
-  // illuminance: "hass:brightness-5",
-  // temperature: "hass:thermometer",
-  // pressure: "hass:gauge",
-  // power: "hass:flash",
-  // signal_strength: "hass:wifi",
-// };
-
-// const sensorIcon = (state) => {
-  // const dclass = state.attributes.device_class;
-
-  // if (dclass && dclass in fixedDeviceClassIcons) {
-    // return fixedDeviceClassIcons[dclass];
-  // }
-  // if (dclass === "battery") {
-    // const battery = Number(state.state);
-    // if (isNaN(battery)) {
-      // return "hass:battery-unknown";
-    // }
-    // const batteryRound = Math.round(battery / 10) * 10;
-    // if (batteryRound >= 100) {
-      // return "hass:battery";
-    // }
-    // if (batteryRound <= 0) {
-      // return "hass:battery-alert";
-    // }
-    // // Will return one of the following icons: (listed so extractor picks up)
-    // // hass:battery-10
-    // // hass:battery-20
-    // // hass:battery-30
-    // // hass:battery-40
-    // // hass:battery-50
-    // // hass:battery-60
-    // // hass:battery-70
-    // // hass:battery-80
-    // // hass:battery-90
-    // // We obscure 'hass' in iconname so this name does not get picked up
-    // return `${"hass"}:battery-${batteryRound}`;
-  // }
-// };
-
-// const domainIcons = {
-  // binary_sensor: binarySensorIcon,
-  // cover: coverIcon,
-  // sensor: sensorIcon,
-  // // input_datetime: inputDateTimeIcon,
-// };
-// const stateIcon = (state) => {
-  // if (!state) {
-    // return DEFAULT_DOMAIN_ICON;
-  // }
-  // if (state.attributes.icon) {
-    // return state.attributes.icon;
-  // }
-
-  // const domain = this._computeDomain(state.entity_id);
-
-  // if (domain in domainIcons) {
-    // return domainIcons[domain](state);
-  // }
-  // return domainIcon(domain, state.state);
-// };
 
 //++ Class ++++++++++
 
@@ -274,7 +139,7 @@ const FONT_SIZE = SVG_DEFAULT_DIMENSIONS / 100;
 class Utils {
 
  /**
-  * _calculateValueBetween()
+  * Utils::calculateValueBetween()
   *
   * Summary.
   * Clips the val value between start and end, and returns the between value ;-)
@@ -308,9 +173,15 @@ class Utils {
   static calculateSvgCoordinate(argOwn, argToolset) {
 
     return (argOwn / 100) * (SVG_DEFAULT_DIMENSIONS)
-            + (argToolset - SVG_DEFAULT_DIMENSIONS/2);
+            + (argToolset - SVG_DEFAULT_DIMENSIONS_HALF);
   }
 
+ /**
+  * Utils::calculateSvgDimension()
+  *
+  * Summary.
+  * Translate tool dimension like length or width to actual SVG dimension.
+  */
 
   static calculateSvgDimension(argDimension) {
     return (argDimension / 100) * (SVG_DEFAULT_DIMENSIONS);
@@ -380,6 +251,14 @@ class Templates {
   * Templates::evaluateJsTemplate()
   *
   * Summary.
+  * Runs the JavaScript template.
+  *
+  * The arguments passed to the function are:
+  * - state, state of the current entity
+  * - states, the full array of states provied by hass
+  * - entity, the current entity and its configuration
+  * - user, the currently logged in user
+  * - hass, the hass object...
   *
   */
 
@@ -445,26 +324,21 @@ class Templates {
 class Toolset {
   constructor(argCard, argConfig) {
 
-
     this.toolsetId = Math.random().toString(36).substr(2, 9);
     this._card = argCard;
     this.dev = {...this._card.dev};
     if (this.dev.performance) console.time("--> "+ this.toolsetId + " PERFORMANCE Toolset::constructor");
 
-    // The position is the absolute position of the GROUP within the svg viewport.
-    // The tool is positioned relative to this origin. A tool is always relative
-    // to a 200x200 default svg viewport. A (50,50) position of the tool
-    // centers the tool on the absolute position of the GROUP!
     this.config = argConfig;
     this.tools=[];
 
     // Get SVG coordinates.
     this.svg = {};
-    this.svg.cx = Utils.calculateSvgCoordinate(argConfig.position.cx, SVG_DEFAULT_DIMENSIONS/2);
-    this.svg.cy = Utils.calculateSvgCoordinate(argConfig.position.cy, SVG_DEFAULT_DIMENSIONS/2);
+    this.svg.cx = Utils.calculateSvgCoordinate(argConfig.position.cx, SVG_DEFAULT_DIMENSIONS_HALF);
+    this.svg.cy = Utils.calculateSvgCoordinate(argConfig.position.cy, SVG_DEFAULT_DIMENSIONS_HALF);
 
-    this.svg.x = (this.svg.cx) - (SVG_DEFAULT_DIMENSIONS / 2);
-    this.svg.y = (this.svg.cy) - (SVG_DEFAULT_DIMENSIONS / 2);
+    this.svg.x = (this.svg.cx) - (SVG_DEFAULT_DIMENSIONS_HALF);
+    this.svg.y = (this.svg.cy) - (SVG_DEFAULT_DIMENSIONS_HALF);
 
     // Group scaling experiment. Calc translate values for SVG using the toolset scale value
     this.transform = {};
@@ -490,6 +364,7 @@ class Toolset {
 
     if (this.dev.debug) console.log("Toolset::constructor config/svg", this.toolsetId, this.config, this.svg);
 
+    // Create the tools configured in the toolset list.
     const toolsNew = {
       "area"      : EntityAreaTool,
       "badge"     : BadgeTool,
@@ -523,7 +398,6 @@ class Toolset {
 
       const newTool = new toolsNew[toolConfig.type](this, argConfig, argPos);
       this.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
-
     });
 
     if (this.dev.performance) console.timeEnd("--> "+ this.toolsetId + " PERFORMANCE Toolset::constructor");
@@ -699,7 +573,7 @@ class Toolset {
   * The order of transformations are done from the childs perspective!!
   * So, the child (tools) gets positioned FIRST, and then scaled/rotated.
   *
-  * See comments for different render paths for Apple/Safar and any other browser...
+  * See comments for different render paths for Apple/Safari and any other browser...
   *
   */
 
@@ -796,13 +670,10 @@ class BaseTool {
 
     // Get SVG coordinates.
     this.svg = {};
-    // this.svg.cx = Utils.calculateSvgCoordinate(argConfig.position.cx, this.toolsetPos.cx);
-    // this.svg.cy = Utils.calculateSvgCoordinate(argConfig.position.cy, this.toolsetPos.cy);
 
     this.svg.cx = Utils.calculateSvgCoordinate(argConfig.position.cx, 0);
     this.svg.cy = Utils.calculateSvgCoordinate(argConfig.position.cy, 0);
 
-    //this.dimensions = {};
     this.svg.height = argConfig.position.height ? Utils.calculateSvgDimension(argConfig.position.height) : 0;
     this.svg.width = argConfig.position.width ? Utils.calculateSvgDimension(argConfig.position.width) : 0;
 
@@ -840,7 +711,18 @@ class BaseTool {
     if ((this.config.show.style == 'colorstop') && (this.config?.colorstops.colors)) {
       this.sortedColorStops = Object.keys(this.config.colorstops.colors).map(n => Number(n)).sort((a, b) => a - b);
     }
-    
+
+    this.csnew = {}
+    if ((this.config.csnew) && (this.config.csnew.colors)) {
+      this.config.csnew.colors.forEach((item, i) => {
+        console.log('csnew, i, item', i, item);
+        this.csnew[item.stop] = this.config.csnew.colors[i];
+      })
+
+    console.log('this.csnew ', this.csnew);
+    this.sortedcsnew = Object.keys(this.csnew).map(n => Number(n)).sort((a, b) => a - b);
+    console.log('this.sortedcsnew ', this.sortedcsnew);
+    }
   }
 
  /*******************************************************************************
@@ -852,8 +734,6 @@ class BaseTool {
   */
   set value(state) {
 
-//    console.log("set value (state)", state);
-    
     let localState = state;
 
     if (this.dev.debug) console.log('BaseTool set value(state)', localState);
@@ -870,7 +750,6 @@ class BaseTool {
     this._stateValuePrev = this._stateValue || localState;
     this._stateValue = localState;
     this._stateValueIsDirty = true;
-    
 
     // If animations defined, calculate style for current state.
 
@@ -1010,6 +889,28 @@ class BaseTool {
   }
 
  /*******************************************************************************
+  * BaseTool::MergeColorFromState2()
+  *
+  * Summary.
+  * Merge color depending on state into colorStyle
+  *
+  */
+
+  MergeColorFromState2(argStyleMap, argPart) {
+    
+    if (this.config.hasOwnProperty('entity_index')) {
+      const fillColor = this.config[this.config.show.style].fill ? this.getColorFromState2(this._stateValue, argPart, 'fill') : '';
+      const strokeColor = this.config[this.config.show.style].stroke ? this.getColorFromState2(this._stateValue, argPart, 'stroke') : '';
+      if (fillColor != '') {
+        argStyleMap['fill'] = fillColor;
+      }
+      if (strokeColor != '') {
+        argStyleMap['stroke'] = strokeColor;
+      }
+    }
+  }
+
+ /*******************************************************************************
   * BaseTool::getColorFromState()
   *
   * Summary.
@@ -1036,7 +937,31 @@ class BaseTool {
     }
     return color;
   }
+
+ /*******************************************************************************
+  * BaseTool::getColorFromState2()
+  *
+  * Summary.
+  * Get color from colorstop or gradient depending on state.
+  *
+  */
+  getColorFromState2(argValue, argPart, argProperty) {
+
+    var color = '';
+    switch (this.config.show.style) {
+      case 'colorstop':
+      case 'colorstops':
+      case 'colorstopgradient':
+        color = this._card._calculateColor2(argValue, this.csnew, argPart, argProperty, (this.config.show.style === 'colorstopgradient'));
+        break;
+      case 'minmaxgradient':
+        color = this._card._calculateColor2(argValue, this.colorStopsMinMax, argPart, argProperty, true);
+        break;
+    }
+    return color;
+  }
 }
+
 
  /*******************************************************************************
   * RangeSliderTool class
@@ -1539,6 +1464,11 @@ class RangeSliderTool2 extends BaseTool {
           cx: 50,
           cy: 50,
           orientation: 'horizontal',
+          active: {
+            width: 0,
+            height: 0,
+            radius: 0,
+          },
           track: {
             width: 16,
             height: 7,
@@ -1556,6 +1486,7 @@ class RangeSliderTool2 extends BaseTool {
         },
         show: {
           uom: 'end',
+          active: false,
         },
         classes: {
           tool: {
@@ -1564,6 +1495,9 @@ class RangeSliderTool2 extends BaseTool {
           },
           capture: {
             "sak-slider__capture": true,
+          },
+          active: {
+            "sak-slider__active": true,
           },
           track: {
             "sak-slider__track": true,
@@ -1583,6 +1517,8 @@ class RangeSliderTool2 extends BaseTool {
           },
           capture: {
           },
+          active: {
+          },
           track: {
           },
           thumb: {
@@ -1596,6 +1532,11 @@ class RangeSliderTool2 extends BaseTool {
 
     super(argToolset, Merge.mergeDeep(DEFAULT_RANGESLIDER_CONFIG, argConfig), argPos);
 
+    this.svg.activeTrack = {};
+    this.svg.activeTrack.radius = Utils.calculateSvgDimension(this.config.position.active.radius);
+    this.svg.activeTrack.height = Utils.calculateSvgDimension(this.config.position.active.height);
+    this.svg.activeTrack.width = Utils.calculateSvgDimension(this.config.position.active.width);
+    
     this.svg.track = {};
     this.svg.track.radius = Utils.calculateSvgDimension(this.config.position.track.radius);
     
@@ -1619,11 +1560,18 @@ class RangeSliderTool2 extends BaseTool {
         this.svg.thumb.width = Utils.calculateSvgDimension(this.config.position.thumb.width);
         this.svg.thumb.height = Utils.calculateSvgDimension(this.config.position.thumb.height);
 
+        // x1, y1 = topleft corner
         this.svg.capture.x1 = this.svg.cx - this.svg.capture.width/2;
         this.svg.capture.y1 = this.svg.cy - this.svg.capture.height/2;
 
+        // x1, y1 = topleft corner
         this.svg.track.x1 = this.svg.cx - this.svg.track.width/2;
         this.svg.track.y1 = this.svg.cy - this.svg.track.height/2;
+
+        // x1, y1 = topleft corner
+        this.svg.activeTrack.x1 = (this.config.position.orientation == 'horizontal') ? this.svg.track.x1 : this.svg.cx - this.svg.activeTrack.width/2;
+        this.svg.activeTrack.y1 = this.svg.cy - this.svg.activeTrack.height/2;
+        // this.svg.activeTrack.x1 = this.svg.track.x1;
 
         this.svg.thumb.x1 = this.svg.cx - this.svg.thumb.width/2;
         this.svg.thumb.y1 = this.svg.cy - this.svg.thumb.height/2;
@@ -1636,6 +1584,7 @@ class RangeSliderTool2 extends BaseTool {
     switch (this.config.position.orientation) {
       case 'vertical':
         this.svg.track.y2 = this.svg.cy + this.svg.track.height/2;
+        this.svg.activeTrack.y2 = this.svg.track.y2;
       break;
     }
     switch (this.config.position.label.placement) {
@@ -1683,7 +1632,7 @@ class RangeSliderTool2 extends BaseTool {
   * RangeSliderTool2::svgCoordinateToSliderValue()
   *
   * Summary.
-  * svg coordinates to actual slider value
+  * @returns {slider value} Translated svg coordinate to actual slider value
   *
   */
 
@@ -1694,18 +1643,14 @@ class RangeSliderTool2 extends BaseTool {
     
     switch (argThis.config.position.orientation) {
       case 'horizontal':
-        // var xpos = m.x - argThis.svg.track.x1 - this.svg.thumb.width/2 + this.svg.cx;
         var xpos = m.x - argThis.svg.track.x1 - this.svg.thumb.width/2;
         scalePos = xpos / (argThis.svg.track.width - this.svg.thumb.width);
-        console.log("svgCoordinateToSliderValue, m.x, xpos, scalePos", m.x, argThis.svg.track.x1, scalePos);
         break;
 
       case 'vertical':
         // y is calculated from lower y value. So slider is from bottom to top...
-        var ypos = argThis.svg.track.y2  - this.svg.thumb.width/2 - m.y;
-        // ypos = argThis.svg.track.y1 + m.y;
+        var ypos = argThis.svg.track.y2  - this.svg.thumb.height/2 - m.y;
         scalePos = ypos / (argThis.svg.track.height - this.svg.thumb.height);
-        // console.log("svgCoordinateToSliderValue, m.y, ypos, scalePos", m.y, argThis.svg.track.y1, scalePos);
         break;
     }
     state = ((argThis.config.scale.max - argThis.config.scale.min) * scalePos) + argThis.config.scale.min;
@@ -1721,14 +1666,12 @@ class RangeSliderTool2 extends BaseTool {
       let state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, argValue);
 
       var xposp = state * (argThis.svg.track.width - this.svg.thumb.width);
-      // var xpos = argThis.svg.track.x1 + this.svg.thumb.width/2 + xposp  - this.svg.cx;
       var xpos = argThis.svg.track.x1 + this.svg.thumb.width/2 + xposp;
       return xpos;
     } else if (argThis.config.position.orientation == 'vertical') {
       let state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, argValue);
 
       var yposp = state * (argThis.svg.track.height - this.svg.thumb.height);
-      // var ypos = argThis.svg.track.y2 - this.svg.thumb.height/2 - yposp  - this.svg.cy;
       var ypos = argThis.svg.track.y2 - this.svg.thumb.height/2 - yposp;
       return ypos;
     }
@@ -1758,9 +1701,7 @@ class RangeSliderTool2 extends BaseTool {
 
         if (this.dragging) {
           const yUp = (this.config.position.label.placement == 'thumb') ? -50 : 0;
-          // const yUpStr = `translateY(${yUp}px)`;
           const yUpStr = `translate(${m.x - this.svg.cx}px , ${yUp}px)`;
-          // console.log('updateThumb', `translate(${m.x}px, ${yUp}px)`);
 
           argThis.elements.thumbGroup.style.transform = yUpStr;
         } else {
@@ -1771,29 +1712,45 @@ class RangeSliderTool2 extends BaseTool {
       case 'vertical':
         if (this.dragging) {
           const xUp = (this.config.position.label.placement == 'thumb') ? -50 : 0;
-          // const yUpStr = `translateY(${yUp}px)`;
-          const xUpStr = `translate(${xUp}px, ${m.y}px)`;
+          const xUpStr = `translate(${xUp}px, ${m.y - this.svg.cy}px)`;
           argThis.elements.thumbGroup.style.transform = xUpStr;
         } else {
-          argThis.elements.thumbGroup.style.transform = `translate(${0}px, ${m.y}px)`;
+          argThis.elements.thumbGroup.style.transform = `translate(${0}px, ${m.y - this.svg.cy}px)`;
         }
         break;
     }
 
     argThis.updateLabel(argThis, m);
-    // argThis.updateInput(m);
+  }
+
+  updateActiveTrack(argThis, m) {
+
+    if (!argThis.config.show.active) return;
+    
+    switch (argThis.config.position.orientation) {
+      default:
+      case 'horizontal':
+        if (this.dragging) {
+          argThis.elements.activeTrack.setAttribute("width", Math.abs(this.svg.activeTrack.x1 - m.x + this.svg.cx));
+        }
+        break;
+
+      case 'vertical':
+        if (this.dragging) {
+          argThis.elements.activeTrack.setAttribute("y", m.y - this.svg.cy);
+          argThis.elements.activeTrack.setAttribute("height", Math.abs(argThis.svg.activeTrack.y2 - m.y + this.svg.cx));
+        }
+        break;
+    }
   }
   
   updateLabel(argThis, m) {
-    // console.log("updateLabel", argThis.elements.label);
     if (this.dev.debug) console.log('SLIDER - updateLabel start', m, argThis.config.position.orientation);
-    argThis.labelValue2 = Math.round(argThis.svgCoordinateToSliderValue(argThis, m)).toString();//argThis._value;
+    argThis.labelValue2 = Math.round(argThis.svgCoordinateToSliderValue(argThis, m)).toString();
     
     if (this.config.position.label.placement != 'none') {
       argThis.elements.label.textContent = argThis.labelValue2;
     }
-    // argThis.elements.label.nodeValue = argThis.labelValue;
-    
   }
 
   /*
@@ -1840,66 +1797,53 @@ class RangeSliderTool2 extends BaseTool {
       thisValue.rid = window.requestAnimationFrame(Frame);
       thisValue.updateValue(thisValue, thisValue.m);
       thisValue.updateThumb(thisValue, thisValue.m);
-      // console.log("Frame", thisValue.toolId);
-      // thisValue.updatePath(thisValue, thisValue.m);
-      //if (this.dev.debug) console.log('pointer in Frame', thisValue.m);
+      thisValue.updateActiveTrack(thisValue, thisValue.m);
     }
 
     if (this.dev.debug) console.log('slider - firstUpdated');
-    // #TODO
-    // svg moet een svg object zijn, want er worden functies op uitgevoerd.
-    // dus deze slider moet een eigen svg element krijgen...
     this.elements = {};
     this.elements.svg = this._card.shadowRoot.getElementById("rangeslider-".concat(this.toolId));
+    this.elements.capture = this.elements.svg.querySelector("#capture");
     this.elements.track = this.elements.svg.querySelector("#rs-track");
+    this.elements.activeTrack = this.elements.svg.querySelector("#active-track");
     this.elements.thumbGroup = this.elements.svg.querySelector("#rs-thumb-group");
     this.elements.thumb = this.elements.svg.querySelector("#rs-thumb");
     this.elements.label = this.elements.svg.querySelector("#rs-label tspan");
 
-    // console.log("firstupdated", this.elements);
-    
     if (this.dev.debug) console.log('slider - firstUpdated svg = ', this.elements.svg, 'path=', this.elements.path, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
 
-//    this.inputElement = witness; ////
+    this.elements.capture.addEventListener("pointerdown", e => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
 
-
-    this.elements.svg.addEventListener("pointerdown", e => {
       this.dragging = true;
       this.timeOutId = setTimeout(() => this.callService(), 250);
       this.m = this.oMousePosSVG(e);
       // WHY again not working for Safari/iPad!!!!!
-      if ((!this.elements.svg.hasPointerCapture(e.pointerId)) && !(this._card.isSafari || this._card.iOS)) {
-        this.elements.svg.setPointerCapture(e.pointerId);
+      // Capture on Safari needs about 0.5 sec for the glass to kick in and then capturing works... No idea why...
+      if ((!this.elements.capture.hasPointerCapture(e.pointerId)) ) {//&& !(this._card.isSafari || this._card.iOS)) {
+        this.elements.capture.setPointerCapture(e.pointerId);
       }
-      // if (!this.iOS) this.elements.svg.setPointerCapture(e.pointerId);
-      //this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
       if (this.config.position.orientation == 'horizontal') {
         this.m.x =  (Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step);
       } else {
         this.m.y = (Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step);
       }
-      // console.log("pointerdown", this.svg.scale, this.m);
-      //if (this.dev.debug) console.clear();
       if (this.dev.debug) console.log('pointerDOWN',Math.round(this.m.x * 100) / 100);
-      // this.target = this.svg.handle.popout;
       Frame();
-    });
+    }, {capture: true, passive: false});
 
-    this.elements.svg.addEventListener("pointerup", e => {
+    this.elements.capture.addEventListener("pointerup", e => {
       this.dragging = false;
       clearTimeout(this.timeOutId);
       this.target = 0;
-      if ((!this.elements.svg.hasPointerCapture(e.pointerId)) && !(this._card.isSafari || this._card.iOS)) {
-        this.elements.svg.releasePointerCapture(e.pointerId);
+      if ((!this.elements.capture.hasPointerCapture(e.pointerId)) ) {//&& !(this._card.isSafari || this._card.iOS)) {
+        this.elements.capture.releasePointerCapture(e.pointerId);
       }
       if (this.dev.debug) console.log('pointerUP');
       Frame();
-      //this.updatePath(m,deformation);
-      // cancelAnimationFrame(this.rid);
-      // Can this here???
       this.callService();
-
-    });
+    }, {capture: true, passive: false});
 
     // this.elements.svg.addEventListener("pointerout", () => {
 
@@ -1909,17 +1853,14 @@ class RangeSliderTool2 extends BaseTool {
       // Frame();
     // });
 
-    this.elements.svg.addEventListener("pointermove", e => {
+    this.elements.capture.addEventListener("pointermove", e => {
       let scaleValue;
+      
+      e.preventDefault();
+      e.stopImmediatePropagation();
       
       if (this.dragging) {
         this.m = this.oMousePosSVG(e);
-
-        // Clip pointer to scale.
-        //this.m.x = Math.max(this.svg.scale.min, Math.min(this.m.x, this.svg.scale.max));
-        //this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
-        //this.m.x = Math.max(10, Math.min(this.m.x, 90.0));
-        //this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
 
         switch (this.config.position.orientation) {
           case 'horizontal':
@@ -1927,31 +1868,23 @@ class RangeSliderTool2 extends BaseTool {
             scaleValue = this.svgCoordinateToSliderValue(this, this.m);
             this.m.x = this.valueToSvg(this, scaleValue);
             this.m.x = Math.max(this.svg.scale.min, Math.min(this.m.x, this.svg.scale.max));
-            const x2 = this.m.x;
+            // const x2 = this.m.x;
             this.m.x = (Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step);
-            const x3 = this.m.x;
-
-            // console.log("pointermove horizontal", this.m, scaleValue, x1, x2, x3);
+            // const x3 = this.m.x;
             break;
 
           case 'vertical':
             const y1 = this.m.y;
             scaleValue = this.svgCoordinateToSliderValue(this, this.m);
             this.m.y = this.valueToSvg(this, scaleValue);
-            // this.m.y = Math.max(this.svg.scale.min, Math.min(this.m.y, this.svg.scale.max));
-            const y2 = this.m.y;
+            // const y2 = this.m.y;
             this.m.y = (Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step);
-            const y3 = this.m.y;
-
-            // console.log("pointermove vertical", this.m, scaleValue, y1, y2, y3);
-          
+            // const y3 = this.m.y;
             break;
         }
-
         Frame();
       }
-    });
-
+    }, {capture: true, passive: false});
   }
 
 /*******************************************************************************
@@ -1973,13 +1906,6 @@ class RangeSliderTool2 extends BaseTool {
     if (this.config.show.uom === 'none') {
       return svg``;
     } else {
-      // Testing !!!!!!!!!!!! Return fixed value always...
-        // return svg`
-          // <tspan class="${classMap(this.classes.uom)}" dx="-0.1em" dy="-0.35em" style="font-size: 10em;"
-            // >
-            // OK</tspan>
-        // `;
-      
       this.MergeColorFromState(this.styles.uom);
       this.MergeAnimationStyleIfChanged();
       
@@ -2002,12 +1928,6 @@ class RangeSliderTool2 extends BaseTool {
 
       // Check for location of uom. end = next to state, bottom = below state ;-), etc.
       if (this.config.show.uom === 'end') {
-        // test: render at fixed position...
-        // return svg`
-          // <tspan class="${classMap(this.classes.uom)}" x="0" y="0" dx="-0.1em" dy="-0.35em"
-            // style="${styleMap(this.styles.uom)}">
-            // ${uom}</tspan>
-        // `;
 
         if ((this.svg.label.cx == 0) || (this.svg.label.cy == 0)) {
         return svg`
@@ -2062,7 +1982,6 @@ class RangeSliderTool2 extends BaseTool {
     this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles);
     this.MergeAnimationStyleIfChanged(this.styles);
-    // console.log('_renderRangeSlider, styles=', this.styles);
 
     this.renderValue = this._stateValue;// || this.labelValue2;
     if (this.dragging) {
@@ -2070,11 +1989,6 @@ class RangeSliderTool2 extends BaseTool {
     } else {
       if (this.elements?.label) this.elements.label.textContent = this.renderValue;
     }
-    
-    // const thumbPos = this.valueToSvg(Number(this.renderValue)) - this.svg.thumb.width/2;
-    
-    // Should use center x,y too for calculating cx,cy. Is not equal to this.renderValue if slider is not centered
-    // at 50,50 in configuration!!!!!!!!!!!!!!!!!!!!!!!!
     
     // Calculate cx and cy: the relative move of the thumb from the center of the track
     let cx, cy;
@@ -2105,10 +2019,26 @@ class RangeSliderTool2 extends BaseTool {
         default:
           console.error('_renderRangeSlider(), invalid label placement', this.config.position.label.placement);
     }
-    // console.log('_renderRangeSlider descr=', this.config.descr, " cx/cy=", cx, cy, " state=", this._stateValue, " label=", this.renderValue);
+    
+    function renderActiveTrack() {
+      if (!this.config.show.active) return svg``;
+      
+      if (this.config.position.orientation === 'horizontal') {
+        return svg`
+          <rect id="active-track" class="${classMap(this.classes.active)}" x="${this.svg.activeTrack.x1}" y="${this.svg.activeTrack.y1}"
+            width="${Math.abs(this.svg.thumb.x1 - this.svg.activeTrack.x1 + cx + this.svg.thumb.width/2)}" height="${this.svg.activeTrack.height}" rx="${this.svg.activeTrack.radius}"
+            style="${styleMap(this.styles.active)}" touch-action="none"
+          />`;
+      } else {
+        return svg`
+          <rect id="active-track" class="${classMap(this.classes.active)}" x="${this.svg.activeTrack.x1}" y="${cy}"
+            height="${Math.abs(this.svg.activeTrack.y1 + cy - this.svg.thumb.height)}" width="${this.svg.activeTrack.width}" rx="${this.svg.activeTrack.radius}"
+            style="${styleMap(this.styles.active)}"
+          />`;
+      }
+    }
     
     function renderThumbGroup() {
-
       return svg`
         <g id="rs-thumb-group" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}" style="transform:translate(${cx}px, ${cy}px)">
           <g style="transform-origin:center;transform-box: fill-box;">
@@ -2145,41 +2075,28 @@ class RangeSliderTool2 extends BaseTool {
       }
     }
     
-    if (!this.counter) this.counter = 1;
-    this.counter++;
-    this.counter = this.renderValue;
+    // if (!this.counter) this.counter = 1;
+    // this.counter++;
+    // this.counter = this.renderValue;
     
     const svgItems = [];
     svgItems.push(svg`
-      <rect id="capture" class="${classMap(this.classes.capture)}" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
-        width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.track.radius}"          
-      />
 
       <rect id="rs-track" class="${classMap(this.classes.track)}" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
         width="${this.svg.track.width}" height="${this.svg.track.height}" rx="${this.svg.track.radius}"
         style="${styleMap(this.styles.track)}"
       />
 
+      ${renderActiveTrack.call(this)}
       ${renderThumbGroup.call(this)}
       ${renderLabel.call(this, false)}
+
+      <rect id="capture" class="${classMap(this.classes.capture)}" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
+        width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.track.radius}"          
+      />
+
       `
     );
-    // svgItems.push(svg`
-      // <g overflow="visible">
-        // <rect id="capture" class="${classMap(this.classes.capture)}" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
-          // width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.track.radius}"          
-        // />
-
-        // <rect id="rs-track" class="${classMap(this.classes.track)}" x="${this.svg.track.x1}" y="${this.svg.track.y1}"
-          // width="${this.svg.track.width}" height="${this.svg.track.height}" rx="${this.svg.track.radius}"
-          // style="${styleMap(this.styles.track)}"
-        // />
-
-        // ${renderThumbGroup.call(this)}
-        // ${renderLabel.call(this, false)}
-      // </g>
-      // `
-    // );
 
     return svgItems;
   }
@@ -2221,7 +2138,8 @@ class RangeSliderTool2 extends BaseTool {
   render() {
 
     return svg`
-      <svg xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}" overflow="visible" pointer-events="all"
+      <svg xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}" overflow="visible"
+        style="touch-action:none; pointer-events:none;"
       >
         ${this._renderRangeSlider()}
       </svg>
@@ -2286,10 +2204,6 @@ class LineTool extends BaseTool {
       this.svg.x2 = this.svg.cx + this.svg.length/2;
       this.svg.y2 = this.svg.cy;
     } else if (this.config.position.orientation == 'fromto') {
-      // this.svg.x1 = this.svg.x1;
-      // this.svg.y1 = this.svg.y1;
-      // this.svg.x2 = this.svg.x2;
-      // this.svg.y2 = this.svg.y2;
     }
     
     this.classes.line = {};
@@ -2304,6 +2218,8 @@ class LineTool extends BaseTool {
   * Summary.
   * Renders the line using precalculated coordinates and dimensions.
   * Only the runtime style is calculated before rendering the line
+  *
+  * @returns  {svg} Rendered line
   *
   */
 
@@ -2328,6 +2244,8 @@ class LineTool extends BaseTool {
   *
   * Summary.
   * The render() function for this object.
+  *
+  * @returns  {svg} Rendered line group
   *
   */
   render() {
@@ -2459,10 +2377,6 @@ class CircleTool extends BaseTool {
   *  background-color: var(--switch-checked-button-color);
   *  border-color: var(--switch-checked-button-color);
   * 
-  * transition: transform 90ms cubic-bezier(0.4, 0, 0.2, 1) 0s, background-color 90ms cubic-bezier(0.4, 0, 0.2, 1) 0s, border-color 90ms cubic-bezier(0.4, 0, 0.2, 1) 0s;
-  *
-  *
-  * Label placement (optional, not yet implemented): Top, Start, Bottom, End --> Also for UOM!!!!!!!!!!!!!!!
   */
 
 class SwitchTool extends BaseTool {
@@ -2629,7 +2543,7 @@ class SwitchTool extends BaseTool {
   * SwitchTool::value()
   *
   * Summary.
-  * Receive new state data for the entity this circle is linked to. Called from set hass;
+  * Receive new state data for the entity this switch is linked to. Called from set hass;
   *
   */
   set value(state) {
@@ -2975,7 +2889,7 @@ class RectangleTool extends BaseTool {
   * RectangleTool::value()
   *
   * Summary.
-  * Receive new state data for the entity this circle is linked to. Called from set hass;
+  * Receive new state data for the entity this rectangle is linked to. Called from set hass;
   *
   */
   set value(state) {
@@ -3110,7 +3024,13 @@ class RectangleToolEx extends BaseTool {
   _renderRectangleEx() {
 
     this.MergeAnimationClassIfChanged();
-    this.MergeColorFromState(this.styles.rectex);
+
+    // WIP
+    if (this.config.hasOwnProperty('csnew')) {
+      this.MergeColorFromState2(this.styles.rectex, 'rectex');
+    } else {
+      this.MergeColorFromState(this.styles.rectex);
+    }
     this.MergeAnimationStyleIfChanged();
 
     const svgItems = svg`
@@ -3428,10 +3348,26 @@ class EntityIconTool extends BaseTool {
 
     // Test with global cache in lovelace...
 
+    // NTS@20201.12.24
+    // When using SVG Icon, it crashes with "cannot read properties of null (reading 'querySelectorAll')
+    // So it seems the query doesn't return anything, not even index [0]...
+    // Solution:
+    // After an icon change, the shadowRoot isn't there yet, so use '?' for that test...
+    //
+    // Should the .whenDefined
+    
     if (!this._card.lovelace.sakIconCache[icon]) {
-      this.iconSvg = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot.querySelectorAll("*")[0]?.path;
+      var theQuery = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot?.querySelectorAll("*");
+      if (theQuery) {
+        this.iconSvg = theQuery[0]?.path;
+      } else {
+        this.iconSvg = undefined;
+      }
+
+      // this.iconSvg = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot.querySelectorAll("*")[0]?.path;
+
       if (!this.iconSvg) {
-        this._card.pleaseReRender();
+        // this._card.pleaseReRender();
       } else {
         this._card.lovelace.sakIconCache[icon] = this.iconSvg;
       }
@@ -3477,7 +3413,10 @@ class EntityIconTool extends BaseTool {
 
     var scale = 1;
 
-    if ((this._card.isSafari) || (this._card.iOS)) {
+    // NTS@20201.12.24
+    // Add (true) to force rendering the Safari like solution for icons. After the above fix, it seems to work for both Chrome and
+    // Safari browsers. That is nice. Now animations also work on Chrome...
+    if ((true) || (this._card.isSafari) || (this._card.iOS)) {
       if (this.iconSvg) {
         // Use original size, not the corrected one!
         this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
@@ -3504,7 +3443,10 @@ class EntityIconTool extends BaseTool {
             <body>
               <div class="div__icon, hover" xmlns="http://www.w3.org/1999/xhtml"
                   style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-                  <ha-icon icon=${icon} id="icon-${this.toolId}" class="${classMap(this.classes.icon)}" style="${styleMap(this.styles.icon)}";></ha-icon>
+                  <ha-icon icon=${icon} id="icon-${this.toolId}" class="${classMap(this.classes.icon)}"
+                  @animationstart=${e => this._handleAnimationEvent(e, this)}
+                  @animationiteration=${e => this._handleAnimationEvent(e, this)}
+                  style="animation: flash 0.1s 10;"></ha-icon>
               </div>
             </body>
           </foreignObject>
@@ -3524,8 +3466,23 @@ class EntityIconTool extends BaseTool {
 
   }
 
-  firstUpdated(changedProperties) {
+                  // style="${styleMap(this.styles.icon)}";></ha-icon>
 
+  _handleAnimationEvent(argEvent, argThis) {
+    argEvent.stopPropagation();
+    argEvent.preventDefault();
+
+    // console.log('_handleAnimationEvent ', argEvent, argThis);
+    argThis.iconSvg = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot?.querySelectorAll("*")[0]?.path;
+    if (argThis.iconSvg) {
+      // console.log('_handleAnimationEvent YESSSSSSSSSSSSSSSSSSSSSSSSSSSS...');
+      argThis._card.requestUpdate();
+    } else {
+      // console.log('_handleAnimationEvent NOPE, not yet...');
+    }
+  }
+  
+  firstUpdated(changedProperties) {
 
   }
 
@@ -4169,7 +4126,7 @@ class HorseshoeTool extends BaseTool {
       show: {horseshoe: true,
              scale_tickmarks: false,
              horseshoe_style: 'fixed'}
-    }
+    };
 
 
     super(argToolset, Merge.mergeDeep(DEFAULT_HORSESHOE_CONFIG, argConfig), argPos);
@@ -4725,8 +4682,6 @@ class SegmentedArcTool extends BaseTool {
     }
 
     super(argToolset, Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig), argPos);
-
-//this.dev.debug = true;
 
     if (this.dev.performance) console.time("--> "+ this.toolId + " PERFORMANCE SegmentedArcTool::constructor");
 
@@ -5834,127 +5789,9 @@ class devSwissArmyKnifeCard extends LitElement {
   * section in lovelace configuration.
   *
   */
-  // static getUserStyles() {
-    // var cssItems = [];
-
-    // this.cssItems = [];
-    // var piet = [];
-    // var someContent;
-    
-    // var cssString = "";
-    // const root = document.querySelector('home-assistant');
-    // const main = root.shadowRoot.querySelector('home-assistant-main');
-    // const drawer_layout = main.shadowRoot.querySelector('app-drawer-layout');
-    // const pages = drawer_layout.querySelector('partial-panel-resolver');
-    // const lovelace = pages.querySelector('ha-panel-lovelace');
-
-    // if (!lovelace) console.error("card::constructor - Can't get Lovelace panel");
-    
-    // if ((lovelace.lovelace.config.sak_templates) &&
-        // (lovelace.lovelace.config.sak_templates.user_css_definitions)) {
-      // cssItems = [];
-
-      // lovelace.lovelace.config.sak_templates.user_css_definitions.map((cssItem, index) => {
-        // console.log('getUserStylesCss, css item', index, cssItem);
-        // // this.cssItems.push(unsafeCSS`.sak-state__value {--descr: fixed-css-def; background: aquamarine;}`);
-        // const cs = '.sak-state__value {--descr: fixed-css-def-2; background: yellow;}';
-        // const cs2 = '' + cssItem.content;
-        // this.cssItems.push(unsafeCSS(cs2));
-        
-        // someContent = cssItem.content.replace(/[\r\n]+/gm, "").trim();
-        // console.log("getUserStylesCss, someContent, piet", someContent);
-        // this.cssItems.push(unsafeCSS`${someContent}`);
-        // // this.cssItems.push(unsafeCSS(someContent));
-
-
-        // // piet[index] = cssItem.content.replace(/[\r\n]+/gm, "").trim();
-        // // console.log('getUserStylesCss, piet regexed', piet);
-        // // cssItems.push(unsafeCSS`${piet}`);
-        
-        // // piet = unsafeCSS`.fuck-state__value {--descr: fixed-css-def-var; background: aquamarine; stroke-width: 2; fill: yellow; opacity: 0.4;}`;
-        // // console.log('getUserStylesCss, piet unsafeCSS', piet);
-        // // cssItems.push(unsafeCSS`${piet}`);
-        // // cssItems.push(css`${cssItem.content}`);  
-        // // cssItems.push(unsafeCSS`${piet}`);
-        // console.log('getUserStylesCss, after push, piet', this.cssItems);
-      // });
-    // }
-    // // return css(cssItems);
-    // return unsafeCSS(this.cssItems);
-    // // return unsafeCSS`${cssItems}`;
-    // console.log('getUserStyesCss, cssItems, piet', this.cssItems);
-    // return unsafeCSS`${cssItems}`;
-  // }
-
-  // static getUserStyles2() {
-    // // var cssItems = [];
-
-    // this.cssItems = [];
-    // var piet = [];
-    // var someContent;
-    // this.someContent = "";
-    
-    // var cssString = "";
-    // const root = document.querySelector('home-assistant');
-    // const main = root.shadowRoot.querySelector('home-assistant-main');
-    // const drawer_layout = main.shadowRoot.querySelector('app-drawer-layout');
-    // const pages = drawer_layout.querySelector('partial-panel-resolver');
-    // const lovelace = pages.querySelector('ha-panel-lovelace');
-
-    // if (!lovelace) console.error("card::constructor - Can't get Lovelace panel");
-    
-    // if ((lovelace.lovelace.config.sak_templates) &&
-        // (lovelace.lovelace.config.sak_templates.user_css_definitions)) {
-      // // cssItems = [];
-
-      // lovelace.lovelace.config.sak_templates.user_css_definitions.map((cssItem, index) => {
-        // console.log('getUserStylesCss2, css item', index, cssItem);
-        // this.someContent += cssItem.content;
-        // console.log("getUserStylesCss2, someContent, piet", this.someContent);
-      // });
-    // }
-    // someContent = unsafeCSS(this.someContent);
-    // return css`${someContent}`;
-    // // return unsafeCSS(this.someContent);
-    // // return unsafeCSS`${cssItems}`;
-    // // console.log('getUserStyesCss2, cssItems, piet', this.someContent);
-    // // return css`${this.someContent}`;
-  // }
-
-  // static getUserStyles3() {
-    // // var cssItems = [];
-
-    // this.cssItems = [];
-    // var piet = [];
-    // var someContent;
-    
-    // var cssString = "";
-    // const root = document.querySelector('home-assistant');
-    // const main = root.shadowRoot.querySelector('home-assistant-main');
-    // const drawer_layout = main.shadowRoot.querySelector('app-drawer-layout');
-    // const pages = drawer_layout.querySelector('partial-panel-resolver');
-    // const lovelace = pages.querySelector('ha-panel-lovelace');
-
-    // if (!lovelace) console.error("card::constructor - Can't get Lovelace panel");
-    
-    // if ((lovelace.lovelace.config.sak_templates) &&
-        // (lovelace.lovelace.config.sak_templates.user_css_definitions)) {
-
-      // lovelace.lovelace.config.sak_templates.user_css_definitions.map((cssItem, index) => {
-        // console.log('getUserStylesCss3, css item', index, cssItem);
-        // this.cssItems.push(unsafeCSS(cssItem.content.replace(/[\r\n]+/gm, "").trim()));
-        // console.log("getUserStylesCss3, someContent, piet", this.cssItems[index]);
-      // });
-    // }
-    // var allcss = unsafeCSS(this.cssItems);
-    // console.log("getUserStyesCss3, allcss", this.cssItems, allcss);
-    // return unsafeCSS(this.cssItems[2]);
-    // // return css`${this.cssItems}`;
-  // }
 
   static getUserStyles4() {
 
-    // var userContent;
     this.userContent = "";
     
     const root = document.querySelector('home-assistant');
@@ -5968,7 +5805,6 @@ class devSwissArmyKnifeCard extends LitElement {
     if ((lovelace.__lovelace.config.sak_templates) &&
         (lovelace.__lovelace.config.sak_templates.user_css_definitions)) {
       this.userContent = lovelace.__lovelace.config.sak_templates.user_css_definitions.reduce((accumulator, currentValue) => {
-        // console.log("getUserStyles4, accu", accumulator, currentValue.content);
         return accumulator + currentValue.content;
       }, "");
     }
@@ -5978,7 +5814,6 @@ class devSwissArmyKnifeCard extends LitElement {
 
   static getSakStyles4() {
 
-    // var sakContent;
     this.sakContent = "";
     
     const root = document.querySelector('home-assistant');
@@ -5992,43 +5827,11 @@ class devSwissArmyKnifeCard extends LitElement {
     if ((lovelace.__lovelace.config.sak_templates) &&
         (lovelace.__lovelace.config.sak_templates.sak_css_definitions)) {
       this.sakContent = lovelace.__lovelace.config.sak_templates.sak_css_definitions.reduce((accumulator, currentValue) => {
-        // console.log("getSystemStyles4, accu", accumulator, currentValue.content);
         return accumulator + currentValue.content;
       }, "");
     }
     return css`${unsafeCSS(this.sakContent)}`;
   }
-
-  // static getUserStylesHtml() {
-    // var cssItems = [];
-
-    // // return html``;
-
-    // var cssString = "";
-    // const root = document.querySelector('home-assistant');
-    // const main = root.shadowRoot.querySelector('home-assistant-main');
-    // const drawer_layout = main.shadowRoot.querySelector('app-drawer-layout');
-    // const pages = drawer_layout.querySelector('partial-panel-resolver');
-    // const lovelace = pages.querySelector('ha-panel-lovelace');
-
-    // if (!lovelace) console.error("card::constructor - Can't get Lovelace panel");
-    
-    // if ((lovelace.lovelace.config.sak_templates) &&
-        // (lovelace.lovelace.config.sak_templates.user_css_definitions)) {
-
-      // lovelace.lovelace.config.sak_templates.user_css_definitions.map((cssItem, index) => {
-        // console.log('getUserStylesHtml, css item', index, cssItem);
-        // // cssItems.push(unsafeCSS`.whatever { background: aquamarine; stroke-width: 2; stroke: yellow; opacity: 0.2; }`);
-        // // var piet = cssItem.content;
-        // // cssItems.push(unsafeCSS`${piet}`);
-        // // cssItems.push(css`${cssItem.content}`);  
-        // cssItems.push(html`${cssItem.content}`);
-      // });
-    // }
-    // return html`${cssItems}`;
-    // console.log('getUserStyesHtml, cssItems', cssItems);
-    // return unsafeCSS`${cssItems}`;
-  // }
 
  /*******************************************************************************
   * card::styles()
@@ -6240,22 +6043,16 @@ class devSwissArmyKnifeCard extends LitElement {
     if (this.dev.performance) console.time("--> " + this.cardId + " PERFORMANCE card::setConfig");
 
     if (this.dev.debug) console.log('*****Event - setConfig', this.cardId, new Date().getTime());
-    config = JSON.parse(JSON.stringify(config))
+    config = JSON.parse(JSON.stringify(config));
 
     if (config.dev) this.dev = {...this.dev, ...config.dev};
 
     if (this.dev.debug) console.log('setConfig', this.cardId);
 
-    // if (this.configIsSet) {
-      // console.log("card::setConfig - already set, returning");
-      // if (this.dev.performance) console.timeEnd("--> " + this.cardId + " PERFORMANCE card::setConfig");
-      // return;
-    // }
-
-    this.aspectratio = "1/1";
-
-    if (config.aspectratio) this.aspectratio = config.aspectratio;
-
+    // this.aspectratio = "1/1";
+    // if (config.aspectratio) this.aspectratio = config.aspectratio;
+    this.aspectratio = config.aspectratio || "1/1";
+    
     var ar = config.aspectratio.trim().split("/");
     if (!this.viewBox) this.viewBox = {};
     this.viewBox.width = ar[0] * SVG_DEFAULT_DIMENSIONS;
@@ -6306,16 +6103,16 @@ class devSwissArmyKnifeCard extends LitElement {
       // console.log("findTemplate, key=", key, "value=", value);
       if (value.template) {
         const template = thisMe.lovelace.__lovelace.config.sak_templates[value.template.name];
-        var replacedValue = Templates.replaceVariables3(value.template.variables, template);
-        // Hmm. cannot add .template var. object is not extensible...
-        // replacedValue.template = 'replaced';
-        var secondValue = Merge.mergeDeep(replacedValue);
-        secondValue.from_template = 'replaced';
+          var replacedValue = Templates.replaceVariables3(value.template.variables, template);
+          // Hmm. cannot add .template var. object is not extensible...
+          // replacedValue.template = 'replaced';
+          var secondValue = Merge.mergeDeep(replacedValue);
+          secondValue.from_template = 'replaced';
 
-        var newValue = {};
-        newValue = replacedValue;//template[template.type];
+        // var newValue = {};
+        // newValue = replacedValue;//template[template.type];
         return secondValue;
-        return replacedValue;
+        // return replacedValue;
       }
       if (key == 'template') {
         // Template is gone via replace!!!! No template anymore, as there is no merge done.
@@ -6395,14 +6192,15 @@ class devSwissArmyKnifeCard extends LitElement {
       }
 
 
-      if (false && toolsetCfg.template) {
-      } else {
-        // We don't have a template to run, get list of tools and use that...
-        // toolList = toolsetCfg.tools;
-      }
+      // if (false && toolsetCfg.template) {
+      // } else {
+        // // We don't have a template to run, get list of tools and use that...
+        // // toolList = toolsetCfg.tools;
+      // }
 
       // Create and push
-      toolsetCfg.tools = toolList;
+      // @2021.12.20 Removed as toolsetCfg is overwritten later...
+      // toolsetCfg.tools = toolList;
       
       // Testing new template replace stuff...
       if (true) {
@@ -6411,7 +6209,6 @@ class devSwissArmyKnifeCard extends LitElement {
       const newToolset = new Toolset(this, toolsetCfg);
 
       this.toolsets.push(newToolset);
-      //this.tools.push(newToolset);
     });
     if (this.dev.debug) console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
     if (this.dev.debug) console.log('debug - setConfig', this.cardId, this.config);
@@ -6524,7 +6321,8 @@ class devSwissArmyKnifeCard extends LitElement {
 
   pleaseReRender() {
 
-    if (this._reRenderCounter < 10) this._reRender = true;
+    // if (this._reRenderCounter < 10) this._reRender = true;
+    console.log('pleaseRerender = ', this._reRender, this._reRenderCounter, this.toolId);
   }
 
   _reRenderTimeout() {
@@ -7082,6 +6880,16 @@ class devSwissArmyKnifeCard extends LitElement {
                 <stop offset="1" stop-color="#555555"/>
               </linearGradient>
 
+              <linearGradient id="light-brightness-gradient--orange" x1="1" x2="0">
+                <stop stop-color="white"/>
+                <stop offset="1" stop-color="darkorange"/>
+              </linearGradient>
+
+              <linearGradient id="light-brightness-gradient--reverse" x1="1" x2="0">
+                <stop stop-color="#555555"/>
+                <stop offset="1" stop-color="#eeeeee"/>
+              </linearGradient>
+
               <linearGradient id="light-color-temperature-gradient" x1="1" x2="0">
                 <stop stop-color="#ffa000"/>
                 <stop offset=".5" stop-color="#fff"/>
@@ -7147,7 +6955,7 @@ class devSwissArmyKnifeCard extends LitElement {
   }
   
   _renderSvg() {
-    const { viewBoxSize, } = this;
+    // const { viewBoxSize, } = this;
 
     const cardFilter = this.config.card_filter ? this.config.card_filter : 'card--filter-none';
 
@@ -7239,6 +7047,7 @@ class devSwissArmyKnifeCard extends LitElement {
 
 /*******************************************************************************
   * card::handlePopup()
+  * card::handleEvent()
   *
   * Summary.
   * Handles the first part of mouse click processing.
@@ -7292,26 +7101,9 @@ class devSwissArmyKnifeCard extends LitElement {
     if (thisIcon) return (thisIcon);
     
     // 2021.11.21
-    // #TODO
-    // First of device class supported state Icons.
-    // Can't for some reason import the custom-card-helpers which does this lookup
-    // So did copy part of the code for binary sensors...
+    // If not specified by user, use state and domain icons defined by card helper.
     
     return (stateIcon(entityState));
-    // const domain = this._computeDomain(entityState.entity_id);
-    // if (domain in domainIcons) {
-      // return domainIcons[domain](entityState);
-    // }
-
-    // // return stateIcon(entityState);
-    
-    // if (domain == 'binary_sensor') {
-      // return binarySensorIcon(entityState);
-    // }
-    // return (
-      // entityConfig.icon
-      // || entityState.attributes.icon
-    // );
   }
 
  /*******************************************************************************
@@ -7505,6 +7297,46 @@ class devSwissArmyKnifeCard extends LitElement {
         const s2 = sortedStops[i + 1];
         if (argState >= s1 && argState < s2) {
           [start, end] = [argStops[s1], argStops[s2]];
+          if (!argIsGradient) {
+            return start;
+          }
+          val = this._calculateValueBetween(s1, s2, argState);
+          break;
+        }
+      }
+    }
+    return this._getGradientValue(start, end, val);
+  }
+
+/*******************************************************************************
+  * _calculateColor2()
+  *
+  * Summary.
+  *
+  * #TODO:
+  * replace by TinyColor library? Is that possible/feasable??
+  *
+  */
+
+  _calculateColor2(argState, argStops, argPart, argProperty, argIsGradient) {
+    // console.log("calculateColor", argState, argStops, argIsGradient);
+    const sortedStops = Object.keys(argStops).map(n => Number(n)).sort((a, b) => a - b);
+    // const sortedStops = Object.keys(argStops);
+
+    let start, end, val;
+    const l = sortedStops.length;
+
+    if (argState <= sortedStops[0]) {
+      return argStops[sortedStops[0]];
+    } else if (argState >= sortedStops[l - 1]) {
+      return argStops[sortedStops[l - 1]];
+    } else {
+      for (let i = 0; i < l - 1; i++) {
+        const s1 = sortedStops[i];
+        const s2 = sortedStops[i + 1];
+        if (argState >= s1 && argState < s2) {
+          console.log('calculateColor2 ', argStops[s1], argStops[s2]);
+          [start, end] = [argStops[s1].styles[argPart][argProperty], argStops[s2].styles[argPart][argProperty]];
           if (!argIsGradient) {
             return start;
           }
