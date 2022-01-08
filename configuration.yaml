@@ -35,8 +35,12 @@ logger:
 # ========
 # Enables the frontend to define themes
 # - https://www.home-assistant.io/integrations/frontend/#defining-themes
+# 2022.01.05
+# - use include_dir_merge_named to include all the themes. Move name of theme also to theme file itself,
+#   instead of in themes.yaml (deprecated now).
+  # themes: !include themes/themes.yaml
 frontend:
-  themes: !include themes/themes.yaml
+  themes: !include_dir_merge_named themes/
   
 # hacs settings
 # =============

@@ -25,6 +25,19 @@
 #==============================================================================
 # sak_svg_definitions:
   # !include sak-svg-definitions.yaml
+
+# Light color temperature gradient
+# HA uses: linear-gradient( right, rgb(255, 160, 0) 0%, white 50%, rgb(166, 209, 255) 100% );
+# Then converted to SVG using https://www.kmhcreative.com/downloads/CSS2SVG.htm gives:
+
+  # - descr light-color-temperature-gradient
+    # content: |
+      # <linearGradient id='light-color-temperature-gradient' x1='1' x2='0'>
+        # <stop stop-color='#ffa000'/>
+        # <stop offset='.5' stop-color='#fff'/>
+        # <stop offset='1' stop-color='#a6d1ff'/>
+      # </linearGradient>
+
 # user_svg_definitions:
   # - descr: nm-1-reverse
     # content: |
@@ -71,10 +84,10 @@
 # - CSS Filters
 #
 #==============================================================================
-sak_css_definitions:
-  !include sak-css-definitions.yaml
-user_css_definitions:
-  !include user-css-definitions.yaml
+definitions: !include_dir_merge_named definitions
+# definitions:
+  # !include_dir_named definitions/sak-css-definitions.yaml
+  # !include_dir_named definitions/user-css-definitions.yaml
 
 #
 # SVG Definitions
@@ -130,7 +143,7 @@ color_palette_default_gradient_white_orange:
       - --sak-cs-default-03: '#FFDA8A'
       - --sak-cs-default-04: '#FFCB5B'
       - --sak-cs-default-05: '#FFBF37'
-      - --sak-cs-default-06: '#ffb414
+      - --sak-cs-default-06: '#ffb414'
       - --sak-cs-default-07: '#FFAD12'
       - --sak-cs-default-08: '#FFA40E'
       - --sak-cs-default-09: '#FF9C0B'
@@ -148,7 +161,7 @@ color_palette_gradient_white_orange:
       - --sak-cs-gradient-white-orange-03: '#FFDA8A'
       - --sak-cs-gradient-white-orange-04: '#FFCB5B'
       - --sak-cs-gradient-white-orange-05: '#FFBF37'
-      - --sak-cs-gradient-white-orange-06: '#ffb414
+      - --sak-cs-gradient-white-orange-06: '#ffb414'
       - --sak-cs-gradient-white-orange-07: '#FFAD12'
       - --sak-cs-gradient-white-orange-08: '#FFA40E'
       - --sak-cs-gradient-white-orange-09: '#FF9C0B'
@@ -171,98 +184,6 @@ color_palette_rainbow:
       - --sak-cs-rainbow-08: '#f46d43'
       - --sak-cs-rainbow-09: '#d53e4f'
       - --sak-cs-rainbow-10: '#9e0142'
-    
-#
-# Colorstop templates
-#
-# Include colorstop templates.
-# These templates show that you can template almost everything in SAK.
-# Colorstops can be used by several cards, so define at one place (this place) and
-# re-use in all your cards for consistency and ease of use.
-#
-# The toolset_arc180_sparklinebar24 tools template shows how to use a colorstop template
-# In this case, the colorstop template is a variable, which can be passed to the template...
-#
-# So you can use a template in a template ;-)
-#
-#==============================================================================
-colorstops_lux:
-  template:
-    type: colorstops
-    defaults:
-      - thegap: 1
-  colorstops:
-    gap: '[[thegap]]'
-    colors:
-      0: 'grey'
-      50: 'var(--theme-gradient-color-01)'
-      75: 'var(--theme-gradient-color-02)'
-      100: 'var(--theme-gradient-color-03)'
-      125: 'var(--theme-gradient-color-04)'
-      150: 'var(--theme-gradient-color-05)'
-      175: 'var(--theme-gradient-color-06)'
 
-colorstops_pressure:
-  template:
-    type: colorstops
-    defaults:
-      - thegap: 1
-  colorstops:
-    gap: '[[thegap]]'
-    colors:
-      980: 'lightgrey'
-      990: 'var(--theme-gradient-color-01)'
-      1020: 'var(--theme-gradient-color-05)'
 
-colorstops_temperature_inside:
-  template:
-    type: colorstops
-    defaults:
-      - thegap: 1
-  colorstops:
-    gap: '[[thegap]]'
-    colors:
-      17: 'PowderBlue'
-      19: 'var(--theme-gradient-color-01)'
-      21: 'var(--theme-gradient-color-04)'
-
-colorstops_humidity:
-  template:
-    type: colorstops
-    defaults:
-      - thegap: 1
-  colorstops:
-    gap: '[[thegap]]'
-    colors:
-      00: 'var(--theme-gradient-color-02)'
-      35: 'DarkSeaGreen'
-      65: 'PowderBlue'
-#
-# Toolset Definitions
-#
-# Toolset template definitions as the last part of the template file definitions
-#
-#==============================================================================
-tools_segarc_icon_state:
-  !include toolset-segarc-icon-state-template.yaml
-
-toolset_arc180_sparklinebar24:
-  !include toolset-arc180-sparklinebar24-template.yaml
-
-toolset_light_button:
-  !include toolset-light-button-template.yaml
-
-toolset_light_button_nm:
-  !include toolset-light-button-nm-template.yaml
-
-toolset_light_button_slider_nm:
-  !include toolset-light-button-slider-nm-template.yaml
-
-toolset_light_button_slider2_nm:
-  !include toolset-light-button-slider2-nm-template.yaml
-
-toolset_light_button_slider3_nm:
-  !include toolset-light-button-slider3-nm-template.yaml
-
-toolset_sensor_history:
-  !include toolset-sensor-history-template.yaml
+templates: !include_dir_merge_named templates
