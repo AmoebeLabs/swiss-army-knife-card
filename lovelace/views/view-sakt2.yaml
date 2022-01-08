@@ -932,7 +932,7 @@ cards:
             toolsets:
               - toolset: humi
                 template:
-                  name: tools_segarc_icon_state
+                  name: toolset_segarc_icon_state
                   variables:
                     - entity: 0
                     - show_scale: false
@@ -979,7 +979,7 @@ cards:
               # ==============================================================================
               - toolset: temp
                 template:
-                  name: tools_segarc_icon_state
+                  name: toolset_segarc_icon_state
                   variables:
                     - entity: 1
                     - show_scale: true
@@ -1017,7 +1017,7 @@ cards:
               # ==============================================================================
               - toolset: pressure
                 template:
-                  name: tools_segarc_icon_state
+                  name: toolset_segarc_icon_state
                   variables:
                     - entity: 2
                     - show_scale: true
@@ -1052,7 +1052,7 @@ cards:
               # ==============================================================================
               - toolset: lux
                 template:
-                  name: tools_segarc_icon_state
+                  name: toolset_segarc_icon_state
                   variables:
                     - entity: 3
                     - show_scale: false

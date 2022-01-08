@@ -1,18 +1,54 @@
-title: Servers
-path: servers
+#
+# View			: view-sake7
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+# SAK Example #7, the two server cards.
+#
+# Templates used:
+# - SAK: toolset_segarc_icon_state
+# - DC: header_template
+#
+# Card #1, 7a
+# ============
+# Data sources:
+# - System Monitor integration
+#
+# Card #2, 7b:
+# ============
+# Data sources:
+# - Glances integration
+# - Extra sensors from REST integration, as the Glances integration does NOT
+#   provide all the system load sensors for some reason!
+#
+# Notes:
+# ------
+# - Both cards are just plain copies of each other. No re-use.
+# - The best solution would be to 'convert' the card to a decluttering template
+#   and use this one in the view for optimal re-use for several servers.
+#   It would require a whole lot of variables to pass the entities, or, if you
+#   manage to have all the sensor.xyz names the same, you only have to pass the
+#   sensor name, and NOT all the separate entities...
+#
+# Refs:
+#   
+###############################################################################
+
+title: SAKE7
+path: sake7
+panel: false
+theme: 'NM - Dark Steelblue'
 cards:
-  - type: vertical-stack
-    cards:
-    - type: custom:decluttering-card
-      template: button_quick_menu_generic
-      variables:
-        - lb_name: Verlichting
-        - lb_icon: lightbulb
-        - lb_path: lights
-
-    - type: custom:decluttering-card
-      template: divider_template
-
+#------------------------------------------------------------------------------
+- type: vertical-stack
+  cards:
+# =================================
     - type: custom:decluttering-card
       template: header_template
       variables:
@@ -47,7 +83,6 @@ cards:
             # CPU
             - entity: sensor.processor_use
               decimals: 0
-              # icon: mdi:memory
             # System Load
             - entity: sensor.load_1m
               decimals: 2
@@ -86,10 +121,6 @@ cards:
             ts: true
             performance: false
           
-          show:
-            # explictly enable the use of the usersvg tool.
-            usersvg : true
-          
           # Set relative x/y aspectratio: twice as wide as it is high
           aspectratio: 2/1
 
@@ -113,11 +144,6 @@ cards:
 
               # ==============================================================================
               - toolset: memory-free-used
-                # Define relative center position on card in percentages. A 1/1 dimension card 
-                # has a relative range of 100%/100%, so this card is up to 200%/100%.
-                #
-                # Tools are always designed on a 1/1 grid (100%/100%) with a center position 
-                # at 50/50, so they can be re-used independant of the toolset position and card size.
                 position:
                   cx: 35
                   cy: 74
@@ -190,13 +216,13 @@ cards:
                   variables:
                     - entity: 0
                     - show_scale: false
-                # Overwrite template with the following configuration not covered by the template
-                # variables. id is required to make this work. So much possibilities...
                 position:
                   cx: 72.5
                   cy: 74
                   # Scale to 80% of toolset template.
                   scale: .8
+                # Overwrite template with the following configuration not covered by the template
+                # variables. id is required to make this work. So much possibilities...
                 tools:
                   - type: segarc
                     id: 0
@@ -213,8 +239,6 @@ cards:
                           70: 'yellow'
                           80: 'orange'
                           90: 'red'
-                  - type: icon
-                    id: 1
 
               # ==============================================================================
               - toolset: areatoolset

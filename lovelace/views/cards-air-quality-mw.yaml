@@ -2084,7 +2084,7 @@
             styles:
               card:
               toolsets:
-                filter: url(#ds-1)
+                filter: url(#sak-drop-1)
             toolsets:
               # ==============================================================================
               - toolset: temperature
