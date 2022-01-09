@@ -838,7 +838,7 @@ cards:
                   cx: 50
                   cy: 55
                 tools:
-                  - type: slider2
+                  - type: slider
                     descr: '#3 test slider'
                     position:
                       cx: 50
@@ -1335,7 +1335,7 @@ cards:
                   cx: 50
                   cy: 55
                 tools:
-                  - type: slider2
+                  - type: slider
                     descr: '#3 test slider'
                     position:
                       cx: 50

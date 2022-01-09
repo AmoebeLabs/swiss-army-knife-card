@@ -1069,7 +1069,7 @@ cards:
                   cy: 60
                 tools:
                   # ------------------------------------------------------------
-                  - type: slider2
+                  - type: slider
                     descr: '#3 test slider'
                     position:
                       cx: 50
@@ -1314,7 +1314,7 @@ cards:
                   cy: 60
                 tools:
                   # ------------------------------------------------------------
-                  - type: slider2
+                  - type: slider
                     descr: '#3 test slider'
                     position:
                       cx: 50
@@ -1559,7 +1559,7 @@ cards:
                   cy: 60
                 tools:
                   # ------------------------------------------------------------
-                  - type: slider2
+                  - type: slider
                     descr: '#3 test slider'
                     position:
                       cx: 50
@@ -1962,7 +1962,7 @@ cards:
                   cy: 50
                 tools:
                   # ------------------------------------------------------------
-                  - type: slider2
+                  - type: slider
                     descr: '#3 test slider'
                     position:
                       cx: 50
