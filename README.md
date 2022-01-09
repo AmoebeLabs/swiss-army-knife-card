@@ -3,7 +3,7 @@ Check https://swiss-army-knife.docs.amoebelabs.com/ for the documentation!
 
 ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/sak-frontpage.png)
 
-An overview of all the example
+An overview of all the examples
 | | |
 | :------------: | :------------: |
 | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-1b.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-2.png) | 
