@@ -147,7 +147,7 @@ cards:
                   cx: 50
                   cy: 50
                 tools:
-                  - type: slider2
+                  - type: slider
                     descr: '#3 test slider'
                     position:
                       cx: 40
@@ -282,7 +282,7 @@ cards:
                   cx: 50
                   cy: 50
                 tools:
-                  - type: slider2
+                  - type: slider
                     descr: '#3 test slider'
                     position:
                       cx: 50
@@ -416,7 +416,7 @@ cards:
               # Using Neumorphic ligth button design
               - toolset: light-button
                 template:
-                  name: toolset_light_button_slider2_nm
+                  name: toolset_light_button_slider_nm
                 position:
                   cx: 50
                   cy: 50
@@ -426,7 +426,7 @@ cards:
                   cx: 50
                   cy: 50
                 tools:
-                  - type: slider2
+                  - type: slider
                     descr: '#3 test slider'
                     position:
                       cx: 50

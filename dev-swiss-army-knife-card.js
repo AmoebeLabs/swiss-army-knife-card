@@ -18,16 +18,9 @@
 *******************************************************************************
 */
 
-/*jshint esversion: 9 */
-/*jshint -W033 */
-/*eslint no-undef: "console"*/
-/*jslint todo: true */
-
 // Note @2021.10.31
 // Use compatible lit-* stuff, ie lit-element@2 and lit-html@1.
 // Combining other versions may lead to incompatibility, and thus lots of errors and tools not working anymore!
-//
-// Problems where caused by 8 months not working on this card, and using @latest, and new versions of lit-* !!
 
 import {
   LitElement, html, css, svg, unsafeCSS
@@ -43,10 +36,6 @@ import {
 
 // import {repeat} from "https://unpkg.com/lit-html@1/directives/repeat.js?module";
 import {ifDefined} from "https://unpkg.com/lit-html@1/directives/if-defined?module";
-
-// import {
-  // unsafeCSS
-// } from "https://unpkg.com/lit-html/directives/unsafe-css.js?module";
 
 import { styleMap } from 'https://unpkg.com/lit-html@1/directives/style-map.js?module';
 import { classMap } from 'https://unpkg.com/lit-html@1/directives/class-map.js?module';
@@ -374,7 +363,6 @@ class Toolset {
       "segarc"    : SegmentedArcTool,
       "state"     : EntityStateTool,
       "slider"    : RangeSliderTool,
-      "slider2"   : RangeSliderTool2,
       "switch"    : SwitchTool,
       "text"      : TextTool,
       "usersvg"   : UserSvgTool,
@@ -956,8 +944,7 @@ class BaseTool {
     return color;
   }
 }
-
-
+ 
  /*******************************************************************************
   * RangeSliderTool class
   *
@@ -966,491 +953,6 @@ class BaseTool {
   */
 
 class RangeSliderTool extends BaseTool {
-  constructor(argToolset, argConfig, argPos) {
-
-    const DEFAULT_SLIDER_CONFIG = {
-        position: {
-          orientation: 'horizontal',
-          length: 80,
-        },
-        styles: {
-          slider: {
-            "stroke-linecap": 'round',
-            "stroke": 'var(--primary-text-color)',
-            "opacity": '1.0',
-            "stroke-width": '2',
-          },
-        }
-    }
-
-    super(argToolset, Merge.mergeDeep(DEFAULT_SLIDER_CONFIG, argConfig), argPos);
-
-    this.svg.length = Utils.calculateSvgDimension(argConfig.position.length)
-
-    this.svg.handle = {};
-    this.svg.handle.width = Utils.calculateSvgDimension(argConfig.handle.width);
-    this.svg.handle.height = Utils.calculateSvgDimension(argConfig.handle.height);
-    this.svg.handle.popout = Utils.calculateSvgDimension(argConfig.handle.popout);
-
-    // Define the bounding box for the pointer / touch events to get detected.
-
-    if (this.config.position.orientation == 'vertical') {
-      this.svg.x1 = this.svg.cx;
-      this.svg.y1 = this.svg.cy - this.svg.length/2;
-      this.svg.x2 = this.svg.cx;
-      this.svg.y2 = this.svg.cy + this.svg.length/2;
-      this.svg.width = this.svg.handle.width;
-      this.svg.height = this.svg.length;
-    } else {
-      this.svg.x1 = this.svg.cx - this.svg.length/2;
-      this.svg.y1 = this.svg.cy;
-      this.svg.x2 = this.svg.cx + this.svg.length/2;
-      this.svg.y2 = this.svg.cy;
-      this.svg.width = this.svg.length;
-      this.svg.height = this.svg.handle.height;
-    }
-
-    this.svg.scale = {};
-    this.svg.scale.min = this.valueToSvg(this, this.config.scale.min);
-    this.svg.scale.max = this.valueToSvg(this, this.config.scale.max);
-
-  // Specific rangeslider stuff...
-    this.elements = {};
-    //this.config.handle.popout = 40;
-    this.deformation = this.svg.handle.popout/4;
-    this.target = this.svg.handle.popout;
-    this._value = null;
-    this.dragging = false;
-
-    this.SVG_NS = "http://www.w3.org/2000/svg";
-    this.SVG_XLINK = "http://www.w3.org/1999/xlink";
-    this.rid = null;
-    //this.m = { x: 100, y: this.svg.y + this.svg.handle.popoutt / 2 };
-    this.m = { x: svg.x1, y: this.svg.y1};
-
-    // hardcoded for testing.
-    // value in box is in steps of 5. So 0..100 is 0,5, 10, etc..
-    this.stepValue = 2;
-    this.velocity = 10;
-  //--
-
-    if (this.dev.debug) console.log('RangeSliderTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
-  }
-
-  // svg coordinates to actual slider value
-  svgCoordinateToSliderValue(argThis, m) {
-    // svg is within viewbox / slider size
-    // length is argThis.svg.length
-
-
-    // is m.x in svg x1/x2 range. Then translate to actual value.
-    // need scale.min / max...
-
-    if (argThis.config.position.orientation == 'horizontal') {
-      var xpos = m.x - argThis.svg.x1;
-      var xposp = xpos / argThis.svg.length;
-      let state = ((argThis.config.scale.max - argThis.config.scale.min) * xposp) + argThis.config.scale.min;
-      //var state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, xposp);
-      if (this.dev.debug) console.log ('SLIDER - svgCoordinateToSliderValue results)', xpos, xposp, state);
-      return state;
-    } else if (argThis.config.position.orientation == 'vertical') {
-      // y is calculated from lower y value. So slider is from bottom to top...
-      var ypos = argThis.svg.y2 - m.y;
-      var yposp = ypos / argThis.svg.length;
-      let state = ((argThis.config.scale.max - argThis.config.scale.min) * yposp) + argThis.config.scale.min;
-      //var state = Utils.calculateValueBetween(argThis.configscale.min, argThis.configscale.max, yposp);
-      if (this.dev.debug) console.log ('SLIDER - svgCoordinateToSliderValue results)', xpos, xposp, state);
-      return state;
-    }
-  }
-
-  valueToSvg(argThis, argValue) {
-
-    if (this.config.position.orientation == 'horizontal') {
-      let state = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, argValue);
-
-      var xposp = state * this.svg.length;
-      var xpos = this.svg.x1 + xposp;
-      return xpos;
-    } else if (this.config.position.orientation == 'vertical') {
-      let state = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, argValue);
-
-      var yposp = state * this.svg.length;
-      var ypos = this.svg.y2 + yposp;
-      return ypos;
-    }
-  }
-
-  updateValue() {
-    let dist = this.target - this._value;
-    let vel = dist / this.velocity;
-    this._value += vel;
-    //improvement
-    if (Math.abs(dist) < 0.01) {
-      if (this.rid) {
-        window.cancelAnimationFrame(this.rid);
-        this.rid = null;
-      }
-    }
-  }
-
-  updatePath(argThis, m) {
-    // HORIZONTAL
-    if (argThis.config.position.orientation == 'horizontal') {
-      //argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argThis.svg.handle.popout / 1000, argThis.deformation, argThis._value);
-      argThis.d = argThis.curvedPath(m.x, argThis.svg.y + argThis.svg.handle.height / 2, argThis.deformation, argThis._value);
-      argThis.elements.path.setAttributeNS(null, "d", argThis.d);
-
-      argThis.elements.thumb.setAttributeNS(null, "r", 1 + argThis._value / 3);
-      argThis.elements.thumb.setAttributeNS(null, "cx", m.x);
-    } //VERTICAL
-    else if (argThis.config.position.orientation == 'vertical') {
-//      argThis.d = argThis.curvedPath(m.x + argThis.svg.handle.width / 2, argThis.svg.y, argThis.deformation, argThis._value);
-      argThis.d = argThis.curvedPath(argThis.svg.x + argThis.svg.handle.width / 2, m.y, argThis.deformation, argThis._value);
-      argThis.elements.path.setAttributeNS(null, "d", argThis.d);
-      argThis.elements.thumb.setAttributeNS(null, "r", 1 + argThis._value / 3);
-      argThis.elements.thumb.setAttributeNS(null, "cy", m.y);
-    }
-
-    argThis.updateLabel(argThis, m);
-    argThis.updateInput(m);
-  }
-
-  updateLabel(argThis, m) {
-    if (this.dev.debug) console.log('SLIDER - updateLabel start', m, argThis.config.position.orientation);
-    if (argThis.config.position.orientation == 'horizontal') {
-
-      // The -30 is for correction width of box around label??????
-
-      argThis.elements.label.setAttributeNS(
-        null,
-        "transform",
-        `translate(${m.x - this.svg.handle.width/2},${argThis.svg.y /*- argThis.svg.handle.popout/100*/ - argThis._value}) scale(1)`
-      );
-      argThis.elements.text.textContent = Math.round(argThis.svgCoordinateToSliderValue(argThis, m));
-      if (this.dev.debug) console.log('SLIDER - updateLabel horizontal', m, argThis.svgCoordinateToSliderValue(argThis, m));
-
-    } else if (argThis.config.position.orientation == 'vertical') {
-      argThis.elements.label.setAttributeNS(
-        null,
-        "transform",
-        `translate(${argThis.svg.x /*- argThis.svg.handle.popout*/ - argThis._value}, ${m.y - this.svg.handle.height/2}) scale(1)`
-      );
-
-      argThis.elements.text.textContent = Math.round(argThis.svgCoordinateToSliderValue(argThis, m));
-      if (this.dev.debug) console.log('SLIDER - updateLabel vertical', m, argThis.svgCoordinateToSliderValue(argThis, m));
-    }
-  }
-
-  // What does this function do?? Need??
-  // Is this the actual html input value that is set?? Guess so..
-  updateInput(m) {
-    //this.inputElement.value = Math.round(m.x);
-  }
-
-  /*
-  * oMousePosSVG
-  *
-  * Translate mouse/touch client window coordinates to SVG window coordinates
-  *
-  */
-  oMousePosSVG(e) {
-    var p = this.elements.svg.createSVGPoint();
-    p.x = e.clientX;
-    p.y = e.clientY;
-    var ctm = this.elements.svg.getScreenCTM().inverse();
-    var p = p.matrixTransform(ctm);
-    return p;
-  }
-
-  // HELPERS
-
-   /*
-   * Draw curved path with popout at centered & mouse position
-   *
-   * Horizontal:
-   * - x = mouse position
-   * - y = fixed y position of slider
-   * - deform = deformation of Q control points
-   * - popout = current value (using animation) of popout in -y direction
-   *
-   * Vertical:
-   * - x = fixed x position of slider
-   * - y = mouse position
-   * - deform = deformation of Q control points
-   * - popout = current value (using animation) of popout in -x direction
-   *
-   */
-   curvedPath(argX, argY, argDeform, argPopout) {
-
-    if (this.dev.debug) console.log("SLIDER - curvedPath, args", argX, argY, argDeform, argPopout);
-    // const offset = this.svg.y1;
-
-    // HORIZONTAL
-    if (this.config.position.orientation == 'horizontal') {
-      // Coordinates are clipped between the start and end of the slider, svg.x1 and svg.x2
-      var D = { cx: Math.max(this.svg.x1, Math.min(argX,                  this.svg.x2)), cy: argY - argPopout, r: 1 };
-      var B = { cx: Math.max(this.svg.x1, Math.min(D.cx - argDeform,      this.svg.x2)), cy: argY,        r: 1 };
-      var F = { cx: Math.max(this.svg.x1, Math.min(D.cx + argDeform,      this.svg.x2)), cy: argY,        r: 1 };
-      var A = { cx: Math.max(this.svg.x1, Math.min(D.cx - 2 * argDeform,  this.svg.x2)), cy: argY,        r: 1 };
-      var G = { cx: Math.max(this.svg.x1, Math.min(D.cx + 2 * argDeform,  this.svg.x2)), cy: argY,        r: 1 };
-
-      var S = this.svg.x1;
-      var U = argY;
-
-      var T = this.svg.x2;
-      var V = A.cy;
-      V = argY;
-
-    } // VERTICAL
-    else if (this.config.position.orientation == 'vertical') {
-      // Coordinates are clipped between the bottom and top of the slider, svg.y1 and svg.y2
-
-      var D = { cy: Math.max(this.svg.y1, Math.min(argY,                  this.svg.y2)), cx: argX - argPopout, r: 1 };
-      var B = { cy: Math.max(this.svg.y1, Math.min(D.cy - 1 * argDeform,  this.svg.y2)), cx: argX,        r: 1 };
-      var F = { cy: Math.max(this.svg.y1, Math.min(D.cy + 1 * argDeform,  this.svg.y2)), cx: argX,          r: 1 };
-      var A = { cy: Math.max(this.svg.y1, Math.min(D.cy - 2 * argDeform,  this.svg.y2)), cx: argX,        r: 1 };
-      var G = { cy: Math.max(this.svg.y1, Math.min(D.cy + 2 * argDeform,  this.svg.y2)), cx: argX,        r: 1 };
-
-      var S = this.svg.y1;
-      var T = this.svg.y2;
-      var U = argX;
-
-      S = A.cx;
-      U = this.svg.y1;
-
-      T = argX;
-      V = this.svg.y2;
-      //T = 50;
-      //V = 50;
-    }
-    let C = this.interpolatePoint(B, D, 1, 2);
-    C.r = 1;
-    let E = this.interpolatePoint(D, F, 1, 2);
-    E.r = 1;
-
-    // Draw the horizontal start slider, then the 3 Q curves, and the rest of the horizontal slider.
-    return `M${S},${U} L${A.cx},${A.cy}
-                Q${B.cx},${B.cy} ${C.cx},${C.cy}
-                Q${D.cx},${D.cy} ${E.cx},${E.cy}
-                Q${F.cx},${F.cy} ${G.cx},${G.cy}
-                L${T},${V} L${S+1}, ${U+1}
-  `;
-  }
-
-   interpolatePoint(a, b, i, n) {
-    //point a
-    //point b
-    //line divided in n segments
-    //find the i-th point
-
-    if (this.config.position.orientation == 'horizontal') {
-      var o = {
-        cx: a.cx + (b.cx - a.cx) * (i / n),
-        cy: a.cy + (b.cy - a.cy) * (i / n)
-      }
-    }
-    else if (this.config.position.orientation == 'vertical') {
-      var o = {
-        cx: a.cx + (b.cx - a.cx) * (i / n),
-        cy: a.cy + (b.cy - a.cy) * (i / n)
-      }
-    }
-    return o;
-  }
-
-  firstUpdated(changedProperties)
-  {
-    const thisValue = this;
-
-    function Frame() {
-      thisValue.rid = window.requestAnimationFrame(Frame);
-      thisValue.updateValue();
-      thisValue.updatePath(thisValue, thisValue.m);
-      //if (this.dev.debug) console.log('pointer in Frame', thisValue.m);
-    }
-
-    if (this.dev.debug) console.log('slider - firstUpdated');
-    // #TODO
-    // svg moet een svg object zijn, want er worden functies op uitgevoerd.
-    // dus deze slider moet een eigen svg element krijgen...
-    this.elements.svg = this._card.shadowRoot.getElementById("rangeslider-".concat(this.toolId));
-
-//    this.svg = document.querySelector("svg");
-    this.elements.path = this.elements.svg.querySelector("path");
-    this.elements.thumb = this.elements.svg.querySelector("circle");
-//    this.thumb = _2.querySelector("circle");
-
-    if (true) {
-      this.elements.label = this.elements.svg.querySelector("#_2 path#label-".concat(this.toolId));
-      this.elements.text = this.elements.svg.querySelector("#_2 text textPath");
-    } else {
-      this.elements.label = this.elements.svg.querySelector("#_2 rect");
-      this.elements.text = this.elements.svg.querySelector("#_2 text");
-    }
-
-    if (this.dev.debug) console.log('slider - firstUpdated svg = ', this.elements.svg, 'path=', this.elements.path, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
-
-//    this.inputElement = witness; ////
-
-
-    this.elements.svg.addEventListener("pointerdown", e => {
-      this.dragging = true;
-
-      this.m = this.oMousePosSVG(e);
-      //this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
-      //if (this.dev.debug) console.clear();
-      if (this.dev.debug) console.log('pointerDOWN',Math.round(this.m.x * 100) / 100);
-      this.target = this.svg.handle.popout;
-      Frame();
-    });
-
-    this.elements.svg.addEventListener("pointerup", () => {
-      this.dragging = false;
-      this.target = 0;
-      if (this.dev.debug) console.log('pointerUP');
-      Frame();
-      //this.updatePath(m,deformation);
-    });
-
-    this.elements.svg.addEventListener("pointerout", () => {
-
-      this.dragging = false;
-      this.target = 0;
-      if (this.dev.debug) console.log('pointerOUT');
-      Frame();
-    });
-
-    this.elements.svg.addEventListener("pointermove", e => {
-      if (this.dragging) {
-        this.m = this.oMousePosSVG(e);
-
-        // Clip pointer to scale.
-        //this.m.x = Math.max(this.svg.scale.min, Math.min(this.m.x, this.svg.scale.max));
-        //this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
-        //this.m.x = Math.max(10, Math.min(this.m.x, 90.0));
-        //this.m.x = Math.round(this.m.x / this.stepValue) * this.stepValue;
-
-        //console.clear();
-        if (this.dev.debug) console.log('pointerMOVE', this.m.x, Math.round(this.m.x * 100) / 100);
-        this.target = this.svg.handle.popout;
-        Frame();
-      }
-    });
-
-  }
-
-/*******************************************************************************
-  * RangeSliderTool::value()
-  *
-  * Summary.
-  * Receive new state data for the entity this rangeslider is linked to. Called from set hass;
-  * Sets the brightness value of the slider. This is a value 0..255. We display %, so translate
-  *
-  */
-  set value(state) {
-    var changed = super.value = state;
-
-    // console.log('rangeslidertool, animation, set value', state);
-
-    // What to do here??
-    // We must know the domain or attribute to know what to do.
-    // Light domain --> do something with brightness etc.
-
-    // Or: in YAML: set translation range, 0..255 for brightness -> 0..100%.
-
-    // for now: use external range for internal scale. No conversion for now. just testing
-
-    return changed;
-  }
-
- /*******************************************************************************
-  * RangeSliderTool::_renderRangeSlider()
-  *
-  * Summary.
-  * Renders the range slider
-  *
-  */
-
-  _renderRangeSlider() {
-
-    if (this.dev.debug) console.log('slider - _renderRangeSlider');
-
-    let configStyle = Merge.mergeDeep(this.config.styles);
-
-    configStyle.handle['text-anchor'] = 'middle';
-    configStyle.handle['alignment-baseline'] = 'middle';
-    
-    const toRender = []
-    //toRender.push(html`<input type="range" id="witness" value="50" disabled style="display:none">`);
-
-    // Calculate startOffset for text along path. Get it about centered along topside of rectangle...
-    const startOffset = 100/2 * (this.svg.handle.width / ((this.svg.handle.width * 2) + (this.svg.handle.height * 2)));
-
-//          <path d="M${this.svg.x1},${this.svg.y1} L${this.svg.x2},${this.svg.y1}" stroke="var(--theme-gradient-color-01)" stroke-width="5" fill="var(--theme-gradient-color-03)" pointer-events="none"
-
-    toRender.push(svg`
-        <g id="poep-${this.toolId}" >
-          <rect x="${this.svg.x1}" y="${this.svg.y1}" width="${this.svg.width}" height="${this.svg.height}" style="fill: none" pointer-events="all"/>
-
-          <path d="M1,1 L20,20" stroke="var(--theme-gradient-color-01)" stroke-width="5" fill="var(--theme-gradient-color-03)" pointer-events="none" stroke-linecap="round"/>
-          <g id="_2" pointer-events="none">
-            <path id="label-${this.toolId}" transform="translate(100,220) scale(5)"
-              d="M 0 0 h ${this.svg.handle.width} v ${this.svg.handle.height} h -${this.svg.handle.width} v -${this.svg.handle.height}"
-              style="${styleMap(configStyle.slider)}"/>
-
-            <circle cx="${this.svg.x}" cy="${this.svg.y}" r="1" fill="none" pointer-events="none"/>
-
-            <text text-anchor="middle" transform="translate(0,${this.svg.handle.height/4})" pointer-events="none" >
-            <textPath startOffset="${startOffset}%" style="${styleMap(configStyle.handle)}" href="#label-${this.toolId}" pointer-events="none">
-            50
-            </textPath>
-          </g>
-        </g>
-      `);
-    return toRender;
-  }
-
- /*******************************************************************************
-  * RangeSliderTool::render()
-  *
-  * Summary.
-  * The render() function for this object.
-  *
-  */
-  render() {
-    return svg`
-      <svg  xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}" class="rangeslider" pointer-events="all"
-      >
-        ${this._renderRangeSlider()}
-      </svg>
-    `;
-
-    // return svg`
-      // <svg viewbox="-10,-100,400,400" id="rangeslider-${this.toolId}" class="rangeslider" pointer-events="all"
-      // >
-        // ${this._renderRangeSlider()}
-      // </svg>
-    // `;
-
-    // return svg`
-      // <g id="rangeslider-${this.toolId}" class="rangeslider"
-        // @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
-        // ${this._renderRangeSlider()}
-      // </g>
-    // `;
-
-  }
-} // END of class
-
- /*******************************************************************************
-  * RangeSliderTool2 class
-  *
-  * Summary.
-  *
-  */
-
-class RangeSliderTool2 extends BaseTool {
   constructor(argToolset, argConfig, argPos) {
 
     const DEFAULT_RANGESLIDER_CONFIG = {
@@ -1573,7 +1075,7 @@ class RangeSliderTool2 extends BaseTool {
         break;
 
       default:
-        console.error('RangeSliderTool2 - constructor: invalid orientation [vertical, horizontal] = ', this.config.position.orientation);
+        console.error('RangeSliderTool - constructor: invalid orientation [vertical, horizontal] = ', this.config.position.orientation);
     }
 
     switch (this.config.position.orientation) {
@@ -1597,7 +1099,7 @@ class RangeSliderTool2 extends BaseTool {
         break;
 
       default:
-        console.error('RangeSliderTool2 - constructor: invalid label placement [none, position, thumb] = ', this.config.position.label.placement);
+        console.error('RangeSliderTool - constructor: invalid label placement [none, position, thumb] = ', this.config.position.label.placement);
     }
     
     // Init classes
@@ -1620,11 +1122,11 @@ class RangeSliderTool2 extends BaseTool {
     this.svg.scale.max = this.valueToSvg(this, this.config.scale.max);
     this.svg.scale.step = this.config.scale.step;
 
-    if (this.dev.debug) console.log('RangeSliderTool2 constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
+    if (this.dev.debug) console.log('RangeSliderTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
  /*******************************************************************************
-  * RangeSliderTool2::svgCoordinateToSliderValue()
+  * RangeSliderTool::svgCoordinateToSliderValue()
   *
   * Summary.
   * @returns {slider value} Translated svg coordinate to actual slider value
@@ -1907,7 +1409,7 @@ class RangeSliderTool2 extends BaseTool {
   }
 
 /*******************************************************************************
-  * RangeSliderTool2::value()
+  * RangeSliderTool::value()
   *
   * Summary.
   * Receive new state data for the entity this rangeslider is linked to. Called from set hass;
@@ -1986,7 +1488,7 @@ class RangeSliderTool2 extends BaseTool {
   }
 
  /*******************************************************************************
-  * RangeSliderTool2::_renderRangeSlider()
+  * RangeSliderTool::_renderRangeSlider()
   *
   * Summary.
   * Renders the range slider
@@ -2122,7 +1624,7 @@ class RangeSliderTool2 extends BaseTool {
   }
 
  /*******************************************************************************
-  * RangeSliderTool2::render()
+  * RangeSliderTool::render()
   *
   * Summary.
   * The render() function for this object. The conversion of pointer events need
@@ -6516,28 +6018,12 @@ class devSwissArmyKnifeCard extends LitElement {
     return svg`
     ${devSwissArmyKnifeCard.sakSvgContent}
     `;
-
-    // return svg`
-    // ${devSwissArmyKnifeCard.lovelace.sakSvgContent}
-    // `;
-
-    // return svg`
-    // ${this.lovelace.sakSvgContent}
-    // `;
   }
 
   _renderUserSvgDefinitions() {
     return svg`
     ${devSwissArmyKnifeCard.userSvgContent}
     `;
-
-    // return svg`
-    // ${devSwissArmyKnifeCard.lovelace.userSvgContent}
-    // `;
-
-    // return svg`
-    // ${this.lovelace.userSvgContent}
-    // `;
   }
 
 /*******************************************************************************
@@ -6583,15 +6069,6 @@ class devSwissArmyKnifeCard extends LitElement {
     
 //                              style="${styleMap(this.config.layout?.styles?.toolsets)}"
 
-    // There must be SAK SVG definitions. Check and if absent, reload them...
-    // console.log("_RenderToolsets", this.lovelace.sakSvgContent);
-    
-    // if (typeof(devSwissArmyKnifeCard.lovelace.sakSvgContent === 'undefined')) {
-      // console.log("_RenderToolsets, getting svg stuff");
-      // devSwissArmyKnifeCard.getSakSvgDefinitions();
-      // devSwissArmyKnifeCard.getUserSvgDefinitions();
-    // } else { console.log("_RenderToolsets, ALREADY got svg stuff")};
-
     return svg`
               <g id="toolsets" class="toolsets__group"
               >
@@ -6603,387 +6080,6 @@ class devSwissArmyKnifeCard extends LitElement {
               ${this._renderUserSvgDefinitions()}
             </defs>
     `;
-
-    // return svg`
-              // <g id="toolsets" class="toolsets__group"
-              // >
-                // ${this.toolsets.map(toolset => toolset.render())}
-              // </g>
-
-
-            // <defs>
-            // <!-- SVG inner shadow on rgba fill: https://codepen.io/salsita/pen/qBbmYMw -->
-
-              // <!-- Damien Jurado Poster Rebound: https://codepen.io/dylanbaumann/pen/wevMwB -->
-              // <filter id="is1" x="-50%" y="-50%" width="400%" height="400%">
-                // <feComponentTransfer in=SourceAlpha>
-                  // <feFuncA type="table" tableValues="1 0" />
-                // </feComponentTransfer>
-                // <feGaussianBlur stdDeviation="1"/>
-                // <feOffset dx="0" dy="1" result="offsetblur"/>
-                // <feFlood flood-color="rgba(0, 0, 0, 0.3)" result="color"/>
-                // <feComposite in2="offsetblur" operator="in"/>
-                // <feComposite in2="SourceAlpha" operator="in" />
-                // <feMerge>
-                  // <feMergeNode in="SourceGraphic" />
-                  // <feMergeNode />
-                // </feMerge>
-              // </filter>
-
-              // <!-- SVG Inset Shadow: https://codepen.io/mattrosno/pen/zxpNwd -->
-              // <filter id="is2">
-                // <!-- Shadow Offset -->
-                // <feOffset
-                  // dx='1'
-                  // dy='1'
-                // />
-
-                // <!-- Shadow Blur -->
-                // <feGaussianBlur
-                  // stdDeviation='0.5'
-                  // result='offset-blur'
-                // />
-
-                // <!-- Invert the drop shadow
-                     // to create an inner shadow -->
-                // <feComposite
-                  // operator='out'
-                  // in='SourceGraphic'
-                  // in2='offset-blur'
-                  // result='inverse'
-                // />
-
-                // <!-- Color & Opacity -->
-                // <feFlood
-                  // flood-color='black'
-                  // flood-opacity='0.4'
-                  // result='color'
-                // />
-
-                // <!-- Clip color inside shadow -->
-                // <feComposite
-                  // operator='in'
-                  // in='color'
-                  // in2='inverse'
-                  // result='shadow'
-                // />
-
-                // <!-- Put shadow over original object -->
-                // <feComposite
-                  // operator='over'
-                  // in='shadow'
-                  // in2='SourceGraphic'
-                // />
-              // </filter>
-
-              // <rect id="cliprect" width="100%" height="100%" fill="none" stroke="none" rx="3" />
-              // <clipPath id="clip">
-                // <use xlink:href="#cliprect"/>
-              // </clipPath>
-
-              // <marker viewBox="0 0 200 200" id="markerCircle" markerWidth="8" markerHeight="8" refX="5" refY="5">
-                  // <circle cx="5" cy="5" r="3" style="stroke: none; fill:currentColor;"/>
-              // </marker>
-
-              // <marker viewBox="0 0 200 200" id="markerArrow" markerWidth="13" markerHeight="13" refX="2" refY="6"
-                     // orient="auto">
-                  // <path d="M2,2 L2,11 L10,6 L2,2" style="fill: currentColor;" />
-              // </marker>
-
-              // <filter id="ds2" width="10" height="10">
-                // <feDropShadow dx="2" dy="3" stdDeviation="0.5"/>
-              // </filter>
-
-              // <filter id="ds3" x="0" y="0" width="200%" height="200%">
-                // <feOffset result="offOut" in="SourceAlpha" dx="20" dy="20" />
-                // <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
-                // <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
-              // </filter>
-
-              // <filter id="ds4" x="0" y="0" width="200%" height="200%">
-                // <feGaussianBlur stdDeviation="1" />
-              // </filter>
-
-              // <filter id="ds-1" y="-50%" x="-50%" width="200%" height="400%">
-                // <feDropShadow dx="0" dy="1.5" stdDeviation=".3"/>
-              // </filter>
-
-              // <!-- Neumorphic filter -->
-              // <!-- -->
-              // <!-- Light Shadow, #FFFFFF at 50%, x:-6, Y:-6, Blur:16 -->
-              // <!-- Dark Shadow: #d1cdc7 at 50%, x:6, y:6, Blur:16 -->
-              // <!-- Main Background: #efeeee -->
-              // <!-- Shape Background: #efeeee -->
-              // <!-- Optional Border: #fff at 20% Alpha -->
-              // <!-- Dark Shadow was: 0d2750 -->
-              
-              // <!-- 2021.11.17 -->
-              // <!-- Performance with inset shadow and width/height=150% seems to be optimal setting -->
-              // <!-- Smaller settings give clipping, and larger settings performance hits -->
-              // <!-- Absolute settings (userSpaceOnUse) seem to be difficult to find right settings -->
-              // <filter id="is-1" x="-25%" y="-25%" width="150%" height="150%">
-                // <feComponentTransfer in=SourceAlpha>
-                  // <feFuncA type="table" tableValues="1 0" />
-                // </feComponentTransfer>
-                // <feGaussianBlur stdDeviation="1"/>
-                // <feOffset dx="2" dy="2" result="offsetblur"/>
-                // <feFlood flood-color="#0d2750" flood-opacity="0.5" result="color"/>
-                // <feComposite in2="offsetblur" operator="in"/>
-                // <feComposite in2="SourceAlpha" operator="in" />
-                // <feMerge>
-                  // <feMergeNode in="SourceGraphic" />
-                  // <feMergeNode />
-                // </feMerge>
-              // </filter>
-
-              // <filter id="is-1b" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1000" height="1000">
-                // <feComponentTransfer in=SourceAlpha>
-                  // <feFuncA type="table" tableValues="1 0" />
-                // </feComponentTransfer>
-                // <feGaussianBlur stdDeviation="1"/>
-                // <feOffset dx="2" dy="2" result="offsetblur"/>
-                // <feFlood flood-color="#0d2750" flood-opacity="0.5" result="color"/>
-                // <feComposite in2="offsetblur" operator="in"/>
-                // <feComposite in2="SourceAlpha" operator="in" />
-                // <feMerge>
-                  // <feMergeNode in="SourceGraphic" />
-                  // <feMergeNode />
-                // </feMerge>
-              // </filter>
-
-              // <!-- Using feComposite in="offsetblur" operator="in" instead of in2 gives a -->
-              // <!-- much larger shadow area, much deeper! WHY?? -->
-              
-              // <filter id="nm-2" x="-50%" y="-50%" width="200%" height="200%">
-                // <feComponentTransfer in=SourceAlpha out=transfer>
-                  // <feFuncA type="table" tableValues="1 0" />
-                // </feComponentTransfer>
-
-                // <feGaussianBlur input="transfer" stdDeviation="5" result="blurdark"/>
-                // <feOffset input="blurdark" dx="12" dy="12" result="offsetblurdark"/>
-                // <feFlood input="offsetblurdark" flood-color="#d1cdc7" flood-opacity="0.4" result="colordark"/>
-
-                // <feGaussianBlur input="transfer" stdDeviation="5" result="blurlight"/>
-                // <feOffset input="blurlight" dx="-12" dy="-12" result="offsetblurlight"/>
-                // <feFlood input="offsetblurlight" flood-color="white" flood-opacity="0.9" result="colorlight"/>
-
-                // <feComposite in="offsetblurdark" operator="in"/>
-                // <feComposite in="SourceAlpha" operator="in" />
-
-                // <feMerge>
-                  // <feMergeNode in="SourceGraphic" />
-                  // <feMergeNode />
-                // </feMerge>
-              // </filter>
-
-              // <filter id="filter-yoksel" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="linearRGB">
-                // <feFlood flood-color="#eeebe7" flood-opacity="0.7" x="0%" y="0%" width="100%" height="100%" result="flood2"/>
-                // <feComposite in="flood2" in2="SourceAlpha" operator="out" x="0%" y="0%" width="100%" height="100%" result="composite5"/>
-                // <feOffset dx="-9" dy="-7" x="0%" y="0%" width="100%" height="100%" in="composite5" result="offset1"/>
-                // <feGaussianBlur stdDeviation="3 10" x="0%" y="0%" width="100%" height="100%" in="offset1" edgeMode="none" result="blur2"/>
-                // <feComposite in="merge3" in2="SourceAlpha" operator="in" x="0%" y="0%" width="100%" height="100%" result="composite7"/>
-                // <feFlood flood-color="#0f0f0f" flood-opacity="1" x="0%" y="0%" width="100%" height="100%" result="flood4"/>
-                // <feComposite in="flood4" in2="SourceAlpha" operator="out" x="0%" y="0%" width="100%" height="100%" result="composite8"/>
-                // <feOffset dx="6" dy="6" x="0%" y="0%" width="100%" height="100%" in="merge3" result="offset2"/>
-                // <feGaussianBlur stdDeviation="3 10" x="0%" y="0%" width="100%" height="100%" in="offset2" edgeMode="none" result="blur3"/>
-                // <feComposite in="blur3" in2="SourceAlpha" operator="in" x="0%" y="0%" width="100%" height="100%" result="composite9"/>
-                // <feMerge x="0%" y="0%" width="100%" height="100%" result="merge3">
-                      // <feMergeNode in="SourceGraphic"/>
-                  // <feMergeNode in="composite7"/>
-                  // <feMergeNode in="composite9"/>
-                  // </feMerge>
-              // </filter>
-
-              // <!-- 2021.11.15 -->
-              // <!-- For some reason, changing the filter width/height from 160% to 600% improves performance on iOS 15 -->
-
-              // <!-- second try... -->
-              // <filter id="filter" x="-50%" y="-50%" width="300%" height="300%">
-                // <feFlood flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="flood2"/>
-                // <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
-                // <feOffset dx="-6" dy="-6" in="composite5" result="offset1"/>
-                // <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
-                // <feComposite in="blur2" in2="SourceAlpha" operator="in"  result="composite7"/>
-
-                // <!-- flood-color="#777777" -->
-                // <feFlood flood-color="var(--cs-theme-shadow-darker)" flood-opacity="1" result="flood4"/>
-                // <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
-                // <feOffset dx="6" dy="6" in="composite8" result="offset2"/>
-                // <feGaussianBlur stdDeviation="15" in="offset2" edgeMode="none" result="blur3"/>
-                // <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
-
-                // <feMerge result="merge3">
-                  // <feMergeNode in="SourceGraphic"/>
-                  // <feMergeNode in="composite7"/>
-                  // <feMergeNode in="composite9"/>
-                  // </feMerge>
-              // </filter>
-
-              // <filter id="filterb" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1000" height="1000">
-                // <feFlood flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="flood2"/>
-                // <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
-                // <feOffset dx="-6" dy="-6" in="composite5" result="offset1"/>
-                // <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
-                // <feComposite in="blur2" in2="SourceAlpha" operator="in"  result="composite7"/>
-
-                // <!-- flood-color="#777777" -->
-                // <feFlood flood-color="var(--cs-theme-shadow-darker)" flood-opacity="1" result="flood4"/>
-                // <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
-                // <feOffset dx="6" dy="6" in="composite8" result="offset2"/>
-                // <feGaussianBlur stdDeviation="15" in="offset2" edgeMode="none" result="blur3"/>
-                // <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
-
-                // <feMerge result="merge3">
-                  // <feMergeNode in="SourceGraphic"/>
-                  // <feMergeNode in="composite7"/>
-                  // <feMergeNode in="composite9"/>
-                  // </feMerge>
-              // </filter>
-
-              // <filter id="bold" x="-50%" y="-50%" width="240%" height="240%">
-                // <feFlood flood-color="#FFFFFF" flood-opacity="0.8" result="flood2"/>
-                // <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
-                // <feOffset dx="12" dy="12" in="composite5" result="offset1"/>
-                // <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
-                // <feComposite in="blur2" in2="SourceAlpha" operator="in"  result="composite7"/>
-
-                // <feFlood flood-color="#777777" flood-opacity="0.6" result="flood4"/>
-                // <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
-                // <feOffset dx="-12" dy="-12" in="composite8" result="offset2"/>
-                // <feGaussianBlur stdDeviation="15" in="offset2" edgeMode="none" result="blur3"/>
-                // <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
-
-                // <feMerge result="merge3">
-                  // <feMergeNode in="SourceGraphic"/>
-                  // <feMergeNode in="composite7"/>
-                  // <feMergeNode in="composite9"/>
-                  // </feMerge>
-              // </filter>
-
-              // <filter id="filterss" x="-20%" y="-20%" width="140%" height="140%">
-                // <feFlood flood-color="#eeebe7" flood-opacity="0.9" result="flood2"/>
-                // <feComposite in="flood2" in2="SourceAlpha" operator="out" result="composite5"/>
-                // <feOffset dx="-15" dy="-15" in="composite5" result="offset1"/>
-                // <feGaussianBlur stdDeviation="5" in="offset1" edgeMode="none" result="blur2"/>
-                // <feComposite in="blur2" in2="SourceAlpha" operator="in" result="composite7"/>
-
-                // <feFlood flood-color="#0f0f0f" flood-opacity="1" result="flood4"/>
-                // <feComposite in="flood4" in2="SourceAlpha" operator="out" result="composite8"/>
-                // <feOffset dx="6" dy="6" in="composite8" result="offset2"/>
-                // <feGaussianBlur stdDeviation="5" in="offset2" edgeMode="none" result="blur3"/>
-                // <feComposite in="blur3" in2="SourceAlpha" operator="in" result="composite9"/>
-
-                // <feMerge result="merge3">
-                  // <feMergeNode in="SourceGraphic"/>
-                  // <feMergeNode in="composite7"/>
-                  // <feMergeNode in="composite9"/>
-                  // </feMerge>
-              // </filter>
-
-              // <!-- flood-color="#d1cdc7" -->
-              // <!-- flood-color="#FFFFFF" -->
-              // <filter id="nm-11" x="-50%" y="-50%" width="300%" height="300%">
-                // <feDropShadow stdDeviation="5" in="SourceGraphic"
-                  // dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"
-                // </feDropShadow>
-                // <feDropShadow stdDeviation="4.5" in="SourceGraphic"
-                  // dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-                // <feMerge result="merge">
-                  // <feMergeNode in="dropShadow1"/>
-                  // <feMergeNode in="dropShadow"/>
-                // </feMerge>
-              // </filter>
-
-              // <!-- 2021.11.15 -->
-              // <!-- For some reason, changing the filter width/height from 300% to 600% improves performance on iOS 15 -->
-              // <!-- Changing this value to 3000% improves performance also, but pixelates some of the views, so unusable! -->
-              // <!-- A value of 1000% seems to be a good value too! Switching views is now instant again for some reason! -->
-              // <!-- However, some views (sake5) becomes very, very, very slow. Views sake4 and sake6 are very fast. -->
-              // <!-- 2021.11.17 -->
-              // <!-- Let's settle for now with x/y=-10% and width/height=120%. This is actually the default for svg filters... -->
-
-              // <filter id="sak-nm-default" x="-10%" y="-10%" width="120%" height="120%">
-                // <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
-                // <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-                // <feMerge result="merge">
-                  // <feMergeNode in="dropShadow1"/>
-                  // <feMergeNode in="dropShadow"/>
-                // </feMerge>
-              // </filter>
-
-              // <filter id="nm-1" x="-10%" y="-10%" width="120%" height="120%">
-                // <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
-                // <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-                // <feMerge result="merge">
-                  // <feMergeNode in="dropShadow1"/>
-                  // <feMergeNode in="dropShadow"/>
-                // </feMerge>
-              // </filter>
-
-              // <filter id="sak-nm-default-b" filterUnits="userSpaceOnUse" x="-100" y="-100" width="5000" height="800">
-                // <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
-                // <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-                // <feMerge result="merge">
-                  // <feMergeNode in="dropShadow1"/>
-                  // <feMergeNode in="dropShadow"/>
-                // </feMerge>
-              // </filter>
-
-              // <filter id="nm-1b" filterUnits="userSpaceOnUse" x="-200" y="-200" width="2000" height="2000">
-                // <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
-                // <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-                // <feMerge result="merge">
-                  // <feMergeNode in="dropShadow1"/>
-                  // <feMergeNode in="dropShadow"/>
-                // </feMerge>
-              // </filter>
-
-              // <filter id="nm-1-reverse" x="-10%" y="-10%" width="120%" height="120%">
-                // <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
-                // <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-                // <feMerge result="merge">
-                  // <feMergeNode in="dropShadow1"/>
-                  // <feMergeNode in="dropShadow"/>
-                // </feMerge>
-              // </filter>
-
-              // <filter id="nm-1b-reverse" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000">
-                // <feDropShadow stdDeviation="4.5" in="SourceGraphic" dx="-6" dy="-6" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5" result="dropShadow"/>
-                // <feDropShadow stdDeviation="5" in="SourceGraphic" dx="6" dy="6" flood-color="var(--cs-theme-shadow-lighter)" flood-opacity="1" result="dropShadow1"/>
-                // <feMerge result="merge">
-                  // <feMergeNode in="dropShadow1"/>
-                  // <feMergeNode in="dropShadow"/>
-                // </feMerge>
-              // </filter>
-
-              // <linearGradient id="light-brightness-gradient" x1="1" x2="0">
-                // <stop stop-color="#eeeeee"/>
-                // <stop offset="1" stop-color="#555555"/>
-              // </linearGradient>
-
-              // <linearGradient id="light-brightness-gradient--orange" x1="1" x2="0">
-                // <stop stop-color="white"/>
-                // <stop offset="1" stop-color="darkorange"/>
-              // </linearGradient>
-
-              // <linearGradient id="light-brightness-gradient--reverse" x1="1" x2="0">
-                // <stop stop-color="#555555"/>
-                // <stop offset="1" stop-color="#eeeeee"/>
-              // </linearGradient>
-
-              // <linearGradient id="light-color-temperature-gradient" x1="1" x2="0">
-                // <stop stop-color="#ffa000"/>
-                // <stop offset=".5" stop-color="#fff"/>
-                // <stop offset="1" stop-color="#a6d1ff"/>
-              // </linearGradient>
-
-              // <linearGradient id="boiler-setpoint-blue-orange-gradient" x1="1" x2="0">
-                // <stop stop-color="#ff8c00"/>
-                // <stop offset="1" stop-color="#0094ff"/>
-              // </linearGradient>
-
-            // </defs>
-    // `;
   }
 
 
@@ -7059,7 +6155,7 @@ class devSwissArmyKnifeCard extends LitElement {
     // The extra group is required for Safari to have filters work and updates are rendered.
     // If group omitted, some cards do update, and some not!!!! Don't ask why!
     
-    const poep = this._renderCardAttributes();
+    this._renderCardAttributes();
     
     svgItems.push(svg`
       <svg id="rootsvg" xmlns="http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
@@ -7454,15 +6550,6 @@ class devSwissArmyKnifeCard extends LitElement {
   _getColorVariable(argColor) {
     const newColor = argColor.substr(4, argColor.length-5);
 
-    // if (!this.lovelace) {
-      // const root = document.querySelector('home-assistant');
-      // const main = root.shadowRoot.querySelector('home-assistant-main');
-      // const drawer_layout = main.shadowRoot.querySelector('app-drawer-layout');
-      // const pages = drawer_layout.querySelector('partial-panel-resolver');
-      // this.lovelace = pages.querySelector('ha-panel-lovelace');
-    // } else { }
-
-    // const returnColor = window.getComputedStyle(this.lovelace).getPropertyValue(newColor);
     const returnColor = window.getComputedStyle(this).getPropertyValue(newColor);
     return returnColor;
   }
