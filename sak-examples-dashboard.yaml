@@ -28,6 +28,7 @@ views:
   - !include lovelace/views/view-sake8.yml
   - !include lovelace/views/view-sake9.yml
   - !include lovelace/views/view-sake10.yml
+  - !include lovelace/views/view-sake11.yml
 
 
 # How do I deal with the situation that lovelace.__panelstate = 'loading'. As a result the __lovelace.config isn't there yet, while the card is already loaded and crashes due to the absence of for instance decluttering_templates...
