@@ -28,8 +28,7 @@ cards:
     - type: custom:decluttering-card
       template: header_template
       variables:
-        - content: 'Boiler:'
-        - font_size: 2.5em
+        - content: 'Boiler'
 
 # =================================
     - type: horizontal-stack
@@ -682,8 +681,7 @@ cards:
     - type: custom:decluttering-card
       template: header_template
       variables:
-        - content: 'Electricity 3x25A phases:'
-        - font_size: 2.5em
+        - content: 'Electricity 3x25A'
 
     - type: horizontal-stack
       cards:
@@ -732,6 +730,37 @@ cards:
               toolsets:
               
             toolsets:
+              # ================================================================
+              - toolset: texts
+                position:
+                  cx: 100
+                  cy: 50
+                tools:
+                  - type: text
+                    position:
+                      cx: 5
+                      cy: 45
+                    text: '='
+                    styles:
+                      text:
+                        font-size: 15em
+                  - type: text
+                    position:
+                      cx: 52.5
+                      cy: 45
+                    text: '+'
+                    styles:
+                      text:
+                        font-size: 15em
+                  - type: text
+                    position:
+                      cx: 97.5
+                      cy: 45
+                    text: '+'
+                    styles:
+                      text:
+                        font-size: 15em
+
               # ================================================================
               - toolset: totals
                 position:
@@ -790,8 +819,8 @@ cards:
                         font-size: 9em
                         fill: var(--primary-text-color)
                         opacity: 1
-                        font-weight: bolder
-                        filter: url(#is-1)
+                        font-weight: bold
+                        # filter: url(#sak-drop-1)
 
                   # ------------------------------------------------------------
                   # Currently Returned TOTAL
@@ -818,7 +847,7 @@ cards:
                       colorstops:
                         gap: 1
                         colors:
-                          0: '#e6f598'
+                          0: '#c6e5a2' #'#e6f598'
                           0.5: '#abdda4'
                           1: '#66c2a5'
                           1.5: '#3288bd'
@@ -846,7 +875,7 @@ cards:
                         fill: var(--primary-text-color)
                         opacity: 1
                         font-weight: bolder
-                        filter: url(#is-1)
+                        # filter: url(#is-1)
 
                   - type: 'name'
                     id: 0
@@ -921,7 +950,7 @@ cards:
                         fill: var(--primary-text-color)
                         opacity: 0.7
                         font-weight: bolder
-                        filter: url(#is-1)
+                        # filter: url(#is-1)
 
                   # ------------------------------------------------------------
                   # Currently Returned L1
@@ -948,7 +977,7 @@ cards:
                       colorstops:
                         gap: 1
                         colors:
-                          0: '#e6f598'
+                          0: '#c6e5a2'
                           0.5: '#abdda4'
                           1: '#66c2a5'
                           1.5: '#3288bd'
@@ -976,7 +1005,7 @@ cards:
                         fill: var(--primary-text-color)
                         opacity: 0.7
                         font-weight: bolder
-                        filter: url(#is-1)
+                        # filter: url(#is-1)
 
                   - type: 'name'
                     id: 0
@@ -1051,7 +1080,7 @@ cards:
                         fill: var(--primary-text-color)
                         opacity: 0.7
                         font-weight: bolder
-                        filter: url(#is-1)
+                        # filter: url(#is-1)
 
                   # ------------------------------------------------------------
                   # Currently Returned L2
@@ -1078,7 +1107,7 @@ cards:
                       colorstops:
                         gap: 1
                         colors:
-                          0: '#e6f598'
+                          0: '#c6e5a2'
                           0.5: '#abdda4'
                           1: '#66c2a5'
                           1.5: '#3288bd'
@@ -1106,7 +1135,7 @@ cards:
                         fill: var(--primary-text-color)
                         opacity: 0.7
                         font-weight: bolder
-                        filter: url(#is-1)
+                        # filter: url(#is-1)
 
                   - type: 'name'
                     id: 0
@@ -1181,7 +1210,7 @@ cards:
                         fill: var(--primary-text-color)
                         opacity: 0.7
                         font-weight: bolder
-                        filter: url(#is-1)
+                        # filter: url(#is-1)
 
                   # ------------------------------------------------------------
                   # Currently Returned L3
@@ -1208,7 +1237,7 @@ cards:
                       colorstops:
                         gap: 1
                         colors:
-                          0: '#e6f598'
+                          0: '#c6e5a2'
                           0.5: '#abdda4'
                           1: '#66c2a5'
                           1.5: '#3288bd'
@@ -1236,7 +1265,7 @@ cards:
                         fill: var(--primary-text-color)
                         opacity: 0.7
                         font-weight: bolder
-                        filter: url(#is-1)
+                        # filter: url(#is-1)
 
                   - type: 'name'
                     id: 0
