@@ -52,7 +52,7 @@ import { fireEvent, stateIcon, getLovelace } from 'https://unpkg.com/custom-card
 //++ Consts ++++++++++
 
 console.info(
-  `%c  SWISS ARMY KNIFE CARD  \n%c    BETA DEV Version     `,
+  `%c  SWISS-ARMY-KNIFE-CARD  \n%c  Beta Version 0.9.0-b2  `,
   'color: yellow; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
@@ -1122,6 +1122,9 @@ class RangeSliderTool extends BaseTool {
     this.svg.scale.max = this.valueToSvg(this, this.config.scale.max);
     this.svg.scale.step = this.config.scale.step;
 
+    // Init slider update interval
+    this.config.slider_action.update_interval = this.config.slider_action.update_interval || 0;
+
     if (this.dev.debug) console.log('RangeSliderTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
@@ -1329,7 +1332,11 @@ class RangeSliderTool extends BaseTool {
       // e.currentTarget.onpointermove = pointerMove;
       
       this.dragging = true;
-      this.timeOutId = setTimeout(() => this.callService(), 250);
+      if (this.config.slider_action.update_interval > 0) {
+        this.timeOutId = setTimeout(() => this.callService(), this.config.slider_action.update_interval);
+      } else {
+        this.timeOutId = null;
+      }
       this.m = this.oMousePosSVG(e);
       // WHY again not working for Safari/iPad!!!!!
       // Capture on Safari needs about 0.5 sec for the glass to kick in and then capturing works... No idea why...
