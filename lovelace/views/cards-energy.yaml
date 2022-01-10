@@ -270,7 +270,7 @@ cards:
                       font-weight: bolder
                       fill: var(--primary-text-color)
                       opacity: 0.7
-                      filter: url(#is-1)
+                      # filter: url(#is-1)
 
             # ==============================================================================
             - toolset: pressure
@@ -356,7 +356,7 @@ cards:
                       font-weight: bolder
                       fill: var(--primary-text-color)
                       opacity: 0.7
-                      filter: url(#is-1)
+                      # filter: url(#is-1)
 
             # ==============================================================================
             - toolset: total
@@ -421,7 +421,7 @@ cards:
                   entity_index: 0
                   position:
                     cx: 50
-                    cy: 30
+                    cy: 32.5
                     align: center
                     icon_size: 18.5
                   styles:
@@ -442,11 +442,11 @@ cards:
                   styles:
                     state:
                       text-anchor: middle
-                      font-size: 15em
+                      font-size: 12.5em
+                      font-weight: bolder
                       fill: var(--primary-text-color)
                       opacity: 0.7
-                      font-weight: bolder
-                      filter: url(#is-1)
+                      # filter: url(#is-1)
 
              # ==============================================================================
             - toolset: text-stuff
