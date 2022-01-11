@@ -1,5 +1,5 @@
 #
-# File      : toolset-light-button-slider2-nm-template.yaml
+# File      : toolset-light-button-slider-nm-template.yaml
 # Project   : Home Assistant
 # Repository: https://github.com/AmoebeLabs/Home-Assistant-Config
 #
@@ -13,13 +13,13 @@
 #
 # This toolset defines a lightbutton with slider to control brightness
 # - Button build with circles & icon
-# - Slider2 for controlling brightness
+# - slider for controlling brightness
 #
 # Design:
 # - Neumorphic
 #   
 ###############################################################################
-toolset_light_button_slider2_nm:
+toolset_light_button_slider_nm:
   template:
     type: toolset
     defaults: 

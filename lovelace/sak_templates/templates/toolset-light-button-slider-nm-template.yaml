@@ -13,7 +13,7 @@
 #
 # This toolset defines a lightbutton with slider to control brightness
 # - Button build with circles & icon
-# - Slider2 for controlling brightness
+# - slider for controlling brightness
 #
 # Design:
 # - Neumorphic
