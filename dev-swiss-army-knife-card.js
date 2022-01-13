@@ -697,13 +697,13 @@ class BaseTool {
     this.csnew = {}
     if ((this.config.csnew) && (this.config.csnew.colors)) {
       this.config.csnew.colors.forEach((item, i) => {
-        console.log('csnew, i, item', i, item);
+        // console.log('csnew, i, item', i, item);
         this.csnew[item.stop] = this.config.csnew.colors[i];
       })
 
-    console.log('this.csnew ', this.csnew);
+    // console.log('this.csnew ', this.csnew);
     this.sortedcsnew = Object.keys(this.csnew).map(n => Number(n)).sort((a, b) => a - b);
-    console.log('this.sortedcsnew ', this.sortedcsnew);
+    // console.log('this.sortedcsnew ', this.sortedcsnew);
     }
   }
 
@@ -1284,7 +1284,6 @@ class RangeSliderTool extends BaseTool {
       // serviceData[this.config.slider_action.parameter] = this._stateValue;
       serviceData[this.config.slider_action.parameter] = this.labelValue2;
       serviceData.entity_id = this.config.slider_action.entity_id || this._card.entities[this.config.entity_index].entity_id;
-      console.log("callService, data=", domain, service, serviceData);
       this._card._hass.callService(domain, service, serviceData);
       fireEvent(window, 'haptic', 'selection');
       
@@ -1326,6 +1325,12 @@ class RangeSliderTool extends BaseTool {
     this.elements.capture.addEventListener("pointerdown", e => {
       e.preventDefault();
       e.stopImmediatePropagation();
+      
+      // Testing lock tap
+      // if (this.locked) {
+        // console.log("pointerdown -> locked = true", this);
+        // return;
+      // }
       fireEvent(window, 'haptic', 'light');
 
       // e.currentTarget.addEventListener("pointermove", pointerMove);
@@ -1357,6 +1362,16 @@ class RangeSliderTool extends BaseTool {
       e.preventDefault();
       e.stopImmediatePropagation();
 
+      // Testing lock tap
+      // if (this.locked) {
+        // console.log("pointerup -> locked = true", this);
+        // this.locked = false;
+        // fireEvent(window, 'haptic', 'success');
+        // return;
+      // }
+
+      // this.locked = true;
+
       this.dragging = false;
       clearTimeout(this.timeOutId);
       this.target = 0;
@@ -1379,8 +1394,6 @@ class RangeSliderTool extends BaseTool {
 
     this.elements.capture.addEventListener("pointermove", e => {
       let scaleValue;
-
-      console.log("pointermove --> ", e.target, "current  ", e.currentTarget);
 
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -2970,7 +2983,7 @@ class EntityIconTool extends BaseTool {
         // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
         return svg`
           <g id="icon-${this.toolId}" class="${classMap(this.classes.icon)}" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
-            <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke="yellow" stroke-width="0px" opacity="50%" fill="none"></rect>
+            <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke="yellow" stroke-width="0px" opacity="50%" fill="rgba(0,0,0,0)"></rect>
             <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
           <g>
         `;
@@ -2983,7 +2996,7 @@ class EntityIconTool extends BaseTool {
                   <ha-icon icon=${icon} id="icon-${this.toolId}" class="${classMap(this.classes.icon)}"
                   @animationstart=${e => this._handleAnimationEvent(e, this)}
                   @animationiteration=${e => this._handleAnimationEvent(e, this)}
-                  style="animation: flash 0.1s 10;"></ha-icon>
+                  style="animation: flash 0.15s 20;"></ha-icon>
               </div>
             </body>
           </foreignObject>
@@ -6520,7 +6533,7 @@ class devSwissArmyKnifeCard extends LitElement {
         const s1 = sortedStops[i];
         const s2 = sortedStops[i + 1];
         if (argState >= s1 && argState < s2) {
-          console.log('calculateColor2 ', argStops[s1], argStops[s2]);
+          // console.log('calculateColor2 ', argStops[s1], argStops[s2]);
           [start, end] = [argStops[s1].styles[argPart][argProperty], argStops[s2].styles[argPart][argProperty]];
           if (!argIsGradient) {
             return start;
