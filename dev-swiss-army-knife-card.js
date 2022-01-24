@@ -574,6 +574,8 @@ class Toolset {
     // One of the things can be a colorswatch, a filter, etc...
 
     if ((this._card.isSafari) || (this._card.iOS)) {
+    // if (false && ((this._card.browser.name == 'Safari') && (this._card.browser.major <= 15) && (this._card.browser.minor <= 2) && (this._card.browser.patch < 1))) {
+    //if (((this._card.browser.name == 'Safari') && (this._card.browser.version != "15.2.1"))) {
       //
       // Safari seems to ignore - although not always - the transform-box:fill-box setting.
       // - It needs the explicit center point when rotating. So this is added to the rotate() command.
@@ -588,12 +590,14 @@ class Toolset {
       //
       // Without this setting, objects are cut-off or become invisible while scaled!
       
+      // @2022.01.23 Next part is ok for all Safari versions regarding scaling a toolset, but when rotating comes into play, it messes up on both versions.
+      // ie 15.2 and 15.2.1
       return svg`
         <g id="toolset-${this.toolsetId}" class="toolset__group-outer"
            transform="rotate(${this.transform.rotate.x}, ${this.svg.cx}, ${this.svg.cy})
                       scale(${this.transform.scale.x}, ${this.transform.scale.y})
                       "
-           style="transform-origin:center;">
+           style="transform-origin:center; transform-box:fill-box;">
           <svg style="overflow:visible;">
             <g class="toolset__group" transform="translate(${this.svg.cx/this.transform.scale.x}, ${this.svg.cy/this.transform.scale.y})">
               ${this.renderToolset()}
@@ -601,6 +605,21 @@ class Toolset {
             </svg>
         </g>
       `;
+
+      // this one is ok for 15.2. not for 15.2.1
+      // return svg`
+        // <g id="toolset-${this.toolsetId}" class="toolset__group-outer"
+           // transform="rotate(${this.transform.rotate.x}, ${this.svg.cx}, ${this.svg.cy})
+                      // scale(${this.transform.scale.x}, ${this.transform.scale.y})
+                      // "
+           // style="transform-origin:center;">
+          // <svg style="overflow:visible;">
+            // <g class="toolset__group" transform="translate(${this.svg.cx/this.transform.scale.x}, ${this.svg.cy/this.transform.scale.y})">
+              // ${this.renderToolset()}
+            // </g>
+            // </svg>
+        // </g>
+      // `;
 
     } else {
       //
@@ -5009,6 +5028,46 @@ class devSwissArmyKnifeCard extends LitElement {
   constructor() {
     super();
 
+    // https://stackoverflow.com/questions/5916900/how-can-you-detect-the-version-of-a-browser
+    // 
+    // function BrowserCheck()
+    // {
+        // var N= navigator.appName, ua= navigator.userAgent, tem;
+        // var M= ua.match(/(opera|chrome|safari|firefox|msie|trident)\/?\s*(\.?\d+(\.\d+)*)/i);
+        // if(M && (tem= ua.match(/version\/([\.\d]+)/i))!= null) {M[2]=tem[1];}
+        // M= M? [M[1], M[2]]: [N, navigator.appVersion,'-?'];
+
+        // var result = {};
+        // [result.name, result.version] = M;
+        // [result.major, result.minor, result.patch] = result.version.split(".");
+        // result.major |= 0;
+        // result.minor |= 0;
+        // result.patch |= 0;
+        // return result;
+        // return M;
+    // }
+
+    // function get_browser() {
+        // var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || []; 
+        // if(/trident/i.test(M[1])){
+            // tem=/\brv[ :]+(\d+)/g.exec(ua) || []; 
+            // return {name:'IE',version:(tem[1]||'')};
+            // }   
+        // if(M[1]==='Chrome'){
+            // tem=ua.match(/\bEdg\/(\d+)/)
+            // if(tem!=null)   {return {name:'Edge(Chromium)', version:tem[1]};}
+            // tem=ua.match(/\bOPR\/(\d+)/)
+            // if(tem!=null)   {return {name:'Opera', version:tem[1]};}
+            // }   
+        // M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+        // if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+        // return {
+          // name: M[0],
+          // version: M[1],
+          // tem: tem
+        // };
+     // }
+
     this.connected = false;
 
     // Get cardId for unique SVG gradient Id
@@ -5051,6 +5110,11 @@ class devSwissArmyKnifeCard extends LitElement {
     // After iOS 13 you should detect iOS devices like this, since iPad will not be detected as iOS devices
     // by old ways (due to new "desktop" options, enabled by default)
 
+    // var browser=get_browser();
+    // console.log(browser);
+    
+    // this.browser = BrowserCheck();
+    // console.log(this.browser);
     this.isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
     this.iOS = (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
@@ -5410,6 +5474,14 @@ class devSwissArmyKnifeCard extends LitElement {
 
     if (!devSwissArmyKnifeCard.lovelace) devSwissArmyKnifeCard.lovelace = getLovelace();
 
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    console.log('get styles', darkModeMediaQuery);
+    darkModeMediaQuery.addListener((e) => {
+      const darkModeOn = e.matches;
+      console.log(`Dark mode is ${darkModeOn ? '🌒 on' : '☀️ off'}.`);
+    });
+    console.log('get styles 2', darkModeMediaQuery);
+
     // Get - only ONCE - the external SVG defintions for both SAK and UserSvgTool
     // These definitions are cached into this.lovelace, so available for all cards
     //
@@ -5438,6 +5510,15 @@ class devSwissArmyKnifeCard extends LitElement {
   set hass(hass) {
     //console.time("--> "+ this.cardId + " PERFORMANCE card::hass");
 
+    // testing
+    // console.log("set hass, themes...", hass.themes, hass.themes.darkMode);
+    
+    // this.darkMode = false;
+    if (hass.themes.darkMode != this.darkMode) {
+      console.log("set hass, darkmode changed from/to ", this.darkMode, hass.themes.darkMode, hass.themes);
+      this.darkMode = hass.themes.darkMode;
+    };
+    
     // Set ref to hass, use "_"for the name ;-)
     if (this.dev.debug) console.log('*****Event - card::set hass', this.cardId, new Date().getTime());
     this._hass = hass;
@@ -6341,6 +6422,8 @@ class devSwissArmyKnifeCard extends LitElement {
 
   _buildState(inState, entityConfig) {
 
+    // console.log('_buildState', inState, entityConfig)
+    
     if (isNaN(inState))
       return inState;
 
