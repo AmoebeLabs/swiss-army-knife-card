@@ -246,13 +246,14 @@ class Templates {
 
   static evaluateJsTemplate(argTool, state, jsTemplate) {
     try {
-      return new Function('state', 'states', 'entity', 'user', 'hass', `'use strict'; ${jsTemplate}`).call(
+      return new Function('state', 'states', 'entity', 'user', 'hass', 'config', `'use strict'; ${jsTemplate}`).call(
         this,
         state,
         argTool._card._hass.states,
         argTool.config.entity_index ? argTool._card.entities[argTool.config.entity_index] : undefined,
         argTool._card._hass.user,
         argTool._card._hass,
+        argTool.config,
       );
     } catch (e) {
       e.name = 'Sak-evaluateJsTemplate-Error';
@@ -681,10 +682,12 @@ class BaseTool {
     this.svg.y = (this.svg.cy) - (this.svg.height / 2);
     
     this.classes = {};
+    this.classes.card = {};
     this.classes.toolset = {};
     this.classes.tool = {};
 
     this.styles = {};
+    this.styles.card = {};
     this.styles.toolset = {};
     this.styles.tool = {};
 
@@ -844,6 +847,14 @@ class BaseTool {
         this.styles = Merge.mergeDeep(argDefaultStyles, this.config.styles, this.animationStyle);
       } else {
         this.styles = Merge.mergeDeep(this.config.styles, this.animationStyle);
+      }
+      
+      // card stuff testing...
+      if (this.styles.card) {
+        if (Object.keys(this.styles.card).length != 0) {
+          this._card.styles.card = Merge.mergeDeep(this.styles.card);
+          console.log(new Date().getTime(), "id=", this._card.cardId, "===== MergeAnimationStyleIfChanged, CARD style set to: ", this.styles.card);
+        }
       }
     }
   }
@@ -1812,7 +1823,7 @@ class LineTool extends BaseTool {
   render() {
 
     return svg`
-      <g id="line-${this.toolId}" class="${classMap(this.styles.tool)}"
+      <g id="line-${this.toolId}" class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
         ${this._renderLine()}
       </g>
@@ -2587,14 +2598,19 @@ class RectangleToolEx extends BaseTool {
     this.MergeAnimationClassIfChanged();
 
     // WIP
-    this.MergeAnimationStyleIfChanged(this.styles.rectex);
+    this.MergeAnimationStyleIfChanged(this.styles);
+    this.MergeAnimationStyleIfChanged();
     if (this.config.hasOwnProperty('csnew')) {
       this.MergeColorFromState2(this.styles.rectex, 'rectex');
     } else {
       this.MergeColorFromState(this.styles.rectex);
-        
     }
 
+    // if (this.styles.card) {
+      // console.log("rectex, has card styles", this.styles.card);
+      // this._card.styles.card = this.styles.card;
+    // };
+    
     if (!this.counter) {this.counter=0}
     this.counter++;
 
@@ -5025,6 +5041,7 @@ class SegmentedArcTool extends BaseTool {
 //=============================================================================
 
 class devSwissArmyKnifeCard extends LitElement {
+  // card::constructor
   constructor() {
     super();
 
@@ -5085,6 +5102,11 @@ class devSwissArmyKnifeCard extends LitElement {
     this.toolsets = [];
     this.tools = [];
 
+    // 2022.01.24
+    // Add card styles functionality
+    this.styles = {};
+    this.styles.card = {};
+    
     // For history query interval updates.
     this.stateChanged = true;
     this.updating = false;
@@ -5512,7 +5534,8 @@ class devSwissArmyKnifeCard extends LitElement {
 
     // testing
     // console.log("set hass, themes...", hass.themes, hass.themes.darkMode);
-    
+    if (!this.counter) this.counter = 0;
+    this.counter++;
     // this.darkMode = false;
     if (hass.themes.darkMode != this.darkMode) {
       console.log("set hass, darkmode changed from/to ", this.darkMode, hass.themes.darkMode, hass.themes);
@@ -5654,13 +5677,14 @@ class devSwissArmyKnifeCard extends LitElement {
           entityHasChanged = true;
           // console.log('set hass CHANGED state', entityHasChanged, this.config.entities[index], newStateStr);
         } else {
-          // console.log('set hass NOT state', entityHasChanged, this.config.entities[index], newStateStr);
+          // console.log('set hass NOT state', entityHasChanged, this.config.entities[index], this.entitiesStr[index], newStateStr);
         }
         if (this.dev.debug) console.log("set hass - attrSet=false", this.cardId, new Date().getSeconds().toString() + '.'+ new Date().getMilliseconds().toString(), newStateStr);
       }
 
       index++;
       attrSet = false;
+      secInfoSet = false;
     }
 
     // #TODO
@@ -5668,6 +5692,14 @@ class devSwissArmyKnifeCard extends LitElement {
     if (!entityHasChanged) {
       //console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
 
+      // ############################TODO. Temp disabled...
+      // @2022.01.24
+      // For some reason, this returns, altough something has changed and should be rendered.
+      // Now this is not done, and for instance the background of cards is not changed at the moment it should be: but the icon changes. That is weird.
+      // Icon changes, and changes color, but background seems to wait for another update of the card orso ?!?!?!?!?!?!?
+      //
+      // By commenting-out the return, the background change is instant after the state change...
+      
       return;
     }
 
@@ -5680,8 +5712,11 @@ class devSwissArmyKnifeCard extends LitElement {
     // For now, always force update to render the card if any of the states or attributes have changed...
     if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
     
-    // Force upate as test...
-    // this.requestUpdate();
+    // Force upate as test... ###########################################
+    this.requestUpdate();
+
+    this.counter--;
+    console.log("set hass, counter = ", this.counter);
 
     //console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
   }
@@ -5932,18 +5967,29 @@ class devSwissArmyKnifeCard extends LitElement {
   * but before the browser has had a chance to paint.
   *
   */
-  async firstUpdated(changedProperties) {
+
+  firstUpdated(changedProperties) {
 
     if (this.dev.debug) console.log('*****Event - card::firstUpdated', this.cardId, new Date().getTime());
 
     if (this.toolsets) {
-      await Promise.all(this.toolsets.map( async (item, index) => {
-        // Give browser some change to paint cards between updates...
-        await new Promise((r) => setTimeout(r, 0));
+      this.toolsets.map( async (item, index) => {
         item.firstUpdated(changedProperties);
-      }));
+      });
     }
   }
+  // async firstUpdated(changedProperties) {
+
+    // if (this.dev.debug) console.log('*****Event - card::firstUpdated', this.cardId, new Date().getTime());
+
+    // if (this.toolsets) {
+      // await Promise.all(this.toolsets.map( async (item, index) => {
+        // // Give browser some change to paint cards between updates...
+        // await new Promise((r) => setTimeout(r, 0));
+        // item.firstUpdated(changedProperties);
+      // }));
+    // }
+  // }
 
 
  /*******************************************************************************
@@ -6025,6 +6071,8 @@ class devSwissArmyKnifeCard extends LitElement {
 
     var myHtml;
 
+                      // style="${styleMap(this.styles.card)}"
+
     try {
       if (this.config.disable_card) {
         myHtml = html`
@@ -6035,7 +6083,8 @@ class devSwissArmyKnifeCard extends LitElement {
       } else {
         myHtml = html`
                   <ha-card>
-                    <div class="container" id="container">
+                    <div class="container" id="container"
+                    >
                       ${this._renderSvg()}
                     </div>
                   </ha-card>
@@ -6255,12 +6304,28 @@ class devSwissArmyKnifeCard extends LitElement {
     //
     // The extra group is required for Safari to have filters work and updates are rendered.
     // If group omitted, some cards do update, and some not!!!! Don't ask why!
+    // style="${styleMap(this.styles.card)}"
     
     this._renderCardAttributes();
+    // console.log("_renderSvg, this.styles.card", this.styles.card);
+    console.log(new Date().getTime(), "id=", this.cardId, "_renderSvg, this.styles.card", this.styles.card);
+
+    // @2022.01.26 Timing / Ordering problem:
+    // - the _RenderToolsets() function renders tools, which build the this.styles/this.classes maps.
+    // - However: this means that higher styles won't render until the next render, ie this.styles.card
+    //   won't render, as this variable is already cached as it seems by Polymer.
+    // - This is also the case for this.styles.tools/toolsets: they also don't work!
+    //
+    // Temp fix for card styles: render toolsets first, and then push the svg data!!
+          // ${this._RenderToolsets()}
+    
+    const toolsetsSvg = this._RenderToolsets();
+    console.log(new Date().getTime(), "id=", this.cardId, "_renderSvg, this.styles.card", this.styles.card);
     
     svgItems.push(svg`
       <svg id="rootsvg" xmlns="http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
        class="${cardFilter}"
+       style="${styleMap(this.styles.card)}"
        data-entity-0="${this._attributes[0]}"
        data-entity-1="${ifDefined(this._attributes[1])}"
        data-entity-2="${ifDefined(this._attributes[2])}"
@@ -6274,7 +6339,7 @@ class devSwissArmyKnifeCard extends LitElement {
        viewBox="0 0 ${this.viewBox.width} ${this.viewBox.height}"
       >
         <g style="${styleMap(this.config.layout?.styles?.toolsets)}">
-          ${this._RenderToolsets()}
+          ${toolsetsSvg}
         </g>
     </svg>`);
 
@@ -6754,8 +6819,18 @@ class devSwissArmyKnifeCard extends LitElement {
     return outColor;
   }
 
+  // 2022.01.25 #TODO
+  // Reset interval to 5 minutes: is now short I think after connectedCallback().
+  // Only if _hass exists / is set --> set to 5 minutes!
+  //
+  // BUG: If no history entity, the interval check keeps running. Initally set to 200ms, and
+  // keeps running with that interval. If history present, interval is larger ????????
+  //
+  // There is no check yet, if history is requested. That is the only reason to have this
+  // interval active!
   updateOnInterval() {
     // Only update if hass is already set, this might be not the case the first few calls...
+    console.log("updateOnInterval -> check...");
     if (!this._hass) {
       if (this.dev.debug) console.log("UpdateOnInterval - NO hass, returning");
       return;
@@ -6766,6 +6841,7 @@ class devSwissArmyKnifeCard extends LitElement {
       // Leave true, as multiple entities can be fetched. fetch every 5 minutes...
       //this.stateChanged = false;
       this.updateData();
+      console.log("updateOnInterval -> updateData");
     }
   }
 
