@@ -853,7 +853,7 @@ class BaseTool {
       if (this.styles.card) {
         if (Object.keys(this.styles.card).length != 0) {
           this._card.styles.card = Merge.mergeDeep(this.styles.card);
-          console.log(new Date().getTime(), "id=", this._card.cardId, "===== MergeAnimationStyleIfChanged, CARD style set to: ", this.styles.card);
+          // console.log(new Date().getTime(), "id=", this._card.cardId, "===== MergeAnimationStyleIfChanged, CARD style set to: ", this.styles.card);
         }
       }
     }
@@ -4376,10 +4376,13 @@ class SegmentedArcTool extends BaseTool {
 
         });
 
-      // Insert dummy stopcolor value for max value for easier lookup...
-      this._segments.colorStops[this.config.scale.max] = 'black';
-
       this._segments.sortedStops = Object.keys(this._segments.colorStops).map(n => Number(n)).sort((a, b) => a - b);
+
+      // Insert extra stopcolor for max scale if not defined. Otherwise color calculations won't work as expected...
+      if (typeof(this._segments.colorStops[this.config.scale.max]) == 'undefined') {
+        this._segments.colorStops[this.config.scale.max] = this._segments.colorStops[this._segments.sortedStops[this._segments.sortedStops.length - 1]];
+        this._segments.sortedStops = Object.keys(this._segments.colorStops).map(n => Number(n)).sort((a, b) => a - b);
+      }
 
       this._segments.count = this._segments.sortedStops.length - 1;
       this._segments.gap = this.config.segments.colorstops.gap != 'undefined' ? this.config.segments.colorstops.gap : 1;
@@ -4787,6 +4790,7 @@ class SegmentedArcTool extends BaseTool {
                                 ? (thisTool._segmentAngles[runningSegment].drawEnd)
                                 : (thisTool._segmentAngles[runningSegment].drawStart);
                   var value = Math.min(Math.max(0, (runningSegmentAngle - boundsStart) / (boundsEnd - boundsStart)), 1);
+                  var sortedMax = thisTool._segments.sortedStops.length;
                   fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                                            thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment+1]],
                                            value);
@@ -6308,7 +6312,7 @@ class devSwissArmyKnifeCard extends LitElement {
     
     this._renderCardAttributes();
     // console.log("_renderSvg, this.styles.card", this.styles.card);
-    console.log(new Date().getTime(), "id=", this.cardId, "_renderSvg, this.styles.card", this.styles.card);
+    // console.log(new Date().getTime(), "id=", this.cardId, "_renderSvg, this.styles.card", this.styles.card);
 
     // @2022.01.26 Timing / Ordering problem:
     // - the _RenderToolsets() function renders tools, which build the this.styles/this.classes maps.
@@ -6320,7 +6324,7 @@ class devSwissArmyKnifeCard extends LitElement {
           // ${this._RenderToolsets()}
     
     const toolsetsSvg = this._RenderToolsets();
-    console.log(new Date().getTime(), "id=", this.cardId, "_renderSvg, this.styles.card", this.styles.card);
+    // console.log(new Date().getTime(), "id=", this.cardId, "_renderSvg, this.styles.card", this.styles.card);
     
     svgItems.push(svg`
       <svg id="rootsvg" xmlns="http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
