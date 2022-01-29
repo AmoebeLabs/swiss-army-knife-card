@@ -11,7 +11,7 @@
 # Description:
 # SAK Example #11. All specific energy cards:
 # - OpenTherm based boiler (Remeha Calenta)
-# - Energy readings from DSMR
+# - Energy readings from DSMR Reader
 #
 # Refs:
 #   
@@ -20,7 +20,7 @@
 title: SAKE11
 path: sake11
 panel: false
-theme: 'NM - Gonsboro'
+# theme: 'NM - Gonsboro'
 cards:
 #-------------------------------------------------------------------------------
 - type: vertical-stack
@@ -36,6 +36,8 @@ cards:
         # 
         # 1st ROW, 1st card
         #
+        # Boiler thermostat control
+        # 
         ########################################################################
 
         - type: 'custom:dev-swiss-army-knife-card'
@@ -64,16 +66,6 @@ cards:
             - entity: sensor.studym_iaq_humidity
               unit: '%'
               decimals: 0
-            #9
-            - entity: weather.zoefdehaas
-              attribute: temperature
-              decimals: 1
-              unit: '°C'
-              icon: mdi:thermometer
-            - entity: weather.zoefdehaas
-              attribute: humidity
-              decimals: 0
-              unit: '%'
 
           # Define aspect ratio as square
           aspectratio: 1/1
@@ -92,28 +84,55 @@ cards:
                 tools:
                   # Background used for active / inactive card
                   # ------------------------------------------------------------
-                  - type: rectex
-                    position:
-                      cx: 50
-                      cy: 50
-                      width: 100
-                      height: 100
-                      radius:
-                        top: 0
-                        bottom: 0
-                    entity_index: 3
-                    animations:
-                      - state: 'on'
-                        classes:
-                          rectex:
-                            sak-card--on: true
-                        styles:
-                          rectex:
-                            animation-fill-mode: forwards
-                      - state: 'off'
-                        classes:
-                          rectex:
-                            sak-card--off: true
+                  # - type: rectex
+                    # position:
+                      # cx: 50
+                      # cy: 50
+                      # width: 100
+                      # height: 100
+                      # radius:
+                        # top: 0
+                        # bottom: 0
+                    # entity_index: 3
+                    # animations:
+                      # - state: 'on'
+                        # # classes:
+                          # # rectex:
+                            # # sak-card--on: true
+                        # styles:
+                          # rectex:
+                            # # animation-fill-mode: forwards
+                            # fill: none
+                          # card:
+                            # -webkit-backdrop-filter: brightness(2)
+                            # backdrop-filter: brightness(2)
+                            # -webkit-transition: backdrop-filter 2s ease 0s
+                            # transition: backdrop-filter 2s ease 0s
+                      # - state: 'off'
+                        # # classes:
+                          # # rectex:
+                            # # sak-card--off: true
+                        # styles:
+                          # rectex:
+                            # # animation-fill-mode: forwards
+                            # fill: none
+                          # card:
+                            # -webkit-backdrop-filter: brightness(1)
+                            # backdrop-filter: brightness(1)
+                            # -webkit-transition: backdrop-filter 2s ease 0s
+                            # transition: backdrop-filter 2s ease 0s
+
+                      # # - state: 'on'
+                        # # classes:
+                          # # rectex:
+                            # # sak-card--on: true
+                        # # styles:
+                          # # rectex:
+                            # # animation-fill-mode: forwards
+                      # # - state: 'off'
+                        # # classes:
+                          # # rectex:
+                            # # sak-card--off: true
 
                   # ------------------------------------------------------------
                   # Brander aan?
@@ -127,13 +146,31 @@ cards:
                     animations:
                       - state: 'on'
                         styles:
+                          card:
+                            # -webkit-transition: backdrop-filter 3s ease 0s
+                            # transition: backdrop-filter 3s ease 0s
+                            # -webkit-backdrop-filter: brightness(2)
+                            # backdrop-filter: brightness(2)
+                            
+                            # background-color: rgb(255,255,255,0.2)
+                            background-color: var(--theme-card-background-color-active)
+                            transition: background-color 3s ease-in-out 0s
                           icon:
                             fill: var(--md-fg-color--alert)
                             color: var(--md-fg-color--alert)
                             animation: pulse 2s ease-in-out infinite
-                            animation-fill-mode: forwards
+                            # animation-fill-mode: forwards
                       - state: 'off'
                         styles:
+                          card:
+                            # background-color: rgb(255,255,255,0.1)
+                            background-color: var(--theme-card-background-color-inactive)
+                            transition: background-color 3s ease-in-out 0s
+
+                            # -webkit-transition: backdrop-filter 3s ease 0s
+                            # transition: backdrop-filter 3s ease 0s
+                            # -webkit-backdrop-filter: brightness(1)
+                            # backdrop-filter: brightness(1)
                           icon:
                             fill: var(--primary-text-color)
                             color: var(--primary-text-color)
@@ -242,6 +279,82 @@ cards:
                         font-weight: 700
 
                   # ------------------------------------------------------------
+                  # Setpoint
+                  - type: segarc
+                    id: 0
+                    entity_index: 7
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: -120
+                      end_angle: 120
+                      # width: 2
+                      # radius: 38.5
+                      width: 4
+                      radius: 43
+                    scale:
+                      min: 17
+                      max: 23
+                      width: 2
+                      offset: 2
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    # derived_entity:
+                      # input : '[[[ return state ]]]'
+                      # state: >
+                        # [[[
+                          # if (typeof(entity) === 'undefined') return;
+                          # if (typeof(state) === 'undefined') return;
+                          
+                          # var reversed = config.scale.max - state + config.scale.min;
+                          # return (reversed);
+                        # ]]]
+                    segments:
+                      colorlist:
+                        gap: -0.5
+                        colors:
+                          - &color white #var(--primary-text-color)
+                          # - *color
+                          # - *color
+                          # - *color
+                          # - *color
+                          # - *color
+                          # - *color
+                          # - *color
+                          # - *color
+                          # - *color
+                          # - *color
+                          # - *color
+                          
+                          # - var(--primary-text-color)
+                          # - var(--primary-text-color)
+                          # - var(--primary-text-color)
+                          # - var(--primary-text-color)
+                          # - var(--primary-text-color)
+                          # - var(--primary-text-color)
+                          # - var(--primary-text-color)
+                          # - var(--primary-text-color)
+                          # - var(--primary-text-color)
+                          # - var(--primary-text-color)
+                          # - var(--primary-text-color)
+                          
+                      # colorstops:
+                        # template:
+                          # name: colorstops_boiler_setpoint_blue2orange
+                          # variables:
+                            # - thegap: 1
+                    animation:
+                      duration: 5
+                    styles:
+                      foreground:
+                        fill: var(--primary-text-color)
+                        opacity: 0.9
+                      background:
+                        # fill: none
+                        fill: var(--theme-background-color-darken-40)
+
+                  # ------------------------------------------------------------
                   # Room temperature
                   - type: segarc
                     id: 0
@@ -251,7 +364,8 @@ cards:
                       cy: 50
                       start_angle: -120
                       end_angle: 120
-                      width: 5
+                      width: 6
+                      # width: 2
                       radius: 40
                     scale:
                       min: 17
@@ -266,57 +380,22 @@ cards:
                         template:
                           name: colorstops_boiler_setpoint_blue2orange
                           variables:
-                            - thegap: 1
+                            - thegap: -0.5
                     animation:
                       duration: 5
                     styles:
                       foreground:
                         fill: var(--primary-text-color)
                       background:
-                        fill: var(--cs-theme-default-darken-15)
+                        fill: var(--theme-background-color-darken-30, --theme-default-darken-15)
 
-                  # ------------------------------------------------------------
-                  # Setpoint
-                  - type: segarc
-                    id: 0
-                    entity_index: 7
-                    position:
-                      cx: 50
-                      cy: 50
-                      start_angle: -120
-                      end_angle: 120
-                      width: 2
-                      radius: 38.5
-                    scale:
-                      min: 17
-                      max: 23
-                      width: 2
-                      offset: 2
-                    show:
-                      scale: false
-                      style: 'colorstops'
-                    segments:
-                      colorstops:
-                        template:
-                          name: colorstops_boiler_setpoint_blue2orange
-                          variables:
-                            - thegap: 1
-                    animation:
-                      duration: 5
-                    styles:
-                      foreground:
-                        fill: var(--primary-text-color)
-                      background:
-                        fill: none  #var(--cs-theme-default-darken-15)
-
-              - toolset: setpont-setting
+              - toolset: setpoint-setting
                 position:
                   cx: 50
                   cy: 50
                 tools:
                   # ------------------------------------------------------------
                   - type: slider
-                    descr: '#3 test slider'
                     position:
                       cx: 50
                       cy: 90
@@ -325,13 +404,11 @@ cards:
                         width: 90
                         height: 15
                       active:
-                        # height: 1
                         height: 8
                         width: 80
                         radius: 2
                       track:
                         width: 90
-                        # height: 8
                         height: 6
                         radius: 2
                       thumb:
@@ -350,32 +427,35 @@ cards:
                     # Below is just for exploration. Actions is not yet used...
                     # Will be part of issue #51 to move actions from card section
                     # to tool section ;-)
-                    user_actions:
-                      drag_action:
-                        update_interval: 0
-                        haptic: selection
-                        actions:
-                          - action: call-service
-                            service: climate.set_temperature
-                            # Override entity_id. Otherwise entity_index is used...
-                            service_data:
-                              entity_id: climate.calenta
-                              parameter: temperature
-                      tap_action:
-                        haptic: light
-                        actions:
-                          - action: call-service
-                            service: climate.set_temperature
-                            # Override entity_id. Otherwise entity_index is used...
-                            service_data:
-                              entity_id: climate.calenta
-                              parameter: temperature
-                      hold_action:
-                        haptic: medium
-                        actions:
-                          - action: more-info
+                    # user_actions:
+                      # drag_action:
+                        # update_interval: 0
+                        # haptic: selection
+                        # actions:
+                          # - action: call-service
+                            # service: climate.set_temperature
+                            # # Override entity_id. Otherwise entity_index is used...
+                            # service_data:
+                              # entity_id: climate.calenta
+                              # parameter: temperature
+                      # tap_action:
+                        # haptic: light
+                        # actions:
+                          # - action: call-service
+                            # service: climate.set_temperature
+                            # # Override entity_id. Otherwise entity_index is used...
+                            # service_data:
+                              # entity_id: climate.calenta
+                              # parameter: temperature
+                      # hold_action:
+                        # haptic: medium
+                        # actions:
+                          # - action: more-info
                         
                     slider_action:
+                      # Set interval to 0 to disable updates while dragging.
+                      # new temperature setpoint is sent to boiler on release
+                      # of the slider
                       update_interval: 0
                       service: climate.set_temperature
                       # Override entity_id. Otherwise entity_index is used...
@@ -396,14 +476,12 @@ cards:
                         pointer-events: all
                         touch-action: none
                       active:
-                        # fill: white
                         fill: url(#sak-boiler-setpoint-blue-orange-gradient)
                         stroke: var(--primary-background-color)
                         stroke-width: 0.5em
                         pointer-events: none
                       track:
-                        # fill: url(#sak-boiler-setpoint-blue-orange-gradient)
-                        fill: var(--cs-theme-default-darken-15)
+                        fill: var(--theme-background-color-darken-30, --theme-default-darken-15)
                         fill-opacity: 1
                         pointer-events: none
                       thumb:
@@ -418,6 +496,8 @@ cards:
         # 
         # 1st ROW, 2nd card
         #
+        # Boiler water temperatures
+        # 
         ########################################################################
 
         - type: 'custom:dev-swiss-army-knife-card'
@@ -464,16 +544,33 @@ cards:
                     entity_index: 0
                     animations:
                       - state: 'on'
-                        classes:
-                          rectex:
-                            sak-card--on: true
+                        # classes:
+                          # rectex:
+                            # sak-card--on: true
                         styles:
-                          rectex:
-                            animation-fill-mode: forwards
+                          card:
+                            # -webkit-backdrop-filter: brightness(2)
+                            # backdrop-filter: brightness(2)
+                            # -webkit-transition: backdrop-filter 5s ease 0s
+                            # transition: backdrop-filter 5s ease 0s
+                            background-color: var(--theme-card-background-color-active)
+                            transition: background-color 3s ease-in-out
                       - state: 'off'
-                        classes:
-                          rectex:
-                            sak-card--off: true
+                        # classes:
+                          # rectex:
+                            # sak-card--off: true
+                        styles:
+                          card:
+                            # -webkit-backdrop-filter: brightness(1)
+                            # backdrop-filter: brightness(1)
+                            # -webkit-transition: backdrop-filter 5s ease 0s
+                            # transition: backdrop-filter 5s ease 0s
+                            transition: background-color 3s ease-in-out
+                            background-color: var(--theme-card-background-color-inactive)
+                    styles:
+                      rectex:
+                        fill: none
+                        opacity: 0
 
                   # ------------------------------------------------------------
                   # Water setpoint temperature
@@ -511,7 +608,7 @@ cards:
                         fill: var(--primary-text-color)
                         stroke-width: 0.5em
                       background:
-                        fill: var(--cs-theme-default-darken-15)
+                        fill: var(--theme-background-color-darken-10, --theme-default-darken-15)
                         stroke-width: 0.5em
 
                   # ------------------------------------------------------------
@@ -578,7 +675,7 @@ cards:
                       foreground:
                         fill: var(--primary-text-color)
                       background:
-                        fill: var(--cs-theme-default-darken-15)
+                        fill: var(--theme-background-color-darken-10, --theme-default-darken-15)
 
                   # ------------------------------------------------------------
                   # Water actual temperature
@@ -644,7 +741,7 @@ cards:
                       foreground:
                         fill: var(--primary-text-color)
                       background:
-                        fill: var(--cs-theme-default-darken-15)
+                        fill: var(--theme-background-color-darken-10)
 
                   # ------------------------------------------------------------
                   # Water return temperature
@@ -688,37 +785,36 @@ cards:
         # 
         # 2nd ROW, full card
         #
+        # Electricity delivered / returned.
+        # 
         ########################################################################
 
         - type: 'custom:dev-swiss-army-knife-card'
           entities:
-            #0
+            #Total
             - entity: sensor.dsmr_reading_electricity_currently_delivered
               decimals: 3
               name: 'Total'
               area: 'Tha Moon'
+            - entity: sensor.dsmr_reading_electricity_currently_returned
+              decimals: 3
+            #L1
             - entity:  sensor.dsmr_reading_phase_currently_delivered_l1
               name: 'L1'
               decimals: 3
+            - entity:  sensor.dsmr_reading_phase_currently_returned_l1
+              decimals: 3
+            #L2
             - entity:  sensor.dsmr_reading_phase_currently_delivered_l2
               name: 'L2'
               decimals: 3
+            - entity:  sensor.dsmr_reading_phase_currently_returned_l2
+              decimals: 3
+            #L3
             - entity:  sensor.dsmr_reading_phase_currently_delivered_l3
               name: 'L3'
               decimals: 3
-            #4
-            - entity: sensor.dsmr_reading_electricity_currently_returned
-              decimals: 3
-              name: 'Total'
-              area: 'Tha Moon'
-            - entity:  sensor.dsmr_reading_phase_currently_returned_l1
-              name: 'L1'
-              decimals: 3
-            - entity:  sensor.dsmr_reading_phase_currently_returned_l2
-              name: 'L2'
-              decimals: 3
             - entity:  sensor.dsmr_reading_phase_currently_returned_l3
-              name: 'L3'
               decimals: 3
             
           # Define aspect ratio
@@ -741,7 +837,7 @@ cards:
                       cx: 5
                       cy: 45
                     text: '='
-                    styles:
+                    styles: &texts-styles
                       text:
                         font-size: 15em
                   - type: text
@@ -749,534 +845,53 @@ cards:
                       cx: 52.5
                       cy: 45
                     text: '+'
-                    styles:
-                      text:
-                        font-size: 15em
+                    styles: *texts-styles
                   - type: text
                     position:
                       cx: 97.5
                       cy: 45
                     text: '+'
-                    styles:
-                      text:
-                        font-size: 15em
+                    styles: *texts-styles
 
               # ================================================================
               - toolset: totals
-                position:
-                  cx: 30
-                  cy: 50
-                tools:
-                  # ------------------------------------------------------------
-                  # Currently Delivered TOTAL
-                  - type: segarc
-                    id: 0
-                    entity_index: 0
-                    position:
-                      cx: 50
-                      cy: 25
-                      start_angle: 180
-                      end_angle: -90
-                      width: 3
-                      radius: 18
-                    scale:
-                      min: 0
-                      max: 2.5
-                      width: 2
-                      offset: 1.75
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                      lastcolor: false
-                    segments:
-                      colorstops:
-                        gap: 1
-                        colors:
-                          0: '#fee08b'
-                          0.5: '#fdae61'
-                          1: '#f46d43'
-                          1.5: '#d53e4f'
-                          2: '#9e0142'
-                    animation:
-                      duration: 5
-                    styles:
-                      foreground:
-                        fill: var(--primary-text-color)
-                      background:
-                        fill: var(--cs-theme-default-darken-15)
-
-                  - type: 'state'
-                    id: 0
-                    entity_index: 0
-                    position:
-                      cx: 50
-                      cy: 25
-                    show:
-                      uom: top
-                    styles:
-                      state:
-                        text-anchor: middle
-                        font-size: 9em
-                        fill: var(--primary-text-color)
-                        opacity: 1
-                        font-weight: bold
-                        # filter: url(#sak-drop-1)
-
-                  # ------------------------------------------------------------
-                  # Currently Returned TOTAL
-                  - type: segarc
-                    id: 0
-                    entity_index: 4
-                    position:
-                      cx: 50
-                      cy: 66
-                      start_angle: 0
-                      end_angle: -270
-                      width: 3
-                      radius: 18
-                    scale:
-                      min: 0
-                      max: 2.5
-                      width: 2
-                      offset: 1.75
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                      lastcolor: false
-                    segments:
-                      colorstops:
-                        gap: 1
-                        colors:
-                          0: '#c6e5a2' #'#e6f598'
-                          0.5: '#abdda4'
-                          1: '#66c2a5'
-                          1.5: '#3288bd'
-                          2: '#5e4fa2'
-                    animation:
-                      duration: 5
-                    styles:
-                      foreground:
-                        fill: var(--primary-text-color)
-                      background:
-                        fill: var(--cs-theme-default-darken-15)
-
-                  - type: 'state'
-                    id: 0
-                    entity_index: 4
-                    position:
-                      cx: 50
-                      cy: 66
-                    show:
-                      uom: bottom
-                    styles:
-                      state:
-                        text-anchor: middle
-                        font-size: 9em
-                        fill: var(--primary-text-color)
-                        opacity: 1
-                        font-weight: bolder
-                        # filter: url(#is-1)
-
-                  - type: 'name'
-                    id: 0
-                    entity_index: 0
-                    position:
-                      cx: 50
-                      cy: 93
-                    styles:
-                      name:
-                        text-anchor: middle
-                        font-size: 9em
-                        fill: var(--primary-text-color)
-                        opacity: 1
-                        font-weight: bold
+                template:
+                  name: toolset_electricity_delivered_returned
+                  variables:
+                    - entity_delivered: 0
+                    - entity_returned: 1
+                    - cx: 30
+                    - cy: 50
 
               # ================================================================
               - toolset: L1
-                position:
-                  cx: 80
-                  cy: 50
-                tools:
-                  # ------------------------------------------------------------
-                  # Currently Delivered L1
-                  - type: segarc
-                    id: 0
-                    entity_index: 1
-                    position:
-                      cx: 50
-                      cy: 25
-                      start_angle: 180
-                      end_angle: -90
-                      width: 3
-                      radius: 18
-                    scale:
-                      min: 0
-                      max: 2.5
-                      width: 2
-                      offset: 1.75
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                      lastcolor: false
-                    segments:
-                      colorstops:
-                        gap: 1
-                        colors:
-                          0: '#fee08b'
-                          0.5: '#fdae61'
-                          1: '#f46d43'
-                          1.5: '#d53e4f'
-                          2: '#9e0142'
-                    animation:
-                      duration: 5
-                    styles:
-                      foreground:
-                        fill: var(--primary-text-color)
-                      background:
-                        fill: var(--cs-theme-default-darken-15)
-
-                  - type: 'state'
-                    id: 0
-                    entity_index: 1
-                    position:
-                      cx: 50
-                      cy: 25
-                    show:
-                      uom: top
-                    styles:
-                      state:
-                        text-anchor: middle
-                        font-size: 9em
-                        fill: var(--primary-text-color)
-                        opacity: 0.7
-                        font-weight: bolder
-                        # filter: url(#is-1)
-
-                  # ------------------------------------------------------------
-                  # Currently Returned L1
-                  - type: segarc
-                    id: 0
-                    entity_index: 5
-                    position:
-                      cx: 50
-                      cy: 66
-                      start_angle: 0
-                      end_angle: -270
-                      width: 3
-                      radius: 18
-                    scale:
-                      min: 0
-                      max: 2.5
-                      width: 2
-                      offset: 1.75
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                      lastcolor: false
-                    segments:
-                      colorstops:
-                        gap: 1
-                        colors:
-                          0: '#c6e5a2'
-                          0.5: '#abdda4'
-                          1: '#66c2a5'
-                          1.5: '#3288bd'
-                          2: '#5e4fa2'
-                    animation:
-                      duration: 5
-                    styles:
-                      foreground:
-                        fill: var(--primary-text-color)
-                      background:
-                        fill: var(--cs-theme-default-darken-15)
-
-                  - type: 'state'
-                    id: 0
-                    entity_index: 5
-                    position:
-                      cx: 50
-                      cy: 66
-                    show:
-                      uom: bottom
-                    styles:
-                      state:
-                        text-anchor: middle
-                        font-size: 9em
-                        fill: var(--primary-text-color)
-                        opacity: 0.7
-                        font-weight: bolder
-                        # filter: url(#is-1)
-
-                  - type: 'name'
-                    id: 0
-                    entity_index: 1
-                    position:
-                      cx: 50
-                      cy: 93
-                    styles:
-                      name:
-                        text-anchor: middle
-                        font-size: 9em
-                        fill: var(--primary-text-color)
-                        opacity: 0.7
-                        font-weight: bold
+                template:
+                  name: toolset_electricity_delivered_returned
+                  variables:
+                    - entity_delivered: 2
+                    - entity_returned: 3
+                    - cx: 80
+                    - cy: 50
+                    - opacity: 0.7
 
               # ================================================================
               - toolset: L2
-                position:
-                  cx: 125
-                  cy: 50
-                tools:
-                  # ------------------------------------------------------------
-                  # Currently Delivered L2
-                  - type: segarc
-                    id: 0
-                    entity_index: 2
-                    position:
-                      cx: 50
-                      cy: 25
-                      start_angle: 180
-                      end_angle: -90
-                      width: 3
-                      radius: 18
-                    scale:
-                      min: 0
-                      max: 2.5
-                      width: 2
-                      offset: 1.75
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                      lastcolor: false
-                    segments:
-                      colorstops:
-                        gap: 1
-                        colors:
-                          0: '#fee08b'
-                          0.5: '#fdae61'
-                          1: '#f46d43'
-                          1.5: '#d53e4f'
-                          2: '#9e0142'
-                    animation:
-                      duration: 5
-                    styles:
-                      foreground:
-                        fill: var(--primary-text-color)
-                      background:
-                        fill: var(--cs-theme-default-darken-15)
-
-                  - type: 'state'
-                    id: 0
-                    entity_index: 2
-                    position:
-                      cx: 50
-                      cy: 25
-                    show:
-                      uom: top
-                    styles:
-                      state:
-                        text-anchor: middle
-                        font-size: 9em
-                        fill: var(--primary-text-color)
-                        opacity: 0.7
-                        font-weight: bolder
-                        # filter: url(#is-1)
-
-                  # ------------------------------------------------------------
-                  # Currently Returned L2
-                  - type: segarc
-                    id: 0
-                    entity_index: 6
-                    position:
-                      cx: 50
-                      cy: 66
-                      start_angle: 0
-                      end_angle: -270
-                      width: 3
-                      radius: 18
-                    scale:
-                      min: 0
-                      max: 2.5
-                      width: 2
-                      offset: 1.75
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                      lastcolor: false
-                    segments:
-                      colorstops:
-                        gap: 1
-                        colors:
-                          0: '#c6e5a2'
-                          0.5: '#abdda4'
-                          1: '#66c2a5'
-                          1.5: '#3288bd'
-                          2: '#5e4fa2'
-                    animation:
-                      duration: 5
-                    styles:
-                      foreground:
-                        fill: var(--primary-text-color)
-                      background:
-                        fill: var(--cs-theme-default-darken-15)
-
-                  - type: 'state'
-                    id: 0
-                    entity_index: 6
-                    position:
-                      cx: 50
-                      cy: 66
-                    show:
-                      uom: bottom
-                    styles:
-                      state:
-                        text-anchor: middle
-                        font-size: 9em
-                        fill: var(--primary-text-color)
-                        opacity: 0.7
-                        font-weight: bolder
-                        # filter: url(#is-1)
-
-                  - type: 'name'
-                    id: 0
-                    entity_index: 2
-                    position:
-                      cx: 50
-                      cy: 93
-                    styles:
-                      name:
-                        text-anchor: middle
-                        font-size: 9em
-                        fill: var(--primary-text-color)
-                        opacity: 0.7
-                        font-weight: bold
+                template:
+                  name: toolset_electricity_delivered_returned
+                  variables:
+                    - entity_delivered: 4
+                    - entity_returned: 5
+                    - cx: 125
+                    - cy: 50
+                    - opacity: 0.7
 
               # ================================================================
               - toolset: L3
-                position:
-                  cx: 170
-                  cy: 50
-                tools:
-                  # ------------------------------------------------------------
-                  # Currently Delivered L3
-                  - type: segarc
-                    id: 0
-                    entity_index: 3
-                    position:
-                      cx: 50
-                      cy: 25
-                      start_angle: 180
-                      end_angle: -90
-                      width: 3
-                      radius: 18
-                    scale:
-                      min: 0
-                      max: 2.5
-                      width: 2
-                      offset: 1.75
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                      lastcolor: false
-                    segments:
-                      colorstops:
-                        gap: 1
-                        colors:
-                          0: '#fee08b'
-                          0.5: '#fdae61'
-                          1: '#f46d43'
-                          1.5: '#d53e4f'
-                          2: '#9e0142'
-                    animation:
-                      duration: 5
-                    styles:
-                      foreground:
-                        fill: var(--primary-text-color)
-                      background:
-                        fill: var(--cs-theme-default-darken-15)
-
-                  - type: 'state'
-                    id: 0
-                    entity_index: 3
-                    position:
-                      cx: 50
-                      cy: 25
-                    show:
-                      uom: top
-                    styles:
-                      state:
-                        text-anchor: middle
-                        font-size: 9em
-                        fill: var(--primary-text-color)
-                        opacity: 0.7
-                        font-weight: bolder
-                        # filter: url(#is-1)
-
-                  # ------------------------------------------------------------
-                  # Currently Returned L3
-                  - type: segarc
-                    id: 0
-                    entity_index: 7
-                    position:
-                      cx: 50
-                      cy: 66
-                      start_angle: 0
-                      end_angle: -270
-                      width: 3
-                      radius: 18
-                    scale:
-                      min: 0
-                      max: 2.5
-                      width: 2
-                      offset: 1.75
-                    show:
-                      scale: true
-                      style: 'colorstops'
-                      lastcolor: false
-                    segments:
-                      colorstops:
-                        gap: 1
-                        colors:
-                          0: '#c6e5a2'
-                          0.5: '#abdda4'
-                          1: '#66c2a5'
-                          1.5: '#3288bd'
-                          2: '#5e4fa2'
-                    animation:
-                      duration: 5
-                    styles:
-                      foreground:
-                        fill: var(--primary-text-color)
-                      background:
-                        fill: var(--cs-theme-default-darken-15)
-
-                  - type: 'state'
-                    id: 0
-                    entity_index: 7
-                    position:
-                      cx: 50
-                      cy: 66
-                    show:
-                      uom: bottom
-                    styles:
-                      state:
-                        text-anchor: middle
-                        font-size: 9em
-                        fill: var(--primary-text-color)
-                        opacity: 0.7
-                        font-weight: bolder
-                        # filter: url(#is-1)
-
-                  - type: 'name'
-                    id: 0
-                    entity_index: 3
-                    position:
-                      cx: 50
-                      cy: 93
-                    styles:
-                      name:
-                        text-anchor: middle
-                        font-size: 9em
-                        fill: var(--primary-text-color)
-                        opacity: 0.7
-                        font-weight: bold
+                template:
+                  name: toolset_electricity_delivered_returned
+                  variables:
+                    - entity_delivered: 6
+                    - entity_returned: 7
+                    - cx: 170
+                    - cy: 50
+                    - opacity: 0.7
