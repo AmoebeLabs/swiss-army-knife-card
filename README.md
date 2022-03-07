@@ -1,6 +1,8 @@
 # ![](docs/images/swiss-army-knife24.png) Swiss Army Knife Card
 Check https://swiss-army-knife.docs.amoebelabs.com/ for the documentation!
 
+Check https://ha-m3-themes.docs.amoebelabs.com/ for Material 3 themes documentation!
+
 ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/sak-frontpage.png)
 
 An overview of all the examples
