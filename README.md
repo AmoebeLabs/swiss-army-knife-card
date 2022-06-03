@@ -62,7 +62,7 @@ Note: It may take a few weeks (as of June 2022) that this card is included into 
 [home-assistant]: https://www.home-assistant.io/
 [home-assitant-theme-docs]: https://www.home-assistant.io/integrations/frontend/#defining-themes
 [hacs]: https://hacs.xyz
-[release-url]: https://github.com/AmoebeLabs/HA-Theme_M3-07-DarkOliveGreen/releases
+[release-url]: https://github.com/AmoebeLabs/swiss-army-knife-card/releases
 [sak-docs-url]: https://swiss-army-knife.docs.amoebelabs.com/
 
 [example-11]: https://swiss-army-knife.docs.amoebelabs.com/examples/example-11/
