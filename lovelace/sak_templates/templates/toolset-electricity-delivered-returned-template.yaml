@@ -65,8 +65,7 @@ toolset_electricity_delivered_returned:
           foreground:
             fill: var(--primary-text-color)
           background:
-            fill: var(--theme-default-darken-15)
-            fill: var(--theme-background-color-darken-20, --theme-default-darken-15)
+            fill: var(--theme-sys-elevation-surface-neutral4, --theme-default-darken-15)
 
       # ------------------------------------------------------------
       - type: 'state'
@@ -82,6 +81,7 @@ toolset_electricity_delivered_returned:
             text-anchor: middle
             font-size: 9em
             fill: var(--primary-text-color)
+            # fill: var(--secondary-text-color)
             opacity: '[[opacity]]'
             font-weight: bold
 
@@ -121,7 +121,7 @@ toolset_electricity_delivered_returned:
           foreground:
             fill: var(--primary-text-color)
           background:
-            fill: var(--theme-background-color-darken-20, --theme-default-darken-15)
+            fill: var(--theme-sys-elevation-surface-neutral4, --theme-default-darken-15)
 
       # ------------------------------------------------------------
       - type: 'state'

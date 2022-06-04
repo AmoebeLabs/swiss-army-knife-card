@@ -381,8 +381,8 @@ cards:
                         fill: none
                         stroke-width: 2em
                         opacity: 1
-                        # stroke-dasharray: 120, 20
-                        # animation: spin 10s linear infinite
+                        stroke-dasharray: 120, 20
+                        animation: spin 10s linear infinite
 
                   # ------------------------------------------------------------
                   - type: icon
@@ -461,12 +461,12 @@ cards:
                       circle:
                         stroke: var(--theme-sys-elevation-surface-neutral4)
                         fill: none
-                        stroke-width: 2em
+                        # stroke-width: 2em
                         opacity: 1
-                        # stroke-dasharray: 40, 20
-                        # stroke-width: 6em
-                        # animation: heartBeat 10s linear infinite
-                        # # animation: wobble 5s linear infinite
+                        stroke-dasharray: 40, 20
+                        stroke-width: 6em
+                        animation: heartBeat 10s linear infinite
+                        # animation: wobble 5s linear infinite
 
                   # ------------------------------------------------------------
                   - type: icon
@@ -641,7 +641,7 @@ cards:
                       icon:
                         # fill: var(--primary-text-color)
                         fill: var(--theme-sys-color-on-tertiary-container)
-                        # animation: spin 2s ease-in-out both infinite
+                        animation: spin 2s ease-in-out both infinite
 
                   # ------------------------------------------------------------
                   - type: state
@@ -658,7 +658,7 @@ cards:
                         font-weight: 700
                         # fill: var(--primary-text-color)
                         fill: var(--theme-sys-color-on-tertiary-container)
-                        # animation: blinkingText 2s ease-in-out both infinite
+                        animation: blinkingText 2s ease-in-out both infinite
                       uom:
                         # fill: var(--primary-text-color)
                         fill: var(--theme-sys-color-on-tertiary-container)

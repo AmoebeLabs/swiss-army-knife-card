@@ -19,14 +19,17 @@ views:
 
   # Swiss Army Knife example views...
   - !include lovelace/views/view-sake1.yml
+  - !include lovelace/views/view-sake1-m3.yml
   - !include lovelace/views/view-sake2.yml
   - !include lovelace/views/view-sake3.yml
   - !include lovelace/views/view-sake4.yml
   - !include lovelace/views/view-sake5.yml
   - !include lovelace/views/view-sake6.yml
+  - !include lovelace/views/view-sake6-m3.yml
   - !include lovelace/views/view-sake7.yml
   - !include lovelace/views/view-sake8.yml
   - !include lovelace/views/view-sake9.yml
   - !include lovelace/views/view-sake10.yml
   - !include lovelace/views/view-sake11.yml
   - !include lovelace/views/view-sake12.yml
+  - !include lovelace/views/view-sake99.yml

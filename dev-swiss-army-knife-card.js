@@ -48,11 +48,17 @@ import { selectUnit} from 'https://unpkg.com/@formatjs/intl-utils@3.8.4/lib/inde
 
 import { fireEvent, stateIcon, getLovelace } from 'https://unpkg.com/custom-card-helpers@1.8.0/dist/index.m.js?module';
 
+// import 'https://unpkg.com/external-svg-loader@1.4.0/svg-loader.min.js';
+// import {SVGInjector} from 'https://unpkg.com/svg-injector-2@2.1.5/dist/svg-injector.min.js?module';
+// import * as SvgInjector from 'https://unpkg.com/svg-injector-2@2.1.5/dist/svg-injector.min.js?module';
+
+import * as SvgInjector from '/local/images/svginjector/SVGInjector.min.js?module';
+
 // import 'https://cdn.skypack.dev/@ctrl/tinycolor';
 //++ Consts ++++++++++
 
 console.info(
-  `%c  SWISS-ARMY-KNIFE-CARD  \n%c  Beta Version 0.9.0-b2  `,
+  `%c  SWISS-ARMY-KNIFE-CARD  \n%c  Beta Version 0.9.0-b3  `,
   'color: yellow; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
@@ -507,6 +513,11 @@ class Toolset {
           if (this.dev.debug) console.log('Toolset::firstUpdated - calling Icon firstUpdated');
           item.tool.firstUpdated(changedProperties);
         }
+
+        if (item.type == "state") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling State firstUpdated');
+          item.tool.firstUpdated(changedProperties);
+        }
       });
     }
   }
@@ -522,6 +533,21 @@ class Toolset {
 
     if (this.dev.debug) console.log('*****Event - Updated', this.toolsetId, new Date().getTime());
 
+    if (this.tools) {
+      this.tools.map((item, index) => {
+
+        if (item.type == "state") {
+          if (this.dev.debug) console.log('Toolset::updated - calling State firstUpdated');
+          item.tool.updated(changedProperties);
+        }
+
+        if (item.type == "usersvg") {
+          if (this.dev.debug) console.log('Toolset::updated - calling Usersvg firstUpdated');
+          item.tool.updated(changedProperties);
+        }
+
+      });
+    }
   }
 
  /*******************************************************************************
@@ -1352,19 +1378,32 @@ class RangeSliderTool extends BaseTool {
 
     if (this.dev.debug) console.log('slider - firstUpdated svg = ', this.elements.svg, 'path=', this.elements.path, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
 
-    this.elements.capture.addEventListener("pointerdown", e => {
+    this.elements.svg.addEventListener("pointerdown", e => {
       e.preventDefault();
-      e.stopImmediatePropagation();
+      // e.stopImmediatePropagation();
+      e.stopPropagation();
       
       // Testing lock tap
       // if (this.locked) {
         // console.log("pointerdown -> locked = true", this);
         // return;
       // }
-      fireEvent(window, 'haptic', 'light');
+      // fireEvent(window, 'haptic', 'light');
 
       // e.currentTarget.addEventListener("pointermove", pointerMove);
       // e.currentTarget.onpointermove = pointerMove;
+      
+      const mousePos = this.oMousePosSVG(e);
+      console.log("pointerdown", mousePos, this.svg.thumb, this.m);
+      var thumbPos = (this.svg.thumb.x1 + this.svg.thumb.cx);
+      if ((mousePos.x > (thumbPos - 10)) && (mousePos.x < (thumbPos + this.svg.thumb.width + 10))) {
+        console.log("pointerdown, mousePos IS within x-width of thumb!!");
+        fireEvent(window, 'haptic', 'success');
+      } else {
+        console.log("pointerdown, mousePos NOT within x-width of thumb!!");
+        fireEvent(window, 'haptic', 'error');
+        return;
+      }
       
       this.dragging = true;
       if (this.config.slider_action.update_interval > 0) {
@@ -1373,6 +1412,7 @@ class RangeSliderTool extends BaseTool {
         this.timeOutId = null;
       }
       this.m = this.oMousePosSVG(e);
+      
       // WHY again not working for Safari/iPad!!!!!
       // Capture on Safari needs about 0.5 sec for the glass to kick in and then capturing works... No idea why...
       // if ((!this.elements.capture.hasPointerCapture(e.pointerId)) ) {//&& !(this._card.isSafari || this._card.iOS)) {
@@ -1388,9 +1428,10 @@ class RangeSliderTool extends BaseTool {
       Frame2.call(this);
     }, {capture: true, passive: false});
 
-    this.elements.capture.addEventListener("pointerup", e => {
+    this.elements.svg.addEventListener("pointerup", e => {
       e.preventDefault();
-      e.stopImmediatePropagation();
+      // e.stopImmediatePropagation();
+      e.stopPropagation();
 
       // Testing lock tap
       // if (this.locked) {
@@ -1400,6 +1441,7 @@ class RangeSliderTool extends BaseTool {
         // return;
       // }
 
+      if (!this.dragging) return;
       // this.locked = true;
 
       this.dragging = false;
@@ -1422,11 +1464,12 @@ class RangeSliderTool extends BaseTool {
       // Frame();
     // });
 
-    this.elements.capture.addEventListener("pointermove", e => {
+    this.elements.svg.addEventListener("pointermove", e => {
       let scaleValue;
 
       e.preventDefault();
-      e.stopImmediatePropagation();
+      // e.stopImmediatePropagation();
+      e.stopPropagation();
 
       // if ((!this.elements.capture.hasPointerCapture(e.pointerId)) ) {
         // throw error("Moving pointer without capture");
@@ -1591,6 +1634,8 @@ class RangeSliderTool extends BaseTool {
         default:
           console.error('_renderRangeSlider(), invalid label placement', this.config.position.label.placement);
     }
+    this.svg.thumb.cx = cx;
+    this.svg.thumb.cy = cy;
     
     function renderActiveTrack() {
       if (!this.config.show.active) return svg``;
@@ -1711,7 +1756,7 @@ class RangeSliderTool extends BaseTool {
 
     return svg`
       <svg xmlns="http://www.w3.org/2000/svg" id="rangeslider-${this.toolId}" overflow="visible"
-        style="touch-action:none; pointer-events:none;"
+        touch-action="none" style="touch-action:none; pointer-events:none;"
       >
         ${this._renderRangeSlider()}
       </svg>
@@ -2338,7 +2383,35 @@ class UserSvgTool extends BaseTool {
     // Select first key in k/v store. HOw??
     this.item = {};
     this.item.image = "default";
+
+    // https://github.com/flobacher/SVGInjector2
+    // Note: in defs, url from gradient is changed, but NOT in the SVG fill=...
     
+    this.injector = {};
+    // Elements to inject
+    // this.injector.elementsToInject = this._card.shadowRoot.querySelectorAll('svg[data-src]');
+    // this.injector.elementsToInject = this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId))?.shadowRoot?.querySelectorAll('svg[data-src]');
+    // Options
+    this.injector.injectorOptions = {
+      evalScripts: 'once',
+      pngFallback: 'assets/png'
+    };
+
+    this.injector.afterAllInjectionsFinishedCallback = function (totalSVGsInjected) {
+      // Callback after all SVGs are injected
+      console.log('We injected ' + totalSVGsInjected + ' SVG(s)!');
+    }.bind(this);
+
+    this.injector.perInjectionCallback = function (svg) {
+      // Callback after each SVG is injected
+      this.injector.svg = svg;
+      console.log('SVG injected: ' + svg);
+    }.bind(this);
+
+    // create injector configured by options
+    this.injector.injector = new SVGInjector(this.injector.injectorOptions);
+
+
     if (this.dev.debug) console.log('UserSvgTool constructor config, svg', this.toolId, this.config, this.svg);
   }
 
@@ -2364,6 +2437,26 @@ class UserSvgTool extends BaseTool {
   *
   */
 
+  updated(changedProperties) {
+    console.log("usersvg updated...");
+
+    console.log(this._card.shadowRoot.querySelectorAll('svg[data-src]'));
+    
+    this.injector.elementsToInject = this._card.shadowRoot.querySelectorAll('svg[data-src]');
+    console.log("updated - ", this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)));
+    
+    this.injector.elementsToInject = this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)).querySelectorAll('svg[data-src]:not(.injected-svg)');
+    console.log("updated - elements...", this.injector.elementsToInject);
+
+    // Trigger the injection if there is something to inject...
+    if (this.injector.elementsToInject.length > 0)
+      this.injector.injector.inject(
+        this.injector.elementsToInject,
+        this.injector.afterAllInjectionsFinishedCallback,
+        this.injector.perInjectionCallback
+      );    
+  }
+
   _renderUserSvg() {
 
     
@@ -2383,11 +2476,21 @@ class UserSvgTool extends BaseTool {
       // `;
     // })
 
-    return svg`
-      <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
-        <image href="${this.images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
-      </svg>
-      `;
+    if (this.injector.svg) {
+      console.log("re-using injected svg...");
+      return svg`${this.injector.svg}`;
+    } else {
+      return svg`
+        <svg id="image-one" data-src="${this.images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
+        </svg>
+        `;
+    }
+
+    // return svg`
+      // <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
+        // <image href="${this.images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
+      // </svg>
+      // `;
   }
  /*******************************************************************************
   * UserSvgTool::render()
@@ -3307,6 +3410,11 @@ class EntityStateTool extends BaseTool {
         // ${this.config?.text?.before ? this.config.text.before : ''}${this._card.counter}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
     // `;
 
+    // return svg`
+      // <tspan class="${classMap(this.classes.state)}" x="${0}" y="${0}"
+        // style="${styleMap(this.styles.state)}">
+        // ${this.config?.text?.before ? this.config.text.before : ''}${inState}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
+    // `;
     return svg`
       <tspan class="${classMap(this.classes.state)}" x="${this.svg.x}" y="${this.svg.y}"
         style="${styleMap(this.styles.state)}">
@@ -3364,17 +3472,53 @@ class EntityStateTool extends BaseTool {
       }
     }
   }
+
+  firstUpdated(changedProperties) {
+  
+    // var elements = this._card.shadowRoot.getElementById("state-".concat(this.toolId))
+    // // elements = this._card.shadowRoot.getElementById("svg.text")
+    // // elements = this._card.shadowRoot.querySelectorAll("svg.text")
+    
+    // const box = elements.querySelector('tspan.sak-state__value').getBBox();
+    // const box2 = elements.getBBox();
+    
+    // console.log("state::firstUpdated, elements", elements, box, box2);
+  }
+
+  // state::updated
+  // Firs try to scale text using SVG viewBox. But due to all the calculations, this is not easy.
+  // But I can see, that scaling is done... So I guess something can be done to scale the state value to the
+  // available width...
+  //
+  // Maybe the svg should have the real coordinates, and the text inside assume 0 0 for x/y...
+  // settting x,y to 0 helps, but calculations are still not right, but much better. So it has to do with
+  // the position of the SVG within the overall SVG. Hmmmm, calculations!!!!!!!!!!!!!!!!!
+  
+  updated(changedProperties) {
+  
+    // var elements = this._card.shadowRoot.getElementById("state-".concat(this.toolId))
+    // // elements = this._card.shadowRoot.getElementById("svg.text")
+    // // elements = this._card.shadowRoot.querySelectorAll("svg.text")
+    
+    // const box = elements.querySelector('tspan.sak-state__value').getBBox();
+    // const tlen = elements.querySelector('tspan.sak-state__value').getComputedTextLength();
+    // const box2 = elements.getBBox();
+    // // elements.setAttribute('viewBox', `${box.x} ${box.y} ${box.width} ${box.height}`)
+    // elements.setAttribute('viewBox', `${this.svg.x } ${this.svg.y + 100 } ${box2.width * 4} ${box2.height * 1}`)
+
+    // console.log("state::updated, elements", elements, box, box2, tlen);
+  }
   
   render() {
 
     if (true || (this._card._computeDomain(this._card.entities[this.config.entity_index].entity_id) == 'sensor')) {
       return svg`
-    <g class="${classMap(this.classes.tool)}">
+    <svg overflow="visible" id="state-${this.toolId}" class="${classMap(this.classes.tool)}">
         <text @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
           ${this._renderState()}
           ${this._renderUom()}
         </text>
-      </g>
+      </svg>
       `;
     } else {
       // Not a sensor. Might be any other domain. Unit can only be specified using the units: in the configuration.
@@ -5120,6 +5264,7 @@ class devSwissArmyKnifeCard extends LitElement {
     this.dev = {};
     this.dev.debug = false;
     this.dev.performance = false;
+    this.dev.m3 = false;
 
     this.configIsSet = false;
 
@@ -5904,6 +6049,221 @@ class devSwissArmyKnifeCard extends LitElement {
 
       this.toolsets.push(newToolset);
     });
+
+    // Special case. Abuse card for m3 conversion to output
+    if (this.dev.m3) {
+      console.log("Checking for m3...")
+      
+      if (this.lovelace.config.sak_templates.templates.m3) {
+        var m3 = this.lovelace.config.sak_templates.templates.m3;
+        
+        // #hier m3
+        var palette = "";
+        var palette2 = "";
+        var colordefault = "";
+        var colorlight = "";
+        var colordark = "";
+        
+        var surfacelight = "";
+        var primarylight = "";
+        var neutrallight = "";
+
+        var surfacedark = "";
+        var primarydark = "";
+        var neutraldark = "";
+
+        var colorEntities = {};
+        var cssNames = {};
+        
+        m3.entities.map((entity, index) => {
+          if (['ref.palette', 'sys.color', 'sys.color.light', 'sys.color.dark'].includes(entity.category_id)) {
+            if (!entity.tags.includes('alias')) {
+            colorEntities[entity.id] = {'value' : entity.value, 'tags' : entity.tags};
+            // cssNames[entity.id] = "ha-theme-" + entity.tags[1] + "-"  + entity.tags[2] + "-" + entity.tags[3] + ": '" + entity.value;
+            };
+          };
+
+          if (entity.category_id === "ref.palette") {
+            palette += entity.id + ": '" + entity.value + "'\n";
+            // palette2 += "ha-theme-" + entity.tags[1] + "-" + entity.tags[2] + "-" + entity.tags[3] + ": '" + entity.value + "'\n";
+            
+            // cssNames[entity.id] = "ha-theme-" + entity.tags[1] + "-"  + entity.tags[2] + "-" + entity.tags[3] + ": '" + entity.value + "'\n";;
+            
+            // test for primary light color...
+            if (entity.id === "md.ref.palette.primary40") {
+              primarylight = entity.value;
+            }
+            // test for primary dark color...
+            if (entity.id === "md.ref.palette.primary80") {
+              primarydark = entity.value;
+            }
+
+            // test for neutral light color...
+            if (entity.id === "md.ref.palette.neutral40") {
+              neutrallight = entity.value;
+            }
+            // test for neutral light color...
+            if (entity.id === "md.ref.palette.neutral80") {
+              neutraldark = entity.value;
+            }
+
+          }
+          
+          if (entity.category_id === "sys.color") {
+            colordefault += entity.id + ": '" + entity.value + "'\n";
+          }
+
+          if (entity.category_id === "sys.color.light") {
+            colorlight += entity.id + ": '" + entity.value + "'\n";
+          
+            // test for surface light color...
+            if (entity.id === "md.sys.color.surface.light") {
+              surfacelight = entity.value;
+            }
+          }
+
+          if (entity.category_id === "sys.color.dark") {
+            colordark += entity.id + ": '" + entity.value + "'\n";
+
+            // test for surface light color...
+            if (entity.id === "md.sys.color.surface.dark") {
+              surfacedark = entity.value;
+            }
+          }
+        });
+        
+        console.log("m3 palettes\n", palette, palette2);
+        console.log("m3 color default\n", colordefault);
+        console.log("m3 color light\n", colorlight);
+        console.log("m3 color dark\n", colordark);
+        
+        ['primary', 'secondary', 'tertiary', 'error', 'neutral', 'neutral-variant'].forEach((palette) => {
+          [5, 15, 25, 35, 45, 65, 75, 85].forEach((step) => {
+            // colorEntities['md.ref.palette.primary' + step.toString()] = this._getGradientValue(colorEntities['md.ref.palette.primary' + (step - 5).toString()], colorEntities['md.ref.palette.primary' + (step + 5).toString()], 0.5);
+            
+            colorEntities['md.ref.palette.' + palette + step.toString()] = {
+              value: this._getGradientValue(colorEntities['md.ref.palette.' + palette + (step - 5).toString()].value,
+                                            colorEntities['md.ref.palette.' + palette + (step + 5).toString()].value, 0.5),
+              tags: [...colorEntities['md.ref.palette.' + palette + (step - 5).toString()].tags]
+            };
+            colorEntities['md.ref.palette.' + palette + step.toString()].tags[3] = palette + step.toString();
+                                                                              
+          });
+          colorEntities['md.ref.palette.' + palette + '7'] = {
+            value: this._getGradientValue(colorEntities['md.ref.palette.' + palette + '5'].value,
+                                          colorEntities['md.ref.palette.' + palette + '10'].value, 0.5),
+            tags: [...colorEntities['md.ref.palette.' + palette + '10'].tags]
+          };
+          colorEntities['md.ref.palette.' + palette + '7'].tags[3] = palette + '7';
+
+          colorEntities['md.ref.palette.' + palette + '92'] = {
+            value: this._getGradientValue(colorEntities['md.ref.palette.' + palette + '90'].value,
+                                          colorEntities['md.ref.palette.' + palette + '95'].value, 0.5),
+            tags: [...colorEntities['md.ref.palette.' + palette + '90'].tags]
+          };
+          colorEntities['md.ref.palette.' + palette + '92'].tags[3] = palette + '92';
+
+          colorEntities['md.ref.palette.' + palette + '97'] = {
+            value: this._getGradientValue(colorEntities['md.ref.palette.' + palette + '95'].value,
+                                          colorEntities['md.ref.palette.' + palette + '99'].value, 0.5),
+            tags: [...colorEntities['md.ref.palette.' + palette + '90'].tags]
+          };
+          colorEntities['md.ref.palette.' + palette + '97'].tags[3] = palette + '97';
+        });
+
+        for (const [index, entity] of Object.entries(colorEntities)) {
+          cssNames[index] = "theme-" + entity.tags[1] + "-"  + entity.tags[2] + "-" + entity.tags[3] + ": '" + entity.value + "'";
+        };
+
+        // console.log("m3 colorEntities", colorEntities);
+        // console.log("m3 cssNames", cssNames);
+        
+        // https://filosophy.org/code/online-tool-to-lighten-color-without-alpha-channel/
+
+        function getSurfaces(surfaceColor, paletteColor, opacities, cssName, mode) {
+          var bgCol = {};
+          var fgCol = {};
+
+          bgCol.r = Math.round(parseInt(surfaceColor.substr(1,2), 16));
+          bgCol.g = Math.round(parseInt(surfaceColor.substr(3,2), 16));
+          bgCol.b = Math.round(parseInt(surfaceColor.substr(5,2), 16));
+          
+          fgCol.r = Math.round(parseInt(paletteColor.substr(1,2), 16));
+          fgCol.g = Math.round(parseInt(paletteColor.substr(3,2), 16));
+          fgCol.b = Math.round(parseInt(paletteColor.substr(5,2), 16));
+          
+          var surfaceColors = '';
+          var r,g,b;
+          opacities.forEach((opacity, index) => {
+            r = Math.round(opacity * fgCol.r + (1 - opacity) * bgCol.r);
+            g = Math.round(opacity * fgCol.g + (1 - opacity) * bgCol.g);
+            b = Math.round(opacity * fgCol.b + (1 - opacity) * bgCol.b);
+            
+            surfaceColors += cssName + (index+1).toString() + "-" + mode + ": rgb(" + r + "," + g + "," + b + ")\n";
+          });
+          
+          return surfaceColors;
+        }
+        
+        // Generate surfaces for dark and light...
+        // var opacitysurface = [0.02, 0.035, 0.05, 0.08, 0.11, 0.12, 0.14, 0.16, 0.18, 0.20];
+        // var opacitysurfacelight = [0.02, 0.035, 0.05, 0.08, 0.11, 0.15, 0.19, 0.24, 0.29, 0.35];
+        var opacitysurfacelight = [0.03, 0.05, 0.08, 0.11, 0.15, 0.19, 0.24, 0.29, 0.35, 0.4];
+        var opacitysurfacedark = [0.05, 0.08, 0.11, 0.15, 0.19, 0.24, 0.29, 0.35, 0.40, 0.45];
+
+        var surfacenL = getSurfaces(surfacelight, neutrallight, opacitysurfacelight, "  theme-ref-elevation-surface-neutral", "light");
+
+        var neutralvariantlight = colorEntities["md.ref.palette.neutral-variant40"].value;
+        var surfacenvL = getSurfaces(surfacelight, neutralvariantlight, opacitysurfacelight, "  theme-ref-elevation-surface-neutral-variant", "light");
+
+        var surfacepL = getSurfaces(surfacelight, primarylight, opacitysurfacelight, "  theme-ref-elevation-surface-primary", "light");
+
+        var secondarylight = colorEntities["md.ref.palette.secondary40"].value;
+        var surfacesL = getSurfaces(surfacelight, secondarylight, opacitysurfacelight, "  theme-ref-elevation-surface-secondary", "light");
+
+        var tertiarylight = colorEntities["md.ref.palette.tertiary40"].value;
+        var surfacetL = getSurfaces(surfacelight, tertiarylight, opacitysurfacelight, "  theme-ref-elevation-surface-tertiary", "light");
+
+        var errorlight = colorEntities["md.ref.palette.error40"].value;
+        var surfaceeL = getSurfaces(surfacelight, errorlight, opacitysurfacelight, "  theme-ref-elevation-surface-error", "light");
+
+
+        // DARK
+        var surfacenD = getSurfaces(surfacedark, neutraldark, opacitysurfacedark, "  theme-ref-elevation-surface-neutral", "dark");
+
+        var neutralvariantdark = colorEntities["md.ref.palette.neutral-variant80"].value;
+        var surfacenvD = getSurfaces(surfacedark, neutralvariantdark, opacitysurfacedark, "  theme-ref-elevation-surface-neutral-variant", "dark");
+
+        var surfacepD = getSurfaces(surfacedark, primarydark, opacitysurfacedark, "  theme-ref-elevation-surface-primary", "dark");
+
+        var secondarydark = colorEntities["md.ref.palette.secondary80"].value;
+        var surfacesD = getSurfaces(surfacedark, secondarydark, opacitysurfacedark, "  theme-ref-elevation-surface-secondary", "dark");
+
+        var tertiarydark = colorEntities["md.ref.palette.tertiary80"].value;
+        var surfacetD = getSurfaces(surfacedark, tertiarydark, opacitysurfacedark, "  theme-ref-elevation-surface-tertiary", "dark");
+
+        var errordark = colorEntities["md.ref.palette.error80"].value;
+        var surfaceeD = getSurfaces(surfacedark, errordark, opacitysurfacedark, "  theme-ref-elevation-surface-error", "dark");
+
+
+
+        var bgCol = {};
+        var fgCol = {};
+
+        var themeDefs = "";
+        for (const [index, cssName] of Object.entries(cssNames)) {
+          if (cssName.substring(0,9) == 'theme-ref') {
+            // console.log(cssName.substring(0,9));
+            themeDefs += "  " + cssName + "\n";
+          }
+        };
+        console.log(surfacenL + surfacenvL + surfacepL + surfacesL + surfacetL + surfaceeL +
+                    surfacenD + surfacenvD + surfacepD + surfacesD + surfacetD + surfaceeD +
+                    themeDefs);
+      }
+    }
+
+
     if (this.dev.debug) console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
     if (this.dev.debug) console.log('debug - setConfig', this.cardId, this.config);
     if (this.dev.performance) console.timeEnd("--> " + this.cardId + " PERFORMANCE card::setConfig");
@@ -6005,6 +6365,12 @@ class devSwissArmyKnifeCard extends LitElement {
   updated(changedProperties) {
 
     if (this.dev.debug) console.log('*****Event - Updated', this.cardId, new Date().getTime());
+
+    if (this.toolsets) {
+      this.toolsets.map( async (item, index) => {
+        item.updated(changedProperties);
+      });
+    }
 
     // this.shadowRoot.getElementById("rootsvg").setAttribute("data-entity-0", "on");
 
@@ -6493,8 +6859,10 @@ class devSwissArmyKnifeCard extends LitElement {
 
     // console.log('_buildState', inState, entityConfig)
     
-    if (isNaN(inState))
+    if (isNaN(inState)) {
+      if (inState === 'unavailable') return '-ua-';
       return inState;
+    }
 
     const state = Number(inState);
     const sign = Math.sign(inState);

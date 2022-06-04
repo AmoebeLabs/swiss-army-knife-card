@@ -1,0 +1,432 @@
+toolset_m3_palette_colors:
+  template:
+    type: toolset
+    defaults: 
+      - cx: 50
+      - cy: 50
+      - title: 'color'
+      - color0: black
+      - color5: black
+      - color7: black
+      - color10: black
+      - color15: black
+      - color20: black
+      - color25: black
+      - color30: black
+      - color35: black
+      - color40: black
+      - color45: black
+      - color50: black
+      - color60: black
+      - color65: black
+      - color70: black
+      - color75: black
+      - color80: black
+      - color85: black
+      - color90: black
+      - color92: black
+      - color95: black
+      - color97: black
+      - color99: black
+      - color100: black
+
+  toolset:
+    position:
+      cx: '[[cx]]'
+      cy: '[[cy]]'
+    tools:
+      # ------------------------------------------------------------
+      # ------------------------------------------------------------
+      - type: rectangle
+        position: &rectpos
+          cx: -10
+          cy: 50
+          width: 10
+          height: 20
+          rx: 1
+        styles:
+          rectangle:
+            fill: '[[color40]]'
+            stroke-width: 0.05em
+            stroke-opacity: 0.5
+
+      - type: text
+        position:
+          cx: -18
+          cy: 50
+        text: '[[title]]'
+        styles:
+          text:
+            fill: var(--primary-text-color)
+            text-anchor: end
+            font-size: 5em
+
+  # ================================================================
+      # ------------------------------------------------------------
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 10
+        styles:
+          rectangle:
+            fill: '[[color100]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 10
+          cy: 45
+        text: '100'
+        styles: &textblack
+          text:
+            fill: black
+            text-anchor: middle
+            font-size: 4em
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 20
+        styles:
+          rectangle:
+            fill: '[[color99]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 20
+          cy: 45
+        text: '99'
+        styles: *textblack
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 30
+        styles:
+          rectangle:
+            fill: '[[color97]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 30
+          cy: 45
+        text: '97'
+        styles: *textblack
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 40
+        styles:
+          rectangle:
+            fill: '[[color95]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 40
+          cy: 45
+        text: '95'
+        styles: *textblack
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 50
+        styles:
+          rectangle:
+            fill: '[[color92]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 50
+          cy: 45
+        text: '92'
+        styles: *textblack
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 60
+        styles:
+          rectangle:
+            fill: '[[color90]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 60
+          cy: 45
+        text: '90'
+        styles: *textblack
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 70
+        styles:
+          rectangle:
+            fill: '[[color85]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 70
+          cy: 45
+        text: '85'
+        styles: *textblack
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 80
+        styles:
+          rectangle:
+            fill: '[[color80]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 80
+          cy: 45
+        text: '80'
+        styles: *textblack
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 90
+        styles:
+          rectangle:
+            fill: '[[color75]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 90
+          cy: 45
+        text: '75'
+        styles: *textblack
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 100
+        styles:
+          rectangle:
+            fill: '[[color70]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 100
+          cy: 45
+        text: '70'
+        styles: *textblack
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 110
+        styles:
+          rectangle:
+            fill: '[[color65]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 110
+          cy: 45
+        text: '65'
+        styles: *textblack
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 120
+        styles:
+          rectangle:
+            fill: '[[color60]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 120
+          cy: 45
+        text: '60'
+        styles: *textblack
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 130
+        styles:
+          rectangle:
+            fill: '[[color50]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 130
+          cy: 45
+        text: '50'
+        styles: &textwhite
+          text:
+            fill: white
+            text-anchor: middle
+            font-size: 4em
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 140
+        styles:
+          rectangle:
+            fill: '[[color45]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 140
+          cy: 45
+        text: '45'
+        styles: *textwhite
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 150
+        styles:
+          rectangle:
+            fill: '[[color40]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 150
+          cy: 45
+        text: '40'
+        styles: *textwhite
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 160
+        styles:
+          rectangle:
+            fill: '[[color35]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 160
+          cy: 45
+        text: '35'
+        styles: *textwhite
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 170
+        styles:
+          rectangle:
+            fill: '[[color30]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 170
+          cy: 45
+        text: '30'
+        styles: *textwhite
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 180
+        styles:
+          rectangle:
+            fill: '[[color25]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 180
+          cy: 45
+        text: '25'
+        styles: *textwhite
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 190
+        styles:
+          rectangle:
+            fill: '[[color20]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 190
+          cy: 45
+        text: '20'
+        styles: *textwhite
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 200
+        styles:
+          rectangle:
+            fill: '[[color15]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 200
+          cy: 45
+        text: '15'
+        styles: *textwhite
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 210
+        styles:
+          rectangle:
+            fill: '[[color10]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 210
+          cy: 45
+        text: '10'
+        styles: *textwhite
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 220
+        styles:
+          rectangle:
+            fill: '[[color7]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 220
+          cy: 45
+        text: '7'
+        styles: *textwhite
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 230
+        styles:
+          rectangle:
+            fill: '[[color5]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 230
+          cy: 45
+        text: '5'
+        styles: *textwhite
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 240
+        styles:
+          rectangle:
+            fill: '[[color0]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 240
+          cy: 45
+        text: '0'
+        styles: *textwhite

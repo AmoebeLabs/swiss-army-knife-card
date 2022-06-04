@@ -49,7 +49,6 @@ card:
             scale:
               min: '[[scale_min]]'
               max: '[[scale_max]]'
-              fuckyou: true
             segments:
               colorstops:
                 template:

@@ -1442,6 +1442,9 @@ cards:
                         classes:
                           rectex:
                             sak-card--off: true
+                    styles:
+                      rectex:
+                        pointer-events: none
 
                   # State rectangle at the top of the card. Colors with the state
                   # ------------------------------------------------------------
@@ -1619,6 +1622,7 @@ cards:
                         text-anchor: middle
                         font-size: 12em
                         font-weight: 600
+                        pointer-events: auto
                       uom:
                         font-weight: 600
                       capture:

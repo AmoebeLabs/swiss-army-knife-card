@@ -152,9 +152,9 @@ cards:
                             # -webkit-backdrop-filter: brightness(2)
                             # backdrop-filter: brightness(2)
                             
-                            # background-color: rgb(255,255,255,0.2)
-                            background-color: var(--theme-card-background-color-active)
-                            transition: background-color 3s ease-in-out 0s
+                            background-color: rgb(255,255,255,0.2)
+                            # background-color: var(--theme-card-background-color-active)
+                            transition: background-color 3s ease-in-out
                           icon:
                             fill: var(--md-fg-color--alert)
                             color: var(--md-fg-color--alert)
@@ -165,7 +165,7 @@ cards:
                           card:
                             # background-color: rgb(255,255,255,0.1)
                             background-color: var(--theme-card-background-color-inactive)
-                            transition: background-color 3s ease-in-out 0s
+                            transition: background-color 3s ease-in-out
 
                             # -webkit-transition: backdrop-filter 3s ease 0s
                             # transition: backdrop-filter 3s ease 0s
@@ -352,7 +352,7 @@ cards:
                         opacity: 0.9
                       background:
                         # fill: none
-                        fill: var(--theme-background-color-darken-40)
+                        fill: var(--theme-sys-elevation-surface-neutral4)
 
                   # ------------------------------------------------------------
                   # Room temperature
@@ -387,7 +387,7 @@ cards:
                       foreground:
                         fill: var(--primary-text-color)
                       background:
-                        fill: var(--theme-background-color-darken-30, --theme-default-darken-15)
+                        fill: var(--theme-sys-elevation-surface-neutral4)
 
               - toolset: setpoint-setting
                 position:
@@ -427,31 +427,31 @@ cards:
                     # Below is just for exploration. Actions is not yet used...
                     # Will be part of issue #51 to move actions from card section
                     # to tool section ;-)
-                    # user_actions:
-                      # drag_action:
-                        # update_interval: 0
-                        # haptic: selection
-                        # actions:
-                          # - action: call-service
-                            # service: climate.set_temperature
-                            # # Override entity_id. Otherwise entity_index is used...
-                            # service_data:
-                              # entity_id: climate.calenta
-                              # parameter: temperature
+                    user_actions:
+                      drag_action:
+                        update_interval: 0
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: climate.set_temperature
+                            parameter: temperature
+                            service_data:
+                              # Override entity_id. Otherwise entity_index is used...
+                              entity_id: climate.calenta
                       # tap_action:
                         # haptic: light
                         # actions:
                           # - action: call-service
                             # service: climate.set_temperature
+                            # parameter: temperature
                             # # Override entity_id. Otherwise entity_index is used...
                             # service_data:
                               # entity_id: climate.calenta
-                              # parameter: temperature
                       # hold_action:
                         # haptic: medium
                         # actions:
                           # - action: more-info
-                        
+
                     slider_action:
                       # Set interval to 0 to disable updates while dragging.
                       # new temperature setpoint is sent to boiler on release
@@ -481,7 +481,7 @@ cards:
                         stroke-width: 0.5em
                         pointer-events: none
                       track:
-                        fill: var(--theme-background-color-darken-30, --theme-default-darken-15)
+                        fill: var(--theme-sys-elevation-surface-neutral4)
                         fill-opacity: 1
                         pointer-events: none
                       thumb:
@@ -554,6 +554,7 @@ cards:
                             # -webkit-transition: backdrop-filter 5s ease 0s
                             # transition: backdrop-filter 5s ease 0s
                             background-color: var(--theme-card-background-color-active)
+                            # background-color: rgb(255,255,255,0.2)
                             transition: background-color 3s ease-in-out
                       - state: 'off'
                         # classes:
@@ -608,7 +609,7 @@ cards:
                         fill: var(--primary-text-color)
                         stroke-width: 0.5em
                       background:
-                        fill: var(--theme-background-color-darken-10, --theme-default-darken-15)
+                        fill: var(--theme-sys-elevation-surface-neutral4, --theme-default-darken-15)
                         stroke-width: 0.5em
 
                   # ------------------------------------------------------------
@@ -674,8 +675,9 @@ cards:
                     styles:
                       foreground:
                         fill: var(--primary-text-color)
+                        animation: pulse 2s ease-in-out both infinite
                       background:
-                        fill: var(--theme-background-color-darken-10, --theme-default-darken-15)
+                        fill: var(--theme-sys-elevation-surface-neutral4, --theme-default-darken-15)
 
                   # ------------------------------------------------------------
                   # Water actual temperature
@@ -741,7 +743,7 @@ cards:
                       foreground:
                         fill: var(--primary-text-color)
                       background:
-                        fill: var(--theme-background-color-darken-10)
+                        fill: var(--theme-sys-elevation-surface-neutral4)
 
                   # ------------------------------------------------------------
                   # Water return temperature
