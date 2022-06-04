@@ -21,7 +21,7 @@ FLT - Brownish:
   #
   # Theming the box-shadow for a card using Neumorphic guidelines.
   # --------------------------------------------------------------
-  ha-card-box-shadow: '3px 3px 6px var(--theme-default-shadow-darker, --theme-shadow-darker), -3px -3px 6px var(--theme-default-shadow-lighter, --theme-shadow-lighter)'
+  # ha-card-box-shadow: '3px 3px 6px var(--theme-default-shadow-darker, --theme-shadow-darker), -3px -3px 6px var(--theme-default-shadow-lighter, --theme-shadow-lighter)'
   ha-card-box-shadow: '1px 1px 2px var(--theme-default-shadow-darker), -1px -1px 2px var(--theme-default-shadow-lighter)'
 
   # Make it an inset shadow. Looks very nice combined with the neumorphic design!!!!
@@ -402,7 +402,7 @@ FLT - Brownish:
       theme-background-color-h: 20
       theme-background-color-s: 9
       theme-background-color-l: 90
-      theme-whatever: 88.35 #calc(93 / .95)
+      # theme-whatever: 88.35 #calc(93 / .95)
       theme-whatever: calc(2.0 + 1.0)
 
       theme-background-color-lighten-200: hsl(25, 10%, 100%)
