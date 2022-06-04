@@ -1,0 +1,385 @@
+toolset_m3_surface_colors:
+  template:
+    type: toolset
+    defaults: 
+      - cx: 50
+      - cy: 50
+      - title: 'color'
+      - background_light: white
+      - fontcolor_light: black
+      - surface1_light: black
+      - surface2_light: black
+      - surface3_light: black
+      - surface4_light: black
+      - surface5_light: black
+      - surface6_light: black
+      - surface7_light: black
+      - surface8_light: black
+      - surface9_light: black
+      - surface10_light: black
+      - background_dark: white
+      - fontcolor_dark: black
+      - surface1_dark: black
+      - surface2_dark: black
+      - surface3_dark: black
+      - surface4_dark: black
+      - surface5_dark: black
+      - surface6_dark: black
+      - surface7_dark: black
+      - surface8_dark: black
+      - surface9_dark: black
+      - surface10_dark: black
+
+  toolset:
+    position:
+      cx: '[[cx]]'
+      cy: '[[cy]]'
+    tools:
+      # ------------------------------------------------------------
+      # ------------------------------------------------------------
+      - type: rectangle
+        position: &rectpos
+          cx: -10
+          cy: 50
+          width: 10
+          height: 20
+          rx: 1
+        styles:
+          rectangle:
+            fill: '[[background_light]]'
+            stroke-width: 0.1em
+            stroke: '[[fontcolor_light]]'
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 130
+        styles:
+          rectangle:
+            fill: '[[background_dark]]'
+            stroke-width: 0.1em
+            stroke: '[[fontcolor_dark]]'
+
+      - type: text
+        position:
+          cx: -18
+          cy: 50
+        text: '[[title]]'
+        styles:
+          text:
+            fill: var(--primary-text-color)
+            text-anchor: end
+            font-size: 5em
+
+      # ------------------------------------------------------------
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 10
+        styles:
+          rectangle:
+            fill: '[[surface1_light]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 10
+          cy: 45
+        text: '+1'
+        styles: &textstylelight
+          text:
+            fill: '[[fontcolor_light]]'
+            text-anchor: middle
+            font-size: 4em
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 20
+        styles:
+          rectangle:
+            fill: '[[surface2_light]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 20
+          cy: 45
+        text: '+2'
+        styles: *textstylelight
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 30
+        styles:
+          rectangle:
+            fill: '[[surface3_light]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 30
+          cy: 45
+        text: '+3'
+        styles: *textstylelight
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 40
+        styles:
+          rectangle:
+            fill: '[[surface4_light]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 40
+          cy: 45
+        text: '+4'
+        styles: *textstylelight
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 50
+        styles:
+          rectangle:
+            fill: '[[surface5_light]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 50
+          cy: 45
+        text: '+5'
+        styles: *textstylelight
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 60
+        styles:
+          rectangle:
+            fill: '[[surface6_light]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 60
+          cy: 45
+        text: +6'
+        styles: *textstylelight
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 70
+        styles:
+          rectangle:
+            fill: '[[surface7_light]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 70
+          cy: 45
+        text: '+7'
+        styles: *textstylelight
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 80
+        styles:
+          rectangle:
+            fill: '[[surface8_light]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 80
+          cy: 45
+        text: '+8'
+        styles: *textstylelight
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 90
+        styles:
+          rectangle:
+            fill: '[[surface9_light]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 90
+          cy: 45
+        text: '+9'
+        styles: *textstylelight
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 100
+        styles:
+          rectangle:
+            fill: '[[surface10_light]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 100
+          cy: 45
+        text: '+10'
+        styles: *textstylelight
+
+      # Dark part...
+      # -----------------------------------------------------------------------
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 150
+        styles:
+          rectangle:
+            fill: '[[surface1_dark]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 150
+          cy: 45
+        text: '+1'
+        styles: &textstyledark
+          text:
+            fill: '[[fontcolor_dark]]'
+            text-anchor: middle
+            font-size: 4em
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 160
+        styles:
+          rectangle:
+            fill: '[[surface2_dark]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 160
+          cy: 45
+        text: '+2'
+        styles: *textstyledark
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 170
+        styles:
+          rectangle:
+            fill: '[[surface3_dark]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 170
+          cy: 45
+        text: '+3'
+        styles: *textstyledark
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 180
+        styles:
+          rectangle:
+            fill: '[[surface4_dark]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 180
+          cy: 45
+        text: '+4'
+        styles: *textstyledark
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 190
+        styles:
+          rectangle:
+            fill: '[[surface5_dark]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 190
+          cy: 45
+        text: '+5'
+        styles: *textstyledark
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 200
+        styles:
+          rectangle:
+            fill: '[[surface6_dark]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 200
+          cy: 45
+        text: '+6'
+        styles: *textstyledark
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 210
+        styles:
+          rectangle:
+            fill: '[[surface7_dark]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 210
+          cy: 45
+        text: '+7'
+        styles: *textstyledark
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 220
+        styles:
+          rectangle:
+            fill: '[[surface8_dark]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 220
+          cy: 45
+        text: '+8'
+        styles: *textstyledark
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 230
+        styles:
+          rectangle:
+            fill: '[[surface9_dark]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 230
+          cy: 45
+        text: '+9'
+        styles: *textstyledark
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 240
+        styles:
+          rectangle:
+            fill: '[[surface10_dark]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 240
+          cy: 45
+        text: '+10'
+        styles: *textstyledark
+
+
