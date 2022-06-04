@@ -28,8 +28,8 @@ button_quick_menu_generic:
 button_switch_template:
   !include button-switch-template-mw.yaml
 
-#glance_card_template:
-#  !include glance-card-template-mw.yaml
+glance_card_template:
+  !include glance-card-template-mw.yaml
 
 # header_template:
   # !include header-template-mw.yaml
@@ -53,8 +53,8 @@ mini_graph_card_template:
 #notification_card_template:
 #  !include notification-card-template-mw.yaml
 
-#thermostat_card_template:
-#  !include thermostat-card-template-mw.yaml
+thermostat_dark_card_template:
+  !include thermostat-dark-card-template-mw.yaml
 
 sak_arc180_sparklinebar24_template:
   !include sak-arc180-sparklinebar24.yaml
