@@ -12,8 +12,7 @@ The custom Swiss Army Knife card for [Home Assistant][home-assistant] allows you
 It is a card with lots of possibilities, fully YAML based, and requires the [user to design a card][sak-how-to-design-your-card]!
 What you can make is only limited by the 17 provided tools and your own imagination.
 
-
-Remember that this custom card is in public **BETA** **BETA** **BETA** as of (end of) June 2022!
+Remember that this custom card is in public **BETA** **BETA** **BETA** as of June/July 2022!
 
 Check https://swiss-army-knife.docs.amoebelabs.com/ for the documentation!
 
@@ -23,10 +22,12 @@ And check https://ha-m3-themes.docs.amoebelabs.com/ for Material 3 themes docume
 
 <a href="https://www.buymeacoffee.com/amoebelabs" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-## ![](docs/images/swiss-army-knife24.png) Installation
+## ![](docs/images/swiss-army-knife24.png) Hybrid or Full manual Installation
 This custom card should be in the default theme repository of HACS, if you have selected BETA releases.
 
-For installation check the [installation documentation][sak-installation]. As this custom card requires extra steps on top of HACS for its installation.
+For installation check the [installation documentation][sak-installation]. As this custom card requires **extra steps on top of HACS** for its installation. The card itself can be installed with HACS, but:
+- The card requires extra configuration files to function
+- If you want to use the examples and example dashboard, you must download the themes, views and templates too!
 
 Note: It may take a few weeks (as of June 2022) that this card is included into the HACS repository!
 
