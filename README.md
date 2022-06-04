@@ -32,6 +32,8 @@ For installation check the [installation documentation][sak-installation]. As th
 Note: It may take a few weeks (as of June 2022) that this card is included into the HACS repository!
 
 ## ![](docs/images/swiss-army-knife24.png) An overview of all the [12 examples](https://swiss-army-knife.docs.amoebelabs.com/examples/introduction/) from my own installation:
+All these examples are available on Github and described in the [installation manual][sak-installation]. Each example has its own page which describes how to adapt / use them in your own installation.
+
 | Examples...| Examples...|
 | :------------: | :------------: |
 | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-1b.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-2.png) | 
