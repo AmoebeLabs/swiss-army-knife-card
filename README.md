@@ -6,6 +6,9 @@
 <!--- ![beta_badge](https://img.shields.io/badge/State-Beta-orange?style=for-the-badge) -->
 <!---[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration) -->
 
+# ![](docs/images/swiss-army-knife24.png) NOTE!
+This Swiss Army Knife custom card is being prepared for a public release. Don't use this card yet!
+
 # ![](docs/images/swiss-army-knife24.png) The Swiss Army Knife Custom Card for Home Assistant
 The custom Swiss Army Knife card for [Home Assistant][home-assistant] allows you to create your own visualization using [17 basic, advanced and Home Assistant specific SVG-based tools][sak-tools] and CSS [styling][sak-css-styles] and [animation][sak-css-animations] options this card provides.
 
