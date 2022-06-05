@@ -17,7 +17,7 @@ The custom Swiss Army Knife card for [Home Assistant][home-assistant] allows you
 It is a card with lots of possibilities, fully YAML based, and requires the [user to design a card][sak-how-to-design-your-card]!
 What you can make is only limited by the 17 provided tools and your own imagination.
 
-Remember that this custom card is in public **BETA** **BETA** **BETA** as of June/July 2022!
+Remember that this custom card will be/is in public **BETA** **BETA** **BETA** as of June/July 2022!
 
 Check https://swiss-army-knife.docs.amoebelabs.com/ for the documentation!
 
