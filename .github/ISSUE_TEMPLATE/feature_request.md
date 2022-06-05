@@ -15,10 +15,7 @@ Please present a concise description of the problem to be addressed by this feat
 
 ### Additional background:
 
-
-## Related Issues 
-There are a few related issues, that can be closed as this issue supersedes them:
-- Issue #69
+### Related Issues (if any)
 
 <!--
 A concise description of your preferred solution. Things to address include:
