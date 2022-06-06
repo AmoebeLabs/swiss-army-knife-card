@@ -2369,13 +2369,13 @@ class UserSvgTool extends BaseTool {
 
     this.injector.afterAllInjectionsFinishedCallback = function (totalSVGsInjected) {
       // Callback after all SVGs are injected
-      console.log('We injected ' + totalSVGsInjected + ' SVG(s)!');
+      // console.log('We injected ' + totalSVGsInjected + ' SVG(s)!');
     }.bind(this);
 
     this.injector.perInjectionCallback = function (svg) {
       // Callback after each SVG is injected
       this.injector.svg = svg;
-      console.log('SVG injected: ' + svg);
+      // console.log('SVG injected: ' + svg);
     }.bind(this);
 
     // create injector configured by options
@@ -2408,15 +2408,15 @@ class UserSvgTool extends BaseTool {
   */
 
   updated(changedProperties) {
-    console.log("usersvg updated...");
+    // console.log("usersvg updated...");
 
-    console.log(this._card.shadowRoot.querySelectorAll('svg[data-src]'));
+    // console.log(this._card.shadowRoot.querySelectorAll('svg[data-src]'));
     
     this.injector.elementsToInject = this._card.shadowRoot.querySelectorAll('svg[data-src]');
-    console.log("updated - ", this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)));
+    // console.log("updated - ", this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)));
     
     this.injector.elementsToInject = this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)).querySelectorAll('svg[data-src]:not(.injected-svg)');
-    console.log("updated - elements...", this.injector.elementsToInject);
+    // console.log("updated - elements...", this.injector.elementsToInject);
 
     // Trigger the injection if there is something to inject...
     if (this.injector.elementsToInject.length > 0)
@@ -2433,7 +2433,7 @@ class UserSvgTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     if (this.injector.svg) {
-      console.log("re-using injected svg...");
+      // console.log("re-using injected svg...");
       return svg`${this.injector.svg}`;
     } else {
       return svg`
@@ -2499,7 +2499,7 @@ class RectangleTool extends BaseTool {
     }
 
     super(argToolset, Merge.mergeDeep(DEFAULT_RECTANGLE_CONFIG, argConfig), argPos);
-    this.svg.rx = Utils.calculateSvgDimension(argConfig.position.rx)
+    this.svg.rx = argConfig.position.rx ? Utils.calculateSvgDimension(argConfig.position.rx) : 0;
 
     this.classes.rectangle = {};
     this.styles.rectangle = {};
@@ -5581,7 +5581,7 @@ class SwissArmyKnifeCard extends LitElement {
     this.requestUpdate();
 
     this.counter--;
-    console.log("set hass, counter = ", this.counter);
+    // console.log("set hass, counter = ", this.counter);
 
     //console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
   }
@@ -6772,7 +6772,7 @@ class SwissArmyKnifeCard extends LitElement {
   // interval active!
   updateOnInterval() {
     // Only update if hass is already set, this might be not the case the first few calls...
-    console.log("updateOnInterval -> check...");
+    // console.log("updateOnInterval -> check...");
     if (!this._hass) {
       if (this.dev.debug) console.log("UpdateOnInterval - NO hass, returning");
       return;
@@ -6783,7 +6783,7 @@ class SwissArmyKnifeCard extends LitElement {
       // Leave true, as multiple entities can be fetched. fetch every 5 minutes...
       //this.stateChanged = false;
       this.updateData();
-      console.log("updateOnInterval -> updateData");
+      // console.log("updateOnInterval -> updateData");
     }
   }
 
