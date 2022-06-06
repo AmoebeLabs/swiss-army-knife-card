@@ -1,0 +1,164 @@
+- type: vertical-stack
+  cards:
+    # The menu
+    - type: custom:decluttering-card
+      template: button_quick_menu_generic
+      variables:
+        - lb_name: Scenes
+        - lb_icon: arrange-send-backward
+        - lb_path: /lovelace/scenes
+
+    - type: custom:decluttering-card
+      template: divider_template
+
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: '### Scenes'
+
+    - type: custom:decluttering-card
+      template: divider_template
+
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: '### Verlichting'
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: '#### Woonkamer'
+        - font_color: var(--secondary-text-color)
+    - type: horizontal-stack
+      cards:
+        - !include card-blank-card.yaml
+
+        - type: custom:decluttering-card
+          template: button_light_template
+          variables:
+            - entity: light.livingroom_light_duo_left_light #linker_lamp_voor
+            - area: Woonkamer
+            - name: Duo Links
+            - icon: 'floor-lamp-dual' #'mdi:grid-large' mdi-floor-lamp-dual
+
+        - type: custom:decluttering-card
+          template: button_light_template
+          variables:
+            - entity: light.livingroom_light_duo_right_light #rechter_lamp_voor
+            - area: Woonkamer
+            - name: Duo Rechts
+            - icon: 'floor-lamp-dual' #'mdi:grid-large' border-left
+
+        - type: custom:decluttering-card
+          template: button_light_template
+          variables:
+#              - entity: light.muurlamp_voor
+            - entity: light.livingroom_light_front_right_light
+            - area: Woonkamer
+            - name: Muurlamp
+            - icon: 'wall-sconce' #'border-right' #'mdi:grid-large'
+
+        - !include card-blank-card.yaml
+
+    - type: horizontal-stack
+      cards:
+        - !include card-blank-card.yaml
+
+        - type: custom:decluttering-card
+          template: button_light_template
+          variables:
+#              - entity: rode_lampenkap
+            - entity: light.livingroom_light_gasheater_light
+            - area: Woonkamer
+            - name: Rode Lamp
+            - icon: 'floor-lamp'
+
+        - type: custom:decluttering-card
+          template: button_light_template
+          variables:
+            - entity: light.livingroom_light_cupboard_light
+            - area: Woonkamer
+            - name: Boekenkast
+            - icon: 'book-open-outline'
+
+        - type: 'custom:button-card'
+          color_type: blank-card
+        - !include card-blank-card.yaml
+
+    - type: horizontal-stack
+      cards:
+        - !include card-blank-card.yaml
+        - type: custom:decluttering-card
+          template: button_light_template
+          variables:
+            - entity: light.livingroom_light_couch_tv_left_light
+            - area: Woonkamer
+            - name: Bank TV Links
+            - icon: 'sofa'
+        - type: custom:decluttering-card
+          template: button_light_template
+          variables:
+            - entity: light.livingroom_light_couch_tv_right_light
+            - area: Woonkamer
+            - name: Bank TV Rechts
+            - icon: 'sofa'
+        - type: 'custom:button-card'
+          color_type: blank-card
+        - !include card-blank-card.yaml
+
+
+
+##
+## Keuken
+##
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: '#### Keuken'
+        - font_color: var(--secondary-text-color)
+    - type: horizontal-stack
+      cards:
+        - !include card-blank-card.yaml
+        - type: custom:decluttering-card
+          template: button_light_template
+          variables:
+            - entity: light.kitchen_light_fridge_light
+            - area: Keuken
+            - name: Op koelkast
+            - icon: 'fridge'
+        - type: custom:decluttering-card
+          template: button_light_template
+          variables:
+            - entity: light.backyard_light_backdoor_light
+            - area: Tuin
+            - name: Tuin Keuken
+            - icon: 'wall-sconce'
+        - type: 'custom:button-card'
+          color_type: blank-card
+        - !include card-blank-card.yaml
+
+##
+## 1ste Verdieping
+##
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: '#### 1ste Verdieping'
+        - font_color: var(--secondary-text-color)
+    - type: horizontal-stack
+      cards:
+        - !include card-blank-card.yaml
+        - type: custom:decluttering-card
+          template: button_light_template
+          variables:
+            - entity: light.1st_floor_hall_light
+            - area: Overloop 1ste
+            - name: Overloop
+            - icon: 'ceiling-light'
+        - type: 'custom:button-card'
+          color_type: blank-card
+        - type: 'custom:button-card'
+          color_type: blank-card
+        - !include card-blank-card.yaml

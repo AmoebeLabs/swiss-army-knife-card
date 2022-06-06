@@ -1,0 +1,37 @@
+default:
+  - cx: 50
+  - cy: 50
+  - decimals: 1
+  - variables:
+      - bar_color_min: var(--cs-orange-lighten-40)
+      - bar_color_max: var(--cs-orange-darken-20)
+
+card:
+  type: 'custom:dev-swiss-army-knife-card'
+
+  entities: 
+    - entity: '[[entity]]'
+      name: '[[name]]'
+      icon: '[[icon]]'
+      decimals: '[[decimals]]'
+    # - entity: weather.zoefdehaas
+
+  aspectratio: 1/1
+  dev:
+    debug: false
+    ts: true
+  
+  layout:
+    styles:
+      toolsets:
+        filter: url(#nm-1)
+    toolsets:
+      # ==============================================================================
+      # Using Neumorphic sensor history design
+      - toolset: sensor-history
+        template:
+          name: toolset_sensor_history
+          variables: '[[variables]]'
+        position:
+          cx: '[[cx]]'
+          cy: '[[cy]]'

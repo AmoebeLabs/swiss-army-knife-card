@@ -1,0 +1,1910 @@
+#
+# View			: view-sake1
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+# SAK Example #1, with two cards: Airvisual and my MOAC (Mother of all Cards)
+#
+# Data sources:
+# - Met weather integration: replace below weather.zoefdehaas with your own entity!
+# - Airvisual integration
+#
+# None of these cards use templates and are therefore large!
+# Hundreds of lines of YAML can be saved by using templates, but as these where
+# one of the first cards I made, templates didn't exist yet!
+#
+# Card #1:
+# ========
+# Inspired by the Airvisual Pro Device...
+#
+# Card #2:
+# ========
+# A big card showing several tools of the SAK Card.
+#
+# You also see a lot of copy/paste is done, especially for the forecast each day
+# As a result this card is about 1.300 lines of YAML.
+# 
+# A single forecast day is already 120 lines, so using a template could have 
+# saved approx 5x100 = 500 lines of YAML.
+#
+# If things like the weathertype, temp/humi an AQI would be a template, and thus
+# re-usable in other cards, another few hundred lines could be saved.
+#
+# Even if you can reduce the size to say 600 lines, this card remains a big one.
+# Defining 50 entities already takes about 170 lines of YAML.
+#
+# Refs:
+#   
+###############################################################################
+
+title: SAKE1-M3
+path: sake1-m3
+panel: false
+# theme: 'NM - Gonsboro'
+cards:
+#------------------------------------------------------------------------------
+- type: vertical-stack
+  cards:
+# =================================
+    - type: horizontal-stack
+      cards:
+        #
+        # Airvisual Pro device inspired card.
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            - entity: sensor.u_s_air_quality_index
+              name: '0T: AirVisual'
+              area: '0T: De Maan'
+            - entity: sensor.u_s_air_pollution_level
+            - entity: sensor.u_s_main_pollutant
+            - entity: weather.zoefdehaas
+              attribute: temperature
+              decimals: 1
+              unit: '°C'
+              icon: mdi:thermometer
+            - entity: weather.zoefdehaas
+              attribute: humidity
+              decimals: 0
+              unit: '%'
+              icon: mdi:water-percent
+            - entity: weather.zoefdehaas
+              attribute: pressure
+              decimals: 0
+              unit: 'hPa'
+              icon: mdi:gauge
+            - entity: weather.zoefdehaas
+              attribute: wind_speed
+              unit: 'km/h'
+              icon: mdi:weather-windy
+            - entity: weather.zoefdehaas
+
+          aspectratio: 3/2
+
+          disable_card: false
+
+          dev:
+            debug: false
+            
+          layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
+                will-change: filter
+              
+            toolsets:
+              # ==============================================================================
+              - toolset: title
+                position:
+                  cx: 10
+                  cy: 18
+                tools:
+                  # Area
+                  - type: area
+                    id: 10
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      area:
+                        font-size: 18em
+                        font-weight: 400
+                        text-anchor: start
+
+              - toolset: weather-type
+                position:
+                  cx: 255
+                  cy: 25
+                tools:
+                  # Surface circle
+                  - type: 'circle'
+                    id: 0
+                    position:
+                      cx: 45
+                      cy: 50
+                      radius: 17
+                    styles:
+                      circle:
+                        opacity: 1
+                        fill: var(--primary-background-color)
+                  - type: 'usersvg'
+                    id: 2
+                    entity_index: 7
+                    position:
+                      cx: 45
+                      cy: 50
+                      height: 30
+                      width: 30
+                    style: 'images'
+                    images:
+                      - clear-night-night: /local/images/weather/clear-night.svg
+                      - cloudy-day: /local/images/weather/cloudy-day.svg
+                      - cloudy-night: /local/images/weather/cloudy-night.svg
+                      - fog-day: /local/images/weather/fog-day.svg
+                      - fog-night: /local/images/weather/fog-night.svg
+                      - hail-day: /local/images/weather/hail-day.svg
+                      - hail-night: /local/images/weather/hail-night.svg
+                      - lightning-day: /local/images/weather/lightning.svg
+                      - lightning-night: /local/images/weather/lightning.svg
+                      - partlycloudy-day: /local/images/weather/partlycloudy-day.svg
+                      - partlycloudy-night: /local/images/weather/partlycloudy-night.svg
+                      - pouring-day: /local/images/weather/pouring.svg
+                      - pouring-night: /local/images/weather/pouring-night.svg
+                      - rainy-day: /local/images/weather/rainy-day.svg
+                      - rainy-night: /local/images/weather/rainy-night.svg
+                      - snowy-day: /local/images/weather/snowy-day.svg
+                      - snowy-night: /local/images/weather/snowy-night.svg
+                      - snowy-rainy-day: /local/images/weather/snowy-rainy-day.svg
+                      - snowy-rainy-night: /local/images/weather/snowy-rainy-night.svg
+                      - sunny-day: /local/images/weather/sunny-day.svg
+                      - sunny-night: /local/images/weather/clear-night.svg
+                      - snowy-rainy-day: /local/images/weather/snowy-rainy-day.svg
+                      - snowy-rainy-night: /local/images/weather/snowy-rainy-night.svg
+                      - windy-day: /local/images/weather/windy-day.svg
+                      - windy-night: /local/images/weather/windy-night.svg
+                      - windy-variant-day: /local/images/weather/windy-variant.svg
+                      - windy-variant-night: /local/images/weather/windy-variant.svg
+                    animations:
+                      - state: '[[[ return (state); ]]]'
+                        image: >
+                          [[[
+                            if (states["sun.sun"].state == 'below_horizon') return (state + '-night');
+                            return (state + '-day');
+                          ]]]
+                        
+              - toolset: weather-temperature
+                position:
+                  cx: 255
+                  cy: 95
+                tools:
+                  # Temperature part
+                  - type: rectex
+                    id: 1
+                    position:
+                      cx: 42.5
+                      cy: 20
+                      width: 85
+                      height: 28
+                      radius:
+                        all: 2
+                    styles:
+                      rectex:
+                        fill: var(--theme-sys-color-secondary-container)
+                      
+                  - type: icon
+                    id: 2
+                    position:
+                      cx: 13
+                      cy: 20
+                      icon_size: 20
+                    entity_index: 3
+                    styles:
+                      icon:
+                        filter: url(#is-1)
+                        fill: var(--theme-sys-color-on-secondary-container)
+                      
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 80
+                      cy: 20
+                    entity_index: 3
+                    styles:
+                      state:
+                        font-size: 15em
+                        font-weight: 400
+                        text-anchor: end
+                        fill: var(--theme-sys-color-on-secondary-container)
+
+              - toolset: weather-humidity
+                position:
+                  cx: 255
+                  cy: 132.5
+                tools:
+                  # Humidity part
+                  - type: rectex
+                    id: 1
+                    position:
+                      cx: 42.5
+                      cy: 20
+                      width: 85
+                      height: 28
+                      radius:
+                        all: 2
+                    styles:
+                      rectex:
+                        fill: var(--theme-sys-color-secondary-container)
+                      
+                  - type: icon
+                    id: 2
+                    position:
+                      cx: 13
+                      cy: 20
+                      icon_size: 20
+                    entity_index: 4
+                    styles:
+                      icon:
+                        filter: url(#is-1)
+                        fill: var(--theme-sys-color-on-secondary-container)
+
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 80
+                      cy: 20
+                    entity_index: 4
+                    styles:
+                      state:
+                        font-size: 15em
+                        font-weight: 400
+                        text-anchor: end
+                        fill: var(--theme-sys-color-on-secondary-container)
+
+              - toolset: weather-pressure
+                position:
+                  cx: 255
+                  cy: 170
+                tools:
+                  # Pressure part
+                  - type: rectex
+                    id: 1
+                    position:
+                      cx: 42.5
+                      cy: 20
+                      width: 85
+                      height: 28
+                      radius:
+                        all: 2
+                    styles:
+                      rectex:
+                        fill: var(--theme-sys-color-secondary-container)
+                      
+                  - type: icon
+                    id: 2
+                    position:
+                      cx: 13
+                      cy: 20
+                      icon_size: 20
+                    entity_index: 5
+                    styles:
+                      icon:
+                        filter: url(#is-1)
+                        fill: var(--theme-sys-color-on-secondary-container)
+
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 80
+                      cy: 20
+                    entity_index: 5
+                    styles:
+                      state:
+                        font-size: 15em
+                        font-weight: 400
+                        text-anchor: end
+                        fill: var(--theme-sys-color-on-secondary-container)
+
+              - toolset: weather-wind
+                position:
+                  cx: 255
+                  cy: 207.5
+                tools:
+                  # wind part
+                  - type: rectex
+                    id: 1
+                    position:
+                      cx: 42.5
+                      cy: 20
+                      width: 85
+                      height: 28
+                      radius:
+                        all: 2
+                    styles:
+                      rectex:
+                        fill: var(--theme-sys-color-secondary-container)
+                      
+                  - type: icon
+                    id: 2
+                    position:
+                      cx: 13
+                      cy: 20
+                      icon_size: 20
+                    entity_index: 6
+                    styles:
+                      icon:
+                        filter: url(#is-1)
+                        fill: var(--theme-sys-color-on-secondary-container)
+
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 80
+                      cy: 20
+                    entity_index: 6
+                    styles:
+                      state:
+                        font-size: 15em
+                        font-weight: 400
+                        text-anchor: end
+                        fill: var(--theme-sys-color-on-secondary-container)
+              
+              # ==============================================================================
+              - toolset:
+                  name: airvisual
+                position:
+                  cx: 100
+                  cy: 65
+                tools:
+                  # Surface rectangle
+                  - type: rectex
+                    id: 5
+                    position:
+                      cx: 80
+                      cy: 60
+                      width: 110
+                      height: 45
+                      radius:
+                        all: 2
+                    entity_index: 0
+                    show:
+                      style: 'colorstops'
+                    colorstops:
+                      fill: true
+                      colors:
+                        0: '#A8E05F'
+                        51: '#FDD74B'
+                        101: '#FE9B57'
+                        151: '#FE6A69'
+                        201: '#A97ABC'
+                        301: '#A87383'
+                    styles:
+                      rectex:
+                        stroke: var(--primary-background-color)
+                        stroke-width: 5em
+                        opacity: 1
+                        transition: fill 0.5s
+                  # State / AQI
+                  - type: 'state'
+                    id: 6
+                    position:
+                      cx: 126
+                      cy: 60
+                    entity_index: 0
+                    show:
+                      uom: end
+                    styles:
+                      state:
+                        font-size: 26em
+                        font-weight: 700
+                        text-anchor: end
+                        alignment-baseline: central
+
+                  # State / main pollutant
+                  - type: 'state'
+                    id: 7
+                    position:
+                      cx: 87.5
+                      cy: 95
+                    entity_index: 2
+                    styles:
+                      state:
+                        font-size: 12.5em
+                        font-weight: 500
+                        text-anchor: middle
+                        alignment-baseline: central
+
+                  # State / pollutant level
+                  - type: 'state'
+                    id: 8
+                    position:
+                      cx: 87.5
+                      cy: 25
+                    entity_index: 1
+                    styles:
+                      state:
+                        font-size: 12.5em
+                        font-weight: 500
+                        text-anchor: middle
+                        alignment-baseline: central
+                      
+                  # Surface circle
+                  - type: 'circle'
+                    id: 0
+                    position:
+                      cx: 2.5
+                      cy: 60
+                      radius: 45
+                    styles:
+                      circle:
+                        opacity: 1
+                        fill: var(--primary-background-color)
+
+                  - type: 'circle'
+                    id: 1
+                    entity_index: 0
+                    position:
+                      cx: 2.5
+                      cy: 60
+                      radius: 40
+                    show:
+                      style: 'colorstops'
+                    colorstops:
+                      fill: true
+                      colors:
+                        0: '#A8E05F'
+                        51: '#FDD74B'
+                        101: '#FE9B57'
+                        151: '#FE6A69'
+                        201: '#A97ABC'
+                        301: '#A87383'
+                    styles:
+                      circle:
+                        fill: var(--primary-background-color)
+                        opacity: 1
+                        transition: fill 0.5s
+
+                  - type: 'usersvg'
+                    id: 2
+                    entity_index: 0
+                    position:
+                      cx: 2.5
+                      cy: 60
+                      height: 70
+                      width: 70
+                    style: 'images'
+                    images:
+                      - face1: /local/images/ic-face-1.svg
+                      - face2: /local/images/ic-face-2.svg
+                      - face3: /local/images/ic-face-3.svg
+                      - face4: /local/images/ic-face-4.svg
+                      - face5: /local/images/ic-face-5.svg
+                      - face6: /local/images/ic-face-6.svg
+                    animations:
+                      - state: '50'
+                        operator: <=
+                        image: face1
+                      - state: '100'
+                        operator: <=
+                        image: face2
+                      - state: '150'
+                        operator: <=
+                        image: face3
+                      - state: '200'
+                        operator: <=
+                        image: face4
+                      - state: '300'
+                        operator: <=
+                        image: face5
+                      - state: '9999'
+                        operator: <=
+                        image: face6
+
+                    styles:
+                      usersvg:
+                        opacity: 1
+
+                  # bar
+                  - type: bar
+                    id: 2
+                    orientation: vertical
+                    entity_index: 0
+                    position:
+                      cx: 47.5
+                      cy: 145
+                      width: 180
+                      height: 55
+                      margin: 1
+                    hours: 24
+                    barhours: 1
+                    show:
+                      style: 'colorstops'
+                    colorstops:
+                      colors:
+                        0: '#A8E05F'
+                        50: '#FDD74B'
+                        100: '#FE9B57'
+                        150: '#FE6A69'
+                        200: '#A97ABC'
+                        300: '#A87383'
+                    styles:
+                      bar:
+                        stroke-linecap: round
+                        transition: fill 0.5s
+
+    - type: horizontal-stack
+      cards:
+        #
+        # MOAC
+        #
+        #######################################################################
+
+        - type: 'custom:dev-swiss-army-knife-card'
+          entities:
+            - entity: sensor.u_s_air_quality_index
+              name: '5T: Pinterest'
+              area: '5T: De Maan'
+            - entity: sensor.u_s_air_pollution_level
+            - entity: sensor.u_s_main_pollutant
+            - entity: weather.zoefdehaas
+              attribute: temperature
+              decimals: 1
+              unit: '°C'
+              icon: mdi:thermometer
+            - entity: weather.zoefdehaas
+              attribute: humidity
+              decimals: 0
+              unit: '%'
+              icon: mdi:water-percent
+            - entity: weather.zoefdehaas
+              attribute: pressure
+              decimals: 0
+              unit: 'hPa'
+              icon: mdi:gauge
+            - entity: weather.zoefdehaas
+              attribute: wind_speed
+              unit: 'km/h'
+              icon: mdi:weather-windy
+            - entity: weather.zoefdehaas
+
+              #entity_indexes 8, 9 & 10
+            - entity: sun.sun
+            # - entity: sensor.next_sunrise
+            - entity: sun.sun
+              attribute: next_rising
+              unit: 'uur'
+              icon: mdi:weather-sunset-up
+            # - entity: sensor.next_sunset
+            - entity: sun.sun
+              attribute: next_setting
+              unit: 'uur'
+              icon: mdi:weather-sunset-down
+            
+              #entity_indexes 11-17
+            - entity: weather.zoefdehaas
+              attribute: forecast[0].datetime
+            - entity: weather.zoefdehaas
+              attribute: forecast[0].condition
+            - entity: weather.zoefdehaas
+              attribute: forecast[0].temperature
+              decimals: 1
+              unit: '°C'
+              icon: mdi:thermometer-chevron-up
+            - entity: weather.zoefdehaas
+              attribute: forecast[0].templow
+              decimals: 1
+              unit: '°C'
+              icon: mdi:thermometer-chevron-down
+            - entity: weather.zoefdehaas
+              attribute: forecast[0].wind_speed
+              unit: 'km/h'
+              icon: mdi:weather-windy
+            - entity: weather.zoefdehaas
+              attribute: forecast[0].wind_bearing
+            - entity: weather.zoefdehaas
+              attribute: forecast[0].precipitation
+              decimals: 1
+              unit: 'mm'
+              icon: mdi:weather-rainy
+
+              #entity_indexes 18-24
+            - entity: weather.zoefdehaas
+              attribute: forecast[1].datetime
+            - entity: weather.zoefdehaas
+              attribute: forecast[1].condition
+            - entity: weather.zoefdehaas
+              attribute: forecast[1].temperature
+              decimals: 1
+              unit: '°C'
+              icon: mdi:thermometer-chevron-up
+            - entity: weather.zoefdehaas
+              attribute: forecast[1].templow
+              decimals: 1
+              unit: '°C'
+              icon: mdi:thermometer-chevron-down
+            - entity: weather.zoefdehaas
+              attribute: forecast[1].wind_speed
+              unit: 'km/h'
+              icon: mdi:weather-windy
+            - entity: weather.zoefdehaas
+              attribute: forecast[1].wind_bearing
+            - entity: weather.zoefdehaas
+              attribute: forecast[1].precipitation
+              decimals: 1
+              unit: 'mm'
+              icon: mdi:weather-rainy
+
+              #entity_indexes 25-31
+            - entity: weather.zoefdehaas
+              attribute: forecast[2].datetime
+            - entity: weather.zoefdehaas
+              attribute: forecast[2].condition
+            - entity: weather.zoefdehaas
+              attribute: forecast[2].temperature
+              decimals: 1
+              unit: '°C'
+              icon: mdi:thermometer-chevron-up
+            - entity: weather.zoefdehaas
+              attribute: forecast[2].templow
+              decimals: 1
+              unit: '°C'
+              icon: mdi:thermometer-chevron-down
+            - entity: weather.zoefdehaas
+              attribute: forecast[2].wind_speed
+              unit: 'km/h'
+              icon: mdi:weather-windy
+            - entity: weather.zoefdehaas
+              attribute: forecast[2].wind_bearing
+            - entity: weather.zoefdehaas
+              attribute: forecast[2].precipitation
+              decimals: 1
+              unit: 'mm'
+              icon: mdi:weather-rainy
+
+              #entity_indexes 32-38
+            - entity: weather.zoefdehaas
+              attribute: forecast[3].datetime
+            - entity: weather.zoefdehaas
+              attribute: forecast[3].condition
+            - entity: weather.zoefdehaas
+              attribute: forecast[3].temperature
+              decimals: 1
+              unit: '°C'
+              icon: mdi:thermometer-chevron-up
+            - entity: weather.zoefdehaas
+              attribute: forecast[3].templow
+              decimals: 1
+              unit: '°C'
+              icon: mdi:thermometer-chevron-down
+            - entity: weather.zoefdehaas
+              attribute: forecast[3].wind_speed
+              unit: 'km/h'
+              icon: mdi:weather-windy
+            - entity: weather.zoefdehaas
+              attribute: forecast[3].wind_bearing
+            - entity: weather.zoefdehaas
+              attribute: forecast[3].precipitation
+              decimals: 1
+              unit: 'mm'
+              icon: mdi:weather-rainy
+
+              #entity_indexes 39-45
+            - entity: weather.zoefdehaas
+              attribute: forecast[4].datetime
+            - entity: weather.zoefdehaas
+              attribute: forecast[4].condition
+            - entity: weather.zoefdehaas
+              attribute: forecast[4].temperature
+              decimals: 1
+              unit: '°C'
+              icon: mdi:thermometer-chevron-up
+            - entity: weather.zoefdehaas
+              attribute: forecast[4].templow
+              decimals: 1
+              unit: '°C'
+              icon: mdi:thermometer-chevron-down
+            - entity: weather.zoefdehaas
+              attribute: forecast[4].wind_speed
+              unit: 'km/h'
+              icon: mdi:weather-windy
+            - entity: weather.zoefdehaas
+              attribute: forecast[4].wind_bearing
+            - entity: weather.zoefdehaas
+              attribute: forecast[4].precipitation
+              decimals: 1
+              unit: 'mm'
+              icon: mdi:weather-rainy
+
+            # Add wind bearing... entity 46...
+            - entity: weather.zoefdehaas
+              attribute: wind_bearing
+
+          aspectratio: 2/2.3
+
+          disable_card: false
+
+          dev:
+            debug: false
+            
+          layout:
+            styles:
+              card:
+                background-color: var(--primary-background-color)
+              toolsets:
+                filter: url(#nm-1)
+
+            toolsets:
+              # ==============================================================================
+              - toolset: card-title
+                # name: card-title
+                position:
+                  cx: 5
+                  cy: 5
+                tools:
+                  # Area
+                  - type: area
+                    id: 10
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      card:
+                        background-color: var(--primary-background-color)
+                      area:
+                        font-size: 12em
+                        font-weight: 400
+                        text-anchor: start
+                        alignment-baseline: hanging
+                        fill: var(--primary-text-color)
+                        letter-spacing: 0em
+                        opacity: 1
+
+                  # weather type description
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 70
+                    entity_index: 7
+                    styles:
+                      state:
+                        font-size: 10em
+                        font-weight: 400
+                        text-anchor: start
+                        font-style: italic
+                      # uom:
+                        # alignment-baseline: central
+
+              - toolset: airvisual
+                # name: airvisual
+                position:
+                  cx: 173.5
+                  cy: 60
+                tools:
+                  - type: 'circle'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 22
+                    styles:
+                      circle:
+                        opacity: 1
+                        fill: var(--primary-background-color)
+
+                  - type: 'segarc'
+                    id: 0
+                    entity_index: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 2
+                      radius: 20
+                    scale:
+                      min: 0
+                      max: 200
+                    show:
+                      scale: false
+                      style: 'colorstops'
+
+                    segments:
+                      colorstops:
+                        gap: 1
+                        colors:
+                          0: '#A8E05F'
+                          50: '#FDD74B'
+                          100: '#FE9B57'
+                          150: '#FE6A69'
+                          200: '#A97ABC'
+                          300: '#A87383'
+                    styles:
+                      foreground:
+                        fill: var(--theme-gradient-color-01)
+                      background:
+                        fill: var(--cs-theme-default-darken-15)
+                        filter: url(#is-1)
+                        fill: var(--theme-sys-elevation-surface-neutral5)
+
+                  - type: icon
+                    id: 2
+                    position:
+                      cx: 50
+                      cy: 40
+                      icon_size: 12
+                    entity_index: 1
+                    styles:
+                      icon:
+                        filter: url(#is-1)
+                        opacity: 0.6
+
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 0
+                    styles:
+                      state:
+                        font-size: 11em
+                        font-weight: 400
+                        text-anchor: middle
+                      uom:
+                        alignment-baseline: central
+
+              - toolset: weather-type
+                  # name: weather-type
+                position:
+                  cx: 26.5
+                  cy: 60
+                tools:
+                  # # Surface circle
+                  - type: 'circle'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 22
+                    styles:
+                      circle:
+                        opacity: 1
+                        fill: var(--primary-background-color)
+
+                  - type: 'usersvg'
+                    id: 2
+                    entity_index: 7
+                    position:
+                      cx: 50
+                      cy: 50
+                      height: 42
+                      width: 42
+                    style: 'images'
+                    images:
+                      - clear-night-night: /local/images/weather/clear-night.svg
+                      - cloudy-day: /local/images/weather/cloudy-day.svg
+                      - cloudy-night: /local/images/weather/cloudy-night.svg
+                      - fog-day: /local/images/weather/fog-day.svg
+                      - fog-night: /local/images/weather/fog-night.svg
+                      - hail-day: /local/images/weather/hail-day.svg
+                      - hail-night: /local/images/weather/hail-night.svg
+                      - lightning-day: /local/images/weather/lightning.svg
+                      - lightning-night: /local/images/weather/lightning.svg
+                      - partlycloudy-day: /local/images/weather/partlycloudy-day.svg
+                      - partlycloudy-night: /local/images/weather/partlycloudy-night.svg
+                      - pouring-day: /local/images/weather/pouring.svg
+                      - pouring-night: /local/images/weather/pouring-night.svg
+                      - rainy-day: /local/images/weather/rainy-day.svg
+                      - rainy-night: /local/images/weather/rainy-night.svg
+                      - snowy-day: /local/images/weather/snowy-day.svg
+                      - snowy-night: /local/images/weather/snowy-night.svg
+                      - snowy-rainy-day: /local/images/weather/snowy-rainy-day.svg
+                      - snowy-rainy-night: /local/images/weather/snowy-rainy-night.svg
+                      - sunny-day: /local/images/weather/sunny-day.svg
+                      - sunny-night: /local/images/weather/clear-night.svg
+                      - snowy-rainy-day: /local/images/weather/snowy-rainy-day.svg
+                      - snowy-rainy-night: /local/images/weather/snowy-rainy-night.svg
+                      - windy-day: /local/images/weather/windy-day.svg
+                      - windy-night: /local/images/weather/windy-night.svg
+                      - windy-variant-day: /local/images/weather/windy-variant.svg
+                      - windy-variant-night: /local/images/weather/windy-variant.svg
+                    animations:
+                      - state: '[[[ return (state); ]]]'
+                        image: >
+                          [[[
+                            if (states["sun.sun"].state == 'below_horizon') return (state + '-night');
+                            return (state + '-day');
+                          ]]]
+                    styles:
+                      usersvg:
+                        filter: url(#is-1)
+                        
+              - toolset: weather-temperature
+                # name: weather-temperature
+                position:
+                  cx: 75.5
+                  cy: 60
+                tools:
+                  - type: 'circle'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 22
+                    styles:
+                      circle:
+                        opacity: 1
+                        fill: var(--primary-background-color)
+
+                  - type: 'segarc'
+                    id: 0
+                    entity_index: 3
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 2
+                      radius: 20
+                    scale:
+                      min: -20
+                      max: 40
+                    show:
+                      scale: false
+                      style: 'colorstops'
+                    segments:
+                      colorstops:
+                        gap: 1
+                        colors:
+                          -30: 'white'
+                          -20: '#5e4fa2'
+                          -10: '#3288bd'
+                          0: '#66c2a5'
+                          5: '#abdda4'
+                          10: '#e6f598'
+                          15: '#fee08b'
+                          20: '#fdae61'
+                          25: '#f46d43'
+                          30: '#d53e4f'
+                          35: '#9e0142'
+                    styles:
+                      foreground:
+                        fill: var(--theme-gradient-color-01)
+                      background:
+                        fill: var(--cs-theme-default-darken-15)
+                        filter: url(#is-1)
+                        fill: var(--theme-sys-elevation-surface-neutral5)
+
+                  - type: icon
+                    id: 2
+                    position:
+                      cx: 50
+                      cy: 40
+                      icon_size: 12
+                    entity_index: 3
+                    styles:
+                      icon:
+                        filter: url(#is-1)
+                        opacity: 0.6
+
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 3
+                    styles:
+                      state:
+                        font-size: 11em
+                        font-weight: 400
+                        text-anchor: middle
+                      uom:
+                        alignment-baseline: central
+
+              - toolset: weather-humidity
+                # name: weather-humidity
+                position:
+                  cx: 124.5
+                  cy: 60
+                tools:
+                  - type: 'circle'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 22
+                    styles:
+                      circle:
+                        opacity: 1
+                        fill: var(--primary-background-color)
+
+                  - type: 'segarc'
+                    id: 0
+                    entity_index: 4
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 2
+                      radius: 20
+                    scale:
+                      min: 0
+                      max: 100
+                    show:
+                      scale: false
+                      style: 'colorstops'
+                    segments:
+                      colorstops:
+                        gap: 1
+                        colors:
+                          -30: 'white'
+                          -20: '#5e4fa2'
+                          -10: '#3288bd'
+                          0: '#66c2a5'
+                          05: '#abdda4'
+                          10: '#e6f598'
+                          15: '#fee08b'
+                          20: '#fdae61'
+                          25: '#f46d43'
+                          30: '#d53e4f'
+                          35: '#9e0142'
+                    styles:
+                      foreground:
+                        fill: var(--theme-gradient-color-01)
+                      background:
+                        fill: var(--cs-theme-default-darken-15)
+                        filter: url(#is-1)
+                        fill: var(--theme-sys-elevation-surface-neutral5)
+
+                  - type: icon
+                    id: 2
+                    position:
+                      cx: 50
+                      cy: 40
+                      icon_size: 12
+                    entity_index: 4
+                    styles:
+                      icon:
+                        filter: url(#is-1)
+                        opacity: 0.6
+
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 4
+                    styles:
+                      state:
+                        font-size: 11em
+                        font-weight: 400
+                        text-anchor: middle
+
+              - toolset: weather-line-1
+                # name: weather-line-1
+                position:
+                  cx: 100
+                  # cy: 115
+                  cy: 90
+                tools:
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      length: 190
+                      orientation: horizontal
+                    styles:
+                      line:
+                        stroke: lightgray
+                        stroke-opacity: 0.7
+                        stroke-width: 5
+                        
+              - toolset: weather-pressure
+                # name: weather-pressure
+                position:
+                  cx: 30
+                  cy: 132.5
+                tools:
+                  - type: icon
+                    id: 2
+                    position:
+                      cx: 30
+                      cy: 20
+                      icon_size: 12
+                    entity_index: 5
+                    styles:
+                      icon:
+                        filter: url(#is-1)
+                        opacity: 0.6
+
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 75
+                      cy: 20
+                    entity_index: 5
+                    styles:
+                      state:
+                        font-size: 10em
+                        font-weight: 400
+                        text-anchor: end
+                        opacity: 0.6
+
+              - toolset: weather-wind
+                # name: weather-wind
+                position:
+                  cx: 30
+                  cy: 150
+                tools:
+                  - type: icon
+                    id: 2
+                    position:
+                      cx: 30
+                      cy: 20
+                      icon_size: 12
+                    entity_index: 6
+                    styles:
+                      icon:
+                        filter: url(#is-1)
+                        opacity: 0.6
+
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 75
+                      cy: 20
+                    entity_index: 6
+                    styles:
+                      state:
+                        font-size: 10em
+                        font-weight: 400
+                        text-anchor: end
+                        opacity: 0.6
+
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 78
+                      cy: 20
+                    entity_index: 46
+                    locale_tag: 'ui.card.weather.cardinal_direction.'
+                    text:
+                      before: '/ '
+                    derived_entity:
+                      state: |
+                        [[[
+                          const DIRECTION = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW", ];
+                          const dir = Math.floor((state / 22.5) + .5);
+                          return DIRECTION[(dir % 16)];
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 10em
+                        font-weight: 400
+                        text-anchor: start
+                        opacity: 0.6
+
+              - toolset: weather-sunset-up
+                # name: weather-sunset-up
+                position:
+                  cx: 170
+                  cy: 132.5
+                tools:
+                  - type: icon
+                    id: 2
+                    position:
+                      cx: 30
+                      cy: 20
+                      icon_size: 12
+                    entity_index: 9
+                    styles:
+                      icon:
+                        filter: url(#is-1)
+                        opacity: 0.6
+
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 75
+                      cy: 20
+                    entity_index: 9
+                    derived_entity:
+                      state: |
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleTimeString(undefined,{ hour: '2-digit', minute: '2-digit' }));
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 10em
+                        font-weight: 400
+                        text-anchor: end
+                        opacity: 0.6
+
+              - toolset: weather-sunset-down
+                # name: weather-sunset-down
+                position:
+                  cx: 170
+                  cy: 150
+                tools:
+                  - type: icon
+                    id: 2
+                    position:
+                      cx: 30
+                      cy: 20
+                      icon_size: 12
+                    entity_index: 10
+                    styles:
+                      icon:
+                        filter: url(#is-1)
+                        opacity: 0.6
+
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 75
+                      cy: 20
+                    entity_index: 10
+                    derived_entity:
+                      state: |
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleTimeString(undefined,{ hour: '2-digit', minute: '2-digit' }));
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 10em
+                        font-weight: 400
+                        text-anchor: end
+                        opacity: 0.6
+
+              - toolset: weather-line-2
+                # name: weather-line-2
+                position:
+                  cx: 100
+                  cy: 132.5
+                tools:
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      length: 190
+                      orientation: horizontal
+                    styles:
+                      line:
+                        stroke: lightgray
+                        stroke-opacity: 0.7
+                        stroke-width: 5
+
+              - toolset: weather-forecast-0
+                # name: weather-forecast-0
+                position:
+                  cx: 22
+                  cy: 190
+                tools:
+                  # Day
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 5
+                    entity_index: 11
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 700
+                        text-anchor: middle
+                        text-transform: capitalize
+
+                  - type: rectex
+                    position:
+                      cx: 50
+                      cy: 50
+                      height: 70
+                      width: 35
+                      radius:
+                        all: 1
+                    styles:
+                      rectex:
+                        fill: var(--primary-background-color)
+
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 30
+                      radius: 12.5
+                    styles:
+                      circle:
+                        fill: var(--primary-background-color)
+                        filter: url(#filter)
+                        will-change: filter, contents
+
+                  - type: 'usersvg'
+                    id: 10
+                    entity_index: 12
+                    position:
+                      cx: 50
+                      cy: 30
+                      height: 23
+                      width: 23
+                    style: 'images'
+                    images:
+                      - clear-night: /local/images/weather/clear-night.svg
+                      - cloudy: /local/images/weather/cloudy-day.svg
+                      - fog: /local/images/weather/fog-day.svg
+                      - hail: /local/images/weather/hail-day.svg
+                      - lightning: /local/images/weather/lightning-day.svg
+                      - partlycloudy: /local/images/weather/partlycloudy-day.svg
+                      - pouring: /local/images/weather/pouring-day.svg
+                      - rainy: /local/images/weather/rainy-day.svg
+                      - snowy: /local/images/weather/snowy-day.svg
+                      - snowy-rainy: /local/images/weather/snowy-rainy-day.svg
+                      - sunny: /local/images/weather/sunny-day.svg
+                      - windy: /local/images/weather/windy-day.svg
+                      - windy-variant: /local/images/weather/windy-variant-day.svg
+                    animations:
+                      - state: '[[[ return (state); ]]]'
+                        image: '[[[ return (state); ]]]'
+                    # styles:
+                      # usersvg:
+                        # filter: url(#nm-1)
+
+                  # temperature
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 52.5
+                    entity_index: 13
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 700
+                        text-anchor: middle
+
+                  # templow
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 65
+                    entity_index: 14
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 400
+                        text-anchor: middle
+
+                  # precipitation
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 77.5
+                    entity_index: 17
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(state) === 'undefined') return('0');
+                          return (state);
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 400
+                        text-anchor: middle
+
+              - toolset: weather-forecast-1
+                # name: weather-forecast-1
+                position:
+                  cx: 61
+                  cy: 190
+                tools:
+                  # Day
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 5
+                    entity_index: 18
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 700
+                        text-anchor: middle
+                        text-transform: capitalize
+
+                  - type: rectex
+                    position:
+                      cx: 50
+                      cy: 50
+                      height: 70
+                      width: 35
+                      radius:
+                        all: 1
+                    styles:
+                      rectex:
+                        fill: var(--primary-background-color)
+
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 30
+                      radius: 12.5
+                    styles:
+                      circle:
+                        fill: var(--primary-background-color)
+                        filter: url(#filter)
+
+                  - type: 'usersvg'
+                    id: 10
+                    entity_index: 19
+                    position:
+                      cx: 50
+                      cy: 30
+                      height: 23
+                      width: 23
+                    style: 'images'
+                    images:
+                      - clear-night: /local/images/weather/clear-night.svg
+                      - cloudy: /local/images/weather/cloudy-day.svg
+                      - fog: /local/images/weather/fog-day.svg
+                      - hail: /local/images/weather/hail-day.svg
+                      - lightning: /local/images/weather/lightning-day.svg
+                      - partlycloudy: /local/images/weather/partlycloudy-day.svg
+                      - pouring: /local/images/weather/pouring-day.svg
+                      - rainy: /local/images/weather/rainy-day.svg
+                      - snowy: /local/images/weather/snowy-day.svg
+                      - snowy-rainy: /local/images/weather/snowy-rainy-day.svg
+                      - sunny: /local/images/weather/sunny-day.svg
+                      - windy: /local/images/weather/windy-day.svg
+                      - windy-variant: /local/images/weather/windy-variant-day.svg
+                    animations:
+                      - state: '[[[ return (state); ]]]'
+                        image: '[[[ return (state); ]]]'
+                    # styles:
+                      # usersvg:
+                        # filter: url(#nm-1)
+
+                  # temperature
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 52.5
+                    entity_index: 20
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 700
+                        text-anchor: middle
+
+                  # templow
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 65
+                    entity_index: 21
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 400
+                        text-anchor: middle
+
+                  # precipitation
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 77.5
+                    entity_index: 24
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(state) === 'undefined') return('0');
+                          return (state);
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 400
+                        text-anchor: middle
+
+              - toolset: weather-forecast-2
+                # name: weather-forecast-2
+                position:
+                  cx: 100
+                  cy: 190
+                tools:
+                  # Day
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 5
+                    entity_index: 25
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 700
+                        text-anchor: middle
+                        text-transform: capitalize
+
+                  - type: rectex
+                    position:
+                      cx: 50
+                      cy: 50
+                      height: 70
+                      width: 35
+                      radius:
+                        all: 1
+                    styles:
+                      rectex:
+                        fill: var(--primary-background-color)
+
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 30
+                      radius: 12.5
+                    styles:
+                      circle:
+                        fill: var(--primary-background-color)
+                        filter: url(#filter)
+
+                  - type: 'usersvg'
+                    id: 10
+                    entity_index: 26
+                    position:
+                      cx: 50
+                      cy: 30
+                      height: 23
+                      width: 23
+                    style: 'images'
+                    images:
+                      - clear-night: /local/images/weather/clear-night.svg
+                      - cloudy: /local/images/weather/cloudy-day.svg
+                      - fog: /local/images/weather/fog-day.svg
+                      - hail: /local/images/weather/hail-day.svg
+                      - lightning: /local/images/weather/lightning-day.svg
+                      - partlycloudy: /local/images/weather/partlycloudy-day.svg
+                      - pouring: /local/images/weather/pouring-day.svg
+                      - rainy: /local/images/weather/rainy-day.svg
+                      - snowy: /local/images/weather/snowy-day.svg
+                      - snowy-rainy: /local/images/weather/snowy-rainy-day.svg
+                      - sunny: /local/images/weather/sunny-day.svg
+                      - windy: /local/images/weather/windy-day.svg
+                      - windy-variant: /local/images/weather/windy-variant-day.svg
+                    animations:
+                      - state: '[[[ return (state); ]]]'
+                        image: '[[[ return (state); ]]]'
+                    # styles:
+                      # usersvg:
+                        # filter: url(#nm-1)
+
+                  # temperature
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 52.5
+                    entity_index: 27
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 700
+                        text-anchor: middle
+
+                  # templow
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 65
+                    entity_index: 28
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 400
+                        text-anchor: middle
+
+                  # precipitation
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 77.5
+                    entity_index: 31
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(state) === 'undefined') return('0');
+                          return (state);
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 400
+                        text-anchor: middle
+
+              - toolset: weather-forecast-3
+                # name: weather-forecast-3
+                position:
+                  cx: 139
+                  cy: 190
+                tools:
+                  # Day
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 5
+                    entity_index: 32
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 700
+                        text-anchor: middle
+                        text-transform: capitalize
+
+                  - type: rectex
+                    position:
+                      cx: 50
+                      cy: 50
+                      height: 70
+                      width: 35
+                      radius:
+                        all: 1
+                    styles:
+                      rectex:
+                        fill: var(--primary-background-color)
+                        fill: var(--theme-sys-elevation-surface-neutral-variant3)
+                        fill: var(--card-background-color)
+
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 30
+                      radius: 12.5
+                    styles:
+                      circle:
+                        fill: var(--primary-background-color)
+                        # filter: url(#filter)
+                        # fill: var(--theme-sys-elevation-surface-neutral-variant2)
+                        fill: var(--secondary-background-color)
+                        fill: var(--card-background-color)
+
+                  - type: 'usersvg'
+                    id: 10
+                    entity_index: 33
+                    position:
+                      cx: 50
+                      cy: 30
+                      height: 23
+                      width: 23
+                    style: 'images'
+                    images:
+                      - clear-night: /local/images/weather/clear-night.svg
+                      - cloudy: /local/images/weather/cloudy-day.svg
+                      - fog: /local/images/weather/fog-day.svg
+                      - hail: /local/images/weather/hail-day.svg
+                      - lightning: /local/images/weather/lightning-day.svg
+                      - partlycloudy: /local/images/weather/partlycloudy-day.svg
+                      - pouring: /local/images/weather/pouring-day.svg
+                      - rainy: /local/images/weather/rainy-day.svg
+                      - snowy: /local/images/weather/snowy-day.svg
+                      - snowy-rainy: /local/images/weather/snowy-rainy-day.svg
+                      - sunny: /local/images/weather/sunny-day.svg
+                      - windy: /local/images/weather/windy-day.svg
+                      - windy-variant: /local/images/weather/windy-variant-day.svg
+                    animations:
+                      - state: '[[[ return (state); ]]]'
+                        image: '[[[ return (state); ]]]'
+                    # styles:
+                      # usersvg:
+                        # filter: url(#nm-1)
+
+                  # temperature
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 52.5
+                    entity_index: 34
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 700
+                        text-anchor: middle
+
+                  # templow
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 65
+                    entity_index: 35
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 400
+                        text-anchor: middle
+
+                  # precipitation
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 77.5
+                    entity_index: 38
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(state) === 'undefined') return('0');
+                          return (state);
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 400
+                        text-anchor: middle
+
+              - toolset: weather-forecast-4
+                # name: weather-forecast-4
+                position:
+                  cx: 178
+                  cy: 190
+                tools:
+                  # Day
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 5
+                    entity_index: 39
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return('?');
+                          return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 700
+                        text-anchor: middle
+                        text-transform: capitalize
+
+                  - type: rectex
+                    position:
+                      cx: 50
+                      cy: 50
+                      height: 70
+                      width: 35
+                      radius:
+                        all: 1
+                    styles:
+                      rectex:
+                        fill: var(--primary-background-color)
+                        filter: unset
+
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 30
+                      radius: 12.5
+                    styles:
+                      circle:
+                        fill: var(--primary-background-color)
+                        # filter: url(#filter)
+
+                  - type: 'usersvg'
+                    id: 10
+                    entity_index: 40
+                    position:
+                      cx: 50
+                      cy: 30
+                      height: 23
+                      width: 23
+                    style: 'images'
+                    images:
+                      - clear-night: /local/images/weather/clear-night.svg
+                      - cloudy: /local/images/weather/cloudy-day.svg
+                      - fog: /local/images/weather/fog-day.svg
+                      - hail: /local/images/weather/hail-day.svg
+                      - lightning: /local/images/weather/lightning-day.svg
+                      - partlycloudy: /local/images/weather/partlycloudy-day.svg
+                      - pouring: /local/images/weather/pouring-day.svg
+                      - rainy: /local/images/weather/rainy-day.svg
+                      - snowy: /local/images/weather/snowy-day.svg
+                      - snowy-rainy: /local/images/weather/snowy-rainy-day.svg
+                      - sunny: /local/images/weather/sunny-day.svg
+                      - windy: /local/images/weather/windy-day.svg
+                      - windy-variant: /local/images/weather/windy-variant-day.svg
+                    animations:
+                      - state: '[[[ return (state); ]]]'
+                        image: '[[[ return (state); ]]]'
+                    # styles:
+                      # usersvg:
+                        # filter: url(#nm-1)
+
+                  # temperature
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 52.5
+                    entity_index: 41
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 700
+                        text-anchor: middle
+
+                  # templow
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 65
+                    entity_index: 42
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 400
+                        text-anchor: middle
+
+                  # precipitation
+                  - type: state
+                    id: 3
+                    position:
+                      cx: 50
+                      cy: 77.5
+                    entity_index: 45
+                    derived_entity:
+                      state: >
+                        [[[
+                          if (typeof(state) === 'undefined') return('0');
+                          return (state);
+                        ]]]
+                    styles:
+                      state:
+                        font-size: 7.5em
+                        font-weight: 400
+                        text-anchor: middle

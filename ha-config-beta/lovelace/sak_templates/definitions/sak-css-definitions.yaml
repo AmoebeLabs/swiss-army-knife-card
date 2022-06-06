@@ -1,0 +1,580 @@
+#
+# File      : sak-css-definitions.yaml
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/Home-Assistant-Config
+#
+# Author: Mars @ AmoebeLabs.com
+# 
+# License: CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Swiss Army Knife CSS class definitions used to style tools
+#   
+###############################################################################
+sak_css_definitions:
+  - descr: sak-overwrite
+    content: >
+      .sak-state__value {
+        --descr: extra-css;
+        letter-spacing: 0.05em;
+      }
+
+  #
+  # Toolsets
+  #
+  #------------------------------------------------------------------------------
+
+  - descr: Toolset
+    content: >
+      .toolset__group-outer {
+        overflow: visible;
+      }
+      .toolset__group {
+        overflow: visible;
+      }
+
+
+  #
+  # Tools in slphabetical order
+  #
+  #------------------------------------------------------------------------------
+  - descr: Area tool
+    content: >
+      .sak-area {
+      }
+      
+      .sak-area__area {
+        font-size: 3em;
+        fill: var(--primary-text-color);
+        opacity: 0.8;
+        text-anchor: middle;
+        alignment-baseline: central;
+        letter-spacing: 0.05em;
+      }
+
+  - descr: Badge tool
+    content: >
+      .sak-badge {
+      }
+      .sak-badge__left {
+        stroke-width: 0;
+        fill: grey;
+      }
+      .sak-badge__right {
+        stroke-width: 0;
+        fill: var(--theme-gradient-color-03, darkgrey);
+      }
+
+  - descr: Barchart tool
+    content: >
+      .sak-barchart {
+      }
+      .sak-barchart__line {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+  - descr: Circle tool
+    content: >
+      .sak-circle {
+      }
+      .sak-circle__circle {
+        fill: var(--primary-background-color);
+      }
+
+  - descr: Ellipse tool
+    content: >
+      .sak-ellipse {
+      }
+      .sak-ellipse__ellipse {
+        fill: var(--primary-background-color);
+      }
+
+  - descr: Horseshoe tool
+    content: >
+      .sak-horseshoe {
+      }
+      .sak-horseshoe__todo {
+      }
+
+  - descr: Icon tool
+    content: >
+      .sak-icon {
+      }
+      .sak-icon__icon {
+        --mdc-icon-size: 100%;
+        align-self: center;
+        height: 100%;
+        width: 100%;
+        fill: var(--primary-text-color);
+        color: var(--primary-text-color);
+      }
+
+  - descr: Line tool
+    content: >
+      .sak-line {
+        overflow: visible;
+      }
+      .sak-line__line {
+        stroke-linecap: round;
+        stroke: var(--primary-text-color);
+        opacity: 1.0;
+        stroke-width: 2;
+      }
+
+  - descr: Entity Name tool
+    content: >
+      .sak-name {
+        overflow: visible;
+      }
+      .sak-name__name {
+        font-size: 3em;
+        fill: var(--primary-text-color);
+        opacity: 1.0;
+        text-anchor: middle;
+        alignment-baseline: central;
+        letter-spacing: 0.05em;
+      }
+
+  - descr: Polygon tool
+    content: >
+        .sak-polygon {
+          overflow: visible;
+        }
+        .sak-polygon__regpoly {
+          stroke: var(--primary-text-color);
+          fill: var(--primary-background-color);
+          fill-rule: nonzero;
+        }
+
+  - descr: Rectangle tool
+    content: >
+      .sak-rectangle {
+        overflow: visible;
+      }
+      .sak-rectangle__rectangle {
+        stroke-linecap: round;
+        stroke: var(--primary-text-color);
+        opacity: 1.0;
+        stroke-width: 2em;
+        fill: var(--primary-background-color);
+      }
+        
+  - descr: RectEx tool
+    content: >
+      .sak-rectex {
+      }
+      .sak-rectex__rectex {
+        stroke-linecap: round;
+        stroke: var(--primary-text-color);
+        opacity: 1.0;
+        stroke-width: 0;
+        fill: var(--primary-background-color);
+      }
+
+  - descr: Segmented arc tool
+    content: >
+      .sak-segarc {
+      }
+      .sak-segarc__background {
+        stroke-linecap: round;
+        fill: var(--primary-background-color);
+        stroke-width: 0;
+        fill-rule: evenodd;
+        stroke-linejoin: round;
+      }
+      .sak-segarc__foreground {
+        stroke-linecap: round;
+        fill: var(--primary-color);
+        stroke: none;
+        stroke-width: 0.5;
+        fill-rule: evenodd;
+        stroke-linejoin: round;
+      }
+
+  - descr: Slider tool
+    content: >
+      #rs-thumb-group {
+        overflow: visible;
+      }
+      #rs-label {
+        overflow: visible;
+      }
+      .sak-slider {
+        pointer-events: none;
+        overflow: visible;
+      }
+      .sak-slider__capture {
+        overflow: visible;
+        pointer-events: all;
+        fill: none;
+        stroke-width: 0;
+        touch-action: manipulation;
+      }
+      .sak-slider__track {
+        overflow: visible;
+        fill-opacity: 0.38;
+        stroke-width: 0;
+        stroke: var(--primary-text-color);
+        fill: var(--switch-unchecked-track-color);
+        transition: all .5s ease;
+        pointer-events: none;
+      }
+      .sak-slider__thumb {
+        overflow: visible;
+        --thumb-stroke: var(--secondary-text-color);
+        stroke: var(--thumb-stroke);
+        fill: var(--primary-background-color);
+        pointer-events: none;
+      }
+      .sak-slider__value {
+        overflow: visible;
+        fill: var(--primary-text-color);
+        font-size: 8em;
+        font-weight: 400;
+        transition: all .5s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+        alignment-baseline: central;
+      }
+      .sak-slider__uom {
+        overflow: visible;
+        fill: var(--primary-text-color);
+        text-anchor: middle;
+        alignment-baseline: central;
+        opacity: 0.7;
+        letter-spacing: 0.05em;
+      }
+        
+  - descr: Entity state/units tool
+    content: >
+      .sak-state {
+      }
+      .sak-state__value {
+        --descr: original;
+        font-size: 3em;
+        fill: var(--primary-text-color);
+        opacity: 1.0;
+        text-anchor: middle;
+        alignment-baseline: central;
+        letter-spacing: 0.05em;
+      }
+      .sak-state__uom {
+        fill: var(--primary-text-color);
+        text-anchor: middle;
+        alignment-baseline: central;
+        opacity: 0.7;
+        letter-spacing: 0.05em;
+      }
+
+  - descr: Switch tool
+    content: >
+      .sak-switch {
+      }
+      .sak-switch__track {
+        fill-opacity: 0.38;
+        stroke-width: 0;
+        stroke: var(--primary-text-color);
+        fill: var(--primary-background-color);
+        transition: all .5s ease;
+        pointer-events: none;
+      }
+      .sak-switch__thumb {
+        --thumb-stroke: var(--secondary-text-color);
+        stroke: var(--thumb-stroke);
+        fill: var(--primary-background-color);
+        transition: all .5s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+      }
+
+  - descr: Text tool
+    content: >
+      .sak-text {
+      }
+      .sak-text__text {
+        font-size: 3em;
+        fill: var(--primary-text-color);
+        opacity: 1.0;
+        text-anchor: middle;
+        alignment-baseline: central;
+      }
+
+  - descr: Usersvg tool
+    content: >
+      .sak-usersvg__group {
+      }
+      .sak-usersvg__image {
+      }
+
+  #
+  # CSS Animations using keyframes
+  #
+  #------------------------------------------------------------------------------
+  - descr: CSS Animations
+    content: >
+      @keyframes blinkingText {
+        0%{   opacity: 0%;   }
+        49%{  opacity: 0%;   }
+        60%{  opacity: 100%; }
+        99%{  opacity: 100%; }
+        100%{ opacity: 0%;   }
+      }
+      
+      @keyframes zoomOut {
+        from {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+          transform: scale3d(0.3, 0.3, 0.3);
+        }
+        to {
+          opacity: 0;
+        }
+      }
+      
+      @keyframes bounce {
+        from,
+        20%,
+        53%,
+        80%,
+        to {
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+        transform: translate3d(0, 0, 0);
+        }
+        40%,
+        43% {
+        animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+        transform: translate3d(0, -30px, 0);
+        }
+        70% {
+        animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+        transform: translate3d(0, -15px, 0);
+        }
+        90% {
+        transform: translate3d(0, -4px, 0);
+        }
+      }
+      
+      @keyframes flash {
+        from,
+        50%,
+        to {
+        opacity: 1;
+        }
+        25%,
+        75% {
+        opacity: 0;
+        }
+      }
+      
+      @keyframes headShake {
+        0% {
+        transform: translateX(0);
+        }
+        6.5% {
+        transform: translateX(-6px) rotateY(-9deg);
+        }
+        18.5% {
+        transform: translateX(5px) rotateY(7deg);
+        }
+        31.5% {
+        transform: translateX(-3px) rotateY(-5deg);
+        }
+        43.5% {
+        transform: translateX(2px) rotateY(3deg);
+        }
+        50% {
+        transform: translateX(0);
+        }
+      }
+      
+      @keyframes heartBeat {
+        0% {
+        transform: scale(1);
+        }
+        14% {
+        transform: scale(1.3);
+        }
+        28% {
+        transform: scale(1);
+        }
+        42% {
+        transform: scale(1.3);
+        }
+        70% {
+        transform: scale(1);
+        }
+      }
+      
+      @keyframes jello {
+        from,
+        11.1%,
+        to {
+        transform: translate3d(0, 0, 0);
+        }
+        22.2% {
+        transform: skewX(-12.5deg) skewY(-12.5deg);
+        }
+        33.3% {
+        transform: skewX(6.25deg) skewY(6.25deg);
+        }
+        44.4% {
+        transform: skewX(-3.125deg) skewY(-3.125deg);
+        }
+        55.5% {
+        transform: skewX(1.5625deg) skewY(1.5625deg);
+        }
+        66.6% {
+        transform: skewX(-0.78125deg) skewY(-0.78125deg);
+        }
+        77.7% {
+        transform: skewX(0.390625deg) skewY(0.390625deg);
+        }
+        88.8% {
+        transform: skewX(-0.1953125deg) skewY(-0.1953125deg);
+        }
+      }
+      
+      @keyframes pulse {
+        from {
+        transform: scale3d(1, 1, 1);
+        }
+        50% {
+        transform: scale3d(1.05, 1.05, 1.05);
+        }
+        to {
+        transform: scale3d(1, 1, 1);
+        }
+      }
+      
+      @keyframes rubberBand {
+        from {
+        transform: scale3d(1, 1, 1);
+        }
+        30% {
+        transform: scale3d(1.25, 0.75, 1);
+        }
+        40% {
+        transform: scale3d(0.75, 1.25, 1);
+        }
+        50% {
+        transform: scale3d(1.15, 0.85, 1);
+        }
+        65% {
+        transform: scale3d(0.95, 1.05, 1);
+        }
+        75% {
+        transform: scale3d(1.05, 0.95, 1);
+        }
+        to {
+        transform: scale3d(1, 1, 1);
+        }
+      }
+      
+      @keyframes shake {
+        from,
+        to {
+        transform: translate3d(0, 0, 0);
+        }
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+        transform: translate3d(-10px, 0, 0);
+        }
+        20%,
+        40%,
+        60%,
+        80% {
+        transform: translate3d(10px, 0, 0);
+        }
+      }
+      
+      @keyframes swing {
+        20% {
+        transform: rotate3d(0, 0, 1, 15deg);
+        }
+        40% {
+        transform: rotate3d(0, 0, 1, -10deg);
+        }
+        60% {
+        transform: rotate3d(0, 0, 1, 5deg);
+        }
+        80% {
+        transform: rotate3d(0, 0, 1, -5deg);
+        }
+        to {
+        transform: rotate3d(0, 0, 1, 0deg);
+        }
+      }
+      
+      @keyframes tada {
+        from {
+        transform: scale3d(1, 1, 1);
+        }
+        10%,
+        20% {
+        transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+        }
+        30%,
+        50%,
+        70%,
+        90% {
+        transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+        }
+        40%,
+        60%,
+        80% {
+        transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+        }
+        to {
+        transform: scale3d(1, 1, 1);
+        }
+      }
+      
+      @keyframes wobble {
+        from {
+        transform: translate3d(0, 0, 0);
+        }
+        15% {
+        transform: translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg);
+        }
+        30% {
+        transform: translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg);
+        }
+        45% {
+        transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg);
+        }
+        60% {
+        transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg);
+        }
+        75% {
+        transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg);
+        }
+        to {
+        transform: translate3d(0, 0, 0);
+        }
+      }
+      
+      @keyframes spin {
+        100% {
+          -webkit-transform: -webkit-rotate(360deg);
+          transform: rotate(360deg);
+        }
+      }
+      
+      @-webkit-keyframes spin {
+        100% {
+          -webkit-transform: -webkit-rotate(360deg);
+          transform: rotate(360deg);
+        }
+      }
+      
+      @keyframes spin-stop {
+        100% {
+          -webkit-transform: -webkit-rotate(0deg);
+          transform: rotate(0deg);
+        }
+      }

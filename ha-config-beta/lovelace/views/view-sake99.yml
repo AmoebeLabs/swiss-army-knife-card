@@ -1,0 +1,860 @@
+#
+# View			: view-sake12
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+# SAK Example #12. Some wide cards
+# - Energy readings from DSMR Reader
+# - ???
+#
+# Refs:
+#   
+################################################################################
+
+title: SAKE99
+path: sake99
+panel: true
+# theme: 'NM - Gonsboro'
+cards:
+#-------------------------------------------------------------------------------
+- type: vertical-stack
+  cards:
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'M3 Converter... See console output...'
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'Palettes...'
+
+    - type: 'custom:dev-swiss-army-knife-card'
+
+      # Define aspect ratio
+      aspectratio: 3.05/1.75
+
+      dev:
+        debug: false
+        m3: true
+
+      layout:
+        styles:
+          card:
+          toolsets:
+          
+        toolsets:
+          # ===================================================================
+          - toolset: primary
+            template:
+              name: toolset_m3_palette_colors
+              variables:
+                - cx: 100
+                - cy: 20
+                - title: 'primary'
+                - color0: var(--theme-ref-palette-primary0)
+                - color5: var(--theme-ref-palette-primary5)
+                - color7: var(--theme-ref-palette-primary7)
+                - color10: var(--theme-ref-palette-primary10)
+                - color15: var(--theme-ref-palette-primary15)
+                - color20: var(--theme-ref-palette-primary20)
+                - color25: var(--theme-ref-palette-primary25)
+                - color30: var(--theme-ref-palette-primary30)
+                - color35: var(--theme-ref-palette-primary35)
+                - color40: var(--theme-ref-palette-primary40)
+                - color45: var(--theme-ref-palette-primary45)
+                - color50: var(--theme-ref-palette-primary50)
+                - color60: var(--theme-ref-palette-primary60)
+                - color65: var(--theme-ref-palette-primary65)
+                - color70: var(--theme-ref-palette-primary70)
+                - color75: var(--theme-ref-palette-primary75)
+                - color80: var(--theme-ref-palette-primary80)
+                - color85: var(--theme-ref-palette-primary85)
+                - color90: var(--theme-ref-palette-primary90)
+                - color92: var(--theme-ref-palette-primary92)
+                - color95: var(--theme-ref-palette-primary95)
+                - color97: var(--theme-ref-palette-primary97)
+                - color99: var(--theme-ref-palette-primary99)
+                - color100: var(--theme-ref-palette-primary100)
+
+          # ===================================================================
+          - toolset: secondary
+            template:
+              name: toolset_m3_palette_colors
+              variables:
+                - cx: 100
+                - cy: 45
+                - title: 'secondary'
+                - color0: var(--theme-ref-palette-secondary0)
+                - color5: var(--theme-ref-palette-secondary5)
+                - color7: var(--theme-ref-palette-secondary7)
+                - color10: var(--theme-ref-palette-secondary10)
+                - color15: var(--theme-ref-palette-secondary15)
+                - color20: var(--theme-ref-palette-secondary20)
+                - color25: var(--theme-ref-palette-secondary25)
+                - color30: var(--theme-ref-palette-secondary30)
+                - color35: var(--theme-ref-palette-secondary35)
+                - color40: var(--theme-ref-palette-secondary40)
+                - color45: var(--theme-ref-palette-secondary45)
+                - color50: var(--theme-ref-palette-secondary50)
+                - color60: var(--theme-ref-palette-secondary60)
+                - color65: var(--theme-ref-palette-secondary65)
+                - color70: var(--theme-ref-palette-secondary70)
+                - color75: var(--theme-ref-palette-secondary75)
+                - color80: var(--theme-ref-palette-secondary80)
+                - color85: var(--theme-ref-palette-secondary85)
+                - color90: var(--theme-ref-palette-secondary90)
+                - color92: var(--theme-ref-palette-secondary92)
+                - color95: var(--theme-ref-palette-secondary95)
+                - color97: var(--theme-ref-palette-secondary97)
+                - color99: var(--theme-ref-palette-secondary99)
+                - color100: var(--theme-ref-palette-secondary100)
+
+          # ===================================================================
+          - toolset: tertiary
+            template:
+              name: toolset_m3_palette_colors
+              variables:
+                - cx: 100
+                - cy: 70
+                - title: 'tertiary'
+                - color0: var(--theme-ref-palette-tertiary0)
+                - color5: var(--theme-ref-palette-tertiary5)
+                - color7: var(--theme-ref-palette-tertiary7)
+                - color10: var(--theme-ref-palette-tertiary10)
+                - color15: var(--theme-ref-palette-tertiary15)
+                - color20: var(--theme-ref-palette-tertiary20)
+                - color25: var(--theme-ref-palette-tertiary25)
+                - color30: var(--theme-ref-palette-tertiary30)
+                - color35: var(--theme-ref-palette-tertiary35)
+                - color40: var(--theme-ref-palette-tertiary40)
+                - color45: var(--theme-ref-palette-tertiary45)
+                - color50: var(--theme-ref-palette-tertiary50)
+                - color60: var(--theme-ref-palette-tertiary60)
+                - color65: var(--theme-ref-palette-tertiary65)
+                - color70: var(--theme-ref-palette-tertiary70)
+                - color75: var(--theme-ref-palette-tertiary75)
+                - color80: var(--theme-ref-palette-tertiary80)
+                - color85: var(--theme-ref-palette-tertiary85)
+                - color90: var(--theme-ref-palette-tertiary90)
+                - color92: var(--theme-ref-palette-tertiary92)
+                - color95: var(--theme-ref-palette-tertiary95)
+                - color97: var(--theme-ref-palette-tertiary97)
+                - color99: var(--theme-ref-palette-tertiary99)
+                - color100: var(--theme-ref-palette-tertiary100)
+
+          # ===================================================================
+          - toolset: error
+            template:
+              name: toolset_m3_palette_colors
+              variables:
+                - cx: 100
+                - cy: 95
+                - title: 'error'
+                - color0: var(--theme-ref-palette-error0)
+                - color5: var(--theme-ref-palette-error5)
+                - color7: var(--theme-ref-palette-error7)
+                - color10: var(--theme-ref-palette-error10)
+                - color15: var(--theme-ref-palette-error15)
+                - color20: var(--theme-ref-palette-error20)
+                - color25: var(--theme-ref-palette-error25)
+                - color30: var(--theme-ref-palette-error30)
+                - color35: var(--theme-ref-palette-error35)
+                - color40: var(--theme-ref-palette-error40)
+                - color45: var(--theme-ref-palette-error45)
+                - color50: var(--theme-ref-palette-error50)
+                - color60: var(--theme-ref-palette-error60)
+                - color65: var(--theme-ref-palette-error65)
+                - color70: var(--theme-ref-palette-error70)
+                - color75: var(--theme-ref-palette-error75)
+                - color80: var(--theme-ref-palette-error80)
+                - color85: var(--theme-ref-palette-error85)
+                - color90: var(--theme-ref-palette-error90)
+                - color92: var(--theme-ref-palette-error92)
+                - color95: var(--theme-ref-palette-error95)
+                - color97: var(--theme-ref-palette-error97)
+                - color99: var(--theme-ref-palette-error99)
+                - color100: var(--theme-ref-palette-error100)
+
+          # ===================================================================
+          - toolset: neutral
+            template:
+              name: toolset_m3_palette_colors
+              variables:
+                - cx: 100
+                - cy: 130
+                - title: 'neutral'
+                - color0: var(--theme-ref-palette-neutral0)
+                - color5: var(--theme-ref-palette-neutral5)
+                - color7: var(--theme-ref-palette-neutral7)
+                - color10: var(--theme-ref-palette-neutral10)
+                - color15: var(--theme-ref-palette-neutral15)
+                - color20: var(--theme-ref-palette-neutral20)
+                - color25: var(--theme-ref-palette-neutral25)
+                - color30: var(--theme-ref-palette-neutral30)
+                - color35: var(--theme-ref-palette-neutral35)
+                - color40: var(--theme-ref-palette-neutral40)
+                - color45: var(--theme-ref-palette-neutral45)
+                - color50: var(--theme-ref-palette-neutral50)
+                - color60: var(--theme-ref-palette-neutral60)
+                - color65: var(--theme-ref-palette-neutral65)
+                - color70: var(--theme-ref-palette-neutral70)
+                - color75: var(--theme-ref-palette-neutral75)
+                - color80: var(--theme-ref-palette-neutral80)
+                - color85: var(--theme-ref-palette-neutral85)
+                - color90: var(--theme-ref-palette-neutral90)
+                - color92: var(--theme-ref-palette-neutral92)
+                - color95: var(--theme-ref-palette-neutral95)
+                - color97: var(--theme-ref-palette-neutral97)
+                - color99: var(--theme-ref-palette-neutral99)
+                - color100: var(--theme-ref-palette-neutral100)
+
+          # ===================================================================
+          - toolset: neutral-variant
+            template:
+              name: toolset_m3_palette_colors
+              variables:
+                - cx: 100
+                - cy: 155
+                - title: 'neutral-variant'
+                - color0: var(--theme-ref-palette-neutral-variant0)
+                - color5: var(--theme-ref-palette-neutral-variant5)
+                - color7: var(--theme-ref-palette-neutral-variant7)
+                - color10: var(--theme-ref-palette-neutral-variant10)
+                - color15: var(--theme-ref-palette-neutral-variant15)
+                - color20: var(--theme-ref-palette-neutral-variant20)
+                - color25: var(--theme-ref-palette-neutral-variant25)
+                - color30: var(--theme-ref-palette-neutral-variant30)
+                - color35: var(--theme-ref-palette-neutral-variant35)
+                - color40: var(--theme-ref-palette-neutral-variant40)
+                - color45: var(--theme-ref-palette-neutral-variant45)
+                - color50: var(--theme-ref-palette-neutral-variant50)
+                - color60: var(--theme-ref-palette-neutral-variant60)
+                - color65: var(--theme-ref-palette-neutral-variant65)
+                - color70: var(--theme-ref-palette-neutral-variant70)
+                - color75: var(--theme-ref-palette-neutral-variant75)
+                - color80: var(--theme-ref-palette-neutral-variant80)
+                - color85: var(--theme-ref-palette-neutral-variant85)
+                - color90: var(--theme-ref-palette-neutral-variant90)
+                - color92: var(--theme-ref-palette-neutral-variant92)
+                - color95: var(--theme-ref-palette-neutral-variant95)
+                - color97: var(--theme-ref-palette-neutral-variant97)
+                - color99: var(--theme-ref-palette-neutral-variant99)
+                - color100: var(--theme-ref-palette-neutral-variant100)
+
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'Surfaces...'
+
+    - type: 'custom:dev-swiss-army-knife-card'
+
+      # Define aspect ratio
+      aspectratio: 3.05/1.65
+
+      dev:
+        debug: false
+        m3: false
+
+      layout:
+        styles:
+          card:
+          toolsets:
+          
+        toolsets:
+          - toolset: light
+            position:
+              cx: 100
+              cy: 82.5
+            tools:
+              # ------------------------------------------------------------
+              - type: rectangle
+                position:
+                  cx: 50
+                  cy: 50
+                  width: 120
+                  height: 165
+                  rx: 0
+                styles:
+                  rectangle:
+                    fill: var(--theme-ref-palette-neutral99)
+                    stroke-width: 0
+
+          - toolset: dark
+            position:
+              cx: 240
+              cy: 82.5
+            tools:
+              # ------------------------------------------------------------
+              - type: rectangle
+                position:
+                  cx: 50
+                  cy: 50
+                  width: 120
+                  height: 165
+                styles:
+                  rectangle:
+                    fill: var(--theme-ref-palette-neutral10)
+                    stroke-width: 0
+              
+        
+          - toolset: surface-neutral
+            template:
+              name: toolset_m3_surface_colors
+              variables:
+                - cx: 100
+                - cy: 20
+                - title: 'neutral'
+                - background_light: var(--theme-ref-palette-neutral99)
+                - fontcolor_light: black
+                - surface1_light: var(--theme-ref-elevation-surface-neutral1-light)
+                - surface2_light: var(--theme-ref-elevation-surface-neutral2-light)
+                - surface3_light: var(--theme-ref-elevation-surface-neutral3-light)
+                - surface4_light: var(--theme-ref-elevation-surface-neutral4-light)
+                - surface5_light: var(--theme-ref-elevation-surface-neutral5-light)
+                - surface6_light: var(--theme-ref-elevation-surface-neutral6-light)
+                - surface7_light: var(--theme-ref-elevation-surface-neutral7-light)
+                - surface8_light: var(--theme-ref-elevation-surface-neutral8-light)
+                - surface9_light: var(--theme-ref-elevation-surface-neutral9-light)
+                - surface10_light: var(--theme-ref-elevation-surface-neutral10-light)
+                - background_dark: var(--theme-ref-palette-neutral10)
+                - fontcolor_dark: white
+                - surface1_dark: var(--theme-ref-elevation-surface-neutral1-dark)
+                - surface2_dark: var(--theme-ref-elevation-surface-neutral2-dark)
+                - surface3_dark: var(--theme-ref-elevation-surface-neutral3-dark)
+                - surface4_dark: var(--theme-ref-elevation-surface-neutral4-dark)
+                - surface5_dark: var(--theme-ref-elevation-surface-neutral5-dark)
+                - surface6_dark: var(--theme-ref-elevation-surface-neutral6-dark)
+                - surface7_dark: var(--theme-ref-elevation-surface-neutral7-dark)
+                - surface8_dark: var(--theme-ref-elevation-surface-neutral8-dark)
+                - surface9_dark: var(--theme-ref-elevation-surface-neutral9-dark)
+                - surface10_dark: var(--theme-ref-elevation-surface-neutral10-dark)
+
+          # ===================================================================
+          - toolset: surface-neutral-variant
+            template:
+              name: toolset_m3_surface_colors
+              variables:
+                - cx: 100
+                - cy: 45
+                - title: 'neutral-variant'
+                - background_light: var(--theme-ref-palette-neutral-variant99)
+                - fontcolor_light: black
+                - surface1_light: var(--theme-ref-elevation-surface-neutral-variant1-light)
+                - surface2_light: var(--theme-ref-elevation-surface-neutral-variant2-light)
+                - surface3_light: var(--theme-ref-elevation-surface-neutral-variant3-light)
+                - surface4_light: var(--theme-ref-elevation-surface-neutral-variant4-light)
+                - surface5_light: var(--theme-ref-elevation-surface-neutral-variant5-light)
+                - surface6_light: var(--theme-ref-elevation-surface-neutral-variant6-light)
+                - surface7_light: var(--theme-ref-elevation-surface-neutral-variant7-light)
+                - surface8_light: var(--theme-ref-elevation-surface-neutral-variant8-light)
+                - surface9_light: var(--theme-ref-elevation-surface-neutral-variant9-light)
+                - surface10_light: var(--theme-ref-elevation-surface-neutral-variant10-light)
+                - background_dark: var(--theme-ref-palette-neutral-variant10)
+                - fontcolor_dark: white
+                - surface1_dark: var(--theme-ref-elevation-surface-neutral-variant1-dark)
+                - surface2_dark: var(--theme-ref-elevation-surface-neutral-variant2-dark)
+                - surface3_dark: var(--theme-ref-elevation-surface-neutral-variant3-dark)
+                - surface4_dark: var(--theme-ref-elevation-surface-neutral-variant4-dark)
+                - surface5_dark: var(--theme-ref-elevation-surface-neutral-variant5-dark)
+                - surface6_dark: var(--theme-ref-elevation-surface-neutral-variant6-dark)
+                - surface7_dark: var(--theme-ref-elevation-surface-neutral-variant7-dark)
+                - surface8_dark: var(--theme-ref-elevation-surface-neutral-variant8-dark)
+                - surface9_dark: var(--theme-ref-elevation-surface-neutral-variant9-dark)
+                - surface10_dark: var(--theme-ref-elevation-surface-neutral-variant10-dark)
+
+          # ===================================================================
+          - toolset: surface-primary
+            template:
+              name: toolset_m3_surface_colors
+              variables:
+                - cx: 100
+                - cy: 70
+                - title: 'primary'
+                - background_light: var(--theme-ref-palette-neutral99)
+                - fontcolor_light: black
+                - surface1_light: var(--theme-ref-elevation-surface-primary1-light)
+                - surface2_light: var(--theme-ref-elevation-surface-primary2-light)
+                - surface3_light: var(--theme-ref-elevation-surface-primary3-light)
+                - surface4_light: var(--theme-ref-elevation-surface-primary4-light)
+                - surface5_light: var(--theme-ref-elevation-surface-primary5-light)
+                - surface6_light: var(--theme-ref-elevation-surface-primary6-light)
+                - surface7_light: var(--theme-ref-elevation-surface-primary7-light)
+                - surface8_light: var(--theme-ref-elevation-surface-primary8-light)
+                - surface9_light: var(--theme-ref-elevation-surface-primary9-light)
+                - surface10_light: var(--theme-ref-elevation-surface-primary10-light)
+                - background_dark: var(--theme-ref-palette-neutral10)
+                - fontcolor_dark: white
+                - surface1_dark: var(--theme-ref-elevation-surface-primary1-dark)
+                - surface2_dark: var(--theme-ref-elevation-surface-primary2-dark)
+                - surface3_dark: var(--theme-ref-elevation-surface-primary3-dark)
+                - surface4_dark: var(--theme-ref-elevation-surface-primary4-dark)
+                - surface5_dark: var(--theme-ref-elevation-surface-primary5-dark)
+                - surface6_dark: var(--theme-ref-elevation-surface-primary6-dark)
+                - surface7_dark: var(--theme-ref-elevation-surface-primary7-dark)
+                - surface8_dark: var(--theme-ref-elevation-surface-primary8-dark)
+                - surface9_dark: var(--theme-ref-elevation-surface-primary9-dark)
+                - surface10_dark: var(--theme-ref-elevation-surface-primary10-dark)
+
+          # ===================================================================
+          - toolset: surface-secondary
+            template:
+              name: toolset_m3_surface_colors
+              variables:
+                - cx: 100
+                - cy: 95
+                - title: 'secondary'
+                - background_light: var(--theme-ref-palette-neutral99)
+                - fontcolor_light: black
+                - surface1_light: var(--theme-ref-elevation-surface-secondary1-light)
+                - surface2_light: var(--theme-ref-elevation-surface-secondary2-light)
+                - surface3_light: var(--theme-ref-elevation-surface-secondary3-light)
+                - surface4_light: var(--theme-ref-elevation-surface-secondary4-light)
+                - surface5_light: var(--theme-ref-elevation-surface-secondary5-light)
+                - surface6_light: var(--theme-ref-elevation-surface-secondary6-light)
+                - surface7_light: var(--theme-ref-elevation-surface-secondary7-light)
+                - surface8_light: var(--theme-ref-elevation-surface-secondary8-light)
+                - surface9_light: var(--theme-ref-elevation-surface-secondary9-light)
+                - surface10_light: var(--theme-ref-elevation-surface-secondary10-light)
+                - background_dark: var(--theme-ref-palette-neutral10)
+                - fontcolor_dark: white
+                - surface1_dark: var(--theme-ref-elevation-surface-secondary1-dark)
+                - surface2_dark: var(--theme-ref-elevation-surface-secondary2-dark)
+                - surface3_dark: var(--theme-ref-elevation-surface-secondary3-dark)
+                - surface4_dark: var(--theme-ref-elevation-surface-secondary4-dark)
+                - surface5_dark: var(--theme-ref-elevation-surface-secondary5-dark)
+                - surface6_dark: var(--theme-ref-elevation-surface-secondary6-dark)
+                - surface7_dark: var(--theme-ref-elevation-surface-secondary7-dark)
+                - surface8_dark: var(--theme-ref-elevation-surface-secondary8-dark)
+                - surface9_dark: var(--theme-ref-elevation-surface-secondary9-dark)
+                - surface10_dark: var(--theme-ref-elevation-surface-secondary10-dark)
+
+          # ===================================================================
+          - toolset: surface-tertiary
+            template:
+              name: toolset_m3_surface_colors
+              variables:
+                - cx: 100
+                - cy: 120
+                - title: 'tertiary'
+                - background_light: var(--theme-ref-palette-neutral99)
+                - fontcolor_light: black
+                - surface1_light: var(--theme-ref-elevation-surface-tertiary1-light)
+                - surface2_light: var(--theme-ref-elevation-surface-tertiary2-light)
+                - surface3_light: var(--theme-ref-elevation-surface-tertiary3-light)
+                - surface4_light: var(--theme-ref-elevation-surface-tertiary4-light)
+                - surface5_light: var(--theme-ref-elevation-surface-tertiary5-light)
+                - surface6_light: var(--theme-ref-elevation-surface-tertiary6-light)
+                - surface7_light: var(--theme-ref-elevation-surface-tertiary7-light)
+                - surface8_light: var(--theme-ref-elevation-surface-tertiary8-light)
+                - surface9_light: var(--theme-ref-elevation-surface-tertiary9-light)
+                - surface10_light: var(--theme-ref-elevation-surface-tertiary10-light)
+                - background_dark: var(--theme-ref-palette-neutral10)
+                - fontcolor_dark: white
+                - surface1_dark: var(--theme-ref-elevation-surface-tertiary1-dark)
+                - surface2_dark: var(--theme-ref-elevation-surface-tertiary2-dark)
+                - surface3_dark: var(--theme-ref-elevation-surface-tertiary3-dark)
+                - surface4_dark: var(--theme-ref-elevation-surface-tertiary4-dark)
+                - surface5_dark: var(--theme-ref-elevation-surface-tertiary5-dark)
+                - surface6_dark: var(--theme-ref-elevation-surface-tertiary6-dark)
+                - surface7_dark: var(--theme-ref-elevation-surface-tertiary7-dark)
+                - surface8_dark: var(--theme-ref-elevation-surface-tertiary8-dark)
+                - surface9_dark: var(--theme-ref-elevation-surface-tertiary9-dark)
+                - surface10_dark: var(--theme-ref-elevation-surface-tertiary10-dark)
+
+          # ===================================================================
+          - toolset: surface-error
+            template:
+              name: toolset_m3_surface_colors
+              variables:
+                - cx: 100
+                - cy: 145
+                - title: 'error'
+                - background_light: var(--theme-ref-palette-neutral99)
+                - fontcolor_light: black
+                - surface1_light: var(--theme-ref-elevation-surface-error1-light)
+                - surface2_light: var(--theme-ref-elevation-surface-error2-light)
+                - surface3_light: var(--theme-ref-elevation-surface-error3-light)
+                - surface4_light: var(--theme-ref-elevation-surface-error4-light)
+                - surface5_light: var(--theme-ref-elevation-surface-error5-light)
+                - surface6_light: var(--theme-ref-elevation-surface-error6-light)
+                - surface7_light: var(--theme-ref-elevation-surface-error7-light)
+                - surface8_light: var(--theme-ref-elevation-surface-error8-light)
+                - surface9_light: var(--theme-ref-elevation-surface-error9-light)
+                - surface10_light: var(--theme-ref-elevation-surface-error10-light)
+                - background_dark: var(--theme-ref-palette-neutral10)
+                - fontcolor_dark: white
+                - surface1_dark: var(--theme-ref-elevation-surface-error1-dark)
+                - surface2_dark: var(--theme-ref-elevation-surface-error2-dark)
+                - surface3_dark: var(--theme-ref-elevation-surface-error3-dark)
+                - surface4_dark: var(--theme-ref-elevation-surface-error4-dark)
+                - surface5_dark: var(--theme-ref-elevation-surface-error5-dark)
+                - surface6_dark: var(--theme-ref-elevation-surface-error6-dark)
+                - surface7_dark: var(--theme-ref-elevation-surface-error7-dark)
+                - surface8_dark: var(--theme-ref-elevation-surface-error8-dark)
+                - surface9_dark: var(--theme-ref-elevation-surface-error9-dark)
+                - surface10_dark: var(--theme-ref-elevation-surface-error10-dark)
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'Light...'
+
+    - type: 'custom:dev-swiss-army-knife-card'
+
+      # Define aspect ratio
+      aspectratio: 3.05/2.3
+
+      dev:
+        debug: false
+        m3: false
+
+      layout:
+        styles:
+          card:
+          toolsets:
+          
+        toolsets:
+          - toolset: light
+            position:
+              cx: 152.5
+              cy: 115
+            tools:
+              # ------------------------------------------------------------
+              - type: rectangle
+                position:
+                  cx: 50
+                  cy: 50
+                  width: 305
+                  height: 230
+                  rx: 0
+                styles:
+                  rectangle:
+                    fill: var(--theme-ref-palette-neutral99)
+                    stroke-width: 0
+
+          - toolset: light-primary
+            template:
+              name: toolset_m3_mode_colors
+              variables:
+                - cx: 152.5
+                - cy: 25
+                - title_background: 'Primary'
+                - color_background: 'Primary40'
+
+                - title_on_background: 'On Primary'
+                - color_on_background: 'Primary100'
+
+                - title_container: 'Primary Container'
+                - color_container: 'Primary90'
+
+                - title_on_container: 'On Primary Container'
+                - color_on_container: 'Primary10'
+
+                - mode_background_color: var(--theme-ref-palette-primary40)
+                - mode_on_background_color: var(--theme-ref-palette-primary100)
+                - mode_container_color: var(--theme-ref-palette-primary90)
+                - mode_on_container_color: var(--theme-ref-palette-primary10)
+                
+          - toolset: light-secondary
+            template:
+              name: toolset_m3_mode_colors
+              variables:
+                - cx: 152.5
+                - cy: 60
+                - title_background: 'Secondary'
+                - color_background: 'Secondary40'
+
+                - title_on_background: 'On Secondary'
+                - color_on_background: 'Secondary100'
+
+                - title_container: 'Secondary Container'
+                - color_container: 'Secondary90'
+
+                - title_on_container: 'On Secondary Container'
+                - color_on_container: 'Secondary10'
+
+                - mode_background_color: var(--theme-ref-palette-secondary40)
+                - mode_on_background_color: var(--theme-ref-palette-secondary100)
+                - mode_container_color: var(--theme-ref-palette-secondary90)
+                - mode_on_container_color: var(--theme-ref-palette-secondary10)
+
+          - toolset: light-tertiary
+            template:
+              name: toolset_m3_mode_colors
+              variables:
+                - cx: 152.5
+                - cy: 95
+                - title_background: 'Tertiary'
+                - color_background: 'Tertiary40'
+
+                - title_on_background: 'On Tertiary'
+                - color_on_background: 'Tertiary100'
+
+                - title_container: 'Tertiary Container'
+                - color_container: 'Tertiary90'
+
+                - title_on_container: 'On Tertiary Container'
+                - color_on_container: 'Tertiary10'
+
+                - mode_background_color: var(--theme-ref-palette-tertiary40)
+                - mode_on_background_color: var(--theme-ref-palette-tertiary100)
+                - mode_container_color: var(--theme-ref-palette-tertiary90)
+                - mode_on_container_color: var(--theme-ref-palette-tertiary10)
+                
+          - toolset: light-error
+            template:
+              name: toolset_m3_mode_colors
+              variables:
+                - cx: 152.5
+                - cy: 130
+                - title_background: 'Error'
+                - color_background: 'Error40'
+
+                - title_on_background: 'On Error'
+                - color_on_background: 'Error100'
+
+                - title_container: 'Error Container'
+                - color_container: 'Error90'
+
+                - title_on_container: 'On Error Container'
+                - color_on_container: 'Error10'
+
+                - mode_background_color: var(--theme-ref-palette-error40)
+                - mode_on_background_color: var(--theme-ref-palette-error100)
+                - mode_container_color: var(--theme-ref-palette-error90)
+                - mode_on_container_color: var(--theme-ref-palette-error10)
+                
+          - toolset: light-background
+            template:
+              name: toolset_m3_mode_colors
+              variables:
+                - cx: 152.5
+                - cy: 170
+                - title_background: 'Background'
+                - color_background: 'Neutral99'
+
+                - title_on_background: 'On Background'
+                - color_on_background: 'Neutral10'
+
+                - title_container: 'Surface'
+                - color_container: 'Neutral99'
+
+                - title_on_container: 'On Surface'
+                - color_on_container: 'Neutral10'
+
+                - mode_background_color: var(--theme-ref-palette-neutral99)
+                - mode_on_background_color: var(--theme-ref-palette-neutral10)
+                - mode_container_color: var(--theme-ref-palette-neutral99)
+                - mode_on_container_color: var(--theme-ref-palette-neutral10)
+
+          - toolset: light-variant
+            template:
+              name: toolset_m3_mode_colors
+              variables:
+                - cx: 152.5
+                - cy: 205
+                - title_background: 'Surface Variant'
+                - color_background: 'Neutral-Variant90'
+
+                - title_on_background: 'On Surface Variant'
+                - color_on_background: 'Neutral-Variant30'
+
+                - title_container: 'Outline'
+                - color_container: 'Neutral-Variant50'
+
+                - title_on_container: 'Outline'
+                - color_on_container: 'Neutral-Variant90'
+
+                - mode_background_color: var(--theme-ref-palette-neutral-variant90)
+                - mode_on_background_color: var(--theme-ref-palette-neutral-variant30)
+                - mode_container_color: var(--theme-ref-palette-neutral-variant50)
+                - mode_on_container_color: var(--theme-ref-palette-neutral-variant90)
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'Dark...'
+
+    - type: 'custom:dev-swiss-army-knife-card'
+
+      # Define aspect ratio
+      aspectratio: 3.05/2.3
+
+      dev:
+        debug: false
+        m3: false
+
+      layout:
+        styles:
+          card:
+          toolsets:
+          
+        toolsets:
+          - toolset: dark
+            position:
+              cx: 152.5
+              cy: 115
+            tools:
+              # ------------------------------------------------------------
+              - type: rectangle
+                position:
+                  cx: 50
+                  cy: 50
+                  width: 305
+                  height: 230
+                  rx: 0
+                styles:
+                  rectangle:
+                    fill: var(--theme-ref-palette-neutral10)
+                    stroke-width: 0
+
+          - toolset: dark-primary
+            template:
+              name: toolset_m3_mode_colors
+              variables:
+                - cx: 152.5
+                - cy: 25
+                - title_background: 'Primary'
+                - color_background: 'Primary80'
+
+                - title_on_background: 'On Primary'
+                - color_on_background: 'Primary20'
+
+                - title_container: 'Primary Container'
+                - color_container: 'Primary30'
+
+                - title_on_container: 'On Primary Container'
+                - color_on_container: 'Primary90'
+
+                - mode_background_color: var(--theme-ref-palette-primary80)
+                - mode_on_background_color: var(--theme-ref-palette-primary20)
+                - mode_container_color: var(--theme-ref-palette-primary30)
+                - mode_on_container_color: var(--theme-ref-palette-primary90)
+                
+          - toolset: dark-secondary
+            template:
+              name: toolset_m3_mode_colors
+              variables:
+                - cx: 152.5
+                - cy: 60
+                - title_background: 'Secondary'
+                - color_background: 'Secondary80'
+
+                - title_on_background: 'On Secondary'
+                - color_on_background: 'Secondary20'
+
+                - title_container: 'Secondary Container'
+                - color_container: 'Secondary30'
+
+                - title_on_container: 'On Secondary Container'
+                - color_on_container: 'Secondary90'
+
+                - mode_background_color: var(--theme-ref-palette-secondary80)
+                - mode_on_background_color: var(--theme-ref-palette-secondary20)
+                - mode_container_color: var(--theme-ref-palette-secondary30)
+                - mode_on_container_color: var(--theme-ref-palette-secondary90)
+
+          - toolset: dark-tertiary
+            template:
+              name: toolset_m3_mode_colors
+              variables:
+                - cx: 152.5
+                - cy: 95
+                - title_background: 'Tertiary'
+                - color_background: 'Tertiary80'
+
+                - title_on_background: 'On Tertiary'
+                - color_on_background: 'Tertiary20'
+
+                - title_container: 'Tertiary Container'
+                - color_container: 'Tertiary30'
+
+                - title_on_container: 'On Tertiary Container'
+                - color_on_container: 'Tertiary90'
+
+                - mode_background_color: var(--theme-ref-palette-tertiary80)
+                - mode_on_background_color: var(--theme-ref-palette-tertiary20)
+                - mode_container_color: var(--theme-ref-palette-tertiary30)
+                - mode_on_container_color: var(--theme-ref-palette-tertiary90)
+                
+          - toolset: dark-error
+            template:
+              name: toolset_m3_mode_colors
+              variables:
+                - cx: 152.5
+                - cy: 130
+                - title_background: 'Error'
+                - color_background: 'Error80'
+
+                - title_on_background: 'On Error'
+                - color_on_background: 'Error20'
+
+                - title_container: 'Error Container'
+                - color_container: 'Error30'
+
+                - title_on_container: 'On Error Container'
+                - color_on_container: 'Error90'
+
+                - mode_background_color: var(--theme-ref-palette-error80)
+                - mode_on_background_color: var(--theme-ref-palette-error20)
+                - mode_container_color: var(--theme-ref-palette-error30)
+                - mode_on_container_color: var(--theme-ref-palette-error90)
+                
+          - toolset: dark-background
+            template:
+              name: toolset_m3_mode_colors
+              variables:
+                - cx: 152.5
+                - cy: 170
+                - title_background: 'Background'
+                - color_background: 'Neutral10'
+
+                - title_on_background: 'On Background'
+                - color_on_background: 'Neutral90'
+
+                - title_container: 'Surface'
+                - color_container: 'Neutral10'
+
+                - title_on_container: 'On Surface'
+                - color_on_container: 'Neutral80'
+
+                - mode_background_color: var(--theme-ref-palette-neutral10)
+                - mode_on_background_color: var(--theme-ref-palette-neutral90)
+                - mode_container_color: var(--theme-ref-palette-neutral10)
+                - mode_on_container_color: var(--theme-ref-palette-neutral80)
+
+          - toolset: dark-variant
+            template:
+              name: toolset_m3_mode_colors
+              variables:
+                - cx: 152.5
+                - cy: 205
+                - title_background: 'Surface Variant'
+                - color_background: 'Neutral-Variant30'
+
+                - title_on_background: 'On Surface Variant'
+                - color_on_background: 'Neutral-Variant80'
+
+                - title_container: 'Outline'
+                - color_container: 'Neutral-Variant60'
+
+                - title_on_container: 'Outline'
+                - color_on_container: 'Neutral-Variant30'
+
+                - mode_background_color: var(--theme-ref-palette-neutral-variant30)
+                - mode_on_background_color: var(--theme-ref-palette-neutral-variant80)
+                - mode_container_color: var(--theme-ref-palette-neutral-variant60)
+                - mode_on_container_color: var(--theme-ref-palette-neutral-variant30)
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: '...'

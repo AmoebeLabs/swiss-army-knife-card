@@ -1,0 +1,84 @@
+# note to self.
+# dit zijn geen knoppen. doen ook vreemd als je erop drukt.
+# dit zijn info blokken. dus anders. kijken hoe ik dat ga noemen.
+# geen switches ofzo, want dat zijn het NIET.
+# geen lampen, geen schakelaars, geen drukknoppen of wat dan ook
+#
+title: Beveiliging
+path: security
+cards:
+  - type: vertical-stack
+    cards:
+      - type: custom:decluttering-card
+        template: button_quick_menu_generic
+        variables:
+          - lb_name: Camera's
+          - lb_icon: shield-home
+          - lb_path: /lovelace/alarm
+
+      - type: custom:decluttering-card
+        template: header_template
+        variables:
+          - content: '### Beveiliging'
+      - type: custom:decluttering-card
+        template: header_template
+        variables:
+          - content: '#### Deuren'
+          - font_color: var(--secondary-text-color)
+      - type: horizontal-stack
+        cards:
+          - !include card-blank-card.yaml
+          - type: custom:decluttering-card
+            template: button_info_template
+            variables:
+              - entity: binary_sensor.back_door_contact
+              - name: Keukendeur
+              - icon: door
+              - show_label: false;
+              - show_last_changed: true
+              - ttap_action: more-info
+              - hhold_action: none
+              - variable: icon
+              - spin: 'mdi:door-open'
+              - deep_press: false
+          - type: 'custom:button-card'
+            color_type: blank-card
+            aspect_ratio: 1/1
+          - type: 'custom:button-card'
+            color_type: blank-card
+            aspect_ratio: 1/1
+          - !include card-blank-card.yaml
+
+      - type: custom:decluttering-card
+        template: header_template
+        variables:
+          - content: '#### Beweging'
+          - font_color: var(--secondary-text-color)
+      - type: horizontal-stack
+        cards:
+          - !include card-blank-card.yaml
+          - type: custom:decluttering-card
+            template: button_info_template
+            variables:
+              - entity: binary_sensor.livingroom_movement_occupancy
+              - name: Woonkamer
+              - icon: walk
+              - variable: icon
+              - spin: 'mdi:motion-sensor'
+              - show_label: false;
+              - show_last_changed: true
+              - ttap_action: more-info
+              - hhold_action: none
+          - type: 'custom:button-card'
+            color_type: blank-card
+            aspect_ratio: 1/1
+          - type: 'custom:button-card'
+            color_type: blank-card
+            aspect_ratio: 1/1
+          - !include card-blank-card.yaml
+
+      - type: 'custom:button-card'
+        color_type: blank-card
+        styles:
+          card:
+            - height: 10px    
