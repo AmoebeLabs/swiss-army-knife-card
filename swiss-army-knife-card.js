@@ -51,7 +51,7 @@ import { fireEvent, stateIcon, getLovelace } from 'https://unpkg.com/custom-card
 
 // Original injector is buggy. Use a patched version, and store this local...
 // import * as SvgInjector from '/local/images/svginjector/SVGInjector.min.js?module';
-import * as SvgInjector from '/local/community/swiss-army-knife-card/SVGInjector.min.js?module';
+import * as SvgInjector from '/local/community/swiss-army-knife-card/SVGInjector.min.js?module'; // lgtm[js/unused-local-variable]
 
 console.info(
   `%c   SWISS-ARMY-KNIFE-CARD   \n%c  Public Release Candidate \n%c     Version 1.0.0-rc1     `,
@@ -2964,7 +2964,7 @@ class EntityIconTool extends BaseTool {
       }
     };
 
-    if (!this.alternateColor) {this.alternateColor = 'white'};
+    if (!this.alternateColor) {this.alternateColor = 'white';}
 
     if (!SwissArmyKnifeCard.sakIconCache[icon]) {
       var theQuery = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot?.querySelectorAll("*");
@@ -4763,7 +4763,7 @@ class SegmentedArcTool extends BaseTool {
                   if (runningSegment > 0) {
                     // #LGTM: This expression has no effect.
                     //        I have no clue. This is a loop that works well, so what about this expression then?
-                    for (var j=runningSegment+1; j--; j>=0) {
+                    for (var j=runningSegment+1; j--; j>=0) { // lgtm[js/useless-expression]
                       if (thisTool.styles.foreground[j]['fill'] != fill) {
                         thisTool.styles.foreground[j]['fill'] = fill;
                         thisTool.as[j].style.fill = fill;
@@ -4927,7 +4927,7 @@ class SegmentedArcTool extends BaseTool {
           if (this.config.show.lastcolor) {
             if (i > 0) {
               // #LGTM: This expression has no effect.
-              for (var j=i-1; j--; j>0) {
+              for (var j=i-1; j--; j>0) { // lgtm[js/useless-expression]
                 this.styles.foreground[j]['fill'] = fill;
               }
             }
@@ -5987,7 +5987,7 @@ class SwissArmyKnifeCard extends LitElement {
         // var fgCol = {};
 
         var themeDefs = "";
-        for (const [index, cssName] of Object.entries(cssNames)) {
+        for (const [index, cssName] of Object.entries(cssNames)) { // lgtm[js/unused-local-variable]
           if (cssName.substring(0,9) == 'theme-ref') {
             themeDefs += "  " + cssName + "\n";
           }
