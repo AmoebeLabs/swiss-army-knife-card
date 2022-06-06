@@ -12,25 +12,6 @@
 # - https://www.home-assistant.io/integrations/default_config/ for all the integrations loaded by this setting.
 default_config:
 
-# Enable logger
-logger:
-  default: warning
-  logs:
-    homeassistant.components.opentherm_gw: info
-
-# AirVisual
-# =========
-# - https://www.home-assistant.io/integrations/airvisual/
-# 2021.01.15
-# - Configuration via UI, so removed here... 
-# airvisual:
-  # api_key: !secret airvisual_api_key
-  # geographies:
-    # city: eindhoven
-    # country: netherlands
-    # state: north-brabant   
-
-
 # frontend
 # ========
 # Enables the frontend to define themes
@@ -56,21 +37,6 @@ hacs:
   appdaemon: true
   python_script: true
 
-# http settings
-# =============
-# - https://www.home-assistant.io/integrations/http/
-#
-# 2021.10.27
-# - Update HTTP integration to latest specifications
-# - Must add trusted proxies, forwarded for, etc.
-# 2020.09.20
-# - This config is the new config, so must run on another port than the default 8123
-http:
-  server_port: 8123
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - 192.168.2.180
-
 # lovelace 
 # ========
 # - https://www.home-assistant.io/lovelace/dashboards-and-views/
@@ -93,32 +59,3 @@ lovelace:
       icon: mdi:hospital-box
       show_in_sidebar: true
 
-# panel iframe
-# - https://www.home-assistant.io/integrations/panel_iframe/
-# panel_iframe:
-  # networkmap:
-    # title: 'Zigbee Map'
-    # url: '/local/community/zigbee2mqtt_networkmap/map.html'
-    # icon: 'mdi:graphql'
-
-# Text to speech
-tts:
-  - platform: google_translate
-
-# webhook
-webhook:
-
-# zigbee2mqtt networkmap
-# - community integration via hacs
-# zigbee2mqtt_networkmap:
-  # topic: common/gateway/zigbee2mqtt
-
-     
-
-# Include list for sensors, groups, etc.
-# - https://www.home-assistant.io/docs/configuration/yaml/#including-entire-files
-automation: !include configuration/automations.yaml
-group: !include configuration/groups.yaml
-sensor: !include configuration/sensors.yaml
-scene: !include configuration/scenes.yaml
-script: !include configuration/scripts.yaml
