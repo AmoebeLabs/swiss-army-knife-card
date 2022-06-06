@@ -6,12 +6,12 @@
 <!--- ![beta_badge](https://img.shields.io/badge/State-Beta-orange?style=for-the-badge) -->
 <!---[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration) -->
 
-# ![](docs/images/swiss-army-knife24.png) NOTE!
+# ![](assets/images/swiss-army-knife24.png) NOTE!
 This Swiss Army Knife custom card is being prepared for a public release candidate. Don't use this card yet!
 
 Due to work on HACS integration, and (breaking) issue solving the card might be broken 😢
 
-# ![](docs/images/swiss-army-knife24.png) The Swiss Army Knife Custom Card for Home Assistant
+# ![](assets/images/swiss-army-knife24.png) The Swiss Army Knife Custom Card for Home Assistant
 The custom Swiss Army Knife card for [Home Assistant][home-assistant] allows you to create your own visualization using [17 basic, advanced and Home Assistant specific SVG-based tools][sak-tools] and CSS [styling][sak-css-styles] and [animation][sak-css-animations] options this card provides.
 
 It is a card with lots of possibilities, fully YAML based, and requires the [user to design a card][sak-how-to-design-your-card]!
@@ -27,7 +27,7 @@ And check https://ha-m3-themes.docs.amoebelabs.com/ for Material 3 themes docume
 
 <a href="https://www.buymeacoffee.com/amoebelabs" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-## ![](docs/images/swiss-army-knife24.png) Hybrid or Full manual Installation
+## ![](assets/images/swiss-army-knife24.png) Hybrid or Full manual Installation
 This custom card should be in the default theme repository of HACS, if you have selected BETA releases.
 
 For installation check the [installation documentation][sak-installation]. As this custom card requires **extra steps on top of HACS** for its installation. The card itself can be installed with HACS, but:
@@ -36,7 +36,7 @@ For installation check the [installation documentation][sak-installation]. As th
 
 Note: It may take a few weeks (as of June 2022) that this card is included into the HACS repository!
 
-## ![](docs/images/swiss-army-knife24.png) An overview of all the [12 examples](https://swiss-army-knife.docs.amoebelabs.com/examples/introduction/) from my own installation:
+## ![](assets/images/swiss-army-knife24.png) An overview of all the [12 examples](https://swiss-army-knife.docs.amoebelabs.com/examples/introduction/) from my own installation:
 All these examples are available on Github and described in the [installation manual][sak-installation]. Each example has its own page which describes how to adapt / use them in your own installation.
 
 | Examples...| Examples...|
