@@ -32,9 +32,9 @@ import {
   LitElement, html, css, svg, unsafeCSS
 } from "https://unpkg.com/lit-element@2.5.1/lit-element.js?module";
 
-import {
-  unsafeHTML
-} from "https://unpkg.com/lit-html@1/directives/unsafe-html.js?module";
+// import {
+  // unsafeHTML
+// } from "https://unpkg.com/lit-html@1/directives/unsafe-html.js?module";
 
 import {
   unsafeSVG
@@ -384,7 +384,7 @@ class Toolset {
       "switch"    : SwitchTool,
       "text"      : TextTool,
       "usersvg"   : UserSvgTool,
-    }
+    };
 
     this.config.tools.map(toolConfig => {
       var argConfig = {...toolConfig};
@@ -731,11 +731,11 @@ class BaseTool {
       this.sortedColorStops = Object.keys(this.config.colorstops.colors).map(n => Number(n)).sort((a, b) => a - b);
     }
 
-    this.csnew = {}
+    this.csnew = {};
     if ((this.config.csnew) && (this.config.csnew.colors)) {
       this.config.csnew.colors.forEach((item, i) => {
         this.csnew[item.stop] = this.config.csnew.colors[i];
-      })
+      });
 
     this.sortedcsnew = Object.keys(this.csnew).map(n => Number(n)).sort((a, b) => a - b);
     }
@@ -822,12 +822,12 @@ class BaseTool {
 
       if (!this.animationClass || !item.reuse) this.animationClass = {};
       if (item.classes) {
-        this.animationClass = Merge.mergeDeep(this.animationClass, item.classes)
+        this.animationClass = Merge.mergeDeep(this.animationClass, item.classes);
       }
 
       if (!this.animationStyle || !item.reuse) this.animationStyle = {};
       if (item.styles) {
-        this.animationStyle = Merge.mergeDeep(this.animationStyle, item.styles)
+        this.animationStyle = Merge.mergeDeep(this.animationStyle, item.styles);
       }
 
       this.animationStyleHasChanged = true;
@@ -1068,7 +1068,7 @@ class RangeSliderTool extends BaseTool {
           uom: {
           }
         }
-    }
+    };
 
     super(argToolset, Merge.mergeDeep(DEFAULT_RANGESLIDER_CONFIG, argConfig), argPos);
 
@@ -1322,8 +1322,9 @@ class RangeSliderTool extends BaseTool {
       this.labelValuePrev = this.labelValue2;
 
       const [domain, service] = this.config.slider_action.service.split('.', 2);
-      var serviceData = { ...this.config.slider_action.service };
-      serviceData = {};
+      // var serviceData = { ...this.config.slider_action.service };
+      // serviceData = {};
+      var serviceData = {};
       // serviceData[this.config.slider_action.parameter] = this._stateValue;
       serviceData[this.config.slider_action.parameter] = this.labelValue2;
       serviceData.entity_id = this.config.slider_action.entity_id || this._card.entities[this.config.entity_index].entity_id;
@@ -1432,7 +1433,8 @@ class RangeSliderTool extends BaseTool {
 
         switch (this.config.position.orientation) {
           case 'horizontal':
-            const x1 = this.m.x;
+            // #LGTM: Unused variable x1.
+            // const x1 = this.m.x;
             scaleValue = this.svgCoordinateToSliderValue(this, this.m);
             this.m.x = this.valueToSvg(this, scaleValue);
             this.m.x = Math.max(this.svg.scale.min, Math.min(this.m.x, this.svg.scale.max));
@@ -1440,7 +1442,8 @@ class RangeSliderTool extends BaseTool {
             break;
 
           case 'vertical':
-            const y1 = this.m.y;
+            // #LGTM: Unused variable y1.
+            // const y1 = this.m.y;
             scaleValue = this.svgCoordinateToSliderValue(this, this.m);
             this.m.y = this.valueToSvg(this, scaleValue);
             this.m.y = (Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step);
@@ -1577,7 +1580,7 @@ class RangeSliderTool extends BaseTool {
           : 0); //this.svg.label.cx);
         cy = (this.config.position.orientation == 'vertical'
           ? this.valueToSvg(this, Number(this.renderValue))
-          : 0)//this.svg.label.cy);
+          : 0); //this.svg.label.cy);
         if (this.dragging) (this.config.position.orientation == 'horizontal') ? cy -= 50 : cx -=50;
         break;
         
@@ -1747,7 +1750,7 @@ class LineTool extends BaseTool {
         line: {
         }
       }
-    }
+    };
 
     super(argToolset, Merge.mergeDeep(DEFAULT_LINE_CONFIG, argConfig), argPos);
 
@@ -1996,7 +1999,7 @@ class SwitchTool extends BaseTool {
           thumb: {
           }
         }
-    }
+    };
 
     const HORIZONTAL_SWITCH_CONFIG = {
         animations: [
@@ -2030,7 +2033,7 @@ class SwitchTool extends BaseTool {
             }
           }
         ],
-    }
+    };
 
     const VERTICAL_SWITCH_CONFIG = {
         animations: [
@@ -2064,7 +2067,7 @@ class SwitchTool extends BaseTool {
             }
           }
         ],
-    }
+    };
 
     super(argToolset, Merge.mergeDeep(DEFAULT_SWITCH_CONFIG, argConfig), argPos);
 
@@ -2256,8 +2259,9 @@ class RegPolyTool extends BaseTool {
   _renderRegPoly() {
 
     var generatePoly = function(p, q, r, a, cx, cy) {
-      var path = '',
-          base_angle = 2 * Math.PI / p, 
+      // #LGTM: Unused variable path.
+      // var path = '',
+      var base_angle = 2 * Math.PI / p, 
           angle = a + base_angle, 
           x, y, d_attr = '';
       
@@ -2280,7 +2284,7 @@ class RegPolyTool extends BaseTool {
         }
       }
       
-      d_attr += 'z'
+      d_attr += 'z';
       return d_attr;
     };
 
@@ -2342,7 +2346,7 @@ class UserSvgTool extends BaseTool {
         usersvg: {
         }
       }
-    }
+    };
 
     super(argToolset, Merge.mergeDeep(DEFAULT_USERSVG_CONFIG, argConfig), argPos);
 
@@ -2599,7 +2603,7 @@ class RectangleToolEx extends BaseTool {
         rectex: {
         }
       }
-    }
+    };
     super(argToolset, Merge.mergeDeep(DEFAULT_RECTANGLEEX_CONFIG, argConfig), argPos);
 
     this.classes.rectex = {};
@@ -2825,7 +2829,7 @@ class EntityIconTool extends BaseTool {
         icon: {
         }
       }
-    }
+    };
     super(argToolset, Merge.mergeDeep(DEFAULT_ICON_CONFIG, argConfig), argPos);
 
 // from original
@@ -2841,8 +2845,10 @@ class EntityIconTool extends BaseTool {
 
     this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 3;
     this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
-    const x = this.config.position.cx ? this.config.position.cx / 100 : 0.5;
-    const y = this.config.position.cy ? this.config.position.cy / 100 : 0.5;
+    // #LGTM: Unused variable x.
+    // const x = this.config.position.cx ? this.config.position.cx / 100 : 0.5;
+    // #LGTM: Unused variable y.
+    // const y = this.config.position.cy ? this.config.position.cy / 100 : 0.5;
 
     const align = this.config.position.align ? this.config.position.align : 'center';
     const adjust = (align == 'center' ? 0.5 : (align == 'start' ? -1 : +1));
@@ -2907,8 +2913,10 @@ class EntityIconTool extends BaseTool {
 
       this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
       this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
-      const x = this.config.position.cx ? this.config.position.cx / 100 : 0.5;
-      const y = this.config.position.cy ? this.config.position.cy / 100 : 0.5;
+      // #LGTM: Unused variable x.
+      // const x = this.config.position.cx ? this.config.position.cx / 100 : 0.5;
+      // #LGTM: Unused variable y.
+      // const y = this.config.position.cy ? this.config.position.cy / 100 : 0.5;
 
       // NEW NEW NEW Use % for size of icon...
       this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
@@ -2923,7 +2931,8 @@ class EntityIconTool extends BaseTool {
       // const clientWidth = this._card.clientWidth; // hard coded adjust for padding...
       const clientWidth = 400;
       var correction = clientWidth / (this._card.viewBox.width);
-      var correctionRect = clientWidth / (this._card.viewBox.width + 50);
+      // #LGTM: Unused variable correctionRect.
+      // var correctionRect = clientWidth / (this._card.viewBox.width + 50);
 
       // icon is not calculated against viewbox, but against toolset pos
       //this.svg.xpx = (x * this._card.viewBox.width);
@@ -2953,7 +2962,7 @@ class EntityIconTool extends BaseTool {
         if (this.dev.debug) console.log("EntityIconTool::_renderIcon - svg values =", this.toolId, this.svg, this.config.cx, this.config.cy, align, adjust);
 
       }
-    }
+    };
 
     if (!this.alternateColor) {this.alternateColor = 'white'};
 
@@ -2975,15 +2984,17 @@ class EntityIconTool extends BaseTool {
     }
     
 
-    if (false) {
-    if (!this.iconSvg) {
-      this.iconSvg = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot.querySelectorAll("*")[0]?.path;
-      if (!this.iconSvg) {
-        this._card.pleaseReRender();
-      }
-    }
-    }
+    // #LGTM: This statement is unreachable.
+    // if (false) {
+    // if (!this.iconSvg) {
+      // this.iconSvg = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot.querySelectorAll("*")[0]?.path;
+      // if (!this.iconSvg) {
+        // this._card.pleaseReRender();
+      // }
+    // }
+    // }
 
+    // #LGTM: The initial value of scale is unused, since it is always overwritten.
     var scale = 1;
 
     // NTS@20201.12.24
@@ -2991,6 +3002,7 @@ class EntityIconTool extends BaseTool {
     // After the above fix, it seems to work for both Chrome and Safari browsers.
     // That is nice. Now animations also work on Chrome...
 
+    // #LGTM: This expression always evaluates to true.
     if ((true) || (this._card.isSafari) || (this._card.iOS)) {
       if (this.iconSvg) {
         // Use original size, not the corrected one!
@@ -3122,7 +3134,7 @@ class BadgeTool extends BaseTool {
         }
       }
     }
-    super(argToolset, Merge.mergeDeep(DEFAULT_BADGE_CONFIG, argConfig), argPos);
+    su;per(argToolset, Merge.mergeDeep(DEFAULT_BADGE_CONFIG, argConfig), argPos);
 
     // Coordinates from left and right part.
     this.svg.radius = 5;
@@ -3332,7 +3344,7 @@ class EntityStateTool extends BaseTool {
         `;
 
       } else {
-        return svg``
+        return svg``;
       }
     }
   }
@@ -3723,8 +3735,8 @@ class HorseshoeTool extends BaseTool {
 
     this.config.entity_index = this.config.entity_index ? this.config.entity_index : 0;
 
-    this.svg.radius = Utils.calculateSvgDimension(this.config.position.radius)
-    this.svg.radius_ticks = Utils.calculateSvgDimension(0.95 * this.config.position.radius)
+    this.svg.radius = Utils.calculateSvgDimension(this.config.position.radius);
+    this.svg.radius_ticks = Utils.calculateSvgDimension(0.95 * this.config.position.radius);
 
     this.svg.horseshoe_scale = {};
     this.svg.horseshoe_scale.width = Utils.calculateSvgDimension(this.config.horseshoe_scale.width);
@@ -4008,7 +4020,7 @@ class SparklineBarChartTool extends BaseTool {
       },
       colorstops: [],
       show: {style: 'fixedcolor'}
-    }
+    };
 
     super(argToolset, Merge.mergeDeep(DEFAULT_BARCHART_CONFIG, argConfig), argPos);
     
@@ -4251,7 +4263,7 @@ class SegmentedArcTool extends BaseTool {
       animation: {
         "duration": 1.5,
       },
-    }
+    };
 
     super(argToolset, Merge.mergeDeep(DEFAULT_SEGARC_CONFIG, argConfig), argPos);
 
@@ -4307,8 +4319,10 @@ class SegmentedArcTool extends BaseTool {
         }
     }
 
-    var tcolorstops = {};
-    var colorstops = null;
+    // #LGTM: Unused variable tcolorstops.
+    // var tcolorstops = {};
+    // #LGTM: Unused variable colorstops.
+    // var colorstops = null;
 
     // FIXEDCOLOR
     if (this.config.show.style == 'fixedcolor') {
@@ -4415,7 +4429,8 @@ class SegmentedArcTool extends BaseTool {
 
         //this._segmentedArcScale = new SegmentedArc(this._card, scaleConfig);
         this._segmentedArcScale = new SegmentedArcTool(this, scaleConfig, argPos);
-        const scaleId = this._segmentedArcScale.objectId;
+        // #LGTM: Unused variable scaleId.
+        // const scaleId = this._segmentedArcScale.objectId;
       } else {
         this._segmentedArcScale = null;
       }
@@ -4540,14 +4555,19 @@ class SegmentedArcTool extends BaseTool {
       // Added temp vars. animation doesn't work!!!!
       var arcStart = this.config.position.start_angle;
       var arcEnd = this.config.position.end_angle;
+      // #LGTM: The initial value of arcEndPrev is unused, since it is always overwritten.
       var arcEndPrev = this.config.position.end_angle;
       //var arcWidth = this.config.position.width;
       var arcWidth = this.svg.width;
 
-      var arcEndFull = this.config.position.end_angle;
-      var arcClockwise = arcEnd > arcStart;
-      var arcPart = this.config.segments.dash;
-      var arcDivider = this.config.segments.gap;
+      // #LGTM: Unused variable arcEndFull.
+      // var arcEndFull = this.config.position.end_angle;
+      // #LGTM: Unused variable arcClockwise.
+      // var arcClockwise = arcEnd > arcStart;
+      // #LGTM: Unused variable arcPart.
+      // var arcPart = this.config.segments.dash;
+      // #LGTM: Unused variable arcDivider.
+      // var arcDivider = this.config.segments.gap;
 
       var arcRadiusX = this.svg.radiusX;
       var arcRadiusY = this.svg.radiusY;
@@ -4563,8 +4583,10 @@ class SegmentedArcTool extends BaseTool {
 
           arcEnd = (val * this._arc.size * this._arc.direction) + this.config.position.start_angle;
           arcEndPrev = (valPrev * this._arc.size * this._arc.direction) + this.config.position.start_angle;
-      var arcSize = Math.abs(arcEnd - this.config.position.start_angle);
-      var arcSizePrev = Math.abs(arcEndPrev - this.config.position.start_angle);
+      // #LGTM: Unused variable arcSize.
+      // var arcSize = Math.abs(arcEnd - this.config.position.start_angle);
+      // #LGTM: Unused variable arcSizePrev.
+      // var arcSizePrev = Math.abs(arcEndPrev - this.config.position.start_angle);
 
       var svgItems = [];
 
@@ -4594,7 +4616,8 @@ class SegmentedArcTool extends BaseTool {
           // extra, set color from colorlist as a test
           if (this.config.isScale) {
             var fill = this.config.color;
-            var stroke = '';
+            // #LGTM: Unused variable stroke.
+            // var stroke = '';
             if (this.config.show.style =="colorlist") {
               fill = this.config.segments.colorlist.colors[index];
             }
@@ -4627,7 +4650,7 @@ class SegmentedArcTool extends BaseTool {
             var frameSegment;
             var runningSegment;
 
-            var timestamp = timestamp || new Date().getTime()
+            var timestamp = timestamp || new Date().getTime();
             if (!tween.startTime) {
               tween.startTime = timestamp;
               tween.runningAngle = tween.fromAngle;
@@ -4635,7 +4658,7 @@ class SegmentedArcTool extends BaseTool {
 
             if (thisTool.debug) console.log('RENDERNEW - in animateSegmentsNEW', thisTool.toolId, tween);
 
-            var runtime = timestamp - tween.startTime
+            var runtime = timestamp - tween.startTime;
             tween.progress = Math.min(runtime / tween.duration, 1);
             tween.progress = easeOut(tween.progress);
 
@@ -4706,6 +4729,7 @@ class SegmentedArcTool extends BaseTool {
                 // #WIP
                 // Testing 'lastcolor'
                 if (thisTool.config.show.lastcolor) {
+                  // #LGTM: The initial value of fill is unused, since it is always overwritten.
                   var fill = thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]]; //thisTool.styles.foreground[runningSegment]['fill'];
                   // console.log('testing...', thisTool.config.show, runningSegment, fill);
                   
@@ -4716,7 +4740,8 @@ class SegmentedArcTool extends BaseTool {
                                 ? (thisTool._segmentAngles[runningSegment].drawEnd)
                                 : (thisTool._segmentAngles[runningSegment].drawStart);
                   var value = Math.min(Math.max(0, (runningSegmentAngle - boundsStart) / (boundsEnd - boundsStart)), 1);
-                  var sortedMax = thisTool._segments.sortedStops.length;
+                  // #LGTM: Unused variable sortedMax.
+                  // var sortedMax = thisTool._segments.sortedStops.length;
                   fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                                            thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment+1]],
                                            value);
@@ -4726,6 +4751,7 @@ class SegmentedArcTool extends BaseTool {
                   thisTool.as[0].style.fill = fill;
 
                   if (runningSegment > 0) {
+                    // #LGTM: This expression has no effect.
                     for (var j=runningSegment+1; j--; j>=0) {
                       if (thisTool.styles.foreground[j]['fill'] != fill) {
                         thisTool.styles.foreground[j]['fill'] = fill;
@@ -4753,10 +4779,11 @@ class SegmentedArcTool extends BaseTool {
                 ? ((runningSegmentAngle <= currentValue.boundsEnd) && (runningSegmentAngle >= currentValue.boundsStart))
                 : ((runningSegmentAngle <= currentValue.boundsStart) && (runningSegmentAngle >= currentValue.boundsEnd)));
 
-              frameSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
-                thisTool._arc.clockwise
-                ? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
-                : ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
+              // #LGTM: The value assigned to frameSegment here is unused.
+              // frameSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
+                // thisTool._arc.clockwise
+                // ? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
+                // : ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
 
               if (!increase) {
                 if (runningSegmentPrev != runningSegment) {
@@ -4785,7 +4812,7 @@ class SegmentedArcTool extends BaseTool {
             if ((tween.progress != 1) /*|| (runningSegment != runningSegmentPrev)*/) {
                 thisTool.rAFid = requestAnimationFrame(function(timestamp){
                     animateSegmentsNEW(timestamp, thisTool)
-                })
+                });
             } else {
               tween.startTime = null;
               if (thisTool.debug) console.log('RENDERNEW - animation loop ENDING tween', thisTool.toolId, tween, runningSegment, runningSegmentPrev);
@@ -4793,7 +4820,8 @@ class SegmentedArcTool extends BaseTool {
         } // function animateSegmentsNEW
 
         var mySelf = this;
-        var arcCur = arcEndPrev;
+        // #LGTM: Unused variable arcCur.
+        // var arcCur = arcEndPrev;
 
         // 2021.10.31
         // Edge case where brightness percentage is set to undefined (attribute is gone) if light is set to off.
@@ -4836,7 +4864,7 @@ class SegmentedArcTool extends BaseTool {
             // this._initialDraw = false;
             this.rAFid = requestAnimationFrame(function(timestamp){
                                                 animateSegmentsNEW(timestamp, mySelf)
-                                              })
+                                              });
             this._initialDraw = false;
           }
         }
@@ -4887,6 +4915,7 @@ class SegmentedArcTool extends BaseTool {
           // Testing 'lastcolor'
           if (this.config.show.lastcolor) {
             if (i > 0) {
+              // #LGTM: This expression has no effect.
               for (var j=i-1; j--; j>0) {
                 this.styles.foreground[j]['fill'] = fill;
               }
@@ -5471,6 +5500,7 @@ class SwissArmyKnifeCard extends LitElement {
       // Get attribute state if specified and available
       if (this.config.entities[index].attribute) {
 
+        // #LGTM: The value assigned to attrSet here is unused.
         attrSet = true;
 
         // #WIP:
@@ -5529,13 +5559,14 @@ class SwissArmyKnifeCard extends LitElement {
         // Due to change in light percentage, check for undefined.
         // If bulb is off, NO percentage is given anymore, so is probably 'undefined'.
         // Any tool should still react to a percentag going from a valid value to undefined!
-        else {
-          if (undefined != this.attributesStr[index]) {
-            this.attributesStr[index] = undefined;
-            entityHasChanged = true;
-            console.log('changed attribute is undefined for entity', this.entities[index].entity_id);
-          }
-        }
+        // #LGTM: This statement is unreachable.
+        // else {
+          // if (undefined != this.attributesStr[index]) {
+            // this.attributesStr[index] = undefined;
+            // entityHasChanged = true;
+            // console.log('changed attribute is undefined for entity', this.entities[index].entity_id);
+          // }
+        // }
       }
       if ((!attrSet) && (!secInfoSet)) {
         newStateStr = this._buildState(this.entities[index].state, this.config.entities[index]);
@@ -5575,6 +5606,7 @@ class SwissArmyKnifeCard extends LitElement {
     }
 
     // For now, always force update to render the card if any of the states or attributes have changed...
+    // #LGTM: This use of variable 'entityHasChanged' always evaluates to true.
     if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
     
     // Force upate as test... ###########################################
@@ -5672,7 +5704,8 @@ class SwissArmyKnifeCard extends LitElement {
         console.log("findTemplate return key=template/value", key, undefined);
         
         return value;
-        return new string('replaced');
+        // #LGTM: This statement is unreachable.
+        // return new string('replaced');
       }
       // console.log("findTemplate return key/value", key, value);
       return value;
@@ -5695,11 +5728,13 @@ class SwissArmyKnifeCard extends LitElement {
     
     this.config.layout.toolsets.map((toolsetCfg, toolidx) => {
 
-      var argToolset = { config: toolsetCfg,
-                          tools: []};
+      // #LGTM: Unused variable argToolset.
+      // var argToolset = { config: toolsetCfg,
+                          // tools: []};
       var toolList = null;
 
-      var toolsetCfgFromTemplate = null;
+      // #LGTM: Unused variable toolsetCfgFromTemplate.
+      // var toolsetCfgFromTemplate = null;
 
       if (!this.toolsets) this.toolsets = [];
 
@@ -5707,7 +5742,8 @@ class SwissArmyKnifeCard extends LitElement {
         
         var found = false;
         var toolAdd = [];
-        var atIndex = null;
+        // #LGTM: Unused variable atIndex.
+        // var atIndex = null;
 
         toolList = cfgobj[toolidx].tools;
         // Check for empty tool list. This can be if template is used. Tools come from template, not from config...
@@ -5752,15 +5788,16 @@ class SwissArmyKnifeCard extends LitElement {
 
     // Special case. Abuse card for m3 conversion to output
     if (this.dev.m3) {
-      console.log("*** M3 - Checking for m3.yaml template to convert...")
+      console.log("*** M3 - Checking for m3.yaml template to convert...");
       
       if (this.lovelace.config.sak_user_templates.templates.m3) {
         var m3 = this.lovelace.config.sak_user_templates.templates.m3;
         
-        console.log("*** M3 - Found. Material 3 conversion starting...")
+        console.log("*** M3 - Found. Material 3 conversion starting...");
         // #hier m3
         var palette = "";
-        var palette2 = "";
+        // #LGTM: Unused variable palette2.
+        // var palette2 = "";
         var colordefault = "";
         var colorlight = "";
         var colordark = "";
@@ -5931,8 +5968,10 @@ class SwissArmyKnifeCard extends LitElement {
         var errordark = colorEntities["md.ref.palette.error80"].value;
         var surfaceeD = getSurfaces(surfacedark, errordark, opacitysurfacedark, "  theme-ref-elevation-surface-error", "dark");
 
-        var bgCol = {};
-        var fgCol = {};
+        // #LGTM: Unused variable bgCol.
+        // var bgCol = {};
+        // #LGTM: Unused variable fgCol.
+        // var fgCol = {};
 
         var themeDefs = "";
         for (const [index, cssName] of Object.entries(cssNames)) {
@@ -5946,7 +5985,7 @@ class SwissArmyKnifeCard extends LitElement {
                     surfacenD + surfacenvD + surfacepD + surfacesD + surfacetD + surfaceeD +
                     themeDefs);
 
-        console.log("*** M3 - Material 3 conversion DONE. You should copy the above output...")
+        console.log("*** M3 - Material 3 conversion DONE. You should copy the above output...");
       }
     }
 
@@ -6248,7 +6287,8 @@ class SwissArmyKnifeCard extends LitElement {
 
   _renderCardAttributes() {
 
-    const svgItems = [];
+    // #LGTM: Unused variable svgItems.
+    // const svgItems = [];
     var entityValue;
     var attributeStr;
     var attributes = [];
@@ -6258,7 +6298,8 @@ class SwissArmyKnifeCard extends LitElement {
 
     // console.log("entities.length = ", this.entities.length);
     for (let i = 0; i < this.entities.length; i++) {
-      attributeStr = "data-entity-" + String(i) + "=";
+      // #LGTM: The value assigned to attributeStr here is unused.
+      // attributeStr = "data-entity-" + String(i) + "=";
       entityValue = this.attributesStr[i]
                       ? this.attributesStr[i]
                       : this.secondaryInfoStr[i]
@@ -6855,6 +6896,7 @@ class SwissArmyKnifeCard extends LitElement {
     // Now we have some history, check if it has valid data and filter out either the entity state or
     // the entity attribute. Ain't that nice!
 
+    // #LGTM: The initial value of theState is unused, since it is always overwritten.
     let theState = entity.state;
     if (newStateHistory[0] && newStateHistory[0].length > 0) {
       if (entity.attrId) {
@@ -6879,9 +6921,10 @@ class SwissArmyKnifeCard extends LitElement {
   uppdate(entity, hist) {
     if (!hist) return;
 
-    const getMin = (arr, val) => arr.reduce((min, p) => (
-          Number(p[val]) < Number(min[val]) ? p : min
-          ), arr[0]);
+    // #LGTM: Unused variable getMin.
+    // const getMin = (arr, val) => arr.reduce((min, p) => (
+          // Number(p[val]) < Number(min[val]) ? p : min
+          // ), arr[0]);
 
     const getAvg = (arr, val) => arr.reduce((sum, p) => (
       sum + Number(p[val])
@@ -6907,7 +6950,7 @@ class SwissArmyKnifeCard extends LitElement {
       if (!res[key]) res[key] = [];
       res[key].push(item);
       return res;
-    }
+    };
     const coords = hist.reduce((res, item) => reduce(res, item), []);
     coords.length = Math.ceil(hours / barhours);
 
@@ -6932,7 +6975,7 @@ class SwissArmyKnifeCard extends LitElement {
     for(var i = 0; i < (hours / barhours); i++) {
       if (!coords[i]) {
         coords[i] = [];
-        coords[i].push(coords[i-1][coords[i-1].length-1])
+        coords[i].push(coords[i-1][coords[i-1].length-1]);
       }
     }
     this.coords = coords;
