@@ -1,8 +1,8 @@
 /*
 *
-* Card      : dev-swiss-army-knife-card.js
+* Card      : swiss-army-knife-card.js
 * Project   : Home Assistant
-* Repository: https://github.com/AmoebeLabs/
+* Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
 *
 * Author    : Mars @ AmoebeLabs.com
 *
@@ -12,13 +12,19 @@
 * Description:
 *   The swiss army knife card.
 *
-* Refs:
-*   - https://github.com/AmoebeLabs/swiss-army-knife
+* Documentation Refs:
+*   - https://swiss-army-knife.docs.amoebelabs.com/
+*   - https://ha-m3-themes.docs.amoebelabs.com/
+*
+* Notes:
+* - This is currently a single file, and should be split into smaller, more
+*   manageable classes ;-)
 *
 *******************************************************************************
 */
 
-// Note @2021.10.31
+// NTS @2021.10.31
+// Check compatibility when upgrading lit stuff. Many versions have conflicts!
 // Use compatible lit-* stuff, ie lit-element@2 and lit-html@1.
 // Combining other versions may lead to incompatibility, and thus lots of errors and tools not working anymore!
 
@@ -34,32 +40,23 @@ import {
   unsafeSVG
 } from "https://unpkg.com/lit-html@1/directives/unsafe-svg.js?module";
 
-// import {repeat} from "https://unpkg.com/lit-html@1/directives/repeat.js?module";
 import {ifDefined} from "https://unpkg.com/lit-html@1/directives/if-defined?module";
 
 import { styleMap } from 'https://unpkg.com/lit-html@1/directives/style-map.js?module';
 import { classMap } from 'https://unpkg.com/lit-html@1/directives/class-map.js?module';
 
 import { selectUnit} from 'https://unpkg.com/@formatjs/intl-utils@3.8.4/lib/index.js?module';
-// import {shouldPolyfill} from 'https://unpkg.com/@formatjs/intl-relativetimeformat@9.3.3/lib/should-polyfill.js?module';
-
-// Note: version 9.4.0 is broken and prevents this card from loading...
-// import {shouldPolyfill} from 'https://unpkg.com/@formatjs/intl-relativetimeformat@9.4.0/lib/should-polyfill.js?module';
 
 import { fireEvent, stateIcon, getLovelace } from 'https://unpkg.com/custom-card-helpers@1.8.0/dist/index.m.js?module';
 
-// import 'https://unpkg.com/external-svg-loader@1.4.0/svg-loader.min.js';
-// import {SVGInjector} from 'https://unpkg.com/svg-injector-2@2.1.5/dist/svg-injector.min.js?module';
-// import * as SvgInjector from 'https://unpkg.com/svg-injector-2@2.1.5/dist/svg-injector.min.js?module';
-
-import * as SvgInjector from '/local/images/svginjector/SVGInjector.min.js?module';
-
-// import 'https://cdn.skypack.dev/@ctrl/tinycolor';
-//++ Consts ++++++++++
+// Original injector is buggy. Use a patched version, and store this local...
+// import * as SvgInjector from '/local/images/svginjector/SVGInjector.min.js?module';
+import * as SvgInjector from '/local/community/swiss-army-knife-card/SVGInjector.min.js?module';
 
 console.info(
-  `%c  SWISS-ARMY-KNIFE-CARD  \n%c  Beta Version 0.9.0-b3  `,
+  `%c   SWISS-ARMY-KNIFE-CARD   \n%c  Public Release Candidate \n%c     Version 0.9.0-rc1     `,
   'color: yellow; font-weight: bold; background: black',
+  'color: white; font-weight: bold; background: dimgray',
   'color: white; font-weight: bold; background: dimgray',
 );
 
@@ -76,7 +73,10 @@ const FONT_SIZE = SVG_DEFAULT_DIMENSIONS / 100;
 
 //++ Class ++++++++++
 
-//=============================================================================
+ /**
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
 
 /**
  * Performs a deep merge of objects and returns new object. Does not modify
@@ -117,7 +117,12 @@ const FONT_SIZE = SVG_DEFAULT_DIMENSIONS / 100;
     }
   }
 
- /*******************************************************************************
+ /**
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+ 
+ /*****************************************************************************
   * Utils class
   *
   * Summary.
@@ -176,7 +181,12 @@ class Utils {
   }
 }
 
- /*******************************************************************************
+ /**
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+/******************************************************************************
   * Templates class
   *
   * Summary.
@@ -185,7 +195,7 @@ class Utils {
 
 class Templates {
 
- /*******************************************************************************
+ /******************************************************************************
   * Templates::replaceVariables()
   *
   * Summary.
@@ -306,9 +316,10 @@ class Templates {
     }
   }
 }
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ /**
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
 
 class Toolset {
   constructor(argCard, argConfig) {
@@ -493,7 +504,6 @@ class Toolset {
     if (this.tools) {
       this.tools.map((item, index) => {
 
-        //console.log("Toolset::firstUpdated, calling item/index", item, index);
         if (item.type == "segarc") {
           if (this.dev.debug) console.log('Toolset::firstUpdated - calling SegmentedArcTool firstUpdated');
           item.tool.firstUpdated(changedProperties);
@@ -587,38 +597,29 @@ class Toolset {
 
   render() {
 
-    // Again, Apple proves that their browser just doens't follow the standards like other browsers.
-    // Although some things seem to work, a combination of scale/rotate and Safari goes berserk.
-
-    // So separate settings for Safari and any other browser...
-
     // Note:
     // Rotating a card can produce different results on several browsers.
     // A 1:1 card / toolset gives the same results, but other aspect ratio's may give different results.
 
-    //# TODO:
-    // Apply toolset styles to the svg styles.
-    // One of the things can be a colorswatch, a filter, etc...
-
     if ((this._card.isSafari) || (this._card.iOS)) {
-    // if (false && ((this._card.browser.name == 'Safari') && (this._card.browser.major <= 15) && (this._card.browser.minor <= 2) && (this._card.browser.patch < 1))) {
-    //if (((this._card.browser.name == 'Safari') && (this._card.browser.version != "15.2.1"))) {
+      //
+      // Renderpath for Safari:
       //
       // Safari seems to ignore - although not always - the transform-box:fill-box setting.
       // - It needs the explicit center point when rotating. So this is added to the rotate() command.
-      // - scale around center uses the "move object to 0,0 -> scale -> move object back to position" trick, where the second move takes scaling into account!
-      // - Does not apply transforms from the child's point of view. Transform of toolset_position MUST take scaling of one level higher into account!
+      // - scale around center uses the "move object to 0,0 -> scale -> move object back to position" trick,
+      //   where the second move takes scaling into account!
+      // - Does not apply transforms from the child's point of view.
+      //   Transform of toolset_position MUST take scaling of one level higher into account!
       //
       // Note: rotate is done around the defined center (cx,cy) of the toolsets position!
       //
-      // NTS:
-      // Safari NEEDS the overflow:visible on the <svg> element, as it defaults to "svg:{overflow: hidden;}".
-      // Other browsers don't need that, they default to: "svg:not(:root) {overflow: hidden;}"
+      // More:
+      // - Safari NEEDS the overflow:visible on the <svg> element, as it defaults to "svg:{overflow: hidden;}".
+      //   Other browsers don't need that, they default to: "svg:not(:root) {overflow: hidden;}"
       //
-      // Without this setting, objects are cut-off or become invisible while scaled!
+      //   Without this setting, objects are cut-off or become invisible while scaled!
       
-      // @2022.01.23 Next part is ok for all Safari versions regarding scaling a toolset, but when rotating comes into play, it messes up on both versions.
-      // ie 15.2 and 15.2.1
       return svg`
         <g id="toolset-${this.toolsetId}" class="toolset__group-outer"
            transform="rotate(${this.transform.rotate.x}, ${this.svg.cx}, ${this.svg.cy})
@@ -633,26 +634,13 @@ class Toolset {
         </g>
       `;
 
-      // this one is ok for 15.2. not for 15.2.1
-      // return svg`
-        // <g id="toolset-${this.toolsetId}" class="toolset__group-outer"
-           // transform="rotate(${this.transform.rotate.x}, ${this.svg.cx}, ${this.svg.cy})
-                      // scale(${this.transform.scale.x}, ${this.transform.scale.y})
-                      // "
-           // style="transform-origin:center;">
-          // <svg style="overflow:visible;">
-            // <g class="toolset__group" transform="translate(${this.svg.cx/this.transform.scale.x}, ${this.svg.cy/this.transform.scale.y})">
-              // ${this.renderToolset()}
-            // </g>
-            // </svg>
-        // </g>
-      // `;
-
     } else {
       //
-      // Any other browser follows the standards:
-      // - using transform-box:fill-box to make sure every transform is about the object itself!
-      // - applying the rules seen from the child's point of view. So the transform on the toolset_position is NOT scaled, as the scaling is done one level higher.
+      // Renderpath for ANY other browser that usually follows the standards:
+      //
+      // - use transform-box:fill-box to make sure every transform is about the object itself!
+      // - applying the rules seen from the child's point of view.
+      //   So the transform on the toolset_position is NOT scaled, as the scaling is done one level higher.
       //
       // Note: rotate is done around the center of the bounding box. This might NOT be the toolsets center (cx,cy) position!
       //
@@ -672,9 +660,10 @@ class Toolset {
   }
 } // END of class
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ /**
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
 
 class BaseTool {
   constructor(argToolset, argConfig, argPos) {
@@ -745,13 +734,10 @@ class BaseTool {
     this.csnew = {}
     if ((this.config.csnew) && (this.config.csnew.colors)) {
       this.config.csnew.colors.forEach((item, i) => {
-        // console.log('csnew, i, item', i, item);
         this.csnew[item.stop] = this.config.csnew.colors[i];
       })
 
-    // console.log('this.csnew ', this.csnew);
     this.sortedcsnew = Object.keys(this.csnew).map(n => Number(n)).sort((a, b) => a - b);
-    // console.log('this.sortedcsnew ', this.sortedcsnew);
     }
   }
 
@@ -851,8 +837,6 @@ class BaseTool {
       // you can override any value from within an animation, not just the css style settings.
       this.item = item;
       this.activeAnimation = item;
-      // console.log('set value, state, image BEFORE', this._stateValue, item);
-      // this.item = Templates.getJsTemplateOrValue(this, this._stateValue, item);
     });
 
     return true;
@@ -875,11 +859,9 @@ class BaseTool {
         this.styles = Merge.mergeDeep(this.config.styles, this.animationStyle);
       }
       
-      // card stuff testing...
       if (this.styles.card) {
         if (Object.keys(this.styles.card).length != 0) {
           this._card.styles.card = Merge.mergeDeep(this.styles.card);
-          // console.log(new Date().getTime(), "id=", this._card.cardId, "===== MergeAnimationStyleIfChanged, CARD style set to: ", this.styles.card);
         }
       }
     }
@@ -1000,8 +982,13 @@ class BaseTool {
     return color;
   }
 }
+
+ /**
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
  
- /*******************************************************************************
+ /*****************************************************************************
   * RangeSliderTool class
   *
   * Summary.
@@ -1380,18 +1367,7 @@ class RangeSliderTool extends BaseTool {
 
     this.elements.svg.addEventListener("pointerdown", e => {
       e.preventDefault();
-      // e.stopImmediatePropagation();
       e.stopPropagation();
-      
-      // Testing lock tap
-      // if (this.locked) {
-        // console.log("pointerdown -> locked = true", this);
-        // return;
-      // }
-      // fireEvent(window, 'haptic', 'light');
-
-      // e.currentTarget.addEventListener("pointermove", pointerMove);
-      // e.currentTarget.onpointermove = pointerMove;
       
       const mousePos = this.oMousePosSVG(e);
       console.log("pointerdown", mousePos, this.svg.thumb, this.m);
@@ -1430,19 +1406,9 @@ class RangeSliderTool extends BaseTool {
 
     this.elements.svg.addEventListener("pointerup", e => {
       e.preventDefault();
-      // e.stopImmediatePropagation();
       e.stopPropagation();
 
-      // Testing lock tap
-      // if (this.locked) {
-        // console.log("pointerup -> locked = true", this);
-        // this.locked = false;
-        // fireEvent(window, 'haptic', 'success');
-        // return;
-      // }
-
       if (!this.dragging) return;
-      // this.locked = true;
 
       this.dragging = false;
       clearTimeout(this.timeOutId);
@@ -1451,30 +1417,16 @@ class RangeSliderTool extends BaseTool {
         this.elements.capture.releasePointerCapture(e.pointerId);
       // }
       if (this.dev.debug) console.log('pointerUP');
-      // Frame();
       Frame2.call(this);
       this.callService();
     }, {capture: true, passive: false});
-
-    // this.elements.svg.addEventListener("pointerout", () => {
-
-      // this.dragging = false;
-      // this.target = 0;
-      // if (this.dev.debug) console.log('pointerOUT');
-      // Frame();
-    // });
 
     this.elements.svg.addEventListener("pointermove", e => {
       let scaleValue;
 
       e.preventDefault();
-      // e.stopImmediatePropagation();
       e.stopPropagation();
 
-      // if ((!this.elements.capture.hasPointerCapture(e.pointerId)) ) {
-        // throw error("Moving pointer without capture");
-      // }
-      
       if (this.dragging) {
         this.m = this.oMousePosSVG(e);
 
@@ -1495,7 +1447,6 @@ class RangeSliderTool extends BaseTool {
             break;
         }
         Frame2.call(this);
-        // Frame();
       }
     }, {capture: true, passive: false});
 
@@ -1592,13 +1543,12 @@ class RangeSliderTool extends BaseTool {
 
     if (this.dev.debug) console.log('slider - _renderRangeSlider');
 
-    // this.styles = Merge.mergeDeep(this.config.styles);
     this.MergeAnimationClassIfChanged();
     this.MergeColorFromState(this.styles);
     this.MergeAnimationStyleIfChanged(this.styles);
     this.MergeColorFromState(this.styles);
 
-    this.renderValue = this._stateValue;// || this.labelValue2;
+    this.renderValue = this._stateValue;
     if (this.dragging) {
       this.renderValue = this.labelValue2;
     } else {
@@ -1692,10 +1642,6 @@ class RangeSliderTool extends BaseTool {
       }
     }
     
-    // if (!this.counter) this.counter = 1;
-    // this.counter++;
-    // this.counter = this.renderValue;
-    
     const svgItems = [];
     svgItems.push(svg`
       <rect id="capture" class="${classMap(this.classes.capture)}" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
@@ -1764,7 +1710,12 @@ class RangeSliderTool extends BaseTool {
   }
 } // END of class
 
- /*******************************************************************************
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+ 
+ /******************************************************************************
   * LineTool class
   *
   * Summary.
@@ -1877,7 +1828,12 @@ class LineTool extends BaseTool {
   }
 } // END of class
 
- /*******************************************************************************
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+ /******************************************************************************
   * CircleTool class
   *
   * Summary.
@@ -1963,7 +1919,6 @@ class CircleTool extends BaseTool {
   * The render() function for this object.
   *
   */
-//        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
 
   render() {
 
@@ -1977,7 +1932,12 @@ class CircleTool extends BaseTool {
   }
 } // END of class
 
- /*******************************************************************************
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+ /******************************************************************************
   * SwitchTool class
   *
   * Summary.
@@ -2220,7 +2180,12 @@ class SwitchTool extends BaseTool {
   }
 } // END of class
 
- /*******************************************************************************
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+ /******************************************************************************
   * RegPolyTool class
   *
   * Summary.
@@ -2351,7 +2316,12 @@ class RegPolyTool extends BaseTool {
   }
 } // END of class
 
- /*******************************************************************************
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+ /******************************************************************************
   * UserSvgTool class, UserSvgTool::constructor
   *
   * Summary.
@@ -2462,20 +2432,6 @@ class UserSvgTool extends BaseTool {
     
     this.MergeAnimationStyleIfChanged();
 
-    // #TODO:
-    // This is only rendering an external svg. Also be able to render inline yaml svg stuff
-
-    // const svgItems = this.config.svgs.map(item => {
-
-      // return svg`
-        // <g>
-          // <line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2" />
-          // <path d="m 0 0 h 50 v 10 l 5 5 l -5 5 l 0 10 h -50 z " stroke-width="2" stroke="#fff" fill="#aaa"/>
-          // ${unsafeSVG(item.data)}
-        // </g>
-      // `;
-    // })
-
     if (this.injector.svg) {
       console.log("re-using injected svg...");
       return svg`${this.injector.svg}`;
@@ -2485,12 +2441,6 @@ class UserSvgTool extends BaseTool {
         </svg>
         `;
     }
-
-    // return svg`
-      // <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
-        // <image href="${this.images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
-      // </svg>
-      // `;
   }
  /*******************************************************************************
   * UserSvgTool::render()
@@ -2507,18 +2457,15 @@ class UserSvgTool extends BaseTool {
         ${this._renderUserSvg()}
       </g>
     `;
-
-    // return svg`
-      // <g id="usersvg-${this.toolId}" class="sak-usersvg__group hover" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
-        // @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
-        // ${this._renderUserSvg()}
-      // </g>
-    // `;
-
   }
 } // END of class
 
- /*******************************************************************************
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+ /******************************************************************************
   * RectangleTool class
   *
   * Summary.
@@ -2614,7 +2561,12 @@ class RectangleTool extends BaseTool {
   }
 } // END of class
 
- /*******************************************************************************
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+ /******************************************************************************
   * RectangleToolEx class
   *
   * Summary.
@@ -2709,11 +2661,6 @@ class RectangleToolEx extends BaseTool {
       this.MergeColorFromState(this.styles.rectex);
     }
 
-    // if (this.styles.card) {
-      // console.log("rectex, has card styles", this.styles.card);
-      // this._card.styles.card = this.styles.card;
-    // };
-    
     if (!this.counter) {this.counter=0}
     this.counter++;
 
@@ -2756,7 +2703,12 @@ class RectangleToolEx extends BaseTool {
   }
 } // END of class
 
- /*******************************************************************************
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+ /******************************************************************************
   * EllipseTool class
   *
   * Summary.
@@ -2844,7 +2796,12 @@ class EllipseTool extends BaseTool {
 } // END of class
 
 
- /*******************************************************************************
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+ /******************************************************************************
   * EntityIconTool class
   *
   * Summary.
@@ -2998,51 +2955,9 @@ class EntityIconTool extends BaseTool {
       }
     }
 
-//        <foreignObject width="${this.svg.iconPixels}" height="${this.svg.iconPixels}" x="${this.svg.xpx}" y="${this.svg.ypx}">
-
-//            <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml" width="100%" height="100% !important">
-//                <ha-icon .icon=${icon} style="${configStyleStr}";></ha-icon>
-//            </div>
-
-    // Safari stays a problem with icons. Using <img></img> seems to do something (sizes and position are different!!), but could it be that
-    // I can get the svg path for the icon, and then render that path? Then the foreignObject can be abused (size to 0,0) to hold the svg for Safari, nothing else...
-
-    //this.elements.haIcon = this._card.shadowRoot.getElementById("icon-".concat(this.toolId));
-    // The inspector shows: ha-icon id=, shadow-root, ha-svg-icon, shadow-root, svg, path.
-    // Or can we use the svg use keyword??????
-
     if (!this.alternateColor) {this.alternateColor = 'white'};
-    //if (this.alternateColor == 'white') {this.alternateColor = 'black'} else {this.alternateColor = 'white'};
-//        <rect width="${this.svg.iconPixels}" height="${this.svg.iconPixels}" x="${this.svg.xpx}" y="${this.svg.ypx}"
-//        <rect width="${this.svg.iconPixels}px" height="${this.svg.iconPixels}px" x="${this.svg.cx - this.svg.iconPixels/2}" y="${(this.svg.cy - this.svg.iconPixels)*1.8}"
-//          style="stroke-width:10;stroke:${this.alternateColor};fill:none"></rect>
 
-    // NTS:
-    // Keep using the em values for the iconSize, and NOT the pixels, as this gives weird extra scaling on Safari!!
-
-    // #TODO:
-    // Could it be possible to simply use this: https://www.sitepoint.com/how-to-translate-from-dom-to-svg-coordinates-and-back-again/
-    // to get the Safari client coordiantes. Already used for clicks in slider, so use also for this stuff to place icon not on svg coordinates, but xlated to client coords??
-    // Or are these the whole screen, and not the card size coordinates????
-
-    //console.log("ICON NAME", icon);
-
-    // NOTE: .icon changed to icon. Why has this worked?????
-
-    //var iconSvg = null;
-
-    // Test with global cache in lovelace...
-
-    // NTS@20201.12.24
-    // When using SVG Icon, it crashes with "cannot read properties of null (reading 'querySelectorAll')
-    // So it seems the query doesn't return anything, not even index [0]...
-    // Solution:
-    // After an icon change, the shadowRoot isn't there yet, so use '?' for that test...
-    //
-    // Should the .whenDefined
-    
-    // if (!this._card.lovelace.sakIconCache[icon]) {
-    if (!devSwissArmyKnifeCard.sakIconCache[icon]) {
+    if (!SwissArmyKnifeCard.sakIconCache[icon]) {
       var theQuery = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot?.querySelectorAll("*");
       if (theQuery) {
         this.iconSvg = theQuery[0]?.path;
@@ -3050,22 +2965,13 @@ class EntityIconTool extends BaseTool {
         this.iconSvg = undefined;
       }
 
-      // this.iconSvg = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot.querySelectorAll("*")[0]?.path;
-
       if (!this.iconSvg) {
         // this._card.pleaseReRender();
       } else {
-        // this._card.lovelace.sakIconCache[icon] = this.iconSvg;
-        devSwissArmyKnifeCard.sakIconCache[icon] = this.iconSvg;
+        SwissArmyKnifeCard.sakIconCache[icon] = this.iconSvg;
       }
     } else {
-      // this.iconSvg = this._card.lovelace.sakIconCache[icon];
-      this.iconSvg = devSwissArmyKnifeCard.sakIconCache[icon];
-
-      // #WIP:
-      // this._card.pleaseReRender();
-
-      // console.log("_renderIcon, icon from global cache!!, icon=", icon, "svg=", this.iconSvg);
+      this.iconSvg = SwissArmyKnifeCard.sakIconCache[icon];
     }
     
 
@@ -3074,36 +2980,17 @@ class EntityIconTool extends BaseTool {
       this.iconSvg = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot.querySelectorAll("*")[0]?.path;
       if (!this.iconSvg) {
         this._card.pleaseReRender();
-//        if (!this.iconTimeoutPending) {
-//          this.iconTimeoutPending = true;
-//          setTimeout(
-//              () => this._iconSvgTimeout(),
-//              100);
-//        } else {
       }
     }
     }
 
-//width="${this.svg.iconSize}em" height="${this.svg.iconSize}em"
-//x="${this.svg.cx}" y="${this.svg.cy}
-
-//        <svg viewbox="0, 0, 24, 24" preserveAspectRatio="xMidYMid meet" focusable="false" x="-200" height="50%"
-//            <rect x="0" y="0" width="100%" height="100%" fill="none" stroke="yellow" stroke-width="5" x="${this.svg.xpx}" y="${this.svg.ypx}"></rect>
-
-//            <svg preserveAspectRatio="xMidYMid meet" focusable="false">
-//        </svg>
-
-    //var scale = this.svg.iconPixels / 24;
-
-
-// Scaling experiment:
-//            <path d="${this.iconSvg}" fill="red" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"
-
     var scale = 1;
 
     // NTS@20201.12.24
-    // Add (true) to force rendering the Safari like solution for icons. After the above fix, it seems to work for both Chrome and
-    // Safari browsers. That is nice. Now animations also work on Chrome...
+    // Add (true) to force rendering the Safari like solution for icons. 
+    // After the above fix, it seems to work for both Chrome and Safari browsers.
+    // That is nice. Now animations also work on Chrome...
+
     if ((true) || (this._card.isSafari) || (this._card.iOS)) {
       if (this.iconSvg) {
         // Use original size, not the corrected one!
@@ -3117,7 +3004,8 @@ class EntityIconTool extends BaseTool {
 
         scale = this.svg.iconPixels / 24;
         // scale = 1;
-        // Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required to position the icon on its desired location.
+        // Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required
+        // to position the icon on its desired location.
         // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
         return svg`
           <g id="icon-${this.toolId}" class="${classMap(this.classes.icon)}" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
@@ -3154,19 +3042,14 @@ class EntityIconTool extends BaseTool {
 
   }
 
-                  // style="${styleMap(this.styles.icon)}";></ha-icon>
-
   _handleAnimationEvent(argEvent, argThis) {
     argEvent.stopPropagation();
     argEvent.preventDefault();
 
-    // console.log('_handleAnimationEvent ', argEvent, argThis);
     argThis.iconSvg = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot?.querySelectorAll("*")[0]?.path;
     if (argThis.iconSvg) {
-      // console.log('_handleAnimationEvent YESSSSSSSSSSSSSSSSSSSSSSSSSSSS...');
       argThis._card.requestUpdate();
     } else {
-      // console.log('_handleAnimationEvent NOPE, not yet...');
     }
   }
   
@@ -3187,10 +3070,6 @@ class EntityIconTool extends BaseTool {
   * a bug in rendering the Icon?? Only first time icon is clipped, then displayed normally if a data update
   * from hass is coming in.
   */
-//      <g "" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale}) translate(${this.svg.xlateX} ${this.svg.xlateY})"
-
-// 2020.12.01: Why scale?? Is done on toolset level...
-//       <g "" id="icongrp-${this.toolId}" class="svgicon" transform="scale(${this.toolsetPos.scale})"
 
   render() {
 
@@ -3201,20 +3080,15 @@ class EntityIconTool extends BaseTool {
         ${this._renderIcon()}
       </g>
     `;
-
-
-    // return svg`
-      // <g "" id="icongrp-${this.toolId}" class="${classMap(this.classes.tool)}"
-        // @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
-
-        // ${this._renderIcon()}
-      // </g>
-    // `;
-
   }
 } // END of class
 
- /*******************************************************************************
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+ /******************************************************************************
   * BadgeTool class
   *
   * Summary.
@@ -3340,11 +3214,12 @@ class BadgeTool extends BaseTool {
   }
 } // END of class
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
 
- /*******************************************************************************
+ /******************************************************************************
   * EntityStateTool class
   *
   * Summary.
@@ -3404,17 +3279,6 @@ class EntityStateTool extends BaseTool {
       inState = this._card.toLocale(localeTag + inState.toLowerCase(), inState);
     }
     
-    // return svg`
-      // <tspan class="state__value, hover" x="${this.svg.x}" y="${this.svg.y}"
-        // style="${styleMap(this.styles.state)}">
-        // ${this.config?.text?.before ? this.config.text.before : ''}${this._card.counter}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
-    // `;
-
-    // return svg`
-      // <tspan class="${classMap(this.classes.state)}" x="${0}" y="${0}"
-        // style="${styleMap(this.styles.state)}">
-        // ${this.config?.text?.before ? this.config.text.before : ''}${inState}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
-    // `;
     return svg`
       <tspan class="${classMap(this.classes.state)}" x="${this.svg.x}" y="${this.svg.y}"
         style="${styleMap(this.styles.state)}">
@@ -3474,39 +3338,10 @@ class EntityStateTool extends BaseTool {
   }
 
   firstUpdated(changedProperties) {
-  
-    // var elements = this._card.shadowRoot.getElementById("state-".concat(this.toolId))
-    // // elements = this._card.shadowRoot.getElementById("svg.text")
-    // // elements = this._card.shadowRoot.querySelectorAll("svg.text")
-    
-    // const box = elements.querySelector('tspan.sak-state__value').getBBox();
-    // const box2 = elements.getBBox();
-    
-    // console.log("state::firstUpdated, elements", elements, box, box2);
   }
 
-  // state::updated
-  // Firs try to scale text using SVG viewBox. But due to all the calculations, this is not easy.
-  // But I can see, that scaling is done... So I guess something can be done to scale the state value to the
-  // available width...
-  //
-  // Maybe the svg should have the real coordinates, and the text inside assume 0 0 for x/y...
-  // settting x,y to 0 helps, but calculations are still not right, but much better. So it has to do with
-  // the position of the SVG within the overall SVG. Hmmmm, calculations!!!!!!!!!!!!!!!!!
-  
+ 
   updated(changedProperties) {
-  
-    // var elements = this._card.shadowRoot.getElementById("state-".concat(this.toolId))
-    // // elements = this._card.shadowRoot.getElementById("svg.text")
-    // // elements = this._card.shadowRoot.querySelectorAll("svg.text")
-    
-    // const box = elements.querySelector('tspan.sak-state__value').getBBox();
-    // const tlen = elements.querySelector('tspan.sak-state__value').getComputedTextLength();
-    // const box2 = elements.getBBox();
-    // // elements.setAttribute('viewBox', `${box.x} ${box.y} ${box.width} ${box.height}`)
-    // elements.setAttribute('viewBox', `${this.svg.x } ${this.svg.y + 100 } ${box2.width * 4} ${box2.height * 1}`)
-
-    // console.log("state::updated, elements", elements, box, box2, tlen);
   }
   
   render() {
@@ -3538,7 +3373,12 @@ class EntityStateTool extends BaseTool {
   } // render()
 }
 
- /*******************************************************************************
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+ /******************************************************************************
   * EntityNameTool class
   *
   * Summary.
@@ -3639,10 +3479,12 @@ class EntityNameTool extends BaseTool {
 } // END of class
 
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
 
- /*******************************************************************************
+ /******************************************************************************
   * EntityAreaTool class
   *
   * Summary.
@@ -3737,10 +3579,12 @@ class EntityAreaTool extends BaseTool {
   }
 } // END of class
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
 
- /*******************************************************************************
+ /******************************************************************************
   * TextTool class
   *
   * Summary.
@@ -3817,10 +3661,12 @@ class TextTool extends BaseTool {
 } // END of class
 
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
 
- /*******************************************************************************
+ /******************************************************************************
   * HorseshoeTool class
   *
   * Summary.
@@ -4120,8 +3966,10 @@ class HorseshoeTool extends BaseTool {
   }
 } // END of class
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
 
 class SparklineBarChartTool extends BaseTool {
   constructor (argToolset, argConfig, argPos) {
@@ -4339,8 +4187,6 @@ class SparklineBarChartTool extends BaseTool {
   */
   render() {
 
-    //if (!this._needsRendering) return;
-
     return svg`
       <g id="barchart-${this.toolId}" class="${classMap(this.classes.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
@@ -4351,8 +4197,10 @@ class SparklineBarChartTool extends BaseTool {
   }
 }
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
 
  /*******************************************************************************
   * SegmentedArcTool class
@@ -4409,9 +4257,6 @@ class SegmentedArcTool extends BaseTool {
 
     if (this.dev.performance) console.time("--> "+ this.toolId + " PERFORMANCE SegmentedArcTool::constructor");
 
-    // Extra for use of styleMap
-    // this.styles = {};
-
     this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius);
     this.svg.radiusX = Utils.calculateSvgDimension(argConfig.position.radius_x || argConfig.position.radius);
     this.svg.radiusY = Utils.calculateSvgDimension(argConfig.position.radius_y || argConfig.position.radius);
@@ -4420,8 +4265,6 @@ class SegmentedArcTool extends BaseTool {
     // #TODO:
     // Get gap from colorlist, colorstop or something else. Not from the default segments gap.
     this.svg.segments.gap = Utils.calculateSvgDimension(this.config.segments.gap);
-    //this.svg.segments.dash = Utils.calculateSvgDimension(this.config.segments.dash);
-    // this.svg.scale_offset = Utils.calculateSvgDimension(this.config.scale_offset);
     this.svg.scale_offset = Utils.calculateSvgDimension(this.config.scale.offset);
 
 
@@ -4443,15 +4286,6 @@ class SegmentedArcTool extends BaseTool {
     // Cache path (d= value) of segments drawn in map by segment index (counter). Simple array.
     this._cache = [];
 
-    // Check for gap. Big enough?
-    //const minGap = this.config.position.radius * Math.PI / SVG_VIEW_BOX / 2;
-    //this.config.segments.gap = Math.max(minGap, this.config.segments.gap);
-
-    //this.config.styles = {...DEFAULT_SEGARC_CONFIG.styles, ...this.config.styles};
-    //this.config.styles_bg = {...DEFAULT_SEGARC_CONFIG.styles_bg, ...this.config.styles_bg};
-    // console.log("segarc - scale fuckup", this.config.scale, this.svg, DEFAULT_SEGARC_CONFIG.scale);
-    // This arc is the scale belonging to another arc??
-
     this._segmentAngles = [];
     this._segments = {};
 
@@ -4461,18 +4295,14 @@ class SegmentedArcTool extends BaseTool {
     this._arc.clockwise = this.config.position.end_angle > this.config.position.start_angle;
     this._arc.direction = this._arc.clockwise ? 1 : -1;
 
-    // 2020.10.13 (see issue #5)
-    // Use different calculation for parts to support colorstops, colorlists and segment counts instead of the currently used dash (degrees) value
-    //
-
     var tcolorlist = {};
     var colorlist = null;
     // New template testing for colorstops
     if (this.config.segments.colorlist?.template) {
         colorlist = this.config.segments.colorlist;
-        if (this._card.lovelace.config.sak_templates.templates[colorlist.template.name]) {
+        if (this._card.lovelace.config.sak_user_templates.templates[colorlist.template.name]) {
           if (this.dev.debug) console.log('SegmentedArcTool::constructor - templates colorlist found', colorlist.template.name);
-          tcolorlist = Templates.replaceVariables2(colorlist.template.variables, this._card.lovelace.config.sak_templates.templates[colorlist.template.name]);
+          tcolorlist = Templates.replaceVariables2(colorlist.template.variables, this._card.lovelace.config.sak_user_templates.templates[colorlist.template.name]);
           this.config.segments.colorlist = tcolorlist;
         }
     }
@@ -4650,9 +4480,6 @@ class SegmentedArcTool extends BaseTool {
 
     var changed = super.value = state;
 
-//    this._stateValuePrev = this._stateValue || state;
-//    this._stateValue = state;
-//    this._stateValueIsDirty = true;
     return changed;
   }
 
@@ -4662,9 +4489,6 @@ class SegmentedArcTool extends BaseTool {
   {
     if (this.dev.debug) console.log('SegmentedArcTool - firstUpdated IN with _arcId/id', this._arcId, this.toolId, this.config.isScale);
     this._arcId = this._card.shadowRoot.getElementById("arc-".concat(this.toolId));
-    //const na = '';//this._arcId.querySelector();
-    //const na = this._arcId.querySelector("arc-segment-".concat(this.Id).concat("-").concat(1));
-    //const na2 = this._card.shadowRoot.getElementById("arc-segment-".concat(this.Id).concat("-").concat(0));
 
     this._firstUpdatedCalled = true;
 
@@ -4677,7 +4501,6 @@ class SegmentedArcTool extends BaseTool {
       if (this.dev.debug) console.log('RENDERNEW - firstUpdated IN with _arcId/id/isScale/scale/connected', this._arcId, this.toolId, this.config.isScale, this._segmentedArcScale, this._card.connected);
       if (!this.config.isScale) this._stateValuePrev = null;
       this._initialDraw = true;
-      // Huh? next call doesn't seem required to update / initiate animation???
       this._card.requestUpdate();
     }
   }
@@ -4686,8 +4509,6 @@ class SegmentedArcTool extends BaseTool {
 
   updated(changedProperties) {
     if (this.dev.debug) console.log('SegmentedArcTool - updated IN');
-    // Element has updated. Now do the animation ???
-    // let dateTime = new Date().getTime();
   }
 
   // SegmentedArcTool::render
@@ -4707,8 +4528,6 @@ class SegmentedArcTool extends BaseTool {
 
   _renderScale() {
     if (this._segmentedArcScale) return this._segmentedArcScale.render();
-
-    //if (this.config.show.scale) this._segmentedArcScale.render();
   }
 
   _renderSegments() {
@@ -4746,28 +4565,6 @@ class SegmentedArcTool extends BaseTool {
           arcEndPrev = (valPrev * this._arc.size * this._arc.direction) + this.config.position.start_angle;
       var arcSize = Math.abs(arcEnd - this.config.position.start_angle);
       var arcSizePrev = Math.abs(arcEndPrev - this.config.position.start_angle);
-
-      // Safeguard. Why is this happening...
-      // if (!arcEnd) {
-        // console.log('arcEnd invalid', arcEnd, val, this._stateValue);
-        // arcEnd = this.config.position.start_angle;
-      // }
-      
-      // // Styles are already converted to an Object {}...
-      // if (!this.stylesFgStr) {
-        // let configStyleFg = {...this.config.styles.foreground};
-        // // const configStyleFgStr = JSON.stringify(configStyleFg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-        // this.stylesFgStr = JSON.stringify(configStyleFg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-      // }
-      // let configStyleFgStr = this.stylesFgStr;
-
-      // // Draw background of segmented arc...
-      // if (!this.stylesBgStr) {
-        // let configStyleBg = {...this.config.styles.background};
-        // // const configStyleBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-        // this.stylesBgStr = JSON.stringify(configStyleBg).slice(1, -1).replace(/"/g,"").replace(/,/g,"");
-      // }
-      // let configStyleBgStr = this.stylesBgStr;
 
       var svgItems = [];
 
@@ -4813,21 +4610,6 @@ class SegmentedArcTool extends BaseTool {
             this.styles.foreground[index]['fill'] = fill;
             // this.styles.foreground[index]['stroke'] = stroke;
           }
-
-          // // #WIP
-          // // Testing 'lastcolor'
-          // if (this.config.show.lastcolor) {
-            // if (index > 0) {
-              // for (var j=index-1; j--; j>0) {
-                // this.styles.foreground[j]['fill'] = fill;
-              // }
-            // }
-          // }
-
-          // this.config.styles.foreground['fill'] = fill;
-          //if (this.dev.debug) console.log('RENDERNEW _renderSegments - from cache', this.toolId, index, d);
-
-//                             style="${styleMap(this.config.styles.foreground)}"
 
           svgItems.push(svg`<path id="arc-segment-${this.toolId}-${index}" class="sak-segarc__foreground"
                             style="${styleMap(this.styles.foreground[index])}"
@@ -4944,11 +4726,6 @@ class SegmentedArcTool extends BaseTool {
                   thisTool.as[0].style.fill = fill;
 
                   if (runningSegment > 0) {
-                    // for (var j=0; j++; j< runningSegment) {
-                      // thisTool.styles.foreground[j]['fill'] = fill;
-                      // thisTool.as[j].style.fill = fill;
-                      // console.log('in segarc draw', j, runningSegment, fill);
-                    // }
                     for (var j=runningSegment+1; j--; j>=0) {
                       if (thisTool.styles.foreground[j]['fill'] != fill) {
                         thisTool.styles.foreground[j]['fill'] = fill;
@@ -4959,10 +4736,6 @@ class SegmentedArcTool extends BaseTool {
                       // console.log('in segarc draw', j, runningSegment, fill);
                     }
                   } else {
-                    // if (thisTool.styles.foreground[0]['fill'] != fill) {
-                      // thisTool.styles.foreground[0]['fill'] = thisTool._segments.colorStops[thisTool._segments.sortedStops[0]];
-                      // thisTool.as[0].style.fill = thisTool._segments.colorStops[thisTool._segments.sortedStops[0]];
-                    // }
                   }
                 }
 
@@ -5002,12 +4775,13 @@ class SegmentedArcTool extends BaseTool {
             } while ((tween.runningAngle != tween.frameAngle) /* && (runningSegment == runningSegmentPrev)*/);
 
             // NTS @ 2020.10.14
-            // In a fast paced animation - say 10msec - multiple segments should be drawn, while tween.progress already has the value of 1.
+            // In a fast paced animation - say 10msec - multiple segments should be drawn, 
+            //   while tween.progress already has the value of 1.
             // This means only the first segment is drawn - due to the "&& (runningSegment == runningSegmentPrev)" test above.
             // To fix this:
             // - either remove that test (why was it there????)... Or
             // - add the line "|| (runningSegment != runningSegmentPrev)" to the if() below to make sure another animation frame is requested
-            //   altough tween.progress == 1.
+            //   although tween.progress == 1.
             if ((tween.progress != 1) /*|| (runningSegment != runningSegmentPrev)*/) {
                 thisTool.rAFid = requestAnimationFrame(function(timestamp){
                     animateSegmentsNEW(timestamp, thisTool)
@@ -5035,7 +4809,7 @@ class SegmentedArcTool extends BaseTool {
 
           // If previous animation active, cancel this one before starting a new one...
           if (this.rAFid) {
-            //if (this.dev.debug) console.log('RENDERNEW cancelling rAFid', this._card.cardId, this.toolId, 'rAFid', this.rAFid);
+            //if (this.dev.debug) console.log('RENDERNEW canceling rAFid', this._card.cardId, this.toolId, 'rAFid', this.rAFid);
             cancelAnimationFrame(this.rAFid);
           }
 
@@ -5050,7 +4824,7 @@ class SegmentedArcTool extends BaseTool {
           // Handle edge case where - for some reason - arcEnd and arcEndPrev are equal.
           // Do NOT render anything in this case to prevent errors...
           
-          // The check is removed temporarily. Brightness is again nog shown for light. Still the same problem...
+          // The check is removed temporarily. Brightness is again not shown for light. Still the same problem...
 
           if (true || !(arcEnd == arcEndPrev)) {
             // Render like an idiot the first time. Performs MUCH better @first load then having a zillion animations...
@@ -5184,54 +4958,15 @@ class SegmentedArcTool extends BaseTool {
 // https://github.com/d3/d3-selection/blob/master/src/selection/data.js
 //
 
-//=============================================================================
-//=============================================================================
-//=============================================================================
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
 
-class devSwissArmyKnifeCard extends LitElement {
+class SwissArmyKnifeCard extends LitElement {
   // card::constructor
   constructor() {
     super();
-
-    // https://stackoverflow.com/questions/5916900/how-can-you-detect-the-version-of-a-browser
-    // 
-    // function BrowserCheck()
-    // {
-        // var N= navigator.appName, ua= navigator.userAgent, tem;
-        // var M= ua.match(/(opera|chrome|safari|firefox|msie|trident)\/?\s*(\.?\d+(\.\d+)*)/i);
-        // if(M && (tem= ua.match(/version\/([\.\d]+)/i))!= null) {M[2]=tem[1];}
-        // M= M? [M[1], M[2]]: [N, navigator.appVersion,'-?'];
-
-        // var result = {};
-        // [result.name, result.version] = M;
-        // [result.major, result.minor, result.patch] = result.version.split(".");
-        // result.major |= 0;
-        // result.minor |= 0;
-        // result.patch |= 0;
-        // return result;
-        // return M;
-    // }
-
-    // function get_browser() {
-        // var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || []; 
-        // if(/trident/i.test(M[1])){
-            // tem=/\brv[ :]+(\d+)/g.exec(ua) || []; 
-            // return {name:'IE',version:(tem[1]||'')};
-            // }   
-        // if(M[1]==='Chrome'){
-            // tem=ua.match(/\bEdg\/(\d+)/)
-            // if(tem!=null)   {return {name:'Edge(Chromium)', version:tem[1]};}
-            // tem=ua.match(/\bOPR\/(\d+)/)
-            // if(tem!=null)   {return {name:'Opera', version:tem[1]};}
-            // }   
-        // M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
-        // if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
-        // return {
-          // name: M[0],
-          // version: M[1],
-          // tem: tem
-        // };
-     // }
 
     this.connected = false;
 
@@ -5291,19 +5026,15 @@ class devSwissArmyKnifeCard extends LitElement {
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
                 !window.MSStream;
 
-    // Get reference to lovelace where we put all sorts of global caches into to be used by
-    // ALL the SAK cards that are created. It saves a lot of processing & memory
-    
-    // this.lovelace = getLovelace();
-    this.lovelace = devSwissArmyKnifeCard.lovelace;
+    this.lovelace = SwissArmyKnifeCard.lovelace;
     
     if (!this.lovelace) console.error("card::constructor - Can't get Lovelace panel");
 
-    if (!devSwissArmyKnifeCard.sakIconCache) {
-      devSwissArmyKnifeCard.sakIconCache = {};
+    if (!SwissArmyKnifeCard.sakIconCache) {
+      SwissArmyKnifeCard.sakIconCache = {};
     }
-    if (!devSwissArmyKnifeCard.colorCache) {
-      devSwissArmyKnifeCard.colorCache = [];
+    if (!SwissArmyKnifeCard.colorCache) {
+      SwissArmyKnifeCard.colorCache = [];
     }
 
     if (this.dev.debug) console.log('*****Event - card - constructor', this.cardId, new Date().getTime());
@@ -5559,7 +5290,7 @@ class devSwissArmyKnifeCard extends LitElement {
   * card::getUserStyles()
   *
   * Summary.
-  * Returns the user defined CSS styles for the card in sak_templates config
+  * Returns the user defined CSS styles for the card in sak_user_templates config
   * section in lovelace configuration.
   *
   */
@@ -5568,9 +5299,9 @@ class devSwissArmyKnifeCard extends LitElement {
 
     this.userContent = "";
     
-    if ((devSwissArmyKnifeCard.lovelace.config.sak_templates) &&
-        (devSwissArmyKnifeCard.lovelace.config.sak_templates.definitions.user_css_definitions)) {
-      this.userContent = devSwissArmyKnifeCard.lovelace.config.sak_templates.definitions.user_css_definitions.reduce((accumulator, currentValue) => {
+    if ((SwissArmyKnifeCard.lovelace.config.sak_user_templates) &&
+        (SwissArmyKnifeCard.lovelace.config.sak_user_templates.definitions.user_css_definitions)) {
+      this.userContent = SwissArmyKnifeCard.lovelace.config.sak_user_templates.definitions.user_css_definitions.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.content;
       }, "");
     }
@@ -5583,9 +5314,9 @@ class devSwissArmyKnifeCard extends LitElement {
 
     this.sakContent = "";
     
-    if ((devSwissArmyKnifeCard.lovelace.config.sak_templates) &&
-        (devSwissArmyKnifeCard.lovelace.config.sak_templates.definitions.sak_css_definitions)) {
-      this.sakContent = devSwissArmyKnifeCard.lovelace.config.sak_templates.definitions.sak_css_definitions.reduce((accumulator, currentValue) => {
+    if ((SwissArmyKnifeCard.lovelace.config.sak_sys_templates) &&
+        (SwissArmyKnifeCard.lovelace.config.sak_sys_templates.definitions.sak_css_definitions)) {
+      this.sakContent = SwissArmyKnifeCard.lovelace.config.sak_sys_templates.definitions.sak_css_definitions.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.content;
       }, "");
     }
@@ -5595,36 +5326,32 @@ class devSwissArmyKnifeCard extends LitElement {
 
   static getSakSvgDefinitions() {
 
-    devSwissArmyKnifeCard.lovelace.sakSvgContent = null;
+    SwissArmyKnifeCard.lovelace.sakSvgContent = null;
     var sakSvgContent = "";
     
-    if ((devSwissArmyKnifeCard.lovelace.config.sak_templates) &&
-        (devSwissArmyKnifeCard.lovelace.config.sak_templates.definitions.sak_svg_definitions)) {
-      sakSvgContent = devSwissArmyKnifeCard.lovelace.config.sak_templates.definitions.sak_svg_definitions.reduce((accumulator, currentValue) => {
+    if ((SwissArmyKnifeCard.lovelace.config.sak_sys_templates) &&
+        (SwissArmyKnifeCard.lovelace.config.sak_sys_templates.definitions.sak_svg_definitions)) {
+      sakSvgContent = SwissArmyKnifeCard.lovelace.config.sak_sys_templates.definitions.sak_svg_definitions.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.content;
       }, "");
     }
-    // Cache result for later use in cards in lovelace
-    // devSwissArmyKnifeCard.lovelace.sakSvgContent = unsafeSVG(sakSvgContent);
-    devSwissArmyKnifeCard.sakSvgContent = unsafeSVG(sakSvgContent);
+    // Cache result for later use in other cards
+    SwissArmyKnifeCard.sakSvgContent = unsafeSVG(sakSvgContent);
   }
 
   static getUserSvgDefinitions() {
 
-    devSwissArmyKnifeCard.lovelace.userSvgContent = null;
+    SwissArmyKnifeCard.lovelace.userSvgContent = null;
     var userSvgContent = "";
     
-    if ((devSwissArmyKnifeCard.lovelace.config.sak_templates) &&
-        (devSwissArmyKnifeCard.lovelace.config.sak_templates.definitions.user_svg_definitions)) {
-      userSvgContent = devSwissArmyKnifeCard.lovelace.config.sak_templates.definitions.user_svg_definitions.reduce((accumulator, currentValue) => {
+    if ((SwissArmyKnifeCard.lovelace.config.sak_user_templates) &&
+        (SwissArmyKnifeCard.lovelace.config.sak_user_templates.definitions.user_svg_definitions)) {
+      userSvgContent = SwissArmyKnifeCard.lovelace.config.sak_user_templates.definitions.user_svg_definitions.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.content;
       }, "");
     }
-    // Cache result for later use in cards in lovelace
-    // #TODO
-    // - check if stuff can be stored in the class, instead of lovelace. Never thought of that...
-    // devSwissArmyKnifeCard.lovelace.userSvgContent = unsafeSVG(userSvgContent);
-    devSwissArmyKnifeCard.userSvgContent = unsafeSVG(userSvgContent);
+    // Cache result for later use other cards
+    SwissArmyKnifeCard.userSvgContent = unsafeSVG(userSvgContent);
   }
 
  /*******************************************************************************
@@ -5643,30 +5370,32 @@ class devSwissArmyKnifeCard extends LitElement {
   */
   static get styles() {
 
-    if (!devSwissArmyKnifeCard.lovelace) devSwissArmyKnifeCard.lovelace = getLovelace();
+    if (!SwissArmyKnifeCard.lovelace) SwissArmyKnifeCard.lovelace = getLovelace();
 
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    console.log('get styles', darkModeMediaQuery);
-    darkModeMediaQuery.addListener((e) => {
-      const darkModeOn = e.matches;
-      console.log(`Dark mode is ${darkModeOn ? '🌒 on' : '☀️ off'}.`);
-    });
-    console.log('get styles 2', darkModeMediaQuery);
+    // #TESTING
+    // Testing dark/light mode support for future functionality
+    // const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    // console.log('get styles', darkModeMediaQuery);
+    // darkModeMediaQuery.addListener((e) => {
+      // const darkModeOn = e.matches;
+      // console.log(`Dark mode is ${darkModeOn ? '🌒 on' : '☀️ off'}.`);
+    // });
+    // console.log('get styles 2', darkModeMediaQuery);
 
-    // Get - only ONCE - the external SVG defintions for both SAK and UserSvgTool
-    // These definitions are cached into this.lovelace, so available for all cards
+    // Get - only ONCE - the external SVG definitions for both SAK and UserSvgTool
+    // These definitions are cached into the static class of the card
     //
     // Note: If you change a view, and do a refresh (F5) everything is loaded.
     // But after that: HA asks you to refresh the page --> BAM, all Lovelace
     // cached data is gone. So we need a check/reload in a card...
     
-    devSwissArmyKnifeCard.getSakSvgDefinitions();
-    devSwissArmyKnifeCard.getUserSvgDefinitions();
+    SwissArmyKnifeCard.getSakSvgDefinitions();
+    SwissArmyKnifeCard.getUserSvgDefinitions();
     
     return css`
-      ${devSwissArmyKnifeCard.getSystemStyles()}
-      ${devSwissArmyKnifeCard.getSakStyles()}
-      ${devSwissArmyKnifeCard.getUserStyles()}
+      ${SwissArmyKnifeCard.getSystemStyles()}
+      ${SwissArmyKnifeCard.getSakStyles()}
+      ${SwissArmyKnifeCard.getUserStyles()}
     `;
   }
 
@@ -5679,15 +5408,15 @@ class devSwissArmyKnifeCard extends LitElement {
   */
 
   set hass(hass) {
-    //console.time("--> "+ this.cardId + " PERFORMANCE card::hass");
-
     // testing
     // console.log("set hass, themes...", hass.themes, hass.themes.darkMode);
     if (!this.counter) this.counter = 0;
     this.counter++;
     // this.darkMode = false;
+
+    // #TESTING
     if (hass.themes.darkMode != this.darkMode) {
-      console.log("set hass, darkmode changed from/to ", this.darkMode, hass.themes.darkMode, hass.themes);
+      // console.log("set hass, darkmode changed from/to ", this.darkMode, hass.themes.darkMode, hass.themes);
       this.darkMode = hass.themes.darkMode;
     };
     
@@ -5807,26 +5536,13 @@ class devSwissArmyKnifeCard extends LitElement {
             console.log('changed attribute is undefined for entity', this.entities[index].entity_id);
           }
         }
-          
-
-        // if (this.entities[index].attributes[this.config.entities[index].attribute]) {
-          // newStateStr = this._buildState(this.entities[index].attributes[this.config.entities[index].attribute], this.config.entities[index]);
-          // if (newStateStr != this.attributesStr[index]) {
-            // this.attributesStr[index] = newStateStr;
-            // entityHasChanged = true;
-          // }
-          // attrSet = true;
-          // if (this.dev.debug) console.log("set hass - attrSet=true", this.cardId, new Date().getSeconds().toString() + '.'+ new Date().getMilliseconds().toString(), newStateStr);
-        // }
       }
       if ((!attrSet) && (!secInfoSet)) {
         newStateStr = this._buildState(this.entities[index].state, this.config.entities[index]);
         if (newStateStr != this.entitiesStr[index]) {
           this.entitiesStr[index] = newStateStr;
           entityHasChanged = true;
-          // console.log('set hass CHANGED state', entityHasChanged, this.config.entities[index], newStateStr);
         } else {
-          // console.log('set hass NOT state', entityHasChanged, this.config.entities[index], this.entitiesStr[index], newStateStr);
         }
         if (this.dev.debug) console.log("set hass - attrSet=false", this.cardId, new Date().getSeconds().toString() + '.'+ new Date().getMilliseconds().toString(), newStateStr);
       }
@@ -5888,8 +5604,6 @@ class devSwissArmyKnifeCard extends LitElement {
 
     if (this.dev.debug) console.log('setConfig', this.cardId);
 
-    // this.aspectratio = "1/1";
-    // if (config.aspectratio) this.aspectratio = config.aspectratio;
     this.aspectratio = config.aspectratio || "1/1";
     
     var ar = config.aspectratio.trim().split("/");
@@ -5941,7 +5655,7 @@ class devSwissArmyKnifeCard extends LitElement {
       // Filtering out properties
       // console.log("findTemplate, key=", key, "value=", value);
       if (value.template) {
-        const template = thisMe.lovelace.config.sak_templates.templates[value.template.name];
+        const template = thisMe.lovelace.config.sak_user_templates.templates[value.template.name];
           var replacedValue = Templates.replaceVariables3(value.template.variables, template);
           // Hmm. cannot add .template var. object is not extensible...
           // replacedValue.template = 'replaced';
@@ -5990,9 +5704,6 @@ class devSwissArmyKnifeCard extends LitElement {
       if (!this.toolsets) this.toolsets = [];
 
       if (true) {
-        // door lijst  van originele config.
-        // vervang extra id in cfgobj waar template al is vervangen.
-        // kan dat?
         
         var found = false;
         var toolAdd = [];
@@ -6030,17 +5741,6 @@ class devSwissArmyKnifeCard extends LitElement {
         toolList = toolList.concat(toolAdd);
       }
 
-
-      // if (false && toolsetCfg.template) {
-      // } else {
-        // // We don't have a template to run, get list of tools and use that...
-        // // toolList = toolsetCfg.tools;
-      // }
-
-      // Create and push
-      // @2021.12.20 Removed as toolsetCfg is overwritten later...
-      // toolsetCfg.tools = toolList;
-      
       // Testing new template replace stuff...
       if (true) {
         toolsetCfg = cfgobj[toolidx];
@@ -6052,11 +5752,12 @@ class devSwissArmyKnifeCard extends LitElement {
 
     // Special case. Abuse card for m3 conversion to output
     if (this.dev.m3) {
-      console.log("Checking for m3...")
+      console.log("*** M3 - Checking for m3.yaml template to convert...")
       
-      if (this.lovelace.config.sak_templates.templates.m3) {
-        var m3 = this.lovelace.config.sak_templates.templates.m3;
+      if (this.lovelace.config.sak_user_templates.templates.m3) {
+        var m3 = this.lovelace.config.sak_user_templates.templates.m3;
         
+        console.log("*** M3 - Found. Material 3 conversion starting...")
         // #hier m3
         var palette = "";
         var palette2 = "";
@@ -6079,15 +5780,11 @@ class devSwissArmyKnifeCard extends LitElement {
           if (['ref.palette', 'sys.color', 'sys.color.light', 'sys.color.dark'].includes(entity.category_id)) {
             if (!entity.tags.includes('alias')) {
             colorEntities[entity.id] = {'value' : entity.value, 'tags' : entity.tags};
-            // cssNames[entity.id] = "ha-theme-" + entity.tags[1] + "-"  + entity.tags[2] + "-" + entity.tags[3] + ": '" + entity.value;
             };
           };
 
           if (entity.category_id === "ref.palette") {
             palette += entity.id + ": '" + entity.value + "'\n";
-            // palette2 += "ha-theme-" + entity.tags[1] + "-" + entity.tags[2] + "-" + entity.tags[3] + ": '" + entity.value + "'\n";
-            
-            // cssNames[entity.id] = "ha-theme-" + entity.tags[1] + "-"  + entity.tags[2] + "-" + entity.tags[3] + ": '" + entity.value + "'\n";;
             
             // test for primary light color...
             if (entity.id === "md.ref.palette.primary40") {
@@ -6132,14 +5829,8 @@ class devSwissArmyKnifeCard extends LitElement {
           }
         });
         
-        console.log("m3 palettes\n", palette, palette2);
-        console.log("m3 color default\n", colordefault);
-        console.log("m3 color light\n", colorlight);
-        console.log("m3 color dark\n", colordark);
-        
         ['primary', 'secondary', 'tertiary', 'error', 'neutral', 'neutral-variant'].forEach((palette) => {
           [5, 15, 25, 35, 45, 65, 75, 85].forEach((step) => {
-            // colorEntities['md.ref.palette.primary' + step.toString()] = this._getGradientValue(colorEntities['md.ref.palette.primary' + (step - 5).toString()], colorEntities['md.ref.palette.primary' + (step + 5).toString()], 0.5);
             
             colorEntities['md.ref.palette.' + palette + step.toString()] = {
               value: this._getGradientValue(colorEntities['md.ref.palette.' + palette + (step - 5).toString()].value,
@@ -6174,10 +5865,7 @@ class devSwissArmyKnifeCard extends LitElement {
         for (const [index, entity] of Object.entries(colorEntities)) {
           cssNames[index] = "theme-" + entity.tags[1] + "-"  + entity.tags[2] + "-" + entity.tags[3] + ": '" + entity.value + "'";
         };
-
-        // console.log("m3 colorEntities", colorEntities);
-        // console.log("m3 cssNames", cssNames);
-        
+       
         // https://filosophy.org/code/online-tool-to-lighten-color-without-alpha-channel/
 
         function getSurfaces(surfaceColor, paletteColor, opacities, cssName, mode) {
@@ -6206,8 +5894,6 @@ class devSwissArmyKnifeCard extends LitElement {
         }
         
         // Generate surfaces for dark and light...
-        // var opacitysurface = [0.02, 0.035, 0.05, 0.08, 0.11, 0.12, 0.14, 0.16, 0.18, 0.20];
-        // var opacitysurfacelight = [0.02, 0.035, 0.05, 0.08, 0.11, 0.15, 0.19, 0.24, 0.29, 0.35];
         var opacitysurfacelight = [0.03, 0.05, 0.08, 0.11, 0.15, 0.19, 0.24, 0.29, 0.35, 0.4];
         var opacitysurfacedark = [0.05, 0.08, 0.11, 0.15, 0.19, 0.24, 0.29, 0.35, 0.40, 0.45];
 
@@ -6245,24 +5931,24 @@ class devSwissArmyKnifeCard extends LitElement {
         var errordark = colorEntities["md.ref.palette.error80"].value;
         var surfaceeD = getSurfaces(surfacedark, errordark, opacitysurfacedark, "  theme-ref-elevation-surface-error", "dark");
 
-
-
         var bgCol = {};
         var fgCol = {};
 
         var themeDefs = "";
         for (const [index, cssName] of Object.entries(cssNames)) {
           if (cssName.substring(0,9) == 'theme-ref') {
-            // console.log(cssName.substring(0,9));
             themeDefs += "  " + cssName + "\n";
           }
         };
+        // Dump full theme contents to console.
+        // User should copy this content into the theme definition YAML file.
         console.log(surfacenL + surfacenvL + surfacepL + surfacesL + surfacetL + surfaceeL +
                     surfacenD + surfacenvD + surfacepD + surfacesD + surfacetD + surfaceeD +
                     themeDefs);
+
+        console.log("*** M3 - Material 3 conversion DONE. You should copy the above output...")
       }
     }
-
 
     if (this.dev.debug) console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
     if (this.dev.debug) console.log('debug - setConfig', this.cardId, this.config);
@@ -6342,19 +6028,6 @@ class devSwissArmyKnifeCard extends LitElement {
       });
     }
   }
-  // async firstUpdated(changedProperties) {
-
-    // if (this.dev.debug) console.log('*****Event - card::firstUpdated', this.cardId, new Date().getTime());
-
-    // if (this.toolsets) {
-      // await Promise.all(this.toolsets.map( async (item, index) => {
-        // // Give browser some change to paint cards between updates...
-        // await new Promise((r) => setTimeout(r, 0));
-        // item.firstUpdated(changedProperties);
-      // }));
-    // }
-  // }
-
 
  /*******************************************************************************
   * card::updated()
@@ -6371,18 +6044,6 @@ class devSwissArmyKnifeCard extends LitElement {
         item.updated(changedProperties);
       });
     }
-
-    // this.shadowRoot.getElementById("rootsvg").setAttribute("data-entity-0", "on");
-
-    // #TODO
-    // Add/check this for tool/tool list. They an implement the updated function/callback
-/*    if (this.segmentedArcs)
-    {
-      this.segmentedArcs.map(item => {
-        item.updated(changedProperties);
-      })
-    }
-*/
   }
 
 /*******************************************************************************
@@ -6393,7 +6054,7 @@ class devSwissArmyKnifeCard extends LitElement {
   pleaseReRender() {
 
     // if (this._reRenderCounter < 10) this._reRender = true;
-    console.log('pleaseRerender = ', this._reRender, this._reRenderCounter, this.toolId);
+    // console.log('pleaseRerender = ', this._reRender, this._reRenderCounter, this.toolId);
   }
 
   _reRenderTimeout() {
@@ -6416,15 +6077,7 @@ class devSwissArmyKnifeCard extends LitElement {
   * render ICON TESTING pathh lzwzmegla undefined NodeList [ha-svg-icon]
   * render ICON TESTING pathh lzwzmegla M7,2V13H10V22L17,10H13L17,2H7Z NodeList [ha-svg-icon]
   */
-  // iconOnLoad(e, iconName) {
-    // console.log("icononload", this.cardId, e, iconName);
 
-    // var pathh = this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path
-    // console.log("in icononload, icon testing, pathh", this.cardId, pathh, this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*"),
-    // this.shadowRoot.getElementById("flash")?.shadowRoot.querySelectorAll("*")[0]?.path);
-  // }
-
-//  render({ config } = this) {
   render() {
 
     if (this.dev.performance) console.time("--> "+ this.cardId + " PERFORMANCE card::render");
@@ -6440,8 +6093,6 @@ class devSwissArmyKnifeCard extends LitElement {
     this._reRenderCounter = 0;
 
     var myHtml;
-
-                      // style="${styleMap(this.styles.card)}"
 
     try {
       if (this.config.disable_card) {
@@ -6479,10 +6130,6 @@ class devSwissArmyKnifeCard extends LitElement {
     return myHtml;
   }
 
-/*      <ha-card
-        @click=${e => this.handlePopup(e, this.entities[0])}
-      >
-*/
 /*******************************************************************************
   * renderTickMarks()
   *
@@ -6536,13 +6183,13 @@ class devSwissArmyKnifeCard extends LitElement {
 
   _renderSakSvgDefinitions() {
     return svg`
-    ${devSwissArmyKnifeCard.sakSvgContent}
+    ${SwissArmyKnifeCard.sakSvgContent}
     `;
   }
 
   _renderUserSvgDefinitions() {
     return svg`
-    ${devSwissArmyKnifeCard.userSvgContent}
+    ${SwissArmyKnifeCard.userSvgContent}
     `;
   }
 
@@ -6557,37 +6204,6 @@ class devSwissArmyKnifeCard extends LitElement {
   _RenderToolsets() {
 
     if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
-
-//              ${this._renderIcons()}
-// The clip-path below gives a 200x200 size if switching from views in safari. Not on chrome of course!!!!
-// WHY ????????????????????????????????????????????????????
-//              <g id="datatoolset" class="datatoolset" clip-path="url(#clip)">
-
-// #TODO:
-// For all objects to have a filter, and i mean composite objects, filter must be set by parent.
-// In that case all objects are on same level, and don't show shadow's on each other if they are close to eachother.
-// but then it seems sometimes IMPOSSIBle to set a filter on an individual object. WHY????????
-// Not always. path filters do work...
-//
-//               <g id="datatoolset" class="datatoolset" filter="url(#nm-1)">
-
-//                ${this._renderUserSvgs()}
-
-//            <g id="toolsets" class="toolsets" style="filter:url(#nm-1);">
-
-    // this.counter++;
-
-            // <g id="toolsets" class="toolsets" style="${styleMap(this.config.layout?.styles?.toolsets || '')}">
-
-    // #WIP
-    // So it seams Safari can't have a style attribute on the next group??? It doesn't render anymore in some cases??
-    // test cards 0t and 5t have NO problems, but others do. WHY???????
-    //
-    // If filter is set one level higher:
-    // - safari OK
-    // - chrome uses other coordinates, so shadows are large!!
-    
-//                              style="${styleMap(this.config.layout?.styles?.toolsets)}"
 
     return svg`
               <g id="toolsets" class="toolsets__group"
@@ -6663,22 +6279,11 @@ class devSwissArmyKnifeCard extends LitElement {
 
     const svgItems = [];
     
-    // New #TODO:
-    // Put each toolset in a so called render group which its own filter setting.
-    // A toolset registers a render group while being configured/created.
-    // Card loops through all render groups and renders them with given style settings.
-    // Default rendergroup, if none given, is "rg-default"
-    //
-    
-    // style="${styleMap(this.config.layout?.styles?.toolsets)}"
-    //
     // The extra group is required for Safari to have filters work and updates are rendered.
     // If group omitted, some cards do update, and some not!!!! Don't ask why!
     // style="${styleMap(this.styles.card)}"
     
     this._renderCardAttributes();
-    // console.log("_renderSvg, this.styles.card", this.styles.card);
-    // console.log(new Date().getTime(), "id=", this.cardId, "_renderSvg, this.styles.card", this.styles.card);
 
     // @2022.01.26 Timing / Ordering problem:
     // - the _RenderToolsets() function renders tools, which build the this.styles/this.classes maps.
@@ -6686,11 +6291,9 @@ class devSwissArmyKnifeCard extends LitElement {
     //   won't render, as this variable is already cached as it seems by Polymer.
     // - This is also the case for this.styles.tools/toolsets: they also don't work!
     //
-    // Temp fix for card styles: render toolsets first, and then push the svg data!!
-          // ${this._RenderToolsets()}
+    // Fix for card styles: render toolsets first, and then push the svg data!!
     
     const toolsetsSvg = this._RenderToolsets();
-    // console.log(new Date().getTime(), "id=", this.cardId, "_renderSvg, this.styles.card", this.styles.card);
     
     svgItems.push(svg`
       <svg id="rootsvg" xmlns="http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
@@ -6774,19 +6377,6 @@ class devSwissArmyKnifeCard extends LitElement {
   * Almost all credits to the mini-graph-card for this function.
   *
   */
-
-  // handlePopup(e, entity) {
-    // e.stopPropagation();
-    // e.preventDefault();
-
-    // // #TODO:
-    // // No check on attribute?? So wrong tap_action selected!! for a light and its brigtness!
-    // this._handleClick(this, this._hass, this.config,
-      // this.config.entities[this.config.entities.findIndex(
-        // // function(element, index, array){return element.entity == entity.entity_id})]
-        // function(element, index, array){console.log('in handlePopup', element, entity);return (element.entity == entity.entity_id) && (element.attribute ? element.attribute == entity.attribute : true)})]
-          // .tap_action, entity.entity_id);
-  // }
 
   handleEvent(argEvent, argEntityConfig) {
     argEvent.stopPropagation();
@@ -6884,22 +6474,6 @@ class devSwissArmyKnifeCard extends LitElement {
   *
   */
 
-// async polyfill(locale) {
-  // if (!shouldPolyfill(locale)) {
-    // return
-  // }
-  // // Load the polyfill 1st BEFORE loading data
-  // await import('https://unpkg.com/@formatjs/intl-relativetimeformat/lib/polyfill')
-
-  // switch (locale) {
-    // default:
-      // await import('https://unpkg.com/@formatjs/intl-relativetimeformat/locale-data/en')
-      // break
-    // case 'nl-nl':
-      // await import('@formatjs/intl-relativetimeformat/locale-data/fr')
-      // break
-  // }
-// }
   _buildSecondaryInfo(inSecInfoState, entityConfig) {
 
     const leftPad = (num) => (num < 10 ? `0${num}` : num);
@@ -6998,9 +6572,7 @@ class devSwissArmyKnifeCard extends LitElement {
   */
 
   _calculateColor(argState, argStops, argIsGradient) {
-    // console.log("calculateColor", argState, argStops, argIsGradient);
     const sortedStops = Object.keys(argStops).map(n => Number(n)).sort((a, b) => a - b);
-    // const sortedStops = Object.keys(argStops);
 
     let start, end, val;
     const l = sortedStops.length;
@@ -7037,9 +6609,7 @@ class devSwissArmyKnifeCard extends LitElement {
   */
 
   _calculateColor2(argState, argStops, argPart, argProperty, argIsGradient) {
-    // console.log("calculateColor", argState, argStops, argIsGradient);
     const sortedStops = Object.keys(argStops).map(n => Number(n)).sort((a, b) => a - b);
-    // const sortedStops = Object.keys(argStops);
 
     let start, end, val;
     const l = sortedStops.length;
@@ -7166,7 +6736,7 @@ class devSwissArmyKnifeCard extends LitElement {
 
   _colorToRGBA(argColor) {
     // return color if found in colorCache...
-    let retColor = devSwissArmyKnifeCard.colorCache[argColor];
+    let retColor = SwissArmyKnifeCard.colorCache[argColor];
     if (retColor) return retColor;
 
     var theColor = argColor;
@@ -7186,7 +6756,7 @@ class devSwissArmyKnifeCard extends LitElement {
     ctx.fillRect(0, 0, 1, 1);
     const outColor = [ ...ctx.getImageData(0, 0, 1, 1).data ];
 
-    devSwissArmyKnifeCard.colorCache[argColor] = outColor;
+    SwissArmyKnifeCard.colorCache[argColor] = outColor;
 
     return outColor;
   }
@@ -7236,7 +6806,6 @@ class devSwissArmyKnifeCard extends LitElement {
 
     // We have a list of objects that might need some history update
     // Create list to fetch.
-//    let entityList = [{}];
     let entityList = [];
     var j = 0;
 
@@ -7264,17 +6833,6 @@ class devSwissArmyKnifeCard extends LitElement {
     // Quick hack to block updates if entrylist is empty
     this.stateChanged = false;
 
-    // this.tools.map((item, i) => {
-      // if (item.type == "bar") {
-        // const end = new Date();
-        // const start = new Date();
-        // start.setHours(end.getHours() - item.tool.config.hours);
-        // const attr = this.config.entities[item.tool.config.entity_index].attribute ? this.config.entities[item.tool.config.entity_index].attribute : null;
-
-        // entityList[j] = ({"entityIndex": item.tool.config.entity_index, "entityId": this.entities[item.tool.config.entity_index].entity_id, "attrId": attr, "start": start, "end": end, "type": "bar", "idx": i});
-        // j++;
-      // }
-    // });
     if (this.dev.debug) console.log('card::updateData, entityList from tools', entityList);
 
     try {
@@ -7283,10 +6841,6 @@ class devSwissArmyKnifeCard extends LitElement {
       await Promise.all(promise);
     } finally {
       this.updating = false;
-
-      // 2020.10.24
-      // why not updating? Should call here??
-      //this.requestUpdate();
     }
   }
   async updateEntity(entity, index, initStart, end) {
@@ -7294,8 +6848,6 @@ class devSwissArmyKnifeCard extends LitElement {
     let stateHistory = [];
     let start = initStart;
     let skipInitialState = false;
-
-//    this.entities[item.entity_index].entity_id)
 
     // Get history for this entity and/or attribute.
     let newStateHistory = await this.fetchRecent(entity.entityId, start, end, skipInitialState);
@@ -7311,13 +6863,10 @@ class devSwissArmyKnifeCard extends LitElement {
       }
       newStateHistory = newStateHistory[0].filter(item => entity.attrId ? !Number.isNaN(parseFloat(item.attributes[entity.attrId])) : !Number.isNaN(parseFloat(item.state)));
 
-//      newStateHistory = newStateHistory[0].filter(item => !Number.isNaN(parseFloat(item.state)));
       newStateHistory = newStateHistory.map(item => ({
         last_changed: item.last_changed,
         state: entity.attrId ? Number(item.attributes[entity.attrId]) : Number(item.state)
-//        state: 16
       }));
-      //newStateHistory = newStateHistory.filter(item => !Number.isNaN(parseFloat(item.state)));
 
     }
 
@@ -7377,14 +6926,7 @@ class devSwissArmyKnifeCard extends LitElement {
       // first index doesn't contain data.
       coords[0] = [];
       
-      // #TODO:
-      // this one crashes on [1] if history is empty, ie database is recreated... No data at-all present in database!
-      // So can't fill using that.
-      // if (coords[firstInterval[0]]) {
-        // coords[0].push(coords[firstInterval[0]][1]);
-      // }
       coords[0].push(coords[firstInterval][0]);
-      // console.log('uppdate, coords', coords, firstInterval, firstInterval[0], coords[firstInterval], coords[firstInterval][0]);
     }
 
     for(var i = 0; i < (hours / barhours); i++) {
@@ -7393,17 +6935,9 @@ class devSwissArmyKnifeCard extends LitElement {
         coords[i].push(coords[i-1][coords[i-1].length-1])
       }
     }
-
-    //this.coords = this._calcPoints(coords);
     this.coords = coords;
-    // #TODO @2020.11.15:
-    // Nothing is using these calculated min/max values?!?!?!?!?!?!
-    //this.min = Math.min(...this.coords.map(item => Math.min(...item.map(item2 => (item2.state)))));
-    //this.max = Math.max(...this.coords.map(item => Math.max(...item.map(item2 => (item2.state)))));
-
     var theData = [];
     theData = [];
-//    theData = coords.map(item => item.reduce((ave, current, index, arr) => ave + current.state));
     theData = coords.map(item => getAvg(item, 'state'));
 
     // now push data into object...
@@ -7415,9 +6949,23 @@ class devSwissArmyKnifeCard extends LitElement {
     this.requestUpdate();
   }
 
+ /*******************************************************************************
+  * card::getCardSize()
+  *
+  * Summary.
+  * Return a fixed value of 4 as the height.
+  *
+  */
+
   getCardSize() {
     return (4);
   }
 }
 
-customElements.define('dev-swiss-army-knife-card', devSwissArmyKnifeCard);
+ /**
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+// Define the custom Swiss Army Knife card, so Lovelace / Lit can find the custom element!
+customElements.define('swiss-army-knife-card', SwissArmyKnifeCard);
