@@ -2,6 +2,7 @@
 [![hacs][beta_badge]][hacs-url]
 [![release][release-badge]][release-url]
 ![downloads][downloads-badge]
+![LGTM Grade][lgtm-grade-badge]
 
 <!--- ![beta_badge](https://img.shields.io/badge/State-Beta-orange?style=for-the-badge) -->
 <!---[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration) -->
@@ -67,6 +68,7 @@ All these examples are available on Github and described in the [installation ma
 [beta_badge]: https://img.shields.io/badge/State-Beta-orange?style=for-the-badge
 [release-badge]: https://img.shields.io/github/v/release/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&include_prereleases
 [downloads-badge]: https://img.shields.io/github/downloads/AmoebeLabs/swiss-army-knife-card/total?style=for-the-badge
+[lgtm-grade-badge]: https://img.shields.io/lgtm/grade/javascript/github/AmoebeLabs/swiss-army-knife-card?style=for-the-badge
 
 <!-- References -->
 
