@@ -54,7 +54,7 @@ import { fireEvent, stateIcon, getLovelace } from 'https://unpkg.com/custom-card
 import * as SvgInjector from '/local/community/swiss-army-knife-card/SVGInjector.min.js?module';
 
 console.info(
-  `%c   SWISS-ARMY-KNIFE-CARD   \n%c  Public Release Candidate \n%c     Version 0.9.0-rc1     `,
+  `%c   SWISS-ARMY-KNIFE-CARD   \n%c  Public Release Candidate \n%c     Version 1.0.0-rc1     `,
   'color: yellow; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
   'color: white; font-weight: bold; background: dimgray',
@@ -2995,7 +2995,8 @@ class EntityIconTool extends BaseTool {
     // }
 
     // #LGTM: The initial value of scale is unused, since it is always overwritten.
-    var scale = 1;
+    // var scale = 1;
+    var scale;
 
     // NTS@20201.12.24
     // Add (true) to force rendering the Safari like solution for icons. 
@@ -3003,7 +3004,7 @@ class EntityIconTool extends BaseTool {
     // That is nice. Now animations also work on Chrome...
 
     // #LGTM: This expression always evaluates to true.
-    if ((true) || (this._card.isSafari) || (this._card.iOS)) {
+    // if ((true) || (this._card.isSafari) || (this._card.iOS)) {
       if (this.iconSvg) {
         // Use original size, not the corrected one!
         this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
@@ -3040,17 +3041,19 @@ class EntityIconTool extends BaseTool {
           </foreignObject>
           `;
       }
-    } else {
-      return svg`
-        <foreignObject width="${this.svg.iconPixels}px" height="${this.svg.iconPixels}px" x="${this.svg.xpx}" y="${this.svg.ypx}"
-                        >
-          <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
-                style="line-height:${this.svg.iconPixels}px;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-            <ha-icon class="${classMap(this.classes.icon)}" icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.styles.icon)}"></ha-icon>
-          </div>
-        </foreignObject>
-        `;
-    }
+    // #LGTM: This expression always evaluates to true.
+    //        This is the else clause of that if!
+    // } else {
+      // return svg`
+        // <foreignObject width="${this.svg.iconPixels}px" height="${this.svg.iconPixels}px" x="${this.svg.xpx}" y="${this.svg.ypx}"
+                        // >
+          // <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
+                // style="line-height:${this.svg.iconPixels}px;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
+            // <ha-icon class="${classMap(this.classes.icon)}" icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.styles.icon)}"></ha-icon>
+          // </div>
+        // </foreignObject>
+        // `;
+    // }
 
   }
 
@@ -3133,8 +3136,8 @@ class BadgeTool extends BaseTool {
         right: {
         }
       }
-    }
-    su;per(argToolset, Merge.mergeDeep(DEFAULT_BADGE_CONFIG, argConfig), argPos);
+    };
+    super(argToolset, Merge.mergeDeep(DEFAULT_BADGE_CONFIG, argConfig), argPos);
 
     // Coordinates from left and right part.
     this.svg.radius = 5;
@@ -4554,9 +4557,12 @@ class SegmentedArcTool extends BaseTool {
 
       // Added temp vars. animation doesn't work!!!!
       var arcStart = this.config.position.start_angle;
-      var arcEnd = this.config.position.end_angle;
+      // #LGTM: The initial value of arcEnd is unused, since it is always overwritten.
+      // var arcEnd = this.config.position.end_angle;
+      var arcEnd;
       // #LGTM: The initial value of arcEndPrev is unused, since it is always overwritten.
-      var arcEndPrev = this.config.position.end_angle;
+      // var arcEndPrev = this.config.position.end_angle;
+      var arcEndPrev;
       //var arcWidth = this.config.position.width;
       var arcWidth = this.svg.width;
 
@@ -4730,7 +4736,10 @@ class SegmentedArcTool extends BaseTool {
                 // Testing 'lastcolor'
                 if (thisTool.config.show.lastcolor) {
                   // #LGTM: The initial value of fill is unused, since it is always overwritten.
-                  var fill = thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]]; //thisTool.styles.foreground[runningSegment]['fill'];
+                  // var fill = thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]];
+                  var fill;
+
+                  //thisTool.styles.foreground[runningSegment]['fill'];
                   // console.log('testing...', thisTool.config.show, runningSegment, fill);
                   
                   var boundsStart = thisTool._arc.clockwise
@@ -4752,6 +4761,7 @@ class SegmentedArcTool extends BaseTool {
 
                   if (runningSegment > 0) {
                     // #LGTM: This expression has no effect.
+                    //        I have no clue. This is a loop that works well, so what about this expression then?
                     for (var j=runningSegment+1; j--; j>=0) {
                       if (thisTool.styles.foreground[j]['fill'] != fill) {
                         thisTool.styles.foreground[j]['fill'] = fill;
@@ -5501,7 +5511,8 @@ class SwissArmyKnifeCard extends LitElement {
       if (this.config.entities[index].attribute) {
 
         // #LGTM: The value assigned to attrSet here is unused.
-        attrSet = true;
+        // attrSet = true;
+        attrSet;
 
         // #WIP:
         // Check for indexed or mapped attributes, like weather forecast (array of 5 days with a map containing attributes)....
@@ -5606,10 +5617,12 @@ class SwissArmyKnifeCard extends LitElement {
     }
 
     // For now, always force update to render the card if any of the states or attributes have changed...
-    // #LGTM: This use of variable 'entityHasChanged' always evaluates to true.
-    if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
     
-    // Force upate as test... ###########################################
+    // #LGTM: This use of variable 'entityHasChanged' always evaluates to true.
+    //        Yep, that is the case. This line can be removed as the next this.requestUpdate() is on the next line!
+    // if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
+    
+    // Force update as test... ###########################################
     this.requestUpdate();
 
     this.counter--;
@@ -6897,7 +6910,9 @@ class SwissArmyKnifeCard extends LitElement {
     // the entity attribute. Ain't that nice!
 
     // #LGTM: The initial value of theState is unused, since it is always overwritten.
-    let theState = entity.state;
+    // let theState = entity.state;
+    let theState;
+
     if (newStateHistory[0] && newStateHistory[0].length > 0) {
       if (entity.attrId) {
         theState = this.entities[entity.entityIndex].attributes[this.config.entities[entity.entityIndex].attribute];
