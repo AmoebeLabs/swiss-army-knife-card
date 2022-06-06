@@ -3,7 +3,6 @@
 
 [![release][release-badge]][release-url]
 ![downloads][downloads-badge]
-
 ![LGTM Grade][lgtm-grade-badge]
 ![LGTM Alerts][lgtm-alerts-badge]
 <!--- ![beta_badge](https://img.shields.io/badge/State-Beta-orange?style=for-the-badge) -->
