@@ -4556,7 +4556,8 @@ class SegmentedArcTool extends BaseTool {
       // Here we can rebuild all needed. Much will be the same I guess...
 
       // Added temp vars. animation doesn't work!!!!
-      var arcStart = this.config.position.start_angle;
+      // #LGTM: Unused variable arcStart.
+      // var arcStart = this.config.position.start_angle;
       // #LGTM: The initial value of arcEnd is unused, since it is always overwritten.
       // var arcEnd = this.config.position.end_angle;
       var arcEnd;
@@ -5512,7 +5513,6 @@ class SwissArmyKnifeCard extends LitElement {
 
         // #LGTM: The value assigned to attrSet here is unused.
         // attrSet = true;
-        attrSet;
 
         // #WIP:
         // Check for indexed or mapped attributes, like weather forecast (array of 5 days with a map containing attributes)....
@@ -6303,7 +6303,8 @@ class SwissArmyKnifeCard extends LitElement {
     // #LGTM: Unused variable svgItems.
     // const svgItems = [];
     var entityValue;
-    var attributeStr;
+    // #LGTM: Unused variable attributeStr.
+    // var attributeStr;
     var attributes = [];
     
     this._attributes = "";
