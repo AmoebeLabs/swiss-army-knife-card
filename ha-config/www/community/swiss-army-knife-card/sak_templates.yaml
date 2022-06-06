@@ -1,0 +1,6 @@
+#definitions: !include_dir_merge_named definitions
+definitions:
+  sak_css_definitions:
+    !include sak-css-definitions.yml
+  sak_svg_definitions:
+    !include sak-svg-definitions.yml

@@ -1,0 +1,193 @@
+#
+# File      : user-css-definitions.yaml
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/Home-Assistant-Config
+#
+# Author: Mars @ AmoebeLabs.com
+# 
+# License: CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Swiss Army Knife USER CSS class definitions used to style tools
+#
+#	These definitions can overwrite the SAK defined CSS definitions
+#   
+###############################################################################
+user_css_definitions:
+  # Just some examples. Replace them with your own class definitions...
+    - descr: color for active light
+      content: >
+        .class-darkorange {
+          fill: darkorange;
+          transition: 'all .8s ease';
+        }
+
+    - descr: color for INactive light
+      content: >
+        .class-lightgray {
+          fill: lightgray;
+          transition: 'all .8s ease';
+        }
+
+    - descr: class for whatever
+      content: >
+        .whatever {
+          --descr: extra-css--whatever;
+          background: orange;
+          stroke-width: 2;
+          fill: green;
+          stroke: yellow;
+          opacity: 0.2;
+        }
+        
+    - descr: class for whoever
+      content: >
+        .whoever {
+          --descr: extra-css--whoever;
+          color: green !important;
+        }
+
+    - descr: sak-overwrite
+      content: >
+        .sak-state__value {
+          --descr: extra-css;
+          letter-spacing: 0.05em;
+        }
+
+    - descr: class for whoever
+      content: >
+        .crazy {
+          --descr: extra-css--crazy;
+          color: red !important;
+        }
+        
+  # Demo using classes for example #8, some homekit like cards...
+  #------------------------------------------------------------------------------
+    - descr: default Area styling
+      content: >
+        .homekit-area__area {
+          text-anchor: start;
+          font-size: 12em;
+          font-weight: 400;
+          fill: var(--primary-text-color);
+          fill: var(--md-fg-color);
+        }
+        
+    - descr: default Name styling
+      content: >
+        .homekit-name__name {
+          text-anchor: start;
+          font-size: 12em;
+          font-weight: 700;
+          fill: var(--primary-text-color);
+          fill: var(--md-fg-color);
+        }
+
+    # Note: font-size MUST be defined as style for the state.
+    # Otherwise, uom can't be rendered!
+    - descr: default State & Uom styling
+      content: >
+        .homekit-state__value {
+          text-anchor: middle;
+          font-weight: 700;
+          fill: var(--primary-text-color);
+          fill: var(--md-fg-color);
+        }
+        .homekit-state__uom {
+          fill: var(--primary-text-color);
+          fill: var(--md-fg-color);
+          font-weight: 700;
+        }
+        
+  # Demo with color switch classes??
+  #------------------------------------------------------------------------------
+    - descr: alert orange
+      content: >
+        .sak-alert--active {
+          fill: var(--md-bg-color--alert);
+          opacity: 1;
+          animation: flash 2s ease-in-out 5;
+        }
+        .sak-alert--clear {
+          opacity: 0;
+          fill: none;
+        }
+
+    - descr: alert2 orange
+      content: >
+        .sak-alert2--active {
+          fill: var(--md-bg-color--alert);
+          opacity: 1;
+          animation: flash 2s ease-in-out 5;
+        }
+        .sak-alert2--clear {
+          opacity: 1;
+          stroke: var(--cs-theme-shadow-darker);
+        }
+
+    - descr: switch
+      content: >
+        .sak-switch--on {
+          fill: orange;
+          opacity: 1;
+          animation: shake 2s ease-in-out both;
+        }
+        .sak-switch--off {
+          opacity: 1;
+          fill: var(--cs-theme-shadow-darker);
+        }
+
+    - descr: switch2
+      content: >
+        .sak-switch2--on {
+          stroke: darkorange;
+          opacity: 1;
+        }
+        .sak-switch2--off {
+          opacity: 1;
+          stroke: lightgrey;
+        }
+
+    - descr: card
+      content: >
+        .sak-card--on {
+          fill: white;
+          opacity: 1;
+        }
+        .sak-card--off {
+          opacity: 1;
+          fill: var(--cs-theme-shadow-darker);
+          opacity: 0.2;
+        }
+
+    - descr: css selector
+      content: >
+        ha-card {
+          --md-fg-color--alert: darkorange;
+          --md-bg-color--alert: darkorange;
+          --md-bg-color: var(--primary-background-color);
+          --md-fg-color: var(--primary-text-color);
+        }
+        
+        [data-entity-0="on"] {
+          --md-fg-color--alert: darkorange;
+          --md-bg-color--alert: darkorange;
+          --md-bg-color: var(--primary-background-color);
+          --md-fg-color: var(--primary-text-color);
+        }
+        [data-entity-0="off"] {
+          --md-fg-color: black;
+          --md-bg-color: var(--primary-background-color);
+        }
+
+        # :host {
+          # .darkmode {
+            # data-background: dark;
+          # }
+        # }
+        # :host {
+          # .lightmode {
+            # data-background: light;
+          # }
+        # }      

@@ -1,0 +1,131 @@
+# AA
+- url: /hacsfiles/air-visual-card/air-visual-card.js
+  type: js  
+
+# BB
+- url: /hacsfiles/button-card/button-card.js
+  type: module
+
+# CC
+#- url: /community_plugin/calendar-card/calendar-card.js
+#  type: js
+
+## DEPRICATED
+#- url: /community_plugin/lovelace-card-loader/card-loader.js
+#  type: js
+    
+## DEPRICATED
+#- url: /community_plugin/lovelace-card-tools/card-tools.js
+#  type: js
+
+# TEST IF CARD-MOD IS CAUSING DOUBLE CREATIONS!!!
+# - url: /hacsfiles/lovelace-card-mod/card-mod.js
+  # type: module
+
+#- url: /community_plugin/check-button-card/check-button-card.js
+#  type: module
+    
+#- type: module
+#  url: /community_plugin/circle-sensor-card-mw/circle-sensor-card.js
+
+#- type: module
+#  url: /community_plugin/compact-custom-header/compact-custom-header.js
+
+# DD
+- url: /hacsfiles/decluttering-card/decluttering-card.js
+  type: module
+#- url: /community_plugin/deep-press/deep-press.js
+#  type: module
+    
+#- type: module
+#  url: /community_plugin/dual-gauge-card/dual-gauge-card.js
+
+# FF
+- url: /hacsfiles/flex-horseshoe-card/flex-horseshoe-card.js
+  type: module
+
+# GG
+#- url: /community_plugin/graph-card/graph-card.js
+#  type: module
+
+# LL
+#- url: /community_plugin/light-entity-card/light-entity-card.js
+#  type: js
+
+#- url: /community_plugin/lovelace-layout-card/layout-card.js?v=1
+#  type: js
+    
+# MM
+#- url: /community_plugin/lovelace-markdown-mod/markdown-mod.js
+#  type: module
+    
+#- type: module
+#  url: /community_plugin/mini-graph-card-mw/mini-graph-card.js
+- url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
+  type: module
+
+#- url: /community_plugin/mobile-menu-mw/mobile-menu-mw.js
+#  type: module
+
+#- url: /community_plugin/monster-card/monster-card.js
+#  type: js
+    
+# PP
+#- url: /community_plugin/lovelace-popup-card/popup-card.js
+#  type: js
+
+# RR
+#- url: /community_plugin/radial-menu/radial-menu.js
+#  type: module
+
+# SS
+#- type: module
+#  url: /community_plugin/simple-thermostat/simple-thermostat.js
+  
+#- url: /community_plugin/simple-weather-card/simple-weather-card.js
+#  type: module  
+
+#- type: module
+#  url: /community_plugin/lovelace-slider-entity-row/slider-entity-row.js
+
+#- type: module
+#  url: /community_plugin/surveillance-card/surveillance-card.js
+
+#- url: /community_plugin/sun-card/sun-card.js
+#  type: module
+
+#- url: /community_plugin/lovelace-state-switch/state-switch.js
+#  type: js
+    
+#- type: module
+#  url: /community_plugin/swipe-card/swipe-card.js
+
+#- type: module
+#  url: /community_plugin/lovelace-swipe-navigation/swipe-navigation.js
+
+# TT
+- url: /hacsfiles/lovelace-thermostat-dark-card/thermostat-dark-card.js
+  type: module
+#- type: module
+#  url: /community_plugin/thermostat-card/thermostat-card.js?v=7
+
+# VV
+#- url: /community_plugin/vertical-stack-in-card/vertical-stack-in-card.js
+#  type: js
+- url: /hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js
+  type: module  
+
+# WW
+#- url: /community_plugin/wip-circle-sensor-mw-card/circle-sensor-card-mw-new.js
+#  type: module
+#- url: /community_plugin/wip-wired-toggle-card/wired-toggle-card.js
+#  type: module
+#- url: /community_plugin/wip-flex-horseshoe-card/flex-horseshoe-card.js
+#  type: module
+# kan ook de swiss knife card gaan heten. Lekker flexibel toch?
+- url: /hacsfiles/wip-flex-layout-card/flex-layout-card.js
+  type: module
+- url: /hacsfiles/wip-swiss-army-knife-card/dev-swiss-army-knife-card.js
+  type: module
+- url: /hacsfiles/swiss-army-knife-card/swiss-army-knife-card.js
+  type: module  

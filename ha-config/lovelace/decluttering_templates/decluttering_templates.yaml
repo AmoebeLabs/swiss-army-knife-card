@@ -1,0 +1,51 @@
+#
+# File      : decluttering_templates.yaml
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card/ha-config
+#
+# Author: Mars @ AmoebeLabs.com
+# 
+# License: CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Decluttering template yaml file
+#   
+###############################################################################
+
+
+# header_template:
+  # !include header-template-mw.yaml
+header_template:
+  !include sak-header-template-mw.yaml
+
+divider_template:
+  !include sak-divider-template-mw.yaml
+
+# ==============================================================================
+# Include the decluttering templates used for the examples dashboard
+# For the public release candidate, these files are located in the 'rc' folder
+# Include them, and set _rc as postfix, as the dev and beta files should coexist!
+
+header_template:
+  !include sak-header-template-mw.yaml
+
+divider_template:
+  !include sak-divider-template-mw.yaml
+
+sak_arc180_sparklinebar24_template:
+  !include sak-arc180-sparklinebar24.yaml
+  
+sak_arc180_sparklinebar24_template_tpl:
+  !include sak-arc180-sparklinebar24-tpl.yaml  
+
+sak_light_button_template_tpl:
+  !include sak-light-button-tpl.yaml  
+
+sak_light_button_template_nm_tpl:
+  !include sak-light-button-nm-tpl.yaml 
+
+sak_sensor_history_template_nm_tpl:
+  !include sak-sensor-history-nm-tpl.yaml
+
+

@@ -1,0 +1,3304 @@
+#
+# View			: view-sake12
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+# SAK Example #12. Some wide cards
+#
+# Refs:
+#   
+################################################################################
+
+title: SAKE12-M3
+path: sake12-m3
+panel: false
+cards:
+#-------------------------------------------------------------------------------
+- type: vertical-stack
+  cards:
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'Some Wide Cards...'
+
+    - type: horizontal-stack
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.u_s_air_quality_index
+              name: 'Tha Moon'
+            - entity: sensor.u_s_air_pollution_level
+            - entity: sensor.u_s_air_quality_index
+              secondary_info: last_changed
+              format: relative
+
+          # Define aspect ratio
+          aspectratio: 6/1
+
+          layout:
+            styles:
+              card:
+              toolsets:
+              
+            toolsets:
+              # ================================================================
+              - toolset: line1
+                position:
+                  cx: 200
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: line2
+                position:
+                  cx: 400
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+
+              # ================================================================
+              - toolset: colomn-icon
+                position:
+                  cx: 30
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 30
+                    entity_index: 0
+                    
+              - toolset: colomn-name
+                position:
+                  cx: 120
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 70
+                    entity_index: 2
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 10em
+                        font-weight: 700
+
+              - toolset: colomn-state
+                position:
+                  cx: 300
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 25
+                      cy: 25
+                      align: end
+                      icon_size: 30
+                    entity_index: 1
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 25
+                    entity_index: 0
+                    styles:
+                      state:
+                        text-anchor: start
+                        font-size: 25em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 70
+                      start_angle: 190
+                      end_angle: 170
+                      width: 8
+                      radius_x: 405         # 20 degrees = 1/9 = 45*9 = 405
+                      radius_y: 1
+                    entity_index: 0
+                    scale:
+                      min: 0
+                      max: 300
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: true
+                      style: 'colorstops'
+                    segments:
+                      colorstops:
+                        gap: 0.1
+                        colors:
+                          0: '#A8E05F'
+                          51: '#FDD74B'
+                          101: '#FE9B57'
+                          151: '#FE6A69'
+                          201: '#A97ABC'
+                          301: '#A87383'
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral5)
+
+              - toolset: colomn-history
+                position:
+                  cx: 500
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: text
+                    position:
+                      orientation: vertical
+                      cx: 50
+                      cy: 20
+                    text: "Last 24 hours"
+                    styles:
+                      text:
+                        text-anchor: middle
+                        font-size: 15em
+                        font-weight: 700
+
+                  # ------------------------------------------------------------
+                  - type: bar
+                    id: 1
+                    entity_index: 0
+                    position:
+                      orientation: vertical
+                      cx: 50
+                      cy: 60
+                      width: 150
+                      height: 40
+                      margin: 1
+                    hours: 24
+                    barhours: 1
+                    show:
+                      style: 'colorstops'
+                    colorstops:
+                      fill: true
+                      colors:
+                        0: '#A8E05F'
+                        51: '#FDD74B'
+                        101: '#FE9B57'
+                        151: '#FE6A69'
+                        201: '#A97ABC'
+                        301: '#A87383'
+                    styles:
+                      bar:
+                        stroke-linecap: square
+            
+
+    # ==========================================================================
+    - type: horizontal-stack
+      cards:
+        # 
+        # Indoor Environment: study
+        # 
+        ########################################################################
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.studym_iaq_temperature
+              name: 'Study'
+              decimals: 1
+              icon: mdi:home-thermometer-outline
+            - entity: sensor.studym_iaq_humidity
+              decimals: 0
+            - entity: sensor.studym_iaq_pressure
+              decimals: 0
+            - entity: sensor.studym_iaq_battery
+              decimals: 0
+            - entity: sensor.studym_iaq_linkquality
+              decimals: 0
+            - entity: sensor.studym_iaq_temperature
+              secondary_info: last_changed
+              format: relative
+
+          # Define aspect ratio
+          aspectratio: 6/1
+
+          layout:
+            styles:
+              card:
+              toolsets:
+              
+            toolsets:
+              # ================================================================
+              - toolset: line1
+                position:
+                  cx: 200
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: line2
+                position:
+                  cx: 500
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: colomn-icon
+                position:
+                  cx: 30
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 30
+                    entity_index: 0
+                    
+              # ================================================================
+              - toolset: colomn-name
+                position:
+                  cx: 120
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: middle
+                        font-size: 25em
+                        font-weight: 700
+                        opacity: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 80
+                    entity_index: 5
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 14em
+                        font-weight: 500
+
+              # ================================================================
+              - toolset: colomn-temperature
+                position:
+                  cx: 260
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  # https://codepen.io/phliem/pen/pEjWwp
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 45
+                    styles:
+                      circle:
+                        stroke: var(--theme-sys-elevation-surface-neutral4)
+                        fill: none
+                        stroke-width: 2em
+                        opacity: 1
+                        # stroke-dasharray: 120, 20
+                        # animation: spin 10s linear infinite
+
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 5
+                    styles:
+                      icon:
+                        opacity: 0.7
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 0
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 0
+                    scale:
+                      min: 15
+                      max: 25
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-primary50)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-humidity
+                position:
+                  cx: 355
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 45
+                    styles:
+                      circle:
+                        stroke: var(--theme-sys-elevation-surface-neutral4)
+                        fill: none
+                        stroke-width: 2em
+                        opacity: 1
+                        # stroke-dasharray: 40, 20
+                        # stroke-width: 6em
+                        # animation: heartBeat 10s linear infinite
+                        # # animation: wobble 5s linear infinite
+
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 1
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 1
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-primary45)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-pressure
+                position:
+                  cx: 450
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 45
+                    styles:
+                      circle:
+                        stroke: var(--theme-sys-elevation-surface-neutral4)
+                        fill: none
+                        stroke-width: 2em
+                        opacity: 1
+
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 2
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 2
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 2
+                    scale:
+                      min: 950
+                      max: 1050
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-primary40)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: color1
+                position:
+                  cx: 100
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: rectangle
+                    position:
+                      cx: 500
+                      cy: 50
+                      width: 100
+                      height: 100
+                    styles:
+                      rectangle:
+                        stroke: none
+                        # fill: var(--theme-sys-elevation-surface-neutral4)
+                        # fill: var(--theme-sys-elevation-surface-primary1)
+                        fill: var(--theme-sys-color-tertiary-container)
+
+              # ================================================================
+              - toolset: colomn-battery
+                position:
+                  cx: 540
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 30
+                      cy: 30
+                      align: right
+                      icon_size: 25
+                    entity_index: 3
+                    styles:
+                      icon:
+                        # fill: var(--primary-text-color)
+                        fill: var(--theme-sys-color-on-tertiary-container)
+                        # animation: spin 2s ease-in-out both infinite
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 70
+                      cy: 30
+                    entity_index: 3
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 18em
+                        font-weight: 700
+                        # fill: var(--primary-text-color)
+                        fill: var(--theme-sys-color-on-tertiary-container)
+                        # animation: blinkingText 2s ease-in-out both infinite
+                      uom:
+                        # fill: var(--primary-text-color)
+                        fill: var(--theme-sys-color-on-tertiary-container)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 70
+                      cy: 30
+                      start_angle: 0
+                      end_angle: 360
+                      width: 3
+                      radius: 18
+                    entity_index: 3
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          # - var(--theme-sys-palette-primary50-darken-30)
+                          - var(--theme-sys-palette-tertiary45)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        # fill: var(--theme-sys-elevation-surface-neutral4)
+                        fill: var(--theme-sys-palette-tertiary95)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-linkquality
+                position:
+                  cx: 540
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 30
+                      cy: 70
+                      align: right
+                      icon_size: 25
+                    entity_index: 4
+                    styles:
+                      icon:
+                        # fill: var(--primary-text-color)
+                        fill: var(--theme-sys-color-on-tertiary-container)
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 70
+                      cy: 70
+                    entity_index: 4
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 18em
+                        font-weight: 700
+                        # fill: var(--primary-text-color)
+                        fill: var(--theme-sys-color-on-tertiary-container)
+                      uom:
+                        # fill: var(--primary-text-color)
+                        fill: var(--theme-sys-color-on-tertiary-container)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 70
+                      cy: 70
+                      start_angle: 0
+                      end_angle: 360
+                      width: 3
+                      radius: 18
+                    entity_index: 4
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-tertiary45)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        # fill: var(--theme-sys-elevation-surface-neutral4)
+                        fill: var(--theme-sys-palette-tertiary95)
+                        opacity: 1
+
+    # ==========================================================================
+    - type: horizontal-stack
+      cards:
+        # 
+        # Indoor Environment: Bath #2
+        # 
+        ########################################################################
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.bathroom_2f_iaq_temperature
+              name: 'Bath #2'
+              icon: mdi:home-thermometer-outline
+              decimals: 1
+            - entity: sensor.bathroom_2f_iaq_humidity
+              decimals: 0
+            - entity: sensor.bathroom_2f_iaq_pressure
+              decimals: 0
+            - entity: sensor.bathroom_2f_iaq_battery
+              decimals: 0
+            - entity: sensor.bathroom_2f_iaq_linkquality
+              decimals: 0
+            - entity: sensor.bathroom_2f_iaq_temperature
+              secondary_info: last_changed
+              format: relative
+
+          # Define aspect ratio
+          aspectratio: 6/1
+
+          layout:
+            styles:
+              card:
+              toolsets:
+              
+            toolsets:
+              # ================================================================
+              - toolset: line1
+                position:
+                  cx: 200
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: line2
+                position:
+                  cx: 500
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: colomn-icon
+                position:
+                  cx: 30
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 30
+                    entity_index: 0
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 22
+                    styles:
+                      circle:
+                        fill: none
+                        # fill: var(--theme-default-darken-20)
+                        stroke: var(--primary-text-color)
+                        stroke-width: 3em
+                        opacity: 1
+                    
+              - toolset: colomn-name
+                position:
+                  cx: 120
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: middle
+                        font-size: 25em
+                        font-weight: 700
+                        opacity: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 80
+                    entity_index: 5
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 14em
+                        font-weight: 500
+
+              # ================================================================
+              - toolset: colomn-temperature
+                position:
+                  cx: 260
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 5
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 0
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 0
+                    scale:
+                      min: 15
+                      max: 25
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-primary50)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-humidity
+                position:
+                  cx: 355
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 1
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 1
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-primary45)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-pressure
+                position:
+                  cx: 450
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 2
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 2
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 2
+                    scale:
+                      min: 950
+                      max: 1050
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-primary40)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-battery
+                position:
+                  cx: 540
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 30
+                      cy: 30
+                      align: right
+                      icon_size: 25
+                    entity_index: 3
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 70
+                      cy: 30
+                    entity_index: 3
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 18em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 70
+                      cy: 30
+                      start_angle: 0
+                      end_angle: 360
+                      width: 3
+                      radius: 18
+                    entity_index: 3
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-tertiary45)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-linkquality
+                position:
+                  cx: 540
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 30
+                      cy: 70
+                      align: right
+                      icon_size: 25
+                    entity_index: 4
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 70
+                      cy: 70
+                    entity_index: 4
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 18em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 70
+                      cy: 70
+                      start_angle: 0
+                      end_angle: 360
+                      width: 3
+                      radius: 18
+                    entity_index: 4
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-tertiary45)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+    # ==========================================================================
+    - type: horizontal-stack
+      cards:
+        # 
+        # Indoor Environment: Hall
+        # 
+        ########################################################################
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.hall_gf_iaq_temperature
+              name: 'Hall'
+              icon: mdi:home-thermometer-outline
+              decimals: 1
+            - entity: sensor.hall_gf_iaq_humidity
+              decimals: 0
+            - entity: sensor.hall_gf_iaq_pressure
+              decimals: 0
+            - entity: sensor.hall_gf_iaq_battery
+              decimals: 0
+            - entity: sensor.hall_gf_iaq_linkquality
+              decimals: 0
+            - entity: sensor.hall_gf_iaq_temperature
+              secondary_info: last_changed
+              format: relative
+
+          # Define aspect ratio
+          aspectratio: 6/1
+
+          layout:
+            styles:
+              card:
+              toolsets:
+              
+            toolsets:
+              # ================================================================
+              - toolset: line1
+                position:
+                  cx: 200
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: line2
+                position:
+                  cx: 500
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: color1
+                position:
+                  cx: 0
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 50
+                    styles:
+                      circle:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        stroke: none
+
+              # ================================================================
+              - toolset: colomn-icon
+                position:
+                  cx: 30
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 30
+                    entity_index: 0
+                    styles:
+                      icon:
+                        fill: var(--primary-text-color)
+                    
+              - toolset: colomn-name
+                position:
+                  cx: 120
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: middle
+                        font-size: 25em
+                        font-weight: 700
+                        opacity: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 80
+                    entity_index: 5
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 14em
+                        font-weight: 500
+
+              # ================================================================
+              - toolset: colomn-temperature
+                position:
+                  cx: 260
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 5
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 0
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 0
+                    scale:
+                      min: 15
+                      max: 25
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-primary50)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-humidity
+                position:
+                  cx: 355
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 1
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 1
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-primary45)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-pressure
+                position:
+                  cx: 450
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 2
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 2
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 2
+                    scale:
+                      min: 950
+                      max: 1050
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-primary40)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-battery
+                position:
+                  cx: 540
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 30
+                      cy: 30
+                      align: right
+                      icon_size: 25
+                    entity_index: 3
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 70
+                      cy: 30
+                    entity_index: 3
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 18em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 70
+                      cy: 30
+                      start_angle: 0
+                      end_angle: 360
+                      width: 3
+                      radius: 18
+                    entity_index: 3
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-tertiary45)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-linkquality
+                position:
+                  cx: 540
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 30
+                      cy: 70
+                      align: right
+                      icon_size: 25
+                    entity_index: 4
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 70
+                      cy: 70
+                    entity_index: 4
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 18em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 70
+                      cy: 70
+                      start_angle: 0
+                      end_angle: 360
+                      width: 3
+                      radius: 18
+                    entity_index: 4
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-tertiary45)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+
+    # ==========================================================================
+    - type: horizontal-stack
+      cards:
+        # 
+        # Indoor Environment: Bedroom Rear
+        # 
+        ########################################################################
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.bedroom_iaq_temperature
+              name: 'Bedroom'
+              icon: mdi:home-thermometer-outline
+              decimals: 1
+            - entity: sensor.bedroom_iaq_humidity
+              decimals: 0
+            - entity: sensor.bedroom_iaq_pressure
+              decimals: 0
+            - entity: sensor.bedroom_iaq_battery
+              decimals: 0
+            - entity: sensor.bedroom_iaq_linkquality
+              decimals: 0
+            - entity: sensor.bedroom_iaq_temperature
+              secondary_info: last_changed
+              format: relative
+
+          # Define aspect ratio
+          aspectratio: 6/1
+
+          layout:
+            styles:
+              card:
+              toolsets:
+              
+            toolsets:
+              # ================================================================
+              - toolset: line1
+                position:
+                  cx: 200
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: line2
+                position:
+                  cx: 500
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: colomn-icon
+                position:
+                  cx: 30
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 22
+                    styles:
+                      circle:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 30
+                    entity_index: 0
+                    
+              - toolset: colomn-name
+                position:
+                  cx: 120
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: middle
+                        font-size: 25em
+                        font-weight: 700
+                        opacity: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 80
+                    entity_index: 5
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 14em
+                        font-weight: 500
+
+              # ================================================================
+              - toolset: colomn-temperature
+                position:
+                  cx: 260
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 5
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 0
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 0
+                    scale:
+                      min: 15
+                      max: 25
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-primary50)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-humidity
+                position:
+                  cx: 355
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 1
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 1
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-primary45)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-pressure
+                position:
+                  cx: 450
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 2
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 2
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 2
+                    scale:
+                      min: 950
+                      max: 1050
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-primary40)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-battery
+                position:
+                  cx: 540
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 30
+                      cy: 30
+                      align: right
+                      icon_size: 25
+                    entity_index: 3
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 70
+                      cy: 30
+                    entity_index: 3
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 18em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 70
+                      cy: 30
+                      start_angle: 0
+                      end_angle: 360
+                      width: 3
+                      radius: 18
+                    entity_index: 3
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-tertiary45)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-linkquality
+                position:
+                  cx: 540
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 30
+                      cy: 70
+                      align: right
+                      icon_size: 25
+                    entity_index: 4
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 70
+                      cy: 70
+                    entity_index: 4
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 18em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 70
+                      cy: 70
+                      start_angle: 0
+                      end_angle: 360
+                      width: 3
+                      radius: 18
+                    entity_index: 4
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-sys-palette-tertiary45)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+    # ==========================================================================
+    - type: horizontal-stack
+      cards:
+        # 
+        # Server: Hestia
+        # 
+        ########################################################################
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            # CPU
+            - entity: sensor.processor_use
+              decimals: 0
+              name: 'Hestia'
+              icon: mdi:server-network
+            # Memory
+            - entity: sensor.memory_use_percent
+              icon: mdi:memory
+              decimals: 0
+            # Disk
+            - entity: sensor.disk_use_percent
+              decimals: 0
+              icon: mdi:harddisk
+            # System Load
+            - entity: sensor.load_1m
+              decimals: 2
+              unit: '1m'
+            # Last changed
+            - entity: sensor.processor_use
+              secondary_info: last_changed
+              format: relative
+
+          # Define aspect ratio
+          aspectratio: 6/1
+
+          layout:
+            styles:
+              card:
+              toolsets:
+              
+            toolsets:
+              # ================================================================
+              - toolset: line1
+                position:
+                  cx: 200
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: color1
+                position:
+                  cx: 0
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 50
+                    styles:
+                      circle:
+                        stroke: none
+                        fill: var(--theme-sys-palette-primary30)
+
+              # ================================================================
+              - toolset: colomn-icon
+                position:
+                  cx: 30
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 30
+                    entity_index: 0
+                    styles:
+                      icon:
+                        fill: var(--primary-background-color)
+                        opacity: 0.9
+                    
+              - toolset: colomn-name
+                position:
+                  cx: 120
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: middle
+                        font-size: 25em
+                        font-weight: 700
+                        opacity: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 80
+                    entity_index: 4
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 14em
+                        font-weight: 500
+
+              # ================================================================
+              - toolset: colomn-cpu
+                position:
+                  cx: 260
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 4
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 0
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 0
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                      # lastcolor: true
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors: &4-colors
+                          - var(--theme-sys-palette-primary50)
+                          - var(--theme-sys-palette-primary45)
+                          - var(--theme-sys-palette-primary40)
+                          - var(--theme-sys-palette-primary35)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-memory
+                position:
+                  cx: 355
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 1
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 1
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                      # lastcolor: true
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors: *4-colors
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-disk
+                position:
+                  cx: 450
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 2
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 2
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 2
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                      # lastcolor: true
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors: *4-colors
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+
+              # ================================================================
+              - toolset: colomn-load
+                position:
+                  cx: 545
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 3
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 3
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 3
+                    scale:
+                      min: 0
+                      max: 2
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: colorlist
+                      # lastcolor: true
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors: *4-colors
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+    # ==========================================================================
+    - type: horizontal-stack
+      cards:
+        # 
+        # Server: Poseidon
+        # 
+        ########################################################################
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            # CPU
+            - entity: sensor.glances_poseidon_cpu_used
+              decimals: 0
+              name: 'Poseidon'
+              icon: mdi:server-network
+            # Memory
+            - entity: sensor.glances_poseidon_ram_used_percent
+              icon: mdi:memory
+              decimals: 0
+            # Disk
+            - entity: sensor.glances_poseidon_etc_glances_used_percent
+              decimals: 0
+              icon: mdi:harddisk
+            # System Load
+            - entity: sensor.glances_poseidon_load_min1
+              decimals: 2
+              unit: '1m'
+            # Last changed
+            - entity: sensor.glances_poseidon_cpu_used
+              secondary_info: last_changed
+              format: relative
+
+          # Define aspect ratio
+          aspectratio: 6/1
+
+          layout:
+            styles:
+              card:
+              toolsets:
+              
+            toolsets:
+              # ================================================================
+              # - toolset: line1
+                # position:
+                  # cx: 200
+                  # cy: 50
+                # tools:
+                  # # ------------------------------------------------------------
+                  # - type: line
+                    # position:
+                      # cx: 50
+                      # cy: 50
+                      # orientation: vertical
+                      # length: 50
+                    # styles:
+                      # line:
+                        # fill: var(--primary-text-color)
+                        # opacity: 0.5
+
+              # ================================================================
+              - toolset: color1
+                position:
+                  cx: 100
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: rectangle
+                    position:
+                      cx: 50
+                      cy: 50
+                      width: 200
+                      height: 100
+                    styles:
+                      rectangle:
+                        stroke: none
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+
+              # ================================================================
+              - toolset: colomn-icon
+                position:
+                  cx: 30
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 30
+                    entity_index: 0
+                    styles:
+                      icon:
+                        fill: var(--primary-text-color)
+
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 22
+                    styles:
+                      circle:
+                        fill: none
+                        stroke: var(--primary-text-color)
+                        stroke-width: 3em
+                        opacity: 1
+                    
+              - toolset: colomn-name
+                position:
+                  cx: 120
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: middle
+                        font-size: 25em
+                        font-weight: 700
+                        opacity: 1
+                        fill: var(--primary-text-color)
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 80
+                    entity_index: 4
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 14em
+                        font-weight: 500
+                        fill: var(--primary-text-color)
+
+              # ================================================================
+              - toolset: colomn-cpu
+                position:
+                  cx: 260
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 4
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 0
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 0
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                      # lastcolor: true
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors: *4-colors
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-memory
+                position:
+                  cx: 355
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 1
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 1
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                      # lastcolor: true
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors: *4-colors
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-disk
+                position:
+                  cx: 450
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 2
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 2
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 2
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                      # lastcolor: true
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors: *4-colors
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+
+              # ================================================================
+              - toolset: colomn-load
+                position:
+                  cx: 545
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 3
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 3
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 3
+                    scale:
+                      min: 0
+                      max: 2
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: colorlist
+                      # lastcolor: true
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors: *4-colors
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+    # ==========================================================================
+    - type: horizontal-stack
+      cards:
+        # 
+        # Illuminance: Ground Floor
+        # 
+        ########################################################################
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            # Kitchen
+            - entity: sensor.kitchen_illuminance_illuminance_lux
+              decimals: 0
+              name: 'Illuminance'
+            # Living TV
+            - entity: sensor.livingroom_illuminance_tv_illuminance_lux
+              decimals: 0
+            # Living Front
+            - entity: sensor.livingroom_illuminance_front_illuminance_lux
+              decimals: 0
+            # Study 
+            - entity: sensor.livingroom_movement_illuminance_lux
+            # Last changed
+            - entity: sensor.kitchen_illuminance_illuminance_lux
+              secondary_info: last_changed
+              format: relative
+
+          # Define aspect ratio
+          aspectratio: 6/1
+
+          layout:
+            styles:
+              card:
+              toolsets:
+              
+            toolsets:
+              # ================================================================
+              - toolset: line1
+                position:
+                  cx: 200
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: colomn-icon
+                position:
+                  cx: 30
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 30
+                    entity_index: 0
+                    
+              - toolset: colomn-name
+                position:
+                  cx: 120
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        opacity: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 80
+                    entity_index: 4
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 14em
+                        font-weight: 500
+
+              # ================================================================
+              - toolset: colomn-cpu
+                position:
+                  cx: 260
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 4
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 0
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 0
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                      # lastcolor: true
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-ref-palette-primary30)
+                          - var(--theme-ref-palette-primary35)
+                          - var(--theme-ref-palette-primary40)
+                          - var(--theme-ref-palette-primary45)
+                          - var(--theme-ref-palette-primary50)
+                          - var(--theme-ref-palette-primary60)
+                          - var(--theme-ref-palette-primary65)
+                          - var(--theme-ref-palette-primary70)
+                          - var(--theme-ref-palette-primary75)
+                          - var(--theme-ref-palette-primary80)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-memory
+                position:
+                  cx: 355
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 1
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 1
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 1
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                      # lastcolor: true
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-ref-palette-primary30)
+                          - var(--theme-ref-palette-primary35)
+                          - var(--theme-ref-palette-primary40)
+                          - var(--theme-ref-palette-primary45)
+                          - var(--theme-ref-palette-primary50)
+                          - var(--theme-ref-palette-primary60)
+                          - var(--theme-ref-palette-primary65)
+                          - var(--theme-ref-palette-primary70)
+                          - var(--theme-ref-palette-primary75)
+                          - var(--theme-ref-palette-primary80)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+              # ================================================================
+              - toolset: colomn-disk
+                position:
+                  cx: 450
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 2
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 2
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 2
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                      # lastcolor: true
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-ref-palette-primary30)
+                          - var(--theme-ref-palette-primary35)
+                          - var(--theme-ref-palette-primary40)
+                          - var(--theme-ref-palette-primary45)
+                          - var(--theme-ref-palette-primary50)
+                          - var(--theme-ref-palette-primary60)
+                          - var(--theme-ref-palette-primary65)
+                          - var(--theme-ref-palette-primary70)
+                          - var(--theme-ref-palette-primary75)
+                          - var(--theme-ref-palette-primary80)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+
+
+              # ================================================================
+              - toolset: colomn-load
+                position:
+                  cx: 545
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 30
+                      align: center
+                      icon_size: 25
+                    entity_index: 3
+
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 55
+                    entity_index: 3
+                    show:
+                      uom: bottom
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                      uom:
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 0
+                      end_angle: 360
+                      width: 6
+                      radius: 40
+                    entity_index: 3
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: colorlist
+                      # lastcolor: true
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - var(--theme-ref-palette-primary30)
+                          - var(--theme-ref-palette-primary35)
+                          - var(--theme-ref-palette-primary40)
+                          - var(--theme-ref-palette-primary45)
+                          - var(--theme-ref-palette-primary50)
+                          - var(--theme-ref-palette-primary60)
+                          - var(--theme-ref-palette-primary65)
+                          - var(--theme-ref-palette-primary70)
+                          - var(--theme-ref-palette-primary75)
+                          - var(--theme-ref-palette-primary80)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        # fill: var(--primary-background-color)
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1

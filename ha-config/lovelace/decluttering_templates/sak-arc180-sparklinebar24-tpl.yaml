@@ -1,0 +1,57 @@
+default:
+  - decimals: 0
+  - cx: 50
+  - cy: 50
+  - scale_min: 0
+  - scale_max: 100
+  - area: 'Home'
+  - colorstops_template: colorstops_humidity
+  - icon: 'mdi:water-percent'
+
+card:
+  type: 'custom:swiss-army-knife-card'
+
+  entities: 
+    - entity: sensor.[[entity]]
+      decimals: '[[decimals]]'
+      name: '[[name]]'
+      icon: '[[icon]]'
+      area: '[[area]]'
+
+  aspectratio: 1/1
+  dev:
+    debug: false
+  
+  layout:
+    styles:
+      card:
+      toolsets:
+        filter: url(#nm-1)
+    toolsets:
+      # ==============================================================================
+      - toolset: humi-dt-tpl
+        template:
+          name: toolset_arc180_sparklinebar24
+          variables:
+            - scale_min: '[[scale_min]]'
+            - scale_max: '[[scale_max]]'
+            - colorstops_template: '[[colorstops_template]]'
+            - cx: '[[cx]]'
+            - cy: '[[cy]]'
+        position:
+          cx: '[[cx]]'
+          cy: '[[cy]]'
+        tools:
+          - type: 'segarc'
+            id: 2
+            show:
+              scale: true
+            scale:
+              min: '[[scale_min]]'
+              max: '[[scale_max]]'
+            segments:
+              colorstops:
+                template:
+                  name: '[[colorstops_template]]'
+                  variables:
+                    - thegap: 1

@@ -1,0 +1,45 @@
+#################################################################
+#                                                               # 
+#             Swiss Army Knife examples dashboard (RC)          #
+#                                                               #
+#             Created: 2021.12.05 (up to Beta 3)                #
+#             Created: 2022.06.05 (from RC 1 onwards)           #
+#                                                               #
+#################################################################
+  
+# Decluttering Templates
+decluttering_templates:
+  !include lovelace/decluttering_templates/decluttering_templates.yaml
+
+# Swiss Army Knife Templates
+#
+# The system templates come with the HACS install and can be updated
+# with a new release. That part is automatic!
+sak_sys_templates:
+  !include www/community/swiss-army-knife-card/sak_templates.yaml
+
+# The user templates are created by the user, and won't be updated 
+# with a new release. If changes are required, then the user has to
+# upate the template configuration files.
+sak_user_templates:
+  !include lovelace/sak_templates/sak_templates.yaml
+
+title: Swiss Army Knife Examples
+views:
+
+  # Swiss Army Knife example views...
+  - !include lovelace/views/sak-example-views/view-sake1.yml
+  - !include lovelace/views/sak-example-views/view-sake1-m3.yml
+  - !include lovelace/views/sak-example-views/view-sake2.yml
+  - !include lovelace/views/sak-example-views/view-sake3.yml
+  - !include lovelace/views/sak-example-views/view-sake4.yml
+  - !include lovelace/views/sak-example-views/view-sake5.yml
+  - !include lovelace/views/sak-example-views/view-sake6.yml
+  - !include lovelace/views/sak-example-views/view-sake6-m3.yml
+  - !include lovelace/views/sak-example-views/view-sake7.yml
+  - !include lovelace/views/sak-example-views/view-sake8.yml
+  - !include lovelace/views/sak-example-views/view-sake9.yml
+  - !include lovelace/views/sak-example-views/view-sake10.yml
+  - !include lovelace/views/sak-example-views/view-sake11-m3.yml
+  - !include lovelace/views/sak-example-views/view-sake12-m3.yml
+  - !include lovelace/views/sak-example-views/view-sake99-m3.yml

@@ -1,0 +1,149 @@
+toolset_m3_mode_colors:
+  template:
+    type: toolset
+    defaults: 
+      - cx: 50
+      - cy: 50
+      - title_background: 'Primary'
+      - color_background: 'Primary80'
+
+      - title_on_background: 'On Primary'
+      - color_on_background: 'Primary20'
+
+      - title_container: 'Primary Container'
+      - color_container: 'Primary30'
+
+      - title_on_container: 'On Primary Container'
+      - color_on_container: 'Primary90'
+
+      - mode_background_color: black
+      - mode_on_background_color: black
+      - mode_container_color: black
+      - mode_on_container_color: black
+
+  toolset:
+    position:
+      cx: '[[cx]]'
+      cy: '[[cy]]'
+    tools:
+      # ------------------------------------------------------------
+      - type: rectangle
+        position: &rectpos
+          cx: -60
+          cy: 50
+          width: 70
+          height: 30
+          rx: 1
+        styles:
+          rectangle:
+            fill: '[[mode_background_color]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: -90
+          cy: 40
+        text: '[[title_background]]'
+        styles:
+          text:
+            fill: '[[mode_on_background_color]]'
+            text-anchor: start
+            font-size: 4em
+      - type: text
+        position:
+          cx: -30
+          cy: 60
+        text: '[[color_background]]'
+        styles:
+          text:
+            fill: '[[mode_on_background_color]]'
+            text-anchor: end
+            font-size: 4em
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 10
+        styles:
+          rectangle:
+            fill: '[[mode_on_background_color]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: -20
+          cy: 40
+        text: '[[title_on_background]]'
+        styles:
+          text:
+            fill: '[[mode_background_color]]'
+            text-anchor: start
+            font-size: 4em
+      - type: text
+        position:
+          cx: 40
+          cy: 60
+        text: '[[color_on_background]]'
+        styles:
+          text:
+            fill: '[[mode_background_color]]'
+            text-anchor: end
+            font-size: 4em
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 90
+        styles:
+          rectangle:
+            fill: '[[mode_container_color]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 60
+          cy: 40
+        text: '[[title_container]]'
+        styles:
+          text:
+            fill: '[[mode_on_container_color]]'
+            text-anchor: start
+            font-size: 4em
+      - type: text
+        position:
+          cx: 120
+          cy: 60
+        text: '[[color_container]]'
+        styles:
+          text:
+            fill: '[[mode_on_container_color]]'
+            text-anchor: end
+            font-size: 4em
+
+      - type: rectangle
+        position:
+          <<: *rectpos
+          cx: 160
+        styles:
+          rectangle:
+            fill: '[[mode_on_container_color]]'
+            stroke-width: 0em
+      - type: text
+        position:
+          cx: 130
+          cy: 40
+        text: '[[title_on_container]]'
+        styles:
+          text:
+            fill: '[[mode_container_color]]'
+            text-anchor: start
+            font-size: 4em
+      - type: text
+        position:
+          cx: 190
+          cy: 60
+        text: '[[color_on_container]]'
+        styles:
+          text:
+            fill: '[[mode_container_color]]'
+            text-anchor: end
+            font-size: 4em
+
+

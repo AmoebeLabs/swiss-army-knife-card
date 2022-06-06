@@ -1,0 +1,241 @@
+#
+# View			: view-sake3
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#
+#
+# Refs:
+#   
+###############################################################################
+
+title: SAKE3
+path: sake3
+panel: false
+theme: 'NM - Gonsboro'
+cards:
+#------------------------------------------------------------------------------
+- type: vertical-stack
+  cards:
+    - type: custom:decluttering-card
+      template: divider_template
+
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'In Huis'
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'Temperatuur'
+        - font_color: var(--secondary-text-color)
+        - font_size: 3em
+
+    - type: horizontal-stack
+      cards:
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.livingroom_iaq_temperature
+            - name: Woonkamer
+            - icon: mdi:thermometer
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.kitchen_iaq_temperature
+            - name: Keuken
+            - icon: mdi:thermometer
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.hall_gf_iaq_temperature
+            - name: Hal
+            - icon: mdi:thermometer
+
+    - type: horizontal-stack
+      cards:
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.bathroom_iaq_temperature
+            - name: Badkamer
+            - icon: mdi:thermometer
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.bedroom_iaq_temperature
+            - name: Slk Achter
+            - icon: mdi:thermometer
+        - type: custom:button-card
+          color_type: blank-card
+          aspect_ratio: 1/1
+
+    - type: horizontal-stack
+      cards:
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.studyf_iaq_temperature
+            - name: Werk Voor
+            - icon: mdi:thermometer
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.studym_iaq_temperature
+            - name: Werk Achter
+            - icon: mdi:thermometer
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.bathroom_2f_iaq_temperature
+            - name: Badkamer Bad
+            - icon: mdi:thermometer
+
+##
+## Luchtvochtigheid
+##
+- type: vertical-stack
+  cards:
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'Luchtvochtigheid'
+        - font_color: var(--secondary-text-color)
+        - font_size: 3em
+    - type: horizontal-stack
+      cards:
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.livingroom_iaq_humidity
+            - name: Woonkamer
+            - icon: mdi:water-percent
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.kitchen_iaq_humidity
+            - name: Keuken
+            - icon: mdi:water-percent
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.hall_gf_iaq_humidity
+            - name: Hal
+            - icon: mdi:water-percent
+
+    - type: horizontal-stack
+      cards:
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.bathroom_iaq_humidity
+            - name: Badkamer
+            - icon: mdi:water-percent
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.bedroom_iaq_humidity
+            - name: Slk Achter
+            - icon: mdi:water-percent
+        - type: custom:button-card
+          color_type: blank-card
+          aspect_ratio: 1/1
+
+    - type: horizontal-stack
+      cards:
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.studyf_iaq_humidity
+            - name: Werk Voor
+            - icon: mdi:water-percent
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.studym_iaq_humidity
+            - name: Werk Achter
+            - icon: mdi:water-percent
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.bathroom_2f_iaq_humidity
+            - name: Badkamer Bad
+            - icon: mdi:water-percent
+                
+##
+## Luchtdruk
+##
+- type: vertical-stack
+  cards:
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        # - content: '#### Luchtdruk'
+        - content: 'Luchtdruk'
+        - font_color: var(--secondary-text-color)
+        - font_size: 3em
+    - type: horizontal-stack
+      cards:
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.livingroom_iaq_pressure
+            - name: Bgg
+            - icon: 'mdi:gauge'
+            - decimals: 0
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.bedroom_iaq_pressure
+            - name: 1ste
+            - icon: 'mdi:gauge'
+            - decimals: 0
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.studym_iaq_pressure
+            - name: 2de
+            - icon: 'mdi:gauge'
+            - decimals: 0
+
+##
+## Lichtwaarde
+##
+- type: vertical-stack
+  cards:
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        # - content: '#### Lichtwaarde'
+        - content: 'Lichtwaarde'
+        - font_color: var(--secondary-text-color)
+        - font_size: 3em
+    - type: horizontal-stack
+      cards:
+        - type: custom:decluttering-card
+          template: sak_sensor_history_template_nm_tpl
+          variables:
+            - entity: sensor.livingroom_movement_illuminance
+            - name: Bgg
+            - icon: mdi:alarm-light-outline
+            - decimals: 0
+        - type: custom:button-card
+          color_type: blank-card
+          aspect_ratio: 1/1
+        - type: custom:button-card
+          color_type: blank-card
+          aspect_ratio: 1/1
+
+    - type: 'custom:button-card'
+      color_type: blank-card
+      styles:
+        card:
+          - height: 5px

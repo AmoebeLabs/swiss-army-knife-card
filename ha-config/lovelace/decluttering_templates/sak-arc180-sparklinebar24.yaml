@@ -1,0 +1,135 @@
+default:
+  - decimals: 0
+  - cx: 50
+  - cy: 50
+  - scale_min: 0
+  - scale_max: 100
+  - area: 'Home'
+  - colorstops_template: colorstops_humidity
+  - icon: 'mdi:water-percent'
+
+card:
+  type: 'custom:swiss-army-knife-card'
+
+  entities: 
+    - entity: sensor.[[entity]]
+      decimals: '[[decimals]]'
+      name: '[[name]]'
+      icon: '[[icon]]'
+      area: '[[area]]'
+
+  aspectratio: 1/1
+  dev:
+    debug: false
+    ts: true
+  
+  layout:
+    styles:
+      card:
+      toolsets:
+        filter: url(#nm-1)
+    toolsets:
+      # ==============================================================================
+      - toolset: humi-dt
+        position:
+          cx: '[[cx]]'
+          cy: '[[cy]]'
+        tools:
+          - type: 'area'
+            id: 0
+            entity_index: 0
+            position:
+              cx: 50
+              cy: 98
+            styles:
+              area:
+                font-size: 2em;
+                text-anchor: middle;
+
+          - type: 'name'
+            id: 1
+            entity_index: 0
+            position:
+              cx: 50
+              cy: 53
+            styles:
+              name:
+                font-size: 1.2em;
+                text-anchor: middle;
+
+          - type: 'segarc'
+            id: 2
+            entity_index: 0
+            position:
+              cx: 49
+              cy: 50
+              start_angle: -90
+              end_angle: 90
+              width: 5
+              radius: 45
+            scale:
+              min: '[[scale_min]]'
+              max: '[[scale_max]]'
+              width: 15
+              offset: -15
+            show:
+              scale: true
+              style: 'colorstops'
+            segments:
+              # colorstops:
+                # template: colorstops_temperature_inside
+                # variables:
+                  # - thegap: 3
+              # dash: 90
+              # gap: 1
+              colorstops:
+                template:
+                  name: '[[colorstops_template]]'
+                  variables:
+                    - thegap: 0
+            styles:
+              foreground:
+                fill: var(--theme-gradient-color-01);
+              background:
+                fill: var(--primary-background-color);
+
+          - type: 'state'
+            id: 3
+            entity_index: 0
+            position:
+              cx: 50
+              cy: 35
+            styles:
+              state:
+                text-anchor: center;
+                font-size: 3em;
+                fill: var(--theme-gradient-color-01);
+
+          - type: 'icon'
+            id: 4
+            entity_index: 0
+            position:
+              cx: 10
+              cy: 10
+              align: center
+              icon_size: 15
+            styles:
+              icon:
+                color: var(--theme-gradient-color-01);
+                fill: var(--theme-gradient-color-01);
+
+          - type: 'bar'
+            id: 5
+            entity_index: 0
+            position:
+              orientation: vertical
+              cx: 50
+              cy: 72
+              width: 80
+              height: 25
+            hours: 24
+            barhours: 1
+            styles:
+              bar:
+                stroke: var(--theme-gradient-color-01);
+                stroke-linecap: butt;

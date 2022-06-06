@@ -1,0 +1,72 @@
+#
+# Template  : sak-separator-template-mw
+# Card:     : sak
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/Home-Assistant-Config
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Decluttering template for the standard markdown card.
+#   Does some formatting and styling.
+#
+#   Styling:
+#   - No shadows for a header
+#   - left padding to align with all the other cards (5px, hard-coded)
+#   - Text to uppercase
+#   - Fully transparent background
+#   - Optional font color
+#
+#   Note:
+#   This template uses the Nyx and Hemera themes for settings!!
+#   You can find them in my repository ;-)
+#   
+#   References:
+#
+###############################################################################
+
+card:
+  type: 'custom:swiss-army-knife-card'
+
+  entities: 
+    - entity: sun.sun
+
+  aspectratio: 1/0.05
+  dev:
+    debug: false
+
+  disable_card: true
+    
+  layout:
+    toolsets:
+      # ==============================================================================
+      - toolset: divider
+        position:
+          cx: 50
+          cy: 2.5
+        tools:
+          # Weird. Need name to get line displayed. What is this for weird bug??
+          # Also, cannot set filter on line itself: line disappears!!!
+          - type: name
+            entity_index: 0
+            position:
+              cx: 50
+              cy: 50
+            styles:
+              name:
+                font-size: 0.05em
+          
+          - type: line
+            position:
+              orientation: horizontal
+              cx: 50
+              cy: 50
+              length: 100
+            styles:
+              line:
+                stroke: var(--cs-theme-shadow-darker)
+                stroke-width: 3
+                stroke-linecap: round

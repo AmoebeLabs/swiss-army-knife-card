@@ -1,0 +1,66 @@
+#
+# Template  : header-template-mw
+# Card:     : markdown
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/Home-Assistant-Config
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Decluttering template for the standard markdown card.
+#   Does some formatting and styling.
+#
+#   Styling:
+#   - No shadows for a header
+#   - left padding to align with all the other cards (5px, hard-coded)
+#   - Text to uppercase
+#   - Fully transparent background
+#   - Optional font color
+#
+#   Note:
+#   This template uses the Nyx and Hemera themes for settings!!
+#   You can find them in my repository ;-)
+#   
+#   References:
+#
+###############################################################################
+
+default:
+  - font_color: var(--primary-text-color)
+  - font_size: 3.5em
+card:
+  type: 'custom:swiss-army-knife-card'
+
+  # entities: 
+    # - entity: sun.sun
+
+  aspectratio: 1/0.05
+  dev:
+    debug: false
+
+  disable_card: true
+    
+  layout:
+    toolsets:
+      # ==============================================================================
+      # Using Neumorphic ligth button design
+      - toolset: header
+        position:
+          cx: 2.5
+          cy: 2.5
+        tools:
+          - type: text
+            position:
+              cx: 50
+              cy: 50
+            text: '[[content]]'
+            styles:
+              text:
+                fill: '[[font_color]]'
+                letter-spacing: 0.1em
+                text-transform: uppercase
+                text-anchor: start
+                font-size: '[[font_size]]'

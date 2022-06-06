@@ -1,0 +1,852 @@
+#
+# Theme     : m3-02-test.yaml
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/l
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Neumorphic theme with gonsboro as the main background color (light grey)
+#
+# Refs:
+#   - https://neumorphism.io/#efeeee
+#   - https://material.io/develop/web/theming/theming-guide
+#   
+###############################################################################
+#
+M3 - Test:
+  #
+  # Theming the box-shadow for a card using Neumorphic guidelines.
+  # --------------------------------------------------------------
+  # ha-card-box-shadow: '3px 3px 6px var(--theme-default-shadow-darker, --theme-shadow-darker), -3px -3px 6px var(--theme-default-shadow-lighter, --theme-shadow-lighter)'
+  ha-card-box-shadow: '1px 1px 2px var(--theme-default-shadow-darker), -1px -1px 2px var(--theme-default-shadow-lighter)'
+
+  # Make it an inset shadow. Looks very nice combined with the neumorphic design!!!!
+  theme-card-box-shadow: 'var(--shadow-elevation-2dp_-_box-shadow)'
+
+  # From: https://designmodo.com/mobile-app-navigations/
+  # via colorpicker
+       # Very light brown for background??
+
+  # Colors generated via Material Design 3 (Material You) DSP export of figma
+  #
+  
+  theme-ref-elevation-surface-primary1-light: rgb(251,245,254)
+  theme-ref-elevation-surface-primary2-light: rgb(248,240,254)
+  theme-ref-elevation-surface-primary3-light: rgb(243,234,254)
+  theme-ref-elevation-surface-primary4-light: rgb(239,227,253)
+  theme-ref-elevation-surface-primary5-light: rgb(233,219,253)
+  theme-ref-elevation-surface-primary6-light: rgb(227,210,253)
+  theme-ref-elevation-surface-primary7-light: rgb(220,200,253)
+  theme-ref-elevation-surface-primary8-light: rgb(212,189,253)
+  theme-ref-elevation-surface-primary9-light: rgb(204,176,252)
+  theme-ref-elevation-surface-primary10-light: rgb(196,165,252)
+
+  theme-ref-elevation-surface-neutral1-light: rgb(250,246,249)
+  theme-ref-elevation-surface-neutral2-light: rgb(247,243,246)
+  theme-ref-elevation-surface-neutral3-light: rgb(242,238,242)
+  theme-ref-elevation-surface-neutral4-light: rgb(238,234,237)
+  theme-ref-elevation-surface-neutral5-light: rgb(231,227,231)
+  theme-ref-elevation-surface-neutral6-light: rgb(225,221,224)
+  theme-ref-elevation-surface-neutral7-light: rgb(217,213,217)
+  theme-ref-elevation-surface-neutral8-light: rgb(209,205,209)
+  theme-ref-elevation-surface-neutral9-light: rgb(199,196,199)
+  theme-ref-elevation-surface-neutral10-light: rgb(191,188,192)
+
+  theme-ref-elevation-surface-primary1-dark: rgb(37,35,41)
+  theme-ref-elevation-surface-primary2-dark: rgb(42,40,48)
+  theme-ref-elevation-surface-primary3-dark: rgb(48,45,55)
+  theme-ref-elevation-surface-primary4-dark: rgb(55,51,64)
+  theme-ref-elevation-surface-primary5-dark: rgb(62,58,73)
+  theme-ref-elevation-surface-primary6-dark: rgb(71,66,84)
+  theme-ref-elevation-surface-primary7-dark: rgb(80,74,95)
+  theme-ref-elevation-surface-primary8-dark: rgb(91,84,109)
+  theme-ref-elevation-surface-primary9-dark: rgb(100,92,120)
+  theme-ref-elevation-surface-primary10-dark: rgb(109,100,131)
+
+  theme-ref-elevation-surface-neutral1-dark: rgb(37,36,39)
+  theme-ref-elevation-surface-neutral2-dark: rgb(42,41,44)
+  theme-ref-elevation-surface-neutral3-dark: rgb(47,46,49)
+  theme-ref-elevation-surface-neutral4-dark: rgb(54,53,56)
+  theme-ref-elevation-surface-neutral5-dark: rgb(61,59,62)
+  theme-ref-elevation-surface-neutral6-dark: rgb(70,68,71)
+  theme-ref-elevation-surface-neutral7-dark: rgb(78,76,80)
+  theme-ref-elevation-surface-neutral8-dark: rgb(89,86,90)
+  theme-ref-elevation-surface-neutral9-dark: rgb(97,95,98)
+  theme-ref-elevation-surface-neutral10-dark: rgb(106,104,107)
+
+  theme-ref-palette-primary100: '#ffffff'
+  theme-ref-palette-primary99: '#fffbfe'
+  theme-ref-palette-primary95: '#f6edff'
+  theme-ref-palette-primary90: '#e9ddff'
+  theme-ref-palette-primary80: '#d0bdff'
+  theme-ref-palette-primary70: '#b69cff'
+  theme-ref-palette-primary60: '#9d79ff'
+  theme-ref-palette-primary50: '#8553ff'
+  theme-ref-palette-primary40: '#6c25f9'
+  theme-ref-palette-primary30: '#5000d0'
+  theme-ref-palette-primary20: '#370095'
+  theme-ref-palette-primary10: '#200060'
+  theme-ref-palette-primary0: '#000000'
+  theme-ref-palette-secondary100: '#ffffff'
+  theme-ref-palette-secondary99: '#fffbfe'
+  theme-ref-palette-secondary95: '#f6edff'
+  theme-ref-palette-secondary90: '#e8dff8'
+  theme-ref-palette-secondary80: '#cbc2dc'
+  theme-ref-palette-secondary70: '#afa7c0'
+  theme-ref-palette-secondary60: '#948da4'
+  theme-ref-palette-secondary50: '#7b748a'
+  theme-ref-palette-secondary40: '#615b70'
+  theme-ref-palette-secondary30: '#494458'
+  theme-ref-palette-secondary20: '#332d41'
+  theme-ref-palette-secondary10: '#1e192b'
+  theme-ref-palette-secondary0: '#000000'
+  theme-ref-palette-tertiary100: '#ffffff'
+  theme-ref-palette-tertiary99: '#fcfcfc'
+  theme-ref-palette-tertiary95: '#ffecf1'
+  theme-ref-palette-tertiary90: '#ffd9e5'
+  theme-ref-palette-tertiary80: '#efb8c9'
+  theme-ref-palette-tertiary70: '#d29dae'
+  theme-ref-palette-tertiary60: '#b58393'
+  theme-ref-palette-tertiary50: '#986a79'
+  theme-ref-palette-tertiary40: '#7d5261'
+  theme-ref-palette-tertiary30: '#633b49'
+  theme-ref-palette-tertiary20: '#4a2533'
+  theme-ref-palette-tertiary10: '#31111e'
+  theme-ref-palette-tertiary0: '#000000'
+  theme-ref-palette-neutral100: '#ffffff'
+  theme-ref-palette-neutral99: '#fffbfe'
+  theme-ref-palette-neutral95: '#f4eff3'
+  theme-ref-palette-neutral90: '#e6e1e6'
+  theme-ref-palette-neutral80: '#c9c5c9'
+  theme-ref-palette-neutral70: '#aeaaaf'
+  theme-ref-palette-neutral60: '#938f94'
+  theme-ref-palette-neutral50: '#79767a'
+  theme-ref-palette-neutral40: '#605d62'
+  theme-ref-palette-neutral30: '#48464a'
+  theme-ref-palette-neutral20: '#313033'
+  theme-ref-palette-neutral10: '#1c1b1e'
+  theme-ref-palette-neutral0: '#000000'
+  theme-ref-palette-neutral-variant100: '#ffffff'
+  theme-ref-palette-neutral-variant99: '#fffbfe'
+  theme-ref-palette-neutral-variant95: '#f5eefa'
+  theme-ref-palette-neutral-variant90: '#e6e0eb'
+  theme-ref-palette-neutral-variant80: '#cac4d0'
+  theme-ref-palette-neutral-variant70: '#aea9b4'
+  theme-ref-palette-neutral-variant60: '#938f99'
+  theme-ref-palette-neutral-variant50: '#79757f'
+  theme-ref-palette-neutral-variant40: '#615d67'
+  theme-ref-palette-neutral-variant30: '#48454e'
+  theme-ref-palette-neutral-variant20: '#322f38'
+  theme-ref-palette-neutral-variant10: '#1c1a22'
+  theme-ref-palette-neutral-variant0: '#000000'
+  theme-ref-palette-error100: '#ffffff'
+  theme-ref-palette-error99: '#fcfcfc'
+  theme-ref-palette-error95: '#ffede9'
+  theme-ref-palette-error90: '#ffdad4'
+  theme-ref-palette-error80: '#ffb4a9'
+  theme-ref-palette-error70: '#ff897a'
+  theme-ref-palette-error60: '#ff5449'
+  theme-ref-palette-error50: '#dd3730'
+  theme-ref-palette-error40: '#ba1b1b'
+  theme-ref-palette-error30: '#930006'
+  theme-ref-palette-error20: '#680003'
+  theme-ref-palette-error10: '#410001'
+  theme-ref-palette-error0: '#000000'
+  theme-ref-palette-primary5: '#100030ff'
+  theme-ref-palette-primary15: '#2b007aff'
+  theme-ref-palette-primary25: '#4300b2ff'
+  theme-ref-palette-primary35: '#5e12e4ff'
+  theme-ref-palette-primary45: '#783cfcff'
+  theme-ref-palette-primary65: '#a98affff'
+  theme-ref-palette-primary75: '#c3acffff'
+  theme-ref-palette-primary85: '#dccdffff'
+  theme-ref-palette-primary92: '#efe5ffff'
+  theme-ref-palette-primary97: '#faf4feff'
+  theme-ref-palette-secondary5: '#0f0c15ff'
+  theme-ref-palette-secondary15: '#282336ff'
+  theme-ref-palette-secondary25: '#3e384cff'
+  theme-ref-palette-secondary35: '#554f64ff'
+  theme-ref-palette-secondary45: '#6e677dff'
+  theme-ref-palette-secondary65: '#a19ab2ff'
+  theme-ref-palette-secondary75: '#bdb4ceff'
+  theme-ref-palette-secondary85: '#d9d0eaff'
+  theme-ref-palette-secondary92: '#efe6fbff'
+  theme-ref-palette-secondary97: '#faf4feff'
+  theme-ref-palette-tertiary5: '#18080fff'
+  theme-ref-palette-tertiary15: '#3d1b28ff'
+  theme-ref-palette-tertiary25: '#56303eff'
+  theme-ref-palette-tertiary35: '#704655ff'
+  theme-ref-palette-tertiary45: '#8a5e6dff'
+  theme-ref-palette-tertiary65: '#c390a0ff'
+  theme-ref-palette-tertiary75: '#e0aabbff'
+  theme-ref-palette-tertiary85: '#f7c8d7ff'
+  theme-ref-palette-tertiary92: '#ffe2ebff'
+  theme-ref-palette-tertiary97: '#fdf4f6ff'
+  theme-ref-palette-error5: '#200000ff'
+  theme-ref-palette-error15: '#540002ff'
+  theme-ref-palette-error25: '#7d0004ff'
+  theme-ref-palette-error35: '#a60d10ff'
+  theme-ref-palette-error45: '#cb2925ff'
+  theme-ref-palette-error65: '#ff6e61ff'
+  theme-ref-palette-error75: '#ff9e91ff'
+  theme-ref-palette-error85: '#ffc7beff'
+  theme-ref-palette-error92: '#ffe3deff'
+  theme-ref-palette-error97: '#fdf4f2ff'
+  theme-ref-palette-neutral5: '#0e0d0fff'
+  theme-ref-palette-neutral15: '#262528ff'
+  theme-ref-palette-neutral25: '#3c3b3eff'
+  theme-ref-palette-neutral35: '#545156ff'
+  theme-ref-palette-neutral45: '#6c696eff'
+  theme-ref-palette-neutral65: '#a09ca1ff'
+  theme-ref-palette-neutral75: '#bbb7bcff'
+  theme-ref-palette-neutral85: '#d7d3d7ff'
+  theme-ref-palette-neutral92: '#ede8ecff'
+  theme-ref-palette-neutral97: '#f9f5f8ff'
+  theme-ref-palette-neutral-variant5: '#0e0d11ff'
+  theme-ref-palette-neutral-variant15: '#27242dff'
+  theme-ref-palette-neutral-variant25: '#3d3a43ff'
+  theme-ref-palette-neutral-variant35: '#54515aff'
+  theme-ref-palette-neutral-variant45: '#6d6973ff'
+  theme-ref-palette-neutral-variant65: '#a09ca6ff'
+  theme-ref-palette-neutral-variant75: '#bcb6c2ff'
+  theme-ref-palette-neutral-variant85: '#d8d2ddff'
+  theme-ref-palette-neutral-variant92: '#ede7f2ff'
+  theme-ref-palette-neutral-variant97: '#faf4fcff'
+  
+
+  # ============================================================================
+  modes:
+
+    # dark theme...
+    #
+    # --------------------------------------------------------------------------
+    dark:
+      # Start with the M3 generated colors for dark mode...
+      #
+      theme-sys-color-primary: var(--theme-ref-palette-primary80)
+      theme-sys-color-on-primary: var(--theme-ref-palette-primary20)
+      theme-sys-color-primary-container: var(--theme-ref-palette-primary30)
+      theme-sys-color-on-primary-container: var(--theme-ref-palette-primary90)
+
+      theme-sys-color-secondary: var(--theme-ref-palette-secondary80)
+      theme-sys-color-on-secondary: var(--theme-ref-palette-secondary20)
+      theme-sys-color-secondary-container: var(--theme-ref-palette-secondary30)
+      theme-sys-color-on-secondary-container: var(--theme-ref-palette-secondary90)
+
+      theme-sys-color-tertiary: var(--theme-ref-palette-tertiary80)
+      theme-sys-color-on-tertiary: var(--theme-ref-palette-tertiary20)
+      theme-sys-color-tertiary-container: var(--theme-ref-palette-tertiary30)
+      theme-sys-color-on-tertiary-container: var(--theme-ref-palette-tertiary90)
+
+      theme-sys-color-error: var(--theme-ref-palette-error80)
+      theme-sys-color-on-error: var(--theme-ref-palette-error20)
+      theme-sys-color-error-container: var(--theme-ref-palette-error30)
+      theme-sys-color-on-error-container: var(--theme-ref-palette-error90)
+
+      theme-sys-color-background: var(--theme-ref-palette-neutral10)
+      theme-sys-color-on-background:  var(--theme-ref-palette-neutral90)
+
+      theme-sys-color-surface: var(--theme-ref-palette-neutral10)
+      theme-sys-color-on-surface: var(--theme-ref-palette-neutral80)
+      theme-sys-color-surface-variant: var(--theme-ref-palette-neutral-variant30)
+      theme-sys-color-on-surface-variant: var(--theme-ref-palette-neutral-variant80)
+
+      theme-sys-color-outline: var(--theme-ref-palette-neutral-variant60)
+
+      # Guessing for these 3
+      theme-sys-color-inverse-surface: var(--theme-ref-palette-neutral80)
+      theme-sys-color-inverse-on-surface: var(--theme-ref-palette-neutral10)
+      theme-sys-color-inverse-primary: var(--theme-ref-palette-primary80)
+
+      # No idea with this one...
+      theme-sys-color-shadow: black
+      # -----------------------------------------------------------------------
+
+      # Use generic darken and lighten names. Reversed in dark mode...
+      #
+      # Primary
+      # -----------------------------------------------------------------------
+      theme-sys-palette-primary100: var(--theme-ref-palette-primary0)
+      theme-sys-palette-primary97: var(--theme-ref-palette-primary5)
+      theme-sys-palette-primary95: var(--theme-ref-palette-primary10)
+      theme-sys-palette-primary92: var(--theme-ref-palette-primary15)
+      theme-sys-palette-primary90: var(--theme-ref-palette-primary20)
+      theme-sys-palette-primary85: var(--theme-ref-palette-primary25)
+      theme-sys-palette-primary80: var(--theme-ref-palette-primary30)
+      theme-sys-palette-primary75: var(--theme-ref-palette-primary35)
+      theme-sys-palette-primary70: var(--theme-ref-palette-primary40)
+      theme-sys-palette-primary65: var(--theme-ref-palette-primary45)
+      theme-sys-palette-primary60: var(--theme-ref-palette-primary50)
+      theme-sys-palette-primary50: var(--theme-ref-palette-primary60)
+      theme-sys-palette-primary45: var(--theme-ref-palette-primary65)
+      theme-sys-palette-primary40: var(--theme-ref-palette-primary70)
+      theme-sys-palette-primary35: var(--theme-ref-palette-primary75)
+      theme-sys-palette-primary30: var(--theme-ref-palette-primary80)
+      theme-sys-palette-primary25: var(--theme-ref-palette-primary85)
+      theme-sys-palette-primary20: var(--theme-ref-palette-primary90)
+      theme-sys-palette-primary15: var(--theme-ref-palette-primary92)
+      theme-sys-palette-primary10: var(--theme-ref-palette-primary95)
+      theme-sys-palette-primary5: var(--theme-ref-palette-primary97)
+      theme-sys-palette-primary0: var(--theme-ref-palette-primary100)
+      
+      # Secondary
+      # -----------------------------------------------------------------------
+      theme-sys-palette-secondary100: var(--theme-ref-palette-secondary0)
+      theme-sys-palette-secondary97: var(--theme-ref-palette-secondary5)
+      theme-sys-palette-secondary95: var(--theme-ref-palette-secondary10)
+      theme-sys-palette-secondary92: var(--theme-ref-palette-secondary15)
+      theme-sys-palette-secondary90: var(--theme-ref-palette-secondary20)
+      theme-sys-palette-secondary85: var(--theme-ref-palette-secondary25)
+      theme-sys-palette-secondary80: var(--theme-ref-palette-secondary30)
+      theme-sys-palette-secondary75: var(--theme-ref-palette-secondary35)
+      theme-sys-palette-secondary70: var(--theme-ref-palette-secondary40)
+      theme-sys-palette-secondary65: var(--theme-ref-palette-secondary45)
+      theme-sys-palette-secondary60: var(--theme-ref-palette-secondary50)
+      theme-sys-palette-secondary50: var(--theme-ref-palette-secondary60)
+      theme-sys-palette-secondary45: var(--theme-ref-palette-secondary65)
+      theme-sys-palette-secondary40: var(--theme-ref-palette-secondary70)
+      theme-sys-palette-secondary35: var(--theme-ref-palette-secondary75)
+      theme-sys-palette-secondary30: var(--theme-ref-palette-secondary80)
+      theme-sys-palette-secondary25: var(--theme-ref-palette-secondary85)
+      theme-sys-palette-secondary20: var(--theme-ref-palette-secondary90)
+      theme-sys-palette-secondary15: var(--theme-ref-palette-secondary92)
+      theme-sys-palette-secondary10: var(--theme-ref-palette-secondary95)
+      theme-sys-palette-secondary5: var(--theme-ref-palette-secondary97)
+      theme-sys-palette-secondary0: var(--theme-ref-palette-secondary100)
+
+      # Tertiary
+      # -----------------------------------------------------------------------
+      theme-sys-palette-tertiary100: var(--theme-ref-palette-tertiary0)
+      theme-sys-palette-tertiary97: var(--theme-ref-palette-tertiary5)
+      theme-sys-palette-tertiary95: var(--theme-ref-palette-tertiary10)
+      theme-sys-palette-tertiary92: var(--theme-ref-palette-tertiary15)
+      theme-sys-palette-tertiary90: var(--theme-ref-palette-tertiary20)
+      theme-sys-palette-tertiary85: var(--theme-ref-palette-tertiary25)
+      theme-sys-palette-tertiary80: var(--theme-ref-palette-tertiary30)
+      theme-sys-palette-tertiary75: var(--theme-ref-palette-tertiary35)
+      theme-sys-palette-tertiary70: var(--theme-ref-palette-tertiary40)
+      theme-sys-palette-tertiary65: var(--theme-ref-palette-tertiary45)
+      theme-sys-palette-tertiary60: var(--theme-ref-palette-tertiary50)
+      theme-sys-palette-tertiary50: var(--theme-ref-palette-tertiary60)
+      theme-sys-palette-tertiary45: var(--theme-ref-palette-tertiary65)
+      theme-sys-palette-tertiary40: var(--theme-ref-palette-tertiary70)
+      theme-sys-palette-tertiary35: var(--theme-ref-palette-tertiary75)
+      theme-sys-palette-tertiary30: var(--theme-ref-palette-tertiary80)
+      theme-sys-palette-tertiary25: var(--theme-ref-palette-tertiary85)
+      theme-sys-palette-tertiary20: var(--theme-ref-palette-tertiary90)
+      theme-sys-palette-tertiary15: var(--theme-ref-palette-tertiary92)
+      theme-sys-palette-tertiary10: var(--theme-ref-palette-tertiary95)
+      theme-sys-palette-tertiary5: var(--theme-ref-palette-tertiary97)
+      theme-sys-palette-tertiary0: var(--theme-ref-palette-tertiary100)
+
+      # Surfaces
+      # -----------------------------------------------------------------------
+
+      theme-sys-elevation-color-neutral1: var(--theme-ref-elevation-surface-neutral1-dark)
+      theme-sys-elevation-color-neutral2: var(--theme-ref-elevation-surface-neutral2-dark)
+      theme-sys-elevation-color-neutral3: var(--theme-ref-elevation-surface-neutral3-dark)
+      theme-sys-elevation-color-neutral4: var(--theme-ref-elevation-surface-neutral4-dark)
+      theme-sys-elevation-color-neutral5: var(--theme-ref-elevation-surface-neutral5-dark)
+      theme-sys-elevation-color-neutral6: var(--theme-ref-elevation-surface-neutral6-dark)
+      theme-sys-elevation-color-neutral7: var(--theme-ref-elevation-surface-neutral7-dark)
+      theme-sys-elevation-color-neutral8: var(--theme-ref-elevation-surface-neutral8-dark)
+      theme-sys-elevation-color-neutral9: var(--theme-ref-elevation-surface-neutral9-dark)
+      theme-sys-elevation-color-neutral10: var(--theme-ref-elevation-surface-neutral10-dark)
+
+      theme-sys-elevation-color-primary1: var(--theme-ref-elevation-surface-primary1-dark)
+      theme-sys-elevation-color-primary2: var(--theme-ref-elevation-surface-primary2-dark)
+      theme-sys-elevation-color-primary3: var(--theme-ref-elevation-surface-primary3-dark)
+      theme-sys-elevation-color-primary4: var(--theme-ref-elevation-surface-primary4-dark)
+      theme-sys-elevation-color-primary5: var(--theme-ref-elevation-surface-primary5-dark)
+      theme-sys-elevation-color-primary6: var(--theme-ref-elevation-surface-primary6-dark)
+      theme-sys-elevation-color-primary7: var(--theme-ref-elevation-surface-primary7-dark)
+      theme-sys-elevation-color-primary8: var(--theme-ref-elevation-surface-primary8-dark)
+      theme-sys-elevation-color-primary9: var(--theme-ref-elevation-surface-primary9-dark)
+      theme-sys-elevation-color-primary10: var(--theme-ref-elevation-surface-primary10-dark)
+
+      # Background colors:
+      # - primary for general backgrounds
+      # - secondary for cards (and more)
+      # theme-default-primary-background-color: var(--theme-background-color-lighten-50)
+      # theme-default-secondary-background-color: var(--theme-background-color-lighten-20)
+      theme-default-primary-background-color: var(--theme-sys-color-background)
+      theme-default-secondary-background-color: var(--theme-sys-elevation-color-primary3)
+      # theme-default-secondary-background-color: var(--theme-ref-palette-neutral-variant20)
+
+      # For boxshadow: darker and lighter colors relative to secondary background color (cards!)
+      theme-default-shadow-darker: var(--theme-background-color-lighten-170)
+      theme-default-shadow-lighter: var(--theme-background-color-darken-20)
+      
+      # Primary color is header for instance with view menu
+      theme-default-primary-color: var(--theme-sys-color-primary) #theme-primary-color)
+      theme-default-accent-color: 'var(--theme-text-primary-color-accent-40)'
+      theme-default-light-primary-color: var(--theme-sys-color-primary-container) #'var(--theme-primary-color-lighten-40)'
+      theme-default-dark-primary-color: var(--theme-sys-color-on-primary-container) #'var(--theme-primary-color-darken-40)'
+
+      # Set text colors
+      theme-default-primary-text-color: var(--theme-sys-color-on-surface)
+      # theme-default-secondary-text-color: var(--theme-text-secondary-color)
+      # theme-default-disabled-text-color: var(--theme-text-primary-color-darken-20)
+      theme-default-secondary-text-color: var(--theme-sys-color-secondary) #var(--theme-text-secondary-color)
+      theme-default-disabled-text-color: theme-sys-color-surface-variant #var(--theme-text-primary-color-lighten-20)
+
+      theme-default-primary-icon-color: var(--theme-primary-text-color)
+
+      # App header is set to black instead of primary-color, so change this...
+      theme-default-app-header-background-color: var(--theme-sys-elevation-color-primary1)
+
+      # Card state colors
+      # theme-card-background-color:  var(--theme-background-color-darken-5) #var(--theme-default-secondary-background-color)
+      # theme-card-background-color: var(--surface-dark-2)
+      theme-card-background-color: var(--theme-sys-elevation-color-neutral1)
+
+      # theme-card-background-color-active: rgb(255, 255, 255, 0.08)
+      theme-card-background-color-active: rgb(255, 255, 255, 0.2)
+      theme-card-background-color-inactive: rgb(0, 0, 0, 0.08)
+      theme-card-background-color-undefined: rgb(0, 0, 0, 0.7)
+      theme-card-background-color-unavailable: rgb(0, 0, 0, 0.7)
+
+    # --------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
+    light:
+      # Light
+      theme-sys-color-primary: var(--theme-ref-palette-primary40)
+      theme-sys-color-on-primary: var(--theme-ref-palette-primary100)
+      theme-sys-color-primary-container: var(--theme-ref-palette-primary90)
+      theme-sys-color-on-primary-container: var(--theme-ref-palette-primary10)
+
+      theme-sys-color-secondary: var(--theme-ref-palette-secondary40)
+      theme-sys-color-on-secondary: var(--theme-ref-palette-secondary100)
+      theme-sys-color-secondary-container: var(--theme-ref-palette-secondary90)
+      theme-sys-color-on-secondary-container: var(--theme-ref-palette-secondary10)
+
+      theme-sys-color-tertiary: var(--theme-ref-palette-tertiary40)
+      theme-sys-color-on-tertiary: var(--theme-ref-palette-tertiary100)
+      theme-sys-color-tertiary-container: var(--theme-ref-palette-tertiary90)
+      theme-sys-color-on-tertiary-container: var(--theme-ref-palette-tertiary10)
+
+      theme-sys-color-error: var(--theme-ref-palette-error40)
+      theme-sys-color-on-error: var(--theme-ref-palette-error100)
+      theme-sys-color-error-container: var(--theme-ref-palette-error90)
+      theme-sys-color-on-error-container: var(--theme-ref-palette-error10)
+
+      theme-sys-color-background: var(--theme-ref-palette-neutral99)
+      theme-sys-color-on-background:  var(--theme-ref-palette-neutral20)
+
+      theme-sys-color-surface: var(--theme-ref-palette-neutral99)
+      theme-sys-color-on-surface: var(--theme-ref-palette-neutral10)
+      theme-sys-color-surface-variant: var(--theme-ref-palette-neutral-variant90)
+      theme-sys-color-on-surface-variant: var(--theme-ref-palette-neutral-variant30)
+
+      theme-sys-color-outline: var(--theme-ref-palette-neutral-variant50)
+
+      # Guessing for these 3
+      theme-sys-color-inverse-surface: var(--theme-ref-palette-neutral10)
+      theme-sys-color-inverse-on-surface: var(--theme-ref-palette-neutral99)
+      theme-sys-color-inverse-primary: var(--theme-ref-palette-primary100)
+
+      # No idea with this one...
+      theme-sys-color-shadow: black
+
+
+      #
+      # Primary
+      # -----------------------------------------------------------------------
+      # theme-primary-color-lighten-90: var(--theme-ref-palette-primary95)
+      # theme-primary-color-lighten-80: var(--theme-ref-palette-primary92)
+      # theme-primary-color-lighten-70: var(--theme-ref-palette-primary90)
+      # theme-primary-color-lighten-60: var(--theme-ref-palette-primary85)
+      # theme-primary-color-lighten-40: var(--theme-ref-palette-primary80)
+      # theme-primary-color-lighten-50: var(--theme-ref-palette-primary75)
+      # theme-primary-color-lighten-30: var(--theme-ref-palette-primary70)
+      # theme-primary-color-lighten-20: var(--theme-ref-palette-primary65)
+      # theme-primary-color-lighten-10: var(--theme-ref-palette-primary60)
+      # #
+      # theme-primary-color: var(--theme-ref-palette-primary50)
+      # #
+      # theme-primary-color-darken-10: var(--theme-ref-palette-primary45)
+      # theme-primary-color-darken-20: var(--theme-ref-palette-primary40)
+      # theme-primary-color-darken-30: var(--theme-ref-palette-primary35)
+      # theme-primary-color-darken-40: var(--theme-ref-palette-primary30)
+      # theme-primary-color-darken-50: var(--theme-ref-palette-primary25)
+      # theme-primary-color-darken-60: var(--theme-ref-palette-primary20)
+      # theme-primary-color-darken-70: var(--theme-ref-palette-primary15)
+      # theme-primary-color-darken-80: var(--theme-ref-palette-primary10)
+      # theme-primary-color-darken-90: var(--theme-ref-palette-primary5)
+
+      # Primary as dark/light mode palette. Better naming than darken/lighten?
+      # This is more in line with the M2 approach, and easier to understand
+      # if I rename the md-ref to ha-ref- stuff...
+      
+      theme-sys-palette-primary100: var(--theme-ref-palette-primary100)
+      theme-sys-palette-primary97: var(--theme-ref-palette-primary97)
+      theme-sys-palette-primary95: var(--theme-ref-palette-primary95)
+      theme-sys-palette-primary92: var(--theme-ref-palette-primary92)
+      theme-sys-palette-primary90: var(--theme-ref-palette-primary90)
+      theme-sys-palette-primary85: var(--theme-ref-palette-primary85)
+      theme-sys-palette-primary80: var(--theme-ref-palette-primary80)
+      theme-sys-palette-primary75: var(--theme-ref-palette-primary75)
+      theme-sys-palette-primary70: var(--theme-ref-palette-primary70)
+      theme-sys-palette-primary65: var(--theme-ref-palette-primary65)
+      theme-sys-palette-primary60: var(--theme-ref-palette-primary60)
+      theme-sys-palette-primary50: var(--theme-ref-palette-primary50)
+      theme-sys-palette-primary45: var(--theme-ref-palette-primary45)
+      theme-sys-palette-primary40: var(--theme-ref-palette-primary40)
+      theme-sys-palette-primary35: var(--theme-ref-palette-primary35)
+      theme-sys-palette-primary30: var(--theme-ref-palette-primary30)
+      theme-sys-palette-primary25: var(--theme-ref-palette-primary25)
+      theme-sys-palette-primary20: var(--theme-ref-palette-primary20)
+      theme-sys-palette-primary15: var(--theme-ref-palette-primary15)
+      theme-sys-palette-primary10: var(--theme-ref-palette-primary10)
+      theme-sys-palette-primary5: var(--theme-ref-palette-primary5)
+      theme-sys-palette-primary0: var(--theme-ref-palette-primary0)
+
+      # Secondary
+      # -----------------------------------------------------------------------
+      theme-sys-palette-secondary100: var(--theme-ref-palette-secondary100)
+      theme-sys-palette-secondary97: var(--theme-ref-palette-secondary97)
+      theme-sys-palette-secondary95: var(--theme-ref-palette-secondary95)
+      theme-sys-palette-secondary92: var(--theme-ref-palette-secondary92)
+      theme-sys-palette-secondary90: var(--theme-ref-palette-secondary90)
+      theme-sys-palette-secondary85: var(--theme-ref-palette-secondary85)
+      theme-sys-palette-secondary80: var(--theme-ref-palette-secondary80)
+      theme-sys-palette-secondary75: var(--theme-ref-palette-secondary75)
+      theme-sys-palette-secondary70: var(--theme-ref-palette-secondary70)
+      theme-sys-palette-secondary65: var(--theme-ref-palette-secondary65)
+      theme-sys-palette-secondary60: var(--theme-ref-palette-secondary60)
+      theme-sys-palette-secondary50: var(--theme-ref-palette-secondary50)
+      theme-sys-palette-secondary45: var(--theme-ref-palette-secondary45)
+      theme-sys-palette-secondary40: var(--theme-ref-palette-secondary40)
+      theme-sys-palette-secondary35: var(--theme-ref-palette-secondary35)
+      theme-sys-palette-secondary30: var(--theme-ref-palette-secondary30)
+      theme-sys-palette-secondary25: var(--theme-ref-palette-secondary25)
+      theme-sys-palette-secondary20: var(--theme-ref-palette-secondary20)
+      theme-sys-palette-secondary15: var(--theme-ref-palette-secondary15)
+      theme-sys-palette-secondary10: var(--theme-ref-palette-secondary10)
+      theme-sys-palette-secondary5: var(--theme-ref-palette-secondary5)
+      theme-sys-palette-secondary0: var(--theme-ref-palette-secondary0)
+
+      # Tertiary
+      # -----------------------------------------------------------------------
+      theme-sys-palette-tertiary100: var(--theme-ref-palette-tertiary100)
+      theme-sys-palette-tertiary97: var(--theme-ref-palette-tertiary97)
+      theme-sys-palette-tertiary95: var(--theme-ref-palette-tertiary95)
+      theme-sys-palette-tertiary92: var(--theme-ref-palette-tertiary92)
+      theme-sys-palette-tertiary90: var(--theme-ref-palette-tertiary90)
+      theme-sys-palette-tertiary85: var(--theme-ref-palette-tertiary85)
+      theme-sys-palette-tertiary80: var(--theme-ref-palette-tertiary80)
+      theme-sys-palette-tertiary75: var(--theme-ref-palette-tertiary75)
+      theme-sys-palette-tertiary70: var(--theme-ref-palette-tertiary70)
+      theme-sys-palette-tertiary65: var(--theme-ref-palette-tertiary65)
+      theme-sys-palette-tertiary60: var(--theme-ref-palette-tertiary60)
+      theme-sys-palette-tertiary50: var(--theme-ref-palette-tertiary50)
+      theme-sys-palette-tertiary45: var(--theme-ref-palette-tertiary45)
+      theme-sys-palette-tertiary40: var(--theme-ref-palette-tertiary40)
+      theme-sys-palette-tertiary35: var(--theme-ref-palette-tertiary35)
+      theme-sys-palette-tertiary30: var(--theme-ref-palette-tertiary30)
+      theme-sys-palette-tertiary25: var(--theme-ref-palette-tertiary25)
+      theme-sys-palette-tertiary20: var(--theme-ref-palette-tertiary20)
+      theme-sys-palette-tertiary15: var(--theme-ref-palette-tertiary15)
+      theme-sys-palette-tertiary10: var(--theme-ref-palette-tertiary10)
+      theme-sys-palette-tertiary5: var(--theme-ref-palette-tertiary5)
+      theme-sys-palette-tertiary0: var(--theme-ref-palette-tertiary0)
+
+      # Surfaces
+      # -----------------------------------------------------------------------
+
+      theme-sys-elevation-color-neutral1: var(--theme-ref-elevation-surface-neutral1-light)
+      theme-sys-elevation-color-neutral2: var(--theme-ref-elevation-surface-neutral2-light)
+      theme-sys-elevation-color-neutral3: var(--theme-ref-elevation-surface-neutral3-light)
+      theme-sys-elevation-color-neutral4: var(--theme-ref-elevation-surface-neutral4-light)
+      theme-sys-elevation-color-neutral5: var(--theme-ref-elevation-surface-neutral5-light)
+      theme-sys-elevation-color-neutral6: var(--theme-ref-elevation-surface-neutral6-light)
+      theme-sys-elevation-color-neutral7: var(--theme-ref-elevation-surface-neutral7-light)
+      theme-sys-elevation-color-neutral8: var(--theme-ref-elevation-surface-neutral8-light)
+      theme-sys-elevation-color-neutral9: var(--theme-ref-elevation-surface-neutral9-light)
+      theme-sys-elevation-color-neutral10: var(--theme-ref-elevation-surface-neutral10-light)
+
+      theme-sys-elevation-color-primary1: var(--theme-ref-elevation-surface-primary1-light)
+      theme-sys-elevation-color-primary2: var(--theme-ref-elevation-surface-primary2-light)
+      theme-sys-elevation-color-primary3: var(--theme-ref-elevation-surface-primary3-light)
+      theme-sys-elevation-color-primary4: var(--theme-ref-elevation-surface-primary4-light)
+      theme-sys-elevation-color-primary5: var(--theme-ref-elevation-surface-primary5-light)
+      theme-sys-elevation-color-primary6: var(--theme-ref-elevation-surface-primary6-light)
+      theme-sys-elevation-color-primary7: var(--theme-ref-elevation-surface-primary7-light)
+      theme-sys-elevation-color-primary8: var(--theme-ref-elevation-surface-primary8-light)
+      theme-sys-elevation-color-primary9: var(--theme-ref-elevation-surface-primary9-light)
+      theme-sys-elevation-color-primary10: var(--theme-ref-elevation-surface-primary10-light)
+
+      # Background colors:
+      # - primary for general backgrounds
+      # - secondary for cards (and more)
+      # theme-default-primary-background-color: var(--theme-background-color-lighten-140)
+      # theme-default-secondary-background-color: var(--theme-background-color-lighten-180)
+      # theme-default-primary-background-color: var(--theme-background-color)
+      # theme-default-secondary-background-color: var(--theme-background-color-lighten-100)
+      theme-default-primary-background-color: var(--theme-sys-color-background)
+      # theme-default-secondary-background-color: var(--theme-background-color-lighten-100) #var(--theme-background-color-lighten-100)
+      theme-default-secondary-background-color: var(--theme-ref-palette-neutral80)
+      
+      # For boxshadow: darker and lighter colors relative to secondary background color (cards!)
+      # theme-default-shadow-darker: var(--theme-background-color-darken-130)
+      # theme-default-shadow-lighter: var(--theme-background-color-lighten-110)
+      theme-default-shadow-darker: var(--theme-ref-palette-neutral80) #var(--theme-background-color-darken-40)
+      theme-default-shadow-lighter: var(--theme-ref-palette-neutral90) #var(--theme-background-color-darken-10)
+      
+      # Primary color is header for instance with view menu
+      theme-default-primary-color: 'var(--theme-sys-color-primary)'
+      theme-default-accent-color: 'var(--theme-text-primary-color-accent-40)'
+      theme-default-light-primary-color: 'var(--theme-text-primary-color-lighten-40)'
+      theme-default-dark-primary-color: 'var(--theme-primary-color-darken-40)'
+
+      # Set text colors
+      theme-default-primary-text-color: var(--theme-sys-color-on-surface)
+      theme-default-secondary-text-color: var(--theme-sys-color-secondary) #var(--theme-text-secondary-color)
+      theme-default-disabled-text-color: theme-sys-color-surface-variant #var(--theme-text-primary-color-lighten-20)
+
+      theme-default-primary-icon-color: var(--theme-text-primary-color)
+      theme-default-secondary-icon-color: var(--theme-text-secondary-color)
+
+      # App header
+      theme-default-app-header-background-color: var(--primary-color)
+      
+      # Card state colors
+      theme-card-background-color: var(--theme-ref-palette-neutral-95) #var(--theme-default-secondary-background-color) #var(--theme-background-color-lighten-100)
+      theme-card-background-color-active: white #rgb(255, 255, 255, 1)
+      theme-card-background-color-inactive: rgb(0, 0, 0, 0.05)
+      theme-card-background-color-undefined: rgb(0, 0, 0, 0.2)
+      theme-card-background-color-unavailable: rgb(0, 0, 0, 0.2)
+      
+
+  theme-primary-color: var(--theme-sys-color-primary)
+  theme-secondary-color: var(--theme-sys-color-secondary)
+  theme-tertiary-color: var(--theme-sys-color-tertiary)
+      
+  # According to MDC Web theming to be used on light/dark backgrounds
+  #
+  # Text items
+  theme-text-primary-color-on-background: var(--theme-default-primary-text-color)
+  theme-text-primary-color-on-light: var(--theme-default-primary-text-color)
+  theme-text-primary-color-on-dark: var(--theme-default-primary-background-color)
+
+  theme-text-secondary-color-on-background: var(--theme-default-primary-text-color)
+  theme-text-secondary-color-on-light: var(--theme-default-primary-text-color)
+  theme-text-secondary-color-on-dark:  var(--theme-default-primary-background-color)
+
+  theme-text-disabled-color-on-background: var(--theme-default-disabled-text-color)
+  theme-text-disabled-color-on-light: var(--theme-default-disabled-text-color)
+  theme-text-disabled-color-on-dark:  var(--theme-default-primary-background-color)
+
+  # Icon items
+  theme-icon-primary-color-on-background: var(--theme-default-primary-text-color)
+  theme-icon-primary-color-on-light: var(--theme-default-primary-text-color)
+  theme-icon-primary-color-on-dark:   var(--theme-default-primary-background-color)
+
+  theme-icon-secondary-color-on-background: var(--theme-default-secondary-text-color)
+  theme-icon-secondary-color-on-light: var(--theme-default-secondary-text-color)
+  theme-icon-secondary-color-on-dark:   var(--theme-default-primary-background-color)
+
+  theme-icon-disabled-color-on-background:  var(--theme-default-disabled-text-color)
+  theme-icon-disabled-color-on-light:  var(--theme-default-disabled-text-color)
+  theme-icon-disabled-color-on-dark:   var(--theme-default-primary-background-color)
+      
+      
+  adc-wheat:  '#e5d7b9'
+  adc-whitesmoke: '#edf4f6'
+  
+
+  md-grey-0:   '#FFFFFFF'
+  md-grey-30:  '#FCFCFC'
+
+  cs-grey-lighten-50:  '#edf4f6'
+  cs-grey-lighten-40: '#edf4f6'
+  cs-grey-lighten-38: '#edf4f6'
+  cs-grey-lighten-35: '#edf4f6'
+  cs-grey-lighten-30: '#edf4f6'
+  cs-grey-lighten-20: '#edf4f6'
+  cs-grey-lighten-10: '#edf4f6'
+  cs-grey-base: '#A2A9AB'
+  cs-grey-darken-10: '#e5d7b9'
+  cs-grey-darken-20: '#e5d7b9'
+  cs-grey-darken-30: '#e5d7b9'
+  cs-grey-darken-35: '#e5d7b9'
+  cs-grey-darken-40: '#212121'
+  cs-grey-darken-45: '#e5d7b9'
+
+  cs-black: '#222222'
+  cs-white: '#FFFFFF'
+
+
+  ## custom:thermostat-card settings
+  #
+  theme-thermostat-text-color: 'var(--primary-text-color)'
+  theme-thermostat-off-fill: 'var(--primary-background-color)'
+  theme-thermostat-cool-fill: '#007AF1'
+  theme-thermostat-heat-fill: '#E36304'
+  theme-thermostat-path-color: 'var(--adc-wheat)'
+  #'rgba(255,255,255, 0.3)'
+  theme-thermostat-path-active-color: 'rgba(255,255,255, 0.8)'
+  theme-thermostat-path-active-color-large: 'rgba(255,255,255, 1.0)'
+  theme-thermostat-path-heat-color: 'rgba(255,255,255,0.4)'
+
+  #
+  # Theming for custom:simple-weather-card
+
+  theme-weather-day-color:   'var(--paper-card-background-color)'
+  theme-weather-night-color: 'var(--paper-card-background-color)'
+  theme-weather-text-color:  'var(--grey-lighten-50)'
+
+  upcoming-color: black
+
+  ##
+  # Main colors of Home Assistant
+  # ============================================================================
+
+  # Base colors...
+  primary-color: 'var(--theme-default-primary-color)'
+  accent-color: 'var(--theme-default-accent-color)'
+  dark-primary-color: 'var(--theme-default-dark-primary-color)'
+  light-primary-color: 'var(--theme-default-light-primary-color)'
+
+  # Text colors
+  primary-text-color: 'var(--theme-default-primary-text-color)'
+  text-primary-color: 'var(--theme-default-primary-text-color)'
+  secondary-text-color: 'var(--theme-default-secondary-text-color)'
+
+  # 2020.09.25 Set disabled text color to some slate color, not grey!
+#  disabled-text-color: 'var(--grey-darken-10)'
+  # disabled-text-color: 'var(--theme-default-darken-10)'
+
+  # label-badge-border-color: 'var(--theme-default-lighten-50)'
+
+  # Top menu text color
+  app-header-text-color: white
+  app-header-background-color: var(--theme-default-app-header-background-color)
+  
+  # Sidebar
+  # - icon colors...
+  sidebar-icon-color: var(--theme-default-primary-text-color)
+
+  # Background colors
+  # Primary is background, secondary is for menu
+  primary-background-color: var(--theme-default-primary-background-color)
+  secondary-background-color: var(--theme-default-secondary-background-color)
+  card-background-color: var(--theme-card-background-color) #var(--paper-card-background-color)
+  
+  # divider-color: 'rgba(229, 215, 185, .25)'
+  # table-row-background-color: 'rgba(22, 25, 26, .11)'
+  # table-row-alternative-background-color: 'rgba(22, 25, 26, .05)'
+
+  # Nav Menu
+  # Nav Menu background is listbox-background-color. A bit lighter than the primary background
+  # paper-listbox-color: 'var(--primary-text-color)'
+  # paper-listbox-background-color: 'var(--theme-default-primary-background-color)'
+  # paper-grey-50: 'var(--primary-text-color)'
+  # paper-grey-200: 'var(--theme-default-secondary-background-color)'
+
+  # Paper card
+  # Colors for the ha-cards
+  # Paper card background color is on primary-background-color
+  paper-card-header-color: 'var(--light-primary-color)'
+
+  # 2020.09.23
+  # The latest versions of hass us this color also for popup and overlay windows.
+  # This means you can't use rgba colors, as the background is visible
+  # Using a color picker with the rgba color, results in rgb(82,95,98).
+  
+  #paper-card-background-color: 'rgba(255, 255, 255, 0.07)'
+  # Yep, color for background cards!!!!!
+  paper-card-background-color: red #var(--theme-card-background-color) #'var(--secondary-background-color)' #theme-background-color-lighten-40)'
+
+  # Used to be fixed:
+  # paper-dialog-background-color: 'rgba(255, 255, 255, 0.09)'
+  paper-dialog-background-color: 'var(--primary-background-color)'
+
+  # paper-item-icon-color: 'var(--primary-text-color)'
+  # paper-item-icon-color: '#555555'
+  # paper-item-icon-active-color: 'var(--primary-color)'
+  # paper-item-icon_-_color: 'var(--secondary-text-color)'
+  # paper-item-selected_-_background-color: 'var(--theme-default-darken-20)'
+  # paper-tabs-selection-bar-color: 'var(--secondary-text-color)'
+
+  # Home Assistant Badges/Labels
+  # label-badge-red: 'var(--primary-color)'
+  label-badge-text-color: 'var(--primary-text-color)'
+  # Find name of text on label. It is not the previous one label-badge-text-color... That is the value of the badge.
+  # ha-label-badge-label-color: 'var(--grey-darken-40)'
+  # label-badge-background-color: 'var(--grey-darken-40)'
+
+  # Switches
+  # paper-toggle-button-checked-button-color: 'var(--light-primary-color)'
+  # paper-toggle-button-checked-bar-color: 'var(--light-primary-color)'
+  # paper-toggle-button-checked-ink-color: 'var(--light-primary-color)'
+  # paper-toggle-button-unchecked-button-color: 'var(--disabled-text-color)'
+  # paper-toggle-button-unchecked-bar-color: 'var(--disabled-text-color)'
+  # paper-toggle-button-unchecked-ink-color: 'var(--disabled-text-color)'
+
+  # Radio buttons
+  mdc-radio-unchecked-color: var(--theme-default-disabled-text-color) #rgba(255,255,255, 0.54) #var(--primary-text-color)
+  
+  mdc-theme-on-primary: var(--theme-sys-color-on-primary)
+  mdc-theme-on-secondary: var(--theme-sys-color-on-secondary)
+  mdc-theme-error: var(--theme-sys-color-error)
+  mdc-theme-secondary: var(--theme-sys-color-secondary)
+  
+  # Sliders
+  # paper-slider-knob-color: 'var(--light-primary-color)'
+  # paper-slider-knob-start-color: 'var(--light-primary-color)'
+  # paper-slider-pin-color: 'var(--light-primary-color)'
+  # paper-slider-active-color: 'var(--light-primary-color)'
+  # paper-slider-container-color: 'linear-gradient(var(--primary-background-color), var(--secondary-background-color)) no-repeat'
+  # paper-slider-secondary-color: 'var(--secondary-background-color)'
+  # paper-slider-disabled-active-color: 'var(--disabled-text-color)'
+  # paper-slider-disabled-secondary-color: 'var(--disabled-text-color)'
+
+  # Google colors
+  google-red-500: 'var(--dark-primary-color)'
+  google-green-500: 'var(--light-primary-color)'
+
+  #Changes to fix history/logbook menus
+  # lumo-primary-text-color: 'var(--light-primary-color)'
+  # lumo-secondary-text-color: 'var(--light-primary-color)'
+  # lumo-primary-color: 'var(--light-primary-color)'
+
+  #Calendar day numbers
+  # lumo-body-text-color: 'var(--light-primary-color)'
+
+  #Calendar/Date-Picker Background
+  # lumo-base-color: 'var(--primary-background-color)'
+
+  #Month/Year header
+  # lumo-header-text-color: 'var(--lumo-body-text-color)'
+
+  #DayOfWeek Header
+  # lumo-tertiary-text-color: 'var(--lumo-body-text-color)'
+  # lumo-shade: 'var(--theme-default-darken-10)'
+  # lumo-darken-90pct: 'rgba(31, 41, 43, .9)'
+  # lumo-darken-80pct: 'rgba(31, 41, 43, .8)'
+  # lumo-darken-70pct: 'rgba(31, 41, 43, .7)'
+  # lumo-darken-60pct: 'rgba(31, 41, 43, .6)'
+  # lumo-darken-50pct: 'rgba(31, 41, 43, .5)'
+  # lumo-darken-40pct: 'rgba(31, 41, 43, .4)'
+  # lumo-darken-30pct: 'rgba(31, 41, 43, .3)'
+  # lumo-darken-20pct: 'rgba(31, 41, 43, .2)'
+  # lumo-darken-10pct: 'rgba(31, 41, 43, .1)'
+  # lumo-darken-5pct: 'rgba(31, 41, 43, .05)'
+  # lumo-lighten-5pct: 'var(--theme-default-darken-10)'
+  
+    # # fix for device configuration screen
+  # # Fix for Person Device Chooser - thanks to vajonam!
+  # material-background-color: "var(--paper-listbox-background-color)"
+  # material-secondary-background-color: 'var(--secondary-background-color)' #'#222222'
+  # material-body-text-color: '#FFFFFF'
+  # # simple-thermostat buttons
+  # st-mode-background: 'var(--primary-background-color)'
+  # # fix white on white markdown code sections (eg. the addons infos)
+  # markdown-code-background-color: 'var(--secondary-background-color)'

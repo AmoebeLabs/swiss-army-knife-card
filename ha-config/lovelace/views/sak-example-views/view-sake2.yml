@@ -1,0 +1,651 @@
+#
+# View			: view-sake2
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#
+#
+# Refs:
+#   
+# Theme colors are replaced with hardcoded colors:
+# - theme-gradient-color-01: '#FFF6E3'
+# - theme-gradient-color-02: '#FFE9B9'
+# - theme-gradient-color-03: '#FFDA8A'
+# - theme-gradient-color-04: '#FFCB5B' 
+# - theme-gradient-color-05: '#FFBF37' 
+# - theme-gradient-color-06: '#ffb414' 
+# - theme-gradient-color-07: '#FFAD12' 
+# - theme-gradient-color-08: '#FFA40E' 
+# - theme-gradient-color-09: '#FF9C0B' 
+# - theme-gradient-color-10: '#FF8C06' 
+# - theme-gradient-color-11: '#FF8305' 
+#
+###############################################################################
+
+title: SAKE2
+path: sake2
+panel: false
+theme: 'NM - Gonsboro'
+cards:
+#------------------------------------------------------------------------------
+- type: vertical-stack
+  cards:
+    - type: custom:decluttering-card
+      template: divider_template
+
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'Scenes'
+
+    - type: custom:decluttering-card
+      template: divider_template
+
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'Verlichting'
+
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'Woonkamer'
+        - font_color: var(--secondary-text-color)
+        - font_size: 3em
+
+# ==============================================================================================
+
+
+#######
+    - type: horizontal-stack
+      cards:
+        ##- !include card-blank-card.yaml
+        # Example 44T::
+        #
+        # Light buttons, new look... Must be on separate circle for filtering globally
+        #
+        #######################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+
+          entities: 
+            - entity: light.livingroom_light_duo_left_light
+              name: Duo Links
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.livingroom_light_duo_left_light" }
+                haptic: light
+
+            - entity: light.livingroom_light_duo_left_light
+              name: Duo Links
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              attribute: brightness
+              unit_of_measurement: "%"
+              tap_action:
+                action: more-info
+                haptic: success
+
+            # Entity used for menu... Should be changed in the future...
+            - entity: light.livingroom_light_duo_left_light
+              icon: mdi:menu
+              attribute: brightness
+              tap_action:
+                action: more-info
+                haptic: success
+
+          aspectratio: 1/1
+          dev:
+            debug: false
+          
+          layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
+            toolsets:
+              # ==============================================================================
+              # Menu for more-info. Use third entity for this now...
+              - toolset: menu
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: icon
+                    position:
+                      cx: 10
+                      cy: 10
+                      align: center
+                      icon_size: 15
+                    entity_index: 2
+                    styles:
+                      icon:
+                        fill: var(--primary-text-color)
+                        color: var(--primary-text-color)
+              
+              # Using Neumorphic ligth button design
+              - toolset: light-button
+                template:
+                  name: toolset_light_button_slider_nm
+                position:
+                  cx: 50
+                  cy: 50
+
+              - toolset: slidertest3
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: slider
+                    descr: '#3 test slider'
+                    position:
+                      cx: 40
+                      cy: 81
+                      capture:
+                        width: 80
+                        height: 15
+                      track:
+                        width: 70
+                        height: 2
+                        radius: 1
+                      thumb:
+                        width: 5
+                        height: 10
+                        radius: 1
+                      label:
+                        # placement can be none, thumb, position (cx,cy)
+                        placement: position
+                        cx: 95
+                        cy: 81
+                    entity_index: 1
+                    derived_entity:
+                      input : '[[[ return state ]]]'
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return;
+                          if (typeof(state) === 'undefined') return;
+                          
+                          var bri = Math.round(state / 2.55);
+                          return (bri ? bri : '0');
+                        ]]]
+                      unit: >
+                        [[[
+                          if (typeof(state) === 'undefined') return undefined;
+                          return '%';
+                        ]]]
+                    slider_action:
+                      update_interval: 200
+                      service: light.turn_on
+                      parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                      steps: '[1,2,5,6,7,8,9,20]'
+                      stepsnew:
+                        - stop: 0
+                          step: 1
+                        - stop: 10
+                          step: 5
+                    styles:
+                      label:
+                        text-anchor: end
+                        font-size: 10em
+                        font-weight: 600
+                      # track:
+                      thumb:
+                        stroke-width: 0.5em
+                        stroke: var(--primary-text-color)
+                        stroke-opacity: 0.8
+
+###############################################
+        - type: 'custom:swiss-army-knife-card'
+
+          entities: 
+            - entity: light.livingroom_light_duo_right_light
+              name: Duo Rechts
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.livingroom_light_duo_right_light" }
+                haptic: light
+
+            - entity: light.livingroom_light_duo_right_light
+              name: Duo Rechts
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              attribute: brightness
+              unit_of_measurement: "%"
+              tap_action:
+                action: more-info
+                haptic: success
+
+            # Entity used for menu... Should be changed in the future...
+            - entity: light.livingroom_light_duo_right_light
+              icon: mdi:dots-vertical
+              attribute: brightness
+              tap_action:
+                action: more-info
+                haptic: success
+
+          aspectratio: 1/1
+          dev:
+            debug: false
+          
+          layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
+            toolsets:
+              # ==============================================================================
+              # Menu for more-info. Use third entity for this now...
+              - toolset: menu
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: icon
+                    position:
+                      cx: 10
+                      cy: 10
+                      align: center
+                      icon_size: 15
+                    entity_index: 2
+                    styles:
+                      icon:
+                        fill: var(--primary-text-color)
+                        color: var(--primary-text-color)
+              
+              # Using Neumorphic ligth button design
+              - toolset: light-button
+                template:
+                  name: toolset_light_button_slider3_nm
+                position:
+                  cx: 50
+                  cy: 50
+
+              - toolset: slidertest3
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: slider
+                    descr: '#3 test slider'
+                    position:
+                      cx: 50
+                      cy: 81
+                      capture:
+                        width: 90
+                        height: 15
+                      track:
+                        width: 90
+                        height: 4
+                        radius: 1
+                      thumb:
+                        width: 5
+                        height: 5
+                        radius: 2.5
+                      label:
+                        # placement can be none, thumb, position (cx,cy)
+                        placement: position
+                        cx: 83
+                        cy: 17
+                    entity_index: 1
+                    derived_entity:
+                      input : '[[[ return state ]]]'
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return;
+                          if (typeof(state) === 'undefined') return;
+                          
+                          var bri = Math.round(state / 2.55);
+                          return (bri ? bri : '0');
+                        ]]]
+                      unit: >
+                        [[[
+                          if (typeof(state) === 'undefined') return undefined;
+                          return '%';
+                        ]]]
+                    slider_action:
+                      update_interval: 200
+                      service: light.turn_on
+                      parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                      steps: '[1,2,5,6,7,8,9,20]'
+                      stepsnew:
+                        - stop: 0
+                          step: 1
+                        - stop: 10
+                          step: 5
+                    styles:
+                      label:
+                        text-anchor: middle
+                        font-size: 10em
+                        font-weight: 600
+                      track:
+                        fill: url(#sak-light-color-temperature-gradient)
+                        fill-opacity: 1
+                        stroke-width: 0.1em
+                        stroke: white
+                      thumb:
+                        stroke-width: 1.2em
+                        stroke: var(--primary-background-color)
+                        stroke-opacity: 1
+                        fill: var(--primary-text-color)
+                        fill-opacity: 0.8
+
+###############################################
+        - type: 'custom:swiss-army-knife-card'
+
+          entities: 
+            - entity: light.livingroom_light_front_right_light
+              name: Muurlamp
+              area: Woonkamer
+              icon: mdi:wall-sconce
+              tap_action:
+                action: call-service
+                service: light.toggle
+                service_data: { "entity_id" : "light.livingroom_light_front_right_light" }
+                haptic: light
+
+            - entity: light.livingroom_light_front_right_light
+              name: Muurlamp
+              area: Woonkamer
+              icon: mdi:floor-lamp-dual
+              attribute: brightness
+              unit_of_measurement: "%"
+              tap_action:
+                action: more-info
+                haptic: success
+
+            # Entity used for menu... Should be changed in the future...
+            - entity: light.livingroom_light_front_right_light
+              icon: mdi:dots-vertical
+              attribute: brightness
+              tap_action:
+                action: more-info
+                haptic: success
+
+          aspectratio: 1/1
+          dev:
+            debug: false
+          
+          layout:
+            styles:
+              card:
+              toolsets:
+                filter: url(#nm-1)
+            toolsets:
+              # ==============================================================================
+              # Menu for more-info. Use third entity for this now...
+              - toolset: menu
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: icon
+                    position:
+                      cx: 10
+                      cy: 10
+                      align: center
+                      icon_size: 15
+                      capture: true
+                    entity_index: 2
+                    styles:
+                      capture:
+                        opacity: 0
+                      icon:
+                        fill: var(--primary-text-color)
+                        color: var(--primary-text-color)
+              
+              # Using Neumorphic ligth button design
+              - toolset: light-button
+                template:
+                  name: toolset_light_button_slider_nm
+                position:
+                  cx: 50
+                  cy: 50
+
+              - toolset: slidertest3
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: slider
+                    descr: '#3 test slider'
+                    position:
+                      cx: 50
+                      cy: 81
+                      capture:
+                        width: 90
+                        height: 15
+                      track:
+                        width: 90
+                        height: 2
+                        radius: 1
+                      active:
+                        width: 90
+                        height: 2
+                        radius: 1
+                      thumb:
+                        width: 7
+                        height: 7
+                        radius: 3.5
+                      label:
+                        # placement can be none, thumb, position (cx,cy)
+                        placement: position
+                        cx: 83
+                        cy: 17
+                    entity_index: 1
+                    show:
+                      active: true
+                    derived_entity:
+                      input : '[[[ return state ]]]'
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return;
+                          if (typeof(state) === 'undefined') return;
+                          
+                          var bri = Math.round(state / 2.55);
+                          return (bri ? bri : '0');
+                        ]]]
+                      unit: >
+                        [[[
+                          if (typeof(state) === 'undefined') return undefined;
+                          return '%';
+                        ]]]
+                    slider_action:
+                      update_interval: 200
+                      service: light.turn_on
+                      parameter: brightness_pct
+                    # As actions map or array? So you can call multiple services? usefull?
+                    # Note: Experimental. Not used yet...
+                    actions:
+                      slider_action:
+                        update_interval: 200
+                        service: light.turn_on
+                        parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                      # Note: Experimental. Not used yet... (steps and stepsnew...)
+                      steps: '[1,2,5,6,7,8,9,20]'
+                      stepsnew:
+                        - stop: 0
+                          step: 1
+                        - stop: 10
+                          step: 5
+                    styles:
+                      toolset:
+                        overflow: visible
+                      tool:
+                        overflow: visible
+                      label:
+                        text-anchor: middle
+                        font-size: 10em
+                        font-weight: 600
+                      active:
+                        fill: orange
+                      track:
+                        fill-opacity: 1
+                        filter: url(#is-1)
+                        fill: var(--primary-background-color)
+                        # fill: url(#sak-light-color-temperature-gradient)
+                      thumb:
+                        stroke-width: 3em
+                        stroke: var(--primary-background-color)
+                        fill: var(--primary-text-color)
+                        filter: url(#filter)
+        
+    # - type: horizontal-stack
+      # cards:
+        # # - !include card-blank-card.yaml
+
+        # - type: custom:decluttering-card
+          # template: sak_light_button_template_nm_tpl
+          # variables:
+            # - entity: light.livingroom_light_duo_left_light #linker_lamp_voor
+            # - area: Woonkamer
+            # - name: Duo Links
+            # - icon: 'mdi:floor-lamp-dual' #'mdi:grid-large' mdi-floor-lamp-dual
+
+        # - type: custom:decluttering-card
+          # template: sak_light_button_template_nm_tpl
+          # variables:
+            # - entity: light.livingroom_light_duo_right_light #rechter_lamp_voor
+            # - area: Woonkamer
+            # - name: Duo Rechts
+            # - icon: 'mdi:floor-lamp-dual' #'mdi:grid-large' border-left
+
+        # - type: custom:decluttering-card
+          # template: sak_light_button_template_nm_tpl
+          # variables:
+# #              - entity: light.muurlamp_voor
+            # - entity: light.livingroom_light_front_right_light
+            # - area: Woonkamer
+            # - name: Muurlamp
+            # - icon: 'mdi:wall-sconce' #'border-right' #'mdi:grid-large'
+
+        # # - !include card-blank-card.yaml
+
+    - type: horizontal-stack
+      cards:
+        # - !include card-blank-card.yaml
+
+        - type: custom:decluttering-card
+          template: sak_light_button_template_nm_tpl
+          variables:
+#              - entity: rode_lampenkap
+            - entity: light.livingroom_light_gasheater_light
+            - area: Woonkamer
+            - name: Rode Lamp
+            - icon: 'mdi:floor-lamp'
+
+        - type: custom:decluttering-card
+          template: sak_light_button_template_nm_tpl
+          variables:
+            - entity: light.livingroom_light_cupboard_light
+            - area: Woonkamer
+            - name: Boekenkast
+            - icon: 'mdi:book-open-outline'
+
+        - type: 'custom:button-card'
+          color_type: blank-card
+        # - !include card-blank-card.yaml
+
+    - type: horizontal-stack
+      cards:
+        # - !include card-blank-card.yaml
+        - type: custom:decluttering-card
+          template: sak_light_button_template_nm_tpl
+          variables:
+            - entity: light.livingroom_light_couch_tv_left_light
+            - area: Woonkamer
+            - name: Bank TV Links
+            - icon: 'mdi:sofa'
+        - type: custom:decluttering-card
+          template: sak_light_button_template_nm_tpl
+          variables:
+            - entity: light.livingroom_light_couch_tv_right_light
+            - area: Woonkamer
+            - name: Bank TV Rechts
+            - icon: 'mdi:sofa'
+        - type: 'custom:button-card'
+          color_type: blank-card
+        # - !include card-blank-card.yaml
+
+
+
+##
+## Keuken
+##
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: 'Keuken'
+        - font_color: var(--secondary-text-color)
+        - font_size: 3em
+    - type: horizontal-stack
+      cards:
+        # - !include card-blank-card.yaml
+        - type: custom:decluttering-card
+          template: sak_light_button_template_nm_tpl
+          variables:
+            - entity: light.kitchen_light_fridge_light
+            - area: Keuken
+            - name: Op koelkast
+            - icon: 'mdi:fridge'
+        - type: custom:decluttering-card
+          template: sak_light_button_template_nm_tpl
+          variables:
+            - entity: light.backyard_light_backdoor_light
+            - area: Tuin
+            - name: Tuin Keuken
+            - icon: 'mdi:wall-sconce'
+        - type: 'custom:button-card'
+          color_type: blank-card
+        # - !include card-blank-card.yaml
+
+##
+## 1ste Verdieping
+##
+    - type: custom:decluttering-card
+      template: header_template
+      variables:
+        - content: '1ste Verdieping'
+        - font_color: var(--secondary-text-color)
+        - font_size: 3em
+    - type: horizontal-stack
+      cards:
+        # - !include card-blank-card.yaml
+        - type: custom:decluttering-card
+          template: sak_light_button_template_nm_tpl
+          variables:
+            - entity: light.1st_floor_hall_light
+            - area: Overloop 1ste
+            - name: Overloop
+            - icon: 'mdi:ceiling-light'
+        - type: 'custom:button-card'
+          color_type: blank-card
+        - type: 'custom:button-card'
+          color_type: blank-card
+        # - !include card-blank-card.yaml
+
