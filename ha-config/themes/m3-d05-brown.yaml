@@ -1,7 +1,7 @@
 #
-# Theme     : m3-10-green.yaml
+# Theme     : m3-d05-brown.yaml
 # Project   : Home Assistant
-# Repository: https://github.com/AmoebeLabs/HA-Theme_M3-10-Green
+# Repository: https://github.com/AmoebeLabs/HA-Theme_M3-D05-Brown
 #
 # Author    : Mars @ AmoebeLabs.com
 # 
@@ -11,204 +11,204 @@
 # Description:
 #   Dark / Light theme based on Material 3 for Home Assistant.
 #
-# According to: https://encycolorpedia.com/
-#   - Green
+# According to: https://encycolorpedia.com/944a00
+#   - Brown
 #   
 ###############################################################################
 #
-M3-10-Green:
+M3-D05-Brown:
   # Colors generated via Material Design 3 (Material You) DSP export of figma
   #
   # --------------------------------------------------------------------------
   # ==================== START of M3 copy/paste configuration ================
   # --------------------------------------------------------------------------
   
-  theme-ref-elevation-surface-neutral1-light: rgb(247,247,241)
-  theme-ref-elevation-surface-neutral2-light: rgb(244,244,238)
-  theme-ref-elevation-surface-neutral3-light: rgb(239,239,234)
-  theme-ref-elevation-surface-neutral4-light: rgb(235,235,229)
-  theme-ref-elevation-surface-neutral5-light: rgb(228,228,223)
-  theme-ref-elevation-surface-neutral6-light: rgb(222,222,217)
-  theme-ref-elevation-surface-neutral7-light: rgb(214,214,209)
-  theme-ref-elevation-surface-neutral8-light: rgb(206,206,201)
-  theme-ref-elevation-surface-neutral9-light: rgb(197,197,192)
-  theme-ref-elevation-surface-neutral10-light: rgb(189,189,184)
-  theme-ref-elevation-surface-neutral-variant1-light: rgb(247,247,241)
-  theme-ref-elevation-surface-neutral-variant2-light: rgb(244,244,238)
-  theme-ref-elevation-surface-neutral-variant3-light: rgb(239,240,233)
-  theme-ref-elevation-surface-neutral-variant4-light: rgb(234,235,228)
-  theme-ref-elevation-surface-neutral-variant5-light: rgb(228,229,222)
-  theme-ref-elevation-surface-neutral-variant6-light: rgb(221,222,216)
-  theme-ref-elevation-surface-neutral-variant7-light: rgb(213,215,208)
-  theme-ref-elevation-surface-neutral-variant8-light: rgb(205,207,200)
-  theme-ref-elevation-surface-neutral-variant9-light: rgb(195,197,190)
-  theme-ref-elevation-surface-neutral-variant10-light: rgb(187,190,182)
-  theme-ref-elevation-surface-primary1-light: rgb(244,248,239)
-  theme-ref-elevation-surface-primary2-light: rgb(239,245,234)
-  theme-ref-elevation-surface-primary3-light: rgb(232,241,226)
-  theme-ref-elevation-surface-primary4-light: rgb(224,236,219)
-  theme-ref-elevation-surface-primary5-light: rgb(214,231,209)
-  theme-ref-elevation-surface-primary6-light: rgb(204,225,199)
-  theme-ref-elevation-surface-primary7-light: rgb(192,218,187)
-  theme-ref-elevation-surface-primary8-light: rgb(179,211,175)
-  theme-ref-elevation-surface-primary9-light: rgb(164,203,160)
-  theme-ref-elevation-surface-primary10-light: rgb(151,196,148)
-  theme-ref-elevation-surface-secondary1-light: rgb(247,247,241)
-  theme-ref-elevation-surface-secondary2-light: rgb(244,244,238)
-  theme-ref-elevation-surface-secondary3-light: rgb(239,240,232)
-  theme-ref-elevation-surface-secondary4-light: rgb(234,235,227)
-  theme-ref-elevation-surface-secondary5-light: rgb(227,229,221)
-  theme-ref-elevation-surface-secondary6-light: rgb(220,223,214)
-  theme-ref-elevation-surface-secondary7-light: rgb(212,215,205)
-  theme-ref-elevation-surface-secondary8-light: rgb(203,208,197)
-  theme-ref-elevation-surface-secondary9-light: rgb(193,198,187)
-  theme-ref-elevation-surface-secondary10-light: rgb(185,191,178)
-  theme-ref-elevation-surface-tertiary1-light: rgb(246,248,242)
-  theme-ref-elevation-surface-tertiary2-light: rgb(242,244,239)
-  theme-ref-elevation-surface-tertiary3-light: rgb(236,240,235)
-  theme-ref-elevation-surface-tertiary4-light: rgb(230,236,230)
-  theme-ref-elevation-surface-tertiary5-light: rgb(223,230,225)
-  theme-ref-elevation-surface-tertiary6-light: rgb(215,224,219)
-  theme-ref-elevation-surface-tertiary7-light: rgb(205,216,212)
-  theme-ref-elevation-surface-tertiary8-light: rgb(195,209,205)
-  theme-ref-elevation-surface-tertiary9-light: rgb(183,200,197)
-  theme-ref-elevation-surface-tertiary10-light: rgb(174,192,190)
-  theme-ref-elevation-surface-error1-light: rgb(250,245,239)
-  theme-ref-elevation-surface-error2-light: rgb(249,241,235)
-  theme-ref-elevation-surface-error3-light: rgb(247,234,228)
-  theme-ref-elevation-surface-error4-light: rgb(245,227,222)
-  theme-ref-elevation-surface-error5-light: rgb(242,218,213)
-  theme-ref-elevation-surface-error6-light: rgb(239,209,204)
-  theme-ref-elevation-surface-error7-light: rgb(236,198,193)
-  theme-ref-elevation-surface-error8-light: rgb(233,187,182)
-  theme-ref-elevation-surface-error9-light: rgb(229,173,169)
-  theme-ref-elevation-surface-error10-light: rgb(226,162,158)
+  theme-ref-elevation-surface-neutral1-light: rgb(247,247,247)
+  theme-ref-elevation-surface-neutral2-light: rgb(244,244,244)
+  theme-ref-elevation-surface-neutral3-light: rgb(240,239,239)
+  theme-ref-elevation-surface-neutral4-light: rgb(235,235,234)
+  theme-ref-elevation-surface-neutral5-light: rgb(229,228,227)
+  theme-ref-elevation-surface-neutral6-light: rgb(223,222,221)
+  theme-ref-elevation-surface-neutral7-light: rgb(216,214,213)
+  theme-ref-elevation-surface-neutral8-light: rgb(208,206,204)
+  theme-ref-elevation-surface-neutral9-light: rgb(199,196,195)
+  theme-ref-elevation-surface-neutral10-light: rgb(192,188,186)
+  theme-ref-elevation-surface-neutral-variant1-light: rgb(248,247,247)
+  theme-ref-elevation-surface-neutral-variant2-light: rgb(245,244,243)
+  theme-ref-elevation-surface-neutral-variant3-light: rgb(240,239,238)
+  theme-ref-elevation-surface-neutral-variant4-light: rgb(236,234,233)
+  theme-ref-elevation-surface-neutral-variant5-light: rgb(230,228,227)
+  theme-ref-elevation-surface-neutral-variant6-light: rgb(224,221,220)
+  theme-ref-elevation-surface-neutral-variant7-light: rgb(217,213,211)
+  theme-ref-elevation-surface-neutral-variant8-light: rgb(210,205,203)
+  theme-ref-elevation-surface-neutral-variant9-light: rgb(201,196,193)
+  theme-ref-elevation-surface-neutral-variant10-light: rgb(194,188,184)
+  theme-ref-elevation-surface-primary1-light: rgb(249,247,244)
+  theme-ref-elevation-surface-primary2-light: rgb(247,243,239)
+  theme-ref-elevation-surface-primary3-light: rgb(244,238,232)
+  theme-ref-elevation-surface-primary4-light: rgb(241,232,224)
+  theme-ref-elevation-surface-primary5-light: rgb(236,225,214)
+  theme-ref-elevation-surface-primary6-light: rgb(232,218,204)
+  theme-ref-elevation-surface-primary7-light: rgb(227,209,192)
+  theme-ref-elevation-surface-primary8-light: rgb(222,200,179)
+  theme-ref-elevation-surface-primary9-light: rgb(216,190,164)
+  theme-ref-elevation-surface-primary10-light: rgb(210,181,151)
+  theme-ref-elevation-surface-secondary1-light: rgb(248,247,247)
+  theme-ref-elevation-surface-secondary2-light: rgb(245,244,243)
+  theme-ref-elevation-surface-secondary3-light: rgb(241,239,237)
+  theme-ref-elevation-surface-secondary4-light: rgb(237,234,232)
+  theme-ref-elevation-surface-secondary5-light: rgb(232,228,225)
+  theme-ref-elevation-surface-secondary6-light: rgb(226,221,217)
+  theme-ref-elevation-surface-secondary7-light: rgb(220,213,208)
+  theme-ref-elevation-surface-secondary8-light: rgb(213,205,199)
+  theme-ref-elevation-surface-secondary9-light: rgb(205,195,188)
+  theme-ref-elevation-surface-secondary10-light: rgb(198,187,179)
+  theme-ref-elevation-surface-tertiary1-light: rgb(247,247,246)
+  theme-ref-elevation-surface-tertiary2-light: rgb(244,244,242)
+  theme-ref-elevation-surface-tertiary3-light: rgb(239,240,236)
+  theme-ref-elevation-surface-tertiary4-light: rgb(235,235,230)
+  theme-ref-elevation-surface-tertiary5-light: rgb(228,229,222)
+  theme-ref-elevation-surface-tertiary6-light: rgb(222,223,214)
+  theme-ref-elevation-surface-tertiary7-light: rgb(214,215,204)
+  theme-ref-elevation-surface-tertiary8-light: rgb(206,207,194)
+  theme-ref-elevation-surface-tertiary9-light: rgb(197,198,182)
+  theme-ref-elevation-surface-tertiary10-light: rgb(189,190,172)
+  theme-ref-elevation-surface-error1-light: rgb(250,245,245)
+  theme-ref-elevation-surface-error2-light: rgb(249,241,241)
+  theme-ref-elevation-surface-error3-light: rgb(247,234,234)
+  theme-ref-elevation-surface-error4-light: rgb(245,227,227)
+  theme-ref-elevation-surface-error5-light: rgb(242,218,218)
+  theme-ref-elevation-surface-error6-light: rgb(239,209,209)
+  theme-ref-elevation-surface-error7-light: rgb(236,198,198)
+  theme-ref-elevation-surface-error8-light: rgb(233,187,187)
+  theme-ref-elevation-surface-error9-light: rgb(229,173,173)
+  theme-ref-elevation-surface-error10-light: rgb(226,162,162)
 
-  theme-ref-elevation-surface-neutral1-dark: rgb(35,37,33)
-  theme-ref-elevation-surface-neutral2-dark: rgb(40,42,38)
-  theme-ref-elevation-surface-neutral3-dark: rgb(45,47,43)
-  theme-ref-elevation-surface-neutral4-dark: rgb(52,54,50)
-  theme-ref-elevation-surface-neutral5-dark: rgb(59,60,57)
-  theme-ref-elevation-surface-neutral6-dark: rgb(67,69,65)
-  theme-ref-elevation-surface-neutral7-dark: rgb(76,78,74)
-  theme-ref-elevation-surface-neutral8-dark: rgb(86,88,84)
-  theme-ref-elevation-surface-neutral9-dark: rgb(95,96,92)
-  theme-ref-elevation-surface-neutral10-dark: rgb(103,105,101)
-  theme-ref-elevation-surface-neutral-variant1-dark: rgb(34,37,33)
-  theme-ref-elevation-surface-neutral-variant2-dark: rgb(40,42,38)
-  theme-ref-elevation-surface-neutral-variant3-dark: rgb(45,47,43)
-  theme-ref-elevation-surface-neutral-variant4-dark: rgb(51,54,49)
-  theme-ref-elevation-surface-neutral-variant5-dark: rgb(58,61,56)
-  theme-ref-elevation-surface-neutral-variant6-dark: rgb(67,70,64)
-  theme-ref-elevation-surface-neutral-variant7-dark: rgb(75,78,72)
-  theme-ref-elevation-surface-neutral-variant8-dark: rgb(85,89,82)
-  theme-ref-elevation-surface-neutral-variant9-dark: rgb(94,97,90)
-  theme-ref-elevation-surface-neutral-variant10-dark: rgb(102,106,98)
-  theme-ref-elevation-surface-primary1-dark: rgb(25,38,24)
-  theme-ref-elevation-surface-primary2-dark: rgb(24,44,23)
-  theme-ref-elevation-surface-primary3-dark: rgb(23,50,22)
-  theme-ref-elevation-surface-primary4-dark: rgb(22,58,21)
-  theme-ref-elevation-surface-primary5-dark: rgb(21,66,20)
-  theme-ref-elevation-surface-primary6-dark: rgb(20,76,19)
-  theme-ref-elevation-surface-primary7-dark: rgb(18,87,18)
-  theme-ref-elevation-surface-primary8-dark: rgb(17,99,16)
-  theme-ref-elevation-surface-primary9-dark: rgb(16,109,15)
-  theme-ref-elevation-surface-primary10-dark: rgb(14,119,14)
-  theme-ref-elevation-surface-secondary1-dark: rgb(34,37,33)
-  theme-ref-elevation-surface-secondary2-dark: rgb(39,42,37)
-  theme-ref-elevation-surface-secondary3-dark: rgb(44,47,42)
-  theme-ref-elevation-surface-secondary4-dark: rgb(50,54,48)
-  theme-ref-elevation-surface-secondary5-dark: rgb(57,61,54)
-  theme-ref-elevation-surface-secondary6-dark: rgb(65,70,62)
-  theme-ref-elevation-surface-secondary7-dark: rgb(73,79,69)
-  theme-ref-elevation-surface-secondary8-dark: rgb(82,89,79)
-  theme-ref-elevation-surface-secondary9-dark: rgb(90,98,86)
-  theme-ref-elevation-surface-secondary10-dark: rgb(98,107,94)
-  theme-ref-elevation-surface-tertiary1-dark: rgb(33,37,34)
-  theme-ref-elevation-surface-tertiary2-dark: rgb(37,42,40)
-  theme-ref-elevation-surface-tertiary3-dark: rgb(41,48,45)
-  theme-ref-elevation-surface-tertiary4-dark: rgb(46,55,53)
-  theme-ref-elevation-surface-tertiary5-dark: rgb(51,62,60)
-  theme-ref-elevation-surface-tertiary6-dark: rgb(58,71,69)
-  theme-ref-elevation-surface-tertiary7-dark: rgb(65,80,79)
-  theme-ref-elevation-surface-tertiary8-dark: rgb(73,91,90)
-  theme-ref-elevation-surface-tertiary9-dark: rgb(80,100,99)
-  theme-ref-elevation-surface-tertiary10-dark: rgb(86,109,108)
-  theme-ref-elevation-surface-error1-dark: rgb(37,36,32)
-  theme-ref-elevation-surface-error2-dark: rgb(44,40,37)
-  theme-ref-elevation-surface-error3-dark: rgb(51,45,41)
-  theme-ref-elevation-surface-error4-dark: rgb(60,51,47)
-  theme-ref-elevation-surface-error5-dark: rgb(70,57,52)
-  theme-ref-elevation-surface-error6-dark: rgb(81,64,60)
-  theme-ref-elevation-surface-error7-dark: rgb(92,72,67)
-  theme-ref-elevation-surface-error8-dark: rgb(106,81,75)
-  theme-ref-elevation-surface-error9-dark: rgb(118,89,83)
-  theme-ref-elevation-surface-error10-dark: rgb(129,96,90)
+  theme-ref-elevation-surface-neutral1-dark: rgb(41,35,31)
+  theme-ref-elevation-surface-neutral2-dark: rgb(46,40,36)
+  theme-ref-elevation-surface-neutral3-dark: rgb(51,45,41)
+  theme-ref-elevation-surface-neutral4-dark: rgb(58,52,48)
+  theme-ref-elevation-surface-neutral5-dark: rgb(65,58,55)
+  theme-ref-elevation-surface-neutral6-dark: rgb(74,67,63)
+  theme-ref-elevation-surface-neutral7-dark: rgb(83,75,71)
+  theme-ref-elevation-surface-neutral8-dark: rgb(93,86,81)
+  theme-ref-elevation-surface-neutral9-dark: rgb(102,94,90)
+  theme-ref-elevation-surface-neutral10-dark: rgb(111,103,98)
+  theme-ref-elevation-surface-neutral-variant1-dark: rgb(41,34,31)
+  theme-ref-elevation-surface-neutral-variant2-dark: rgb(47,40,36)
+  theme-ref-elevation-surface-neutral-variant3-dark: rgb(52,45,41)
+  theme-ref-elevation-surface-neutral-variant4-dark: rgb(59,51,47)
+  theme-ref-elevation-surface-neutral-variant5-dark: rgb(67,58,53)
+  theme-ref-elevation-surface-neutral-variant6-dark: rgb(76,67,61)
+  theme-ref-elevation-surface-neutral-variant7-dark: rgb(85,75,69)
+  theme-ref-elevation-surface-neutral-variant8-dark: rgb(96,85,79)
+  theme-ref-elevation-surface-neutral-variant9-dark: rgb(105,94,87)
+  theme-ref-elevation-surface-neutral-variant10-dark: rgb(114,102,95)
+  theme-ref-elevation-surface-primary1-dark: rgb(43,34,28)
+  theme-ref-elevation-surface-primary2-dark: rgb(50,39,31)
+  theme-ref-elevation-surface-primary3-dark: rgb(57,43,35)
+  theme-ref-elevation-surface-primary4-dark: rgb(65,50,39)
+  theme-ref-elevation-surface-primary5-dark: rgb(74,56,43)
+  theme-ref-elevation-surface-primary6-dark: rgb(86,64,48)
+  theme-ref-elevation-surface-primary7-dark: rgb(97,72,53)
+  theme-ref-elevation-surface-primary8-dark: rgb(110,81,60)
+  theme-ref-elevation-surface-primary9-dark: rgb(121,89,65)
+  theme-ref-elevation-surface-primary10-dark: rgb(132,97,70)
+  theme-ref-elevation-surface-secondary1-dark: rgb(42,34,30)
+  theme-ref-elevation-surface-secondary2-dark: rgb(48,39,35)
+  theme-ref-elevation-surface-secondary3-dark: rgb(53,44,39)
+  theme-ref-elevation-surface-secondary4-dark: rgb(61,51,45)
+  theme-ref-elevation-surface-secondary5-dark: rgb(69,57,50)
+  theme-ref-elevation-surface-secondary6-dark: rgb(79,66,58)
+  theme-ref-elevation-surface-secondary7-dark: rgb(89,74,65)
+  theme-ref-elevation-surface-secondary8-dark: rgb(100,84,73)
+  theme-ref-elevation-surface-secondary9-dark: rgb(110,92,81)
+  theme-ref-elevation-surface-secondary10-dark: rgb(120,100,88)
+  theme-ref-elevation-surface-tertiary1-dark: rgb(40,35,29)
+  theme-ref-elevation-surface-tertiary2-dark: rgb(45,40,33)
+  theme-ref-elevation-surface-tertiary3-dark: rgb(50,45,37)
+  theme-ref-elevation-surface-tertiary4-dark: rgb(57,52,42)
+  theme-ref-elevation-surface-tertiary5-dark: rgb(64,59,47)
+  theme-ref-elevation-surface-tertiary6-dark: rgb(72,68,53)
+  theme-ref-elevation-surface-tertiary7-dark: rgb(80,77,60)
+  theme-ref-elevation-surface-tertiary8-dark: rgb(90,88,67)
+  theme-ref-elevation-surface-tertiary9-dark: rgb(99,96,73)
+  theme-ref-elevation-surface-tertiary10-dark: rgb(107,105,80)
+  theme-ref-elevation-surface-error1-dark: rgb(43,34,30)
+  theme-ref-elevation-surface-error2-dark: rgb(50,38,35)
+  theme-ref-elevation-surface-error3-dark: rgb(57,43,39)
+  theme-ref-elevation-surface-error4-dark: rgb(65,49,45)
+  theme-ref-elevation-surface-error5-dark: rgb(74,55,51)
+  theme-ref-elevation-surface-error6-dark: rgb(86,63,58)
+  theme-ref-elevation-surface-error7-dark: rgb(97,71,65)
+  theme-ref-elevation-surface-error8-dark: rgb(110,80,74)
+  theme-ref-elevation-surface-error9-dark: rgb(121,88,81)
+  theme-ref-elevation-surface-error10-dark: rgb(132,95,89)
 
   theme-ref-palette-primary100: '#ffffff'
-  theme-ref-palette-primary99: '#f5ffeb'
-  theme-ref-palette-primary95: '#c9ffb3'
-  theme-ref-palette-primary90: '#73ff5b'
-  theme-ref-palette-primary80: '#00e600'
-  theme-ref-palette-primary70: '#00c700'
-  theme-ref-palette-primary60: '#00a800'
-  theme-ref-palette-primary50: '#008b00'
-  theme-ref-palette-primary40: '#006f00'
-  theme-ref-palette-primary30: '#005300'
-  theme-ref-palette-primary20: '#003a00'
-  theme-ref-palette-primary10: '#002200'
+  theme-ref-palette-primary99: '#fcfcfc'
+  theme-ref-palette-primary95: '#ffede1'
+  theme-ref-palette-primary90: '#ffdcc3'
+  theme-ref-palette-primary80: '#ffb780'
+  theme-ref-palette-primary70: '#ff8e24'
+  theme-ref-palette-primary60: '#df7400'
+  theme-ref-palette-primary50: '#b95e00'
+  theme-ref-palette-primary40: '#944a00'
+  theme-ref-palette-primary30: '#713700'
+  theme-ref-palette-primary20: '#502500'
+  theme-ref-palette-primary10: '#301400'
   theme-ref-palette-primary0: '#000000'
   theme-ref-palette-secondary100: '#ffffff'
-  theme-ref-palette-secondary99: '#f5ffeb'
-  theme-ref-palette-secondary95: '#e5f6da'
-  theme-ref-palette-secondary90: '#d7e7cd'
-  theme-ref-palette-secondary80: '#bbcbb2'
-  theme-ref-palette-secondary70: '#a0b097'
-  theme-ref-palette-secondary60: '#85957d'
-  theme-ref-palette-secondary50: '#6c7b65'
-  theme-ref-palette-secondary40: '#54634d'
-  theme-ref-palette-secondary30: '#3d4b37'
-  theme-ref-palette-secondary20: '#273422'
-  theme-ref-palette-secondary10: '#121f0e'
+  theme-ref-palette-secondary99: '#fcfcfc'
+  theme-ref-palette-secondary95: '#ffede1'
+  theme-ref-palette-secondary90: '#ffdcc3'
+  theme-ref-palette-secondary80: '#e3bfa7'
+  theme-ref-palette-secondary70: '#c6a48d'
+  theme-ref-palette-secondary60: '#ab8a74'
+  theme-ref-palette-secondary50: '#8f715c'
+  theme-ref-palette-secondary40: '#755945'
+  theme-ref-palette-secondary30: '#5b412f'
+  theme-ref-palette-secondary20: '#422b1a'
+  theme-ref-palette-secondary10: '#2a1708'
   theme-ref-palette-secondary0: '#000000'
   theme-ref-palette-tertiary100: '#ffffff'
-  theme-ref-palette-tertiary99: '#efffff'
-  theme-ref-palette-tertiary95: '#caf9fc'
-  theme-ref-palette-tertiary90: '#bcebee'
-  theme-ref-palette-tertiary80: '#a0cfd2'
-  theme-ref-palette-tertiary70: '#85b3b6'
-  theme-ref-palette-tertiary60: '#6b999c'
-  theme-ref-palette-tertiary50: '#517f82'
-  theme-ref-palette-tertiary40: '#386669'
-  theme-ref-palette-tertiary30: '#1e4d50'
-  theme-ref-palette-tertiary20: '#00373a'
-  theme-ref-palette-tertiary10: '#002022'
+  theme-ref-palette-tertiary99: '#ffffca'
+  theme-ref-palette-tertiary95: '#f2f5bc'
+  theme-ref-palette-tertiary90: '#e4e6af'
+  theme-ref-palette-tertiary80: '#c7ca95'
+  theme-ref-palette-tertiary70: '#acaf7c'
+  theme-ref-palette-tertiary60: '#919463'
+  theme-ref-palette-tertiary50: '#777a4c'
+  theme-ref-palette-tertiary40: '#5e6135'
+  theme-ref-palette-tertiary30: '#464920'
+  theme-ref-palette-tertiary20: '#30330b'
+  theme-ref-palette-tertiary10: '#1b1d00'
   theme-ref-palette-tertiary0: '#000000'
   theme-ref-palette-neutral100: '#ffffff'
-  theme-ref-palette-neutral99: '#fcfcf6'
-  theme-ref-palette-neutral95: '#f1f1eb'
-  theme-ref-palette-neutral90: '#e2e3dc'
-  theme-ref-palette-neutral80: '#c6c7c1'
-  theme-ref-palette-neutral70: '#abaca7'
-  theme-ref-palette-neutral60: '#90918c'
-  theme-ref-palette-neutral50: '#767872'
-  theme-ref-palette-neutral40: '#5e5f5b'
-  theme-ref-palette-neutral30: '#454743'
-  theme-ref-palette-neutral20: '#2f312d'
-  theme-ref-palette-neutral10: '#1a1c19'
+  theme-ref-palette-neutral99: '#fcfcfc'
+  theme-ref-palette-neutral95: '#fbeee8'
+  theme-ref-palette-neutral90: '#ece0da'
+  theme-ref-palette-neutral80: '#cfc4be'
+  theme-ref-palette-neutral70: '#b3a9a4'
+  theme-ref-palette-neutral60: '#998f8a'
+  theme-ref-palette-neutral50: '#7e7570'
+  theme-ref-palette-neutral40: '#655d58'
+  theme-ref-palette-neutral30: '#4c4541'
+  theme-ref-palette-neutral20: '#362f2b'
+  theme-ref-palette-neutral10: '#201a17'
   theme-ref-palette-neutral0: '#000000'
   theme-ref-palette-neutral-variant100: '#ffffff'
-  theme-ref-palette-neutral-variant99: '#f9fef1'
-  theme-ref-palette-neutral-variant95: '#edf3e5'
-  theme-ref-palette-neutral-variant90: '#dee4d7'
-  theme-ref-palette-neutral-variant80: '#c3c9bc'
-  theme-ref-palette-neutral-variant70: '#a7ada1'
-  theme-ref-palette-neutral-variant60: '#8d9387'
-  theme-ref-palette-neutral-variant50: '#73796e'
-  theme-ref-palette-neutral-variant40: '#5a6056'
-  theme-ref-palette-neutral-variant30: '#43493f'
-  theme-ref-palette-neutral-variant20: '#2c3229'
-  theme-ref-palette-neutral-variant10: '#181d16'
+  theme-ref-palette-neutral-variant99: '#fcfcfc'
+  theme-ref-palette-neutral-variant95: '#ffede1'
+  theme-ref-palette-neutral-variant90: '#f3ded2'
+  theme-ref-palette-neutral-variant80: '#d6c3b7'
+  theme-ref-palette-neutral-variant70: '#baa79c'
+  theme-ref-palette-neutral-variant60: '#9f8d82'
+  theme-ref-palette-neutral-variant50: '#84746a'
+  theme-ref-palette-neutral-variant40: '#6a5b52'
+  theme-ref-palette-neutral-variant30: '#52443b'
+  theme-ref-palette-neutral-variant20: '#3a2e26'
+  theme-ref-palette-neutral-variant10: '#241912'
   theme-ref-palette-neutral-variant0: '#000000'
   theme-ref-palette-error100: '#ffffff'
   theme-ref-palette-error99: '#fcfcfc'
@@ -223,39 +223,39 @@ M3-10-Green:
   theme-ref-palette-error20: '#680003'
   theme-ref-palette-error10: '#410001'
   theme-ref-palette-error0: '#000000'
-  theme-ref-palette-primary5: '#001100ff'
-  theme-ref-palette-primary15: '#002e00ff'
-  theme-ref-palette-primary25: '#004600ff'
-  theme-ref-palette-primary35: '#006100ff'
-  theme-ref-palette-primary45: '#007d00ff'
-  theme-ref-palette-primary65: '#00b700ff'
-  theme-ref-palette-primary75: '#00d600ff'
-  theme-ref-palette-primary85: '#39f22dff'
-  theme-ref-palette-primary7: '#001900ff'
-  theme-ref-palette-primary92: '#9eff87ff'
-  theme-ref-palette-primary97: '#dfffcfff'
-  theme-ref-palette-secondary5: '#090f07ff'
-  theme-ref-palette-secondary15: '#1c2918ff'
-  theme-ref-palette-secondary25: '#323f2cff'
-  theme-ref-palette-secondary35: '#485742ff'
-  theme-ref-palette-secondary45: '#606f59ff'
-  theme-ref-palette-secondary65: '#92a28aff'
-  theme-ref-palette-secondary75: '#adbda4ff'
-  theme-ref-palette-secondary85: '#c9d9bfff'
-  theme-ref-palette-secondary7: '#0d170aff'
-  theme-ref-palette-secondary92: '#deeed3ff'
-  theme-ref-palette-secondary97: '#edfae2ff'
-  theme-ref-palette-tertiary5: '#001011ff'
-  theme-ref-palette-tertiary15: '#002b2eff'
-  theme-ref-palette-tertiary25: '#0f4245ff'
-  theme-ref-palette-tertiary35: '#2b595cff'
-  theme-ref-palette-tertiary45: '#447275ff'
-  theme-ref-palette-tertiary65: '#78a6a9ff'
-  theme-ref-palette-tertiary75: '#92c1c4ff'
-  theme-ref-palette-tertiary85: '#aedde0ff'
-  theme-ref-palette-tertiary7: '#001819ff'
-  theme-ref-palette-tertiary92: '#c3f2f5ff'
-  theme-ref-palette-tertiary97: '#dcfcfdff'
+  theme-ref-palette-primary5: '#180a00ff'
+  theme-ref-palette-primary15: '#401c00ff'
+  theme-ref-palette-primary25: '#602e00ff'
+  theme-ref-palette-primary35: '#824000ff'
+  theme-ref-palette-primary45: '#a65400ff'
+  theme-ref-palette-primary65: '#ef8112ff'
+  theme-ref-palette-primary75: '#ffa252ff'
+  theme-ref-palette-primary85: '#ffc9a1ff'
+  theme-ref-palette-primary7: '#240f00ff'
+  theme-ref-palette-primary92: '#ffe4d2ff'
+  theme-ref-palette-primary97: '#fdf4eeff'
+  theme-ref-palette-secondary5: '#150b04ff'
+  theme-ref-palette-secondary15: '#362111ff'
+  theme-ref-palette-secondary25: '#4e3624ff'
+  theme-ref-palette-secondary35: '#684d3aff'
+  theme-ref-palette-secondary45: '#826550ff'
+  theme-ref-palette-secondary65: '#b89780ff'
+  theme-ref-palette-secondary75: '#d4b19aff'
+  theme-ref-palette-secondary85: '#f1cdb5ff'
+  theme-ref-palette-secondary7: '#1f1106ff'
+  theme-ref-palette-secondary92: '#ffe4d2ff'
+  theme-ref-palette-secondary97: '#fdf4eeff'
+  theme-ref-palette-tertiary5: '#0d0e00ff'
+  theme-ref-palette-tertiary15: '#252805ff'
+  theme-ref-palette-tertiary25: '#3b3e15ff'
+  theme-ref-palette-tertiary35: '#52552aff'
+  theme-ref-palette-tertiary45: '#6a6d40ff'
+  theme-ref-palette-tertiary65: '#9ea16fff'
+  theme-ref-palette-tertiary75: '#b9bc88ff'
+  theme-ref-palette-tertiary85: '#d5d8a2ff'
+  theme-ref-palette-tertiary7: '#141500ff'
+  theme-ref-palette-tertiary92: '#ebedb5ff'
+  theme-ref-palette-tertiary97: '#f8fac3ff'
   theme-ref-palette-error5: '#200000ff'
   theme-ref-palette-error15: '#540002ff'
   theme-ref-palette-error25: '#7d0004ff'
@@ -267,29 +267,29 @@ M3-10-Green:
   theme-ref-palette-error7: '#300000ff'
   theme-ref-palette-error92: '#ffe3deff'
   theme-ref-palette-error97: '#fdf4f2ff'
-  theme-ref-palette-neutral5: '#0d0e0cff'
-  theme-ref-palette-neutral15: '#242623ff'
-  theme-ref-palette-neutral25: '#3a3c38ff'
-  theme-ref-palette-neutral35: '#51534fff'
-  theme-ref-palette-neutral45: '#6a6b66ff'
-  theme-ref-palette-neutral65: '#9d9e99ff'
-  theme-ref-palette-neutral75: '#b8b9b4ff'
-  theme-ref-palette-neutral85: '#d4d5ceff'
-  theme-ref-palette-neutral7: '#131512ff'
-  theme-ref-palette-neutral92: '#e9eae3ff'
-  theme-ref-palette-neutral97: '#f6f6f0ff'
-  theme-ref-palette-neutral-variant5: '#0c0e0bff'
-  theme-ref-palette-neutral-variant15: '#22271fff'
-  theme-ref-palette-neutral-variant25: '#373d34ff'
-  theme-ref-palette-neutral-variant35: '#4e544aff'
-  theme-ref-palette-neutral-variant45: '#666c62ff'
-  theme-ref-palette-neutral-variant65: '#9aa094ff'
-  theme-ref-palette-neutral-variant75: '#b5bbaeff'
-  theme-ref-palette-neutral-variant85: '#d0d6c9ff'
-  theme-ref-palette-neutral-variant7: '#121510ff'
-  theme-ref-palette-neutral-variant92: '#e5ebdeff'
-  theme-ref-palette-neutral-variant97: '#f3f8ebff'
-  
+  theme-ref-palette-neutral5: '#100d0bff'
+  theme-ref-palette-neutral15: '#2b2421ff'
+  theme-ref-palette-neutral25: '#413a36ff'
+  theme-ref-palette-neutral35: '#58514cff'
+  theme-ref-palette-neutral45: '#716964ff'
+  theme-ref-palette-neutral65: '#a69c97ff'
+  theme-ref-palette-neutral75: '#c1b6b1ff'
+  theme-ref-palette-neutral85: '#ddd2ccff'
+  theme-ref-palette-neutral7: '#181311ff'
+  theme-ref-palette-neutral92: '#f3e7e1ff'
+  theme-ref-palette-neutral97: '#fbf5f2ff'
+  theme-ref-palette-neutral-variant5: '#120c09ff'
+  theme-ref-palette-neutral-variant15: '#2f231cff'
+  theme-ref-palette-neutral-variant25: '#463930ff'
+  theme-ref-palette-neutral-variant35: '#5e4f46ff'
+  theme-ref-palette-neutral-variant45: '#77675eff'
+  theme-ref-palette-neutral-variant65: '#ac9a8fff'
+  theme-ref-palette-neutral-variant75: '#c8b5a9ff'
+  theme-ref-palette-neutral-variant85: '#e4d0c4ff'
+  theme-ref-palette-neutral-variant7: '#1b120dff'
+  theme-ref-palette-neutral-variant92: '#f9e5d9ff'
+  theme-ref-palette-neutral-variant97: '#fdf4eeff'
+
   # --------------------------------------------------------------------------
   # ==================== END of M3 copy/paste configuration ==================
   # --------------------------------------------------------------------------
@@ -537,8 +537,6 @@ M3-10-Green:
 
       # Set text colors
       theme-sys-ha-primary-text-color: var(--theme-sys-color-on-surface)
-      # theme-sys-ha-secondary-text-color: var(--theme-text-secondary-color)
-      theme-sys-ha-disabled-text-color: var(--theme-sys-elevation-surface-neutral5)
       theme-sys-ha-secondary-text-color: var(--theme-sys-color-secondary)
       theme-sys-ha-disabled-text-color: var(--theme-sys-color-surface-variant)
 
@@ -552,7 +550,6 @@ M3-10-Green:
       # theme-sys-ha-card-background-color: var(--surface-dark-2)
       theme-sys-ha-card-background-color: var(--theme-sys-elevation-surface-neutral1)
 
-      theme-sys-ha-card-background-color-active: rgb(255, 255, 255, 0.08)
       theme-sys-ha-card-background-color-active: rgb(255, 255, 255, 0.2)
       theme-sys-ha-card-background-color-inactive: rgb(0, 0, 0, 0.08)
       theme-sys-ha-card-background-color-undefined: rgb(0, 0, 0, 0.7)
@@ -859,13 +856,12 @@ M3-10-Green:
       
       # Primary color is header for instance with view menu
       theme-sys-ha-primary-color: 'var(--theme-sys-color-primary)'
-      theme-sys-ha-accent-color: 'var(--theme-text-primary-color-accent-40)'
       theme-sys-ha-light-primary-color: 'var(--theme-ref-palette-primary90)'
       theme-sys-ha-dark-primary-color: 'var(--theme-ref-palette-primary10)'
 
       # Set text colors
       theme-sys-ha-primary-text-color: var(--theme-sys-color-on-surface)
-      theme-sys-ha-secondary-text-color: var(--theme-sys-color-secondary) #var(--theme-text-secondary-color)
+      theme-sys-ha-secondary-text-color: var(--theme-sys-color-secondary)
       theme-sys-ha-disabled-text-color: var(--theme-sys-elevation-surface-neutral5)
 
       theme-sys-ha-primary-icon-color: var(--theme-text-primary-color)
@@ -876,7 +872,7 @@ M3-10-Green:
       
       # Card state colors
       theme-sys-ha-card-background-color: var(--theme-sys-color-background)
-      theme-sys-ha-card-background-color-active: white #rgb(255, 255, 255, 1)
+      theme-sys-ha-card-background-color-active: white
       theme-sys-ha-card-background-color-inactive: rgb(0, 0, 0, 0.05)
       theme-sys-ha-card-background-color-undefined: rgb(0, 0, 0, 0.2)
       theme-sys-ha-card-background-color-unavailable: rgb(0, 0, 0, 0.2)
@@ -918,10 +914,6 @@ M3-10-Green:
   cs-theme-shadow-lighter: var(--theme-sys-ha-shadow-lighter-nm)
   cs-theme-shadow-darker: var(--theme-sys-ha-shadow-darker-nm)
   
-  # theme-primary-color: var(--theme-sys-color-primary)
-  # theme-secondary-color: var(--theme-sys-color-secondary)
-  # theme-tertiary-color: var(--theme-sys-color-tertiary)
-      
   #
   # MDC Web theming to be used on light/dark backgrounds
   # - Media Player is using these CSS Vars for back and foreground text
@@ -960,10 +952,9 @@ M3-10-Green:
   #
   theme-thermostat-text-color: 'var(--primary-text-color)'
   theme-thermostat-off-fill: 'var(--primary-background-color)'
-  theme-thermostat-cool-fill: var(--state-climate-cool-color) #'#007AF1'
-  theme-thermostat-heat-fill: var(--state-climate-heat-color) #'#E36304'
-  theme-thermostat-path-color: rgba(255,255,255, 0.2) #'#e5d7b9' #'var(--adc-wheat)'
-  #'rgba(255,255,255, 0.3)'
+  theme-thermostat-cool-fill: var(--state-climate-cool-color)
+  theme-thermostat-heat-fill: var(--state-climate-heat-color)
+  theme-thermostat-path-color: rgba(255,255,255, 0.2)
   theme-thermostat-path-active-color: rgba(255,255,255, 0.8)
   theme-thermostat-path-active-color-large: 'rgba(255,255,255, 1.0)'
   theme-thermostat-path-heat-color: 'rgba(255,255,255,0.4)'
@@ -1001,15 +992,6 @@ M3-10-Green:
   card-background-color: var(--theme-sys-ha-card-background-color)
   primary-background-color: var(--theme-sys-ha-primary-background-color)
   secondary-background-color: var(--theme-sys-ha-secondary-background-color)
-
-  # for header 
-  # # header-height: 56px
-
-  # for label-badge 
-  # Default for light, redefined for dark mode
-
-  label-badge-text-color: var(--primary-text-color) #var(--theme-sys-color-on-error) #
-  ha-label-badge-label-color: var(--theme-sys-color-on-error)
 
   # states 
   #

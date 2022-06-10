@@ -532,8 +532,6 @@ M3-C05-Yellow:
 
       # Set text colors
       theme-sys-ha-primary-text-color: var(--theme-sys-color-on-surface)
-      # theme-sys-ha-secondary-text-color: var(--theme-text-secondary-color)
-      theme-sys-ha-disabled-text-color: var(--theme-sys-elevation-surface-neutral5)
       theme-sys-ha-secondary-text-color: var(--theme-sys-color-secondary)
       theme-sys-ha-disabled-text-color: var(--theme-sys-color-surface-variant)
 
@@ -547,7 +545,6 @@ M3-C05-Yellow:
       # theme-sys-ha-card-background-color: var(--surface-dark-2)
       theme-sys-ha-card-background-color: var(--theme-sys-elevation-surface-neutral1)
 
-      theme-sys-ha-card-background-color-active: rgb(255, 255, 255, 0.08)
       theme-sys-ha-card-background-color-active: rgb(255, 255, 255, 0.2)
       theme-sys-ha-card-background-color-inactive: rgb(0, 0, 0, 0.08)
       theme-sys-ha-card-background-color-undefined: rgb(0, 0, 0, 0.7)
@@ -854,13 +851,12 @@ M3-C05-Yellow:
       
       # Primary color is header for instance with view menu
       theme-sys-ha-primary-color: 'var(--theme-sys-color-primary)'
-      theme-sys-ha-accent-color: 'var(--theme-text-primary-color-accent-40)'
       theme-sys-ha-light-primary-color: 'var(--theme-ref-palette-primary90)'
       theme-sys-ha-dark-primary-color: 'var(--theme-ref-palette-primary10)'
 
       # Set text colors
       theme-sys-ha-primary-text-color: var(--theme-sys-color-on-surface)
-      theme-sys-ha-secondary-text-color: var(--theme-sys-color-secondary) #var(--theme-text-secondary-color)
+      theme-sys-ha-secondary-text-color: var(--theme-sys-color-secondary)
       theme-sys-ha-disabled-text-color: var(--theme-sys-elevation-surface-neutral5)
 
       theme-sys-ha-primary-icon-color: var(--theme-text-primary-color)
@@ -871,7 +867,7 @@ M3-C05-Yellow:
       
       # Card state colors
       theme-sys-ha-card-background-color: var(--theme-sys-color-background)
-      theme-sys-ha-card-background-color-active: white #rgb(255, 255, 255, 1)
+      theme-sys-ha-card-background-color-active: white
       theme-sys-ha-card-background-color-inactive: rgb(0, 0, 0, 0.05)
       theme-sys-ha-card-background-color-undefined: rgb(0, 0, 0, 0.2)
       theme-sys-ha-card-background-color-unavailable: rgb(0, 0, 0, 0.2)
@@ -913,10 +909,6 @@ M3-C05-Yellow:
   cs-theme-shadow-lighter: var(--theme-sys-ha-shadow-lighter-nm)
   cs-theme-shadow-darker: var(--theme-sys-ha-shadow-darker-nm)
   
-  # theme-primary-color: var(--theme-sys-color-primary)
-  # theme-secondary-color: var(--theme-sys-color-secondary)
-  # theme-tertiary-color: var(--theme-sys-color-tertiary)
-      
   #
   # MDC Web theming to be used on light/dark backgrounds
   # - Media Player is using these CSS Vars for back and foreground text
@@ -955,10 +947,9 @@ M3-C05-Yellow:
   #
   theme-thermostat-text-color: 'var(--primary-text-color)'
   theme-thermostat-off-fill: 'var(--primary-background-color)'
-  theme-thermostat-cool-fill: var(--state-climate-cool-color) #'#007AF1'
-  theme-thermostat-heat-fill: var(--state-climate-heat-color) #'#E36304'
-  theme-thermostat-path-color: rgba(255,255,255, 0.2) #'#e5d7b9' #'var(--adc-wheat)'
-  #'rgba(255,255,255, 0.3)'
+  theme-thermostat-cool-fill: var(--state-climate-cool-color)
+  theme-thermostat-heat-fill: var(--state-climate-heat-color)
+  theme-thermostat-path-color: rgba(255,255,255, 0.2)
   theme-thermostat-path-active-color: rgba(255,255,255, 0.8)
   theme-thermostat-path-active-color-large: 'rgba(255,255,255, 1.0)'
   theme-thermostat-path-heat-color: 'rgba(255,255,255,0.4)'
@@ -996,15 +987,6 @@ M3-C05-Yellow:
   card-background-color: var(--theme-sys-ha-card-background-color)
   primary-background-color: var(--theme-sys-ha-primary-background-color)
   secondary-background-color: var(--theme-sys-ha-secondary-background-color)
-
-  # for header 
-  # # header-height: 56px
-
-  # for label-badge 
-  # Default for light, redefined for dark mode
-
-  label-badge-text-color: var(--primary-text-color) #var(--theme-sys-color-on-error) #
-  ha-label-badge-label-color: var(--theme-sys-color-on-error)
 
   # states 
   #
