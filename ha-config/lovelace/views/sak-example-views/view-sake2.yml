@@ -1,7 +1,7 @@
 #
 # View			: view-sake2
 # Project   : Home Assistant / Swiss Army Knife custom card.
-# Repository: https://github.com/AmoebeLabs/
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
 #
 # Author    : Mars @ AmoebeLabs.com
 # 
@@ -81,11 +81,6 @@ cards:
               name: Duo Links
               area: Woonkamer
               icon: mdi:floor-lamp-dual
-              tap_action:
-                action: call-service
-                service: light.toggle
-                service_data: { "entity_id" : "light.livingroom_light_duo_left_light" }
-                haptic: light
 
             - entity: light.livingroom_light_duo_left_light
               name: Duo Links
@@ -93,17 +88,6 @@ cards:
               icon: mdi:floor-lamp-dual
               attribute: brightness
               unit_of_measurement: "%"
-              tap_action:
-                action: more-info
-                haptic: success
-
-            # Entity used for menu... Should be changed in the future...
-            - entity: light.livingroom_light_duo_left_light
-              icon: mdi:menu
-              attribute: brightness
-              tap_action:
-                action: more-info
-                haptic: success
 
           aspectratio: 1/1
           dev:
@@ -128,7 +112,22 @@ cards:
                       cy: 10
                       align: center
                       icon_size: 15
-                    entity_index: 2
+                    icon: mdi:menu
+                    entity_index: 0
+                    user_actions:
+                      tap_action:
+                        haptic: success
+                        actions:
+                          - action: more-info
+                          - action: call-service
+                            service: light.toggle
+                            service_data:
+                              entity_id: light.livingroom_light_duo_right_light
+                          - action: call-service
+                            service: light.toggle
+                            service_data:
+                              entity_id: light.livingroom_light_front_right_light
+                            
                     styles:
                       icon:
                         fill: var(--primary-text-color)
@@ -184,10 +183,20 @@ cards:
                           if (typeof(state) === 'undefined') return undefined;
                           return '%';
                         ]]]
-                    slider_action:
-                      update_interval: 200
-                      service: light.turn_on
-                      parameter: brightness_pct
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
                     scale:
                       min: 1
                       max: 100
@@ -217,11 +226,6 @@ cards:
               name: Duo Rechts
               area: Woonkamer
               icon: mdi:floor-lamp-dual
-              tap_action:
-                action: call-service
-                service: light.toggle
-                service_data: { "entity_id" : "light.livingroom_light_duo_right_light" }
-                haptic: light
 
             - entity: light.livingroom_light_duo_right_light
               name: Duo Rechts
@@ -229,17 +233,6 @@ cards:
               icon: mdi:floor-lamp-dual
               attribute: brightness
               unit_of_measurement: "%"
-              tap_action:
-                action: more-info
-                haptic: success
-
-            # Entity used for menu... Should be changed in the future...
-            - entity: light.livingroom_light_duo_right_light
-              icon: mdi:dots-vertical
-              attribute: brightness
-              tap_action:
-                action: more-info
-                haptic: success
 
           aspectratio: 1/1
           dev:
@@ -264,7 +257,13 @@ cards:
                       cy: 10
                       align: center
                       icon_size: 15
-                    entity_index: 2
+                    entity_index: 0
+                    icon: mdi:dots-vertical
+                    user_actions:
+                      tap_action:
+                        haptic: success
+                        actions:
+                          - action: more-info
                     styles:
                       icon:
                         fill: var(--primary-text-color)
@@ -320,10 +319,20 @@ cards:
                           if (typeof(state) === 'undefined') return undefined;
                           return '%';
                         ]]]
-                    slider_action:
-                      update_interval: 200
-                      service: light.turn_on
-                      parameter: brightness_pct
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
                     scale:
                       min: 1
                       max: 100
@@ -359,11 +368,6 @@ cards:
               name: Muurlamp
               area: Woonkamer
               icon: mdi:wall-sconce
-              tap_action:
-                action: call-service
-                service: light.toggle
-                service_data: { "entity_id" : "light.livingroom_light_front_right_light" }
-                haptic: light
 
             - entity: light.livingroom_light_front_right_light
               name: Muurlamp
@@ -371,17 +375,6 @@ cards:
               icon: mdi:floor-lamp-dual
               attribute: brightness
               unit_of_measurement: "%"
-              tap_action:
-                action: more-info
-                haptic: success
-
-            # Entity used for menu... Should be changed in the future...
-            - entity: light.livingroom_light_front_right_light
-              icon: mdi:dots-vertical
-              attribute: brightness
-              tap_action:
-                action: more-info
-                haptic: success
 
           aspectratio: 1/1
           dev:
@@ -406,8 +399,13 @@ cards:
                       cy: 10
                       align: center
                       icon_size: 15
-                      capture: true
-                    entity_index: 2
+                    entity_index: 0
+                    icon: mdi:dots-vertical
+                    user_actions:
+                      tap_action:
+                        haptic: success
+                        actions:
+                          - action: more-info
                     styles:
                       capture:
                         opacity: 0
@@ -471,17 +469,20 @@ cards:
                           if (typeof(state) === 'undefined') return undefined;
                           return '%';
                         ]]]
-                    slider_action:
-                      update_interval: 200
-                      service: light.turn_on
-                      parameter: brightness_pct
-                    # As actions map or array? So you can call multiple services? usefull?
-                    # Note: Experimental. Not used yet...
-                    actions:
-                      slider_action:
-                        update_interval: 200
-                        service: light.turn_on
-                        parameter: brightness_pct
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
                     scale:
                       min: 1
                       max: 100
@@ -508,7 +509,6 @@ cards:
                         fill-opacity: 1
                         filter: url(#is-1)
                         fill: var(--primary-background-color)
-                        # fill: url(#sak-light-color-temperature-gradient)
                       thumb:
                         stroke-width: 3em
                         stroke: var(--primary-background-color)
@@ -517,8 +517,6 @@ cards:
         
     # - type: horizontal-stack
       # cards:
-        # # - !include card-blank-card.yaml
-
         # - type: custom:decluttering-card
           # template: sak_light_button_template_nm_tpl
           # variables:
@@ -544,16 +542,11 @@ cards:
             # - name: Muurlamp
             # - icon: 'mdi:wall-sconce' #'border-right' #'mdi:grid-large'
 
-        # # - !include card-blank-card.yaml
-
     - type: horizontal-stack
       cards:
-        # - !include card-blank-card.yaml
-
         - type: custom:decluttering-card
           template: sak_light_button_template_nm_tpl
           variables:
-#              - entity: rode_lampenkap
             - entity: light.livingroom_light_gasheater_light
             - area: Woonkamer
             - name: Rode Lamp
@@ -569,11 +562,9 @@ cards:
 
         - type: 'custom:button-card'
           color_type: blank-card
-        # - !include card-blank-card.yaml
 
     - type: horizontal-stack
       cards:
-        # - !include card-blank-card.yaml
         - type: custom:decluttering-card
           template: sak_light_button_template_nm_tpl
           variables:
@@ -590,7 +581,6 @@ cards:
             - icon: 'mdi:sofa'
         - type: 'custom:button-card'
           color_type: blank-card
-        # - !include card-blank-card.yaml
 
 
 
@@ -605,7 +595,6 @@ cards:
         - font_size: 3em
     - type: horizontal-stack
       cards:
-        # - !include card-blank-card.yaml
         - type: custom:decluttering-card
           template: sak_light_button_template_nm_tpl
           variables:
@@ -622,7 +611,6 @@ cards:
             - icon: 'mdi:wall-sconce'
         - type: 'custom:button-card'
           color_type: blank-card
-        # - !include card-blank-card.yaml
 
 ##
 ## 1ste Verdieping
@@ -635,7 +623,6 @@ cards:
         - font_size: 3em
     - type: horizontal-stack
       cards:
-        # - !include card-blank-card.yaml
         - type: custom:decluttering-card
           template: sak_light_button_template_nm_tpl
           variables:
@@ -647,5 +634,4 @@ cards:
           color_type: blank-card
         - type: 'custom:button-card'
           color_type: blank-card
-        # - !include card-blank-card.yaml
 

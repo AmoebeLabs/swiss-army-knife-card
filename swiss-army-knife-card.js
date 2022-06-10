@@ -10,7 +10,7 @@
 *
 * -----
 * Description:
-*   The swiss army knife card.
+*   The swiss army knife card, a versatile mult-tool custom card for HA.
 *
 * Documentation Refs:
 *   - https://swiss-army-knife.docs.amoebelabs.com/
@@ -842,6 +842,14 @@ class BaseTool {
     return true;
   }
 
+  EnableHoverForInteraction()
+
+  {
+    const hover = (this.config.hasOwnProperty('entity_index') || (this.config?.user_actions?.tap_action));
+    this.classes.tool.hover = hover;
+    // this.classes.tool["hover"] = hover;
+  }
+
  /*******************************************************************************
   * BaseTool::MergeAnimationStyleIfChanged()
   *
@@ -981,7 +989,97 @@ class BaseTool {
     }
     return color;
   }
-}
+
+/*******************************************************************************
+  * BaseTool::_processTapEvent()
+  *
+  * Summary.
+  * Processes the mouse click of the user and dispatches the event to the
+  * configure handler.
+  *
+  */
+
+  _processTapEvent(node, hass, config, actionConfig, entityId) {
+    let e;
+
+    if (!actionConfig) return;
+    fireEvent(node, "haptic", actionConfig.haptic || 'medium');
+
+    if (this.dev.debug) console.log('_processTapEvent', config, actionConfig, entityId);
+    for (let i = 0; i < actionConfig.actions.length; i++) {
+      switch (actionConfig.actions[i].action) {
+        case 'more-info': {
+          if (typeof entityId != 'undefined') {
+            e = new Event('hass-more-info', { composed: true });
+            e.detail = { entityId };
+            node.dispatchEvent(e);
+          }
+          break;
+        }
+        case 'navigate': {
+          if (!actionConfig.actions[i].navigation_path) return;
+          window.history.pushState(null, '', actionConfig.actions[i].navigation_path);
+          e = new Event('location-changed', { composed: true });
+          e.detail = { replace: false };
+          window.dispatchEvent(e);
+          break;
+        }
+        case 'call-service': {
+          if (!actionConfig.actions[i].service) return;
+          const [domain, service] = actionConfig.actions[i].service.split('.', 2);
+          let serviceData = { ...actionConfig.actions[i].service_data };
+          
+          // Fill with current entity_id if none given
+          if (!serviceData.entity_id) {
+            serviceData.entity_id = entityId;
+          };
+          hass.callService(domain, service, serviceData);
+        }
+      }
+    }
+  }
+
+/*******************************************************************************
+  * BaseTool::handleTapEvent()
+  *
+  * Summary.
+  * Handles the first part of mouse click processing.
+  * It stops propagation to the parent and processes the event.
+  *
+  * The action can be configured per tool.
+  *
+  */
+
+  handleTapEvent(argEvent, argToolConfig) {
+    argEvent.stopPropagation();
+    argEvent.preventDefault();
+
+    console.log('handleTapEvent', argEvent, argToolConfig);
+
+    let tapConfig;
+    // If no user_actions defined, AND there is an entity_index,
+    // define a default 'more-info' tap action
+    if (argToolConfig.hasOwnProperty('entity_index') && (!argToolConfig.user_actions)) {
+      tapConfig = { haptic: 'light',
+                    actions: [{
+                      action: 'more-info'
+                    }]
+      };
+    } else {
+      tapConfig = argToolConfig.user_actions?.tap_action;
+    }
+
+    if (!tapConfig) return;
+    console.log('handleTapEvent - calling _processTapEvent');
+
+    this._processTapEvent(this._card,
+                          this._card._hass,
+                          this.config,
+                          tapConfig,
+                          this._card.config.entities[argToolConfig.entity_index]?.entity);
+  }
+
+} //-- CLASS
 
  /**
   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1823,7 +1921,7 @@ class LineTool extends BaseTool {
 
     return svg`
       <g id="line-${this.toolId}" class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderLine()}
       </g>
     `;
@@ -1870,6 +1968,7 @@ class CircleTool extends BaseTool {
     }
 
     super(argToolset, Merge.mergeDeep(DEFAULT_CIRCLE_CONFIG, argConfig), argPos);
+    this.EnableHoverForInteraction();
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius)
     
@@ -1927,7 +2026,7 @@ class CircleTool extends BaseTool {
 
     return svg`
       <g "" id="circle-${this.toolId}" class="${classMap(this.classes.tool)}" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderCircle()}
       </g>
     `;
@@ -2175,7 +2274,7 @@ class SwitchTool extends BaseTool {
 
     return svg`
       <g id="switch-${this.toolId}" class="${classMap(this.classes.tool)}" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderSwitch()}
       </g>
     `;
@@ -2312,7 +2411,7 @@ class RegPolyTool extends BaseTool {
 
     return svg`
       <g "" id="regpoly-${this.toolId}" class="${classMap(this.classes.tool)}" transform-origin="${this.svg.cx} ${this.svg.cy}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderRegPoly()}
       </g>
     `;
@@ -2457,7 +2556,7 @@ class UserSvgTool extends BaseTool {
 
     return svg`
       <g id="usersvg-${this.toolId}" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderUserSvg()}
       </g>
     `;
@@ -2557,7 +2656,7 @@ class RectangleTool extends BaseTool {
 
     return svg`
       <g id="rectangle-${this.toolId}" class="${classMap(this.classes.tool)}" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderRectangle()}
       </g>
     `;
@@ -2699,7 +2798,7 @@ class RectangleToolEx extends BaseTool {
 
     return svg`
       <g id="rectex-${this.toolId}" class="${classMap(this.classes.tool)}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderRectangleEx()}
       </g>
     `;
@@ -2791,7 +2890,7 @@ class EllipseTool extends BaseTool {
 
     return svg`
       <g id="ellipse-${this.toolId}" class="${classMap(this.classes.tool)}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderEllipse()}
       </g>
     `;
@@ -2906,8 +3005,12 @@ class EntityIconTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
     this.MergeColorFromState(this.styles.icon);
 
+    // const icon = this._card._buildIcon(
+      // this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
     const icon = this._card._buildIcon(
-      this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+      this._card.entities[this.config.entity_index],
+      this.config.hasOwnProperty('entity_index') ? this._card.config.entities[this.config.entity_index] : undefined,
+      this.config.icon);
 
     if (true || (this.svg.xpx == 0)) {
 
@@ -3090,6 +3193,14 @@ class EntityIconTool extends BaseTool {
 
     return svg`
       <g "" id="icongrp-${this.toolId}" class="${classMap(this.classes.tool)}"
+        @click=${e => this.handleTapEvent(e, this.config)} >
+
+        ${this._renderIcon()}
+      </g>
+    `;
+
+    return svg`
+      <g "" id="icongrp-${this.toolId}" class="${classMap(this.classes.tool)}"
         @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])} >
 
         ${this._renderIcon()}
@@ -3221,7 +3332,7 @@ class BadgeTool extends BaseTool {
 
     return svg`
       <g id="badge-${this.toolId}" class="${classMap(this.classes.tool)}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderBadge()}
       </g>
     `;
@@ -3364,7 +3475,7 @@ class EntityStateTool extends BaseTool {
     if (true || (this._card._computeDomain(this._card.entities[this.config.entity_index].entity_id) == 'sensor')) {
       return svg`
     <svg overflow="visible" id="state-${this.toolId}" class="${classMap(this.classes.tool)}">
-        <text @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        <text @click=${e => this.handleTapEvent(e, this.config)}>
           ${this._renderState()}
           ${this._renderUom()}
         </text>
@@ -3375,7 +3486,7 @@ class EntityStateTool extends BaseTool {
       // Still check for using an attribute value for the domain...
       return svg`
         <text 
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
           <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}" dx="${dx}em" dy="${dy}em"
             style="${configStyleStr}">
             ${state}</tspan>
@@ -3485,7 +3596,7 @@ class EntityNameTool extends BaseTool {
 
     return svg`
       <g id="name-${this.toolId}" class="${classMap(this.classes.tool)}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderEntityName()}
       </g>
     `;
@@ -3586,7 +3697,7 @@ class EntityAreaTool extends BaseTool {
 
     return svg`
       <g id="area-${this.toolId}" class="${classMap(this.classes.tool)}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderEntityArea()}
       </g>
     `;
@@ -3616,7 +3727,7 @@ class TextTool extends BaseTool {
         },
         text: {
           "sak-text__text": true,
-          "hover": true,
+          "hover": false,
         }
       },
       styles: {
@@ -3629,6 +3740,7 @@ class TextTool extends BaseTool {
 
     super(argToolset, Merge.mergeDeep(DEFAULT_TEXT_CONFIG, argConfig), argPos);
 
+    this.EnableHoverForInteraction();
     this.text = this.config.text;
     this.styles.text = {};
     if (this.dev.debug) console.log('TextTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
@@ -3664,13 +3776,12 @@ class TextTool extends BaseTool {
   *
   */
   render() {
-
-    return svg`
-      <g id="text-${this.toolId}" class="${classMap(this.classes.tool)}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
-        ${this._renderText()}
-      </g>
-    `;
+      return svg`
+        <g id="text-${this.toolId}" class="${classMap(this.classes.tool)}"
+          @click=${e => this.handleTapEvent(e, this.config)}>
+          ${this._renderText()}
+        </g>
+      `;
 
   }
 } // END of class
@@ -3965,7 +4076,7 @@ class HorseshoeTool extends BaseTool {
 
     return svg`
       <g "" id="horseshoe-${this.toolId}" class="horseshoe__group-outer"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderHorseShoe()}
       </g>
 
@@ -4204,7 +4315,7 @@ class SparklineBarChartTool extends BaseTool {
 
     return svg`
       <g id="barchart-${this.toolId}" class="${classMap(this.classes.tool)}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])}>
+        @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderBars()}
       </g>
     `;
@@ -5680,14 +5791,14 @@ class SwissArmyKnifeCard extends LitElement {
     const newConfig = Merge.mergeDeep(config);
     
     // Set default tap_action, if none given for an entity
-    if (newConfig.entities) {
-      newConfig.entities.forEach((entity, i) => {
-        if (!entity.tap_action) {
-          newConfig.entities[i].tap_action = {action: 'more-info'};
-        }
-      }
-      );
-    }
+    // if (newConfig.entities) {
+      // newConfig.entities.forEach((entity, i) => {
+        // if (!entity.tap_action) {
+          // newConfig.entities[i].tap_action = {action: 'more-info'};
+        // }
+      // }
+      // );
+    // }
 
     // #TODO must be removed after removal of segmented arcs part below
     this.config = newConfig;
@@ -5729,15 +5840,15 @@ class SwissArmyKnifeCard extends LitElement {
     var cfgobj = JSON.parse(cfg);
 
     // Set default tap_action, if none given for an entity
-    if (this.config.entities) {
-      this.config.entities.forEach((entity, i) => {
-        if (!entity.tap_action) {
-          this.config.entities[i].tap_action = {action: 'more-info', haptic: light};
-          this.config.entities[i].hold_action = {action: 'more-info', haptic: success};
-        }
-      }
-      );
-    }
+    // if (this.config.entities) {
+      // this.config.entities.forEach((entity, i) => {
+        // if (!entity.tap_action) {
+          // this.config.entities[i].tap_action = {action: 'more-info', haptic: light};
+          // this.config.entities[i].hold_action = {action: 'more-info', haptic: success};
+        // }
+      // }
+      // );
+    // }
     
     this.config.layout.toolsets.map((toolsetCfg, toolidx) => {
 
@@ -6452,9 +6563,10 @@ class SwissArmyKnifeCard extends LitElement {
   * In that case svg icon should be fetched too again. Check for cache/value??
   * entityAnimation.icon orso...
   */
-  _buildIcon(entityState, entityConfig) {
+  _buildIcon(entityState, entityConfig, toolIcon) {
     
-    var thisIcon = entityConfig.icon
+    var thisIcon = toolIcon
+      || entityConfig.icon
       || entityState.attributes.icon;
       
     if (thisIcon) return (thisIcon);

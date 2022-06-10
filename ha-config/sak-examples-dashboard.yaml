@@ -20,7 +20,7 @@ sak_sys_templates:
 
 # The user templates are created by the user, and won't be updated 
 # with a new release. If changes are required, then the user has to
-# upate the template configuration files.
+# update the template configuration files.
 sak_user_templates:
   !include lovelace/sak_templates/sak_templates.yaml
 
@@ -28,6 +28,9 @@ title: Swiss Army Knife Examples
 views:
 
   # Swiss Army Knife example views...
+  #
+  # Each example is manually included, so you can select just a
+  # few for testing and integration...
   - !include lovelace/views/sak-example-views/view-sake1.yml
   - !include lovelace/views/sak-example-views/view-sake1-m3.yml
   - !include lovelace/views/sak-example-views/view-sake2.yml

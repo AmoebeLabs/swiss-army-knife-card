@@ -12,21 +12,10 @@ card:
       name: '[[name]]'
       icon: '[[icon]]'
       area: '[[area]]'
-      tap_action:
-        action: call-service
-        service: light.toggle
-        service_data: { "entity_id" : "[[entity]]" }
-        haptic: light
-      hold_action:
-        action: more-info
-        haptic: success
 
     - entity: '[[entity]]'
       attribute: brightness
       unit_of_measurement: "%"
-      tap_action:
-        action: more-info
-        haptic: success
 
   aspectratio: 1/1
   dev:
@@ -40,7 +29,7 @@ card:
         filter: url(#nm-1)
     toolsets:
       # ==============================================================================
-      # Using Neumorphic ligth button design
+      # Using Neumorphic light button design
       - toolset: light-button
         template:
           name: toolset_light_button_nm

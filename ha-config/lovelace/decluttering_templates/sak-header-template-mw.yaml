@@ -34,9 +34,6 @@ default:
 card:
   type: 'custom:swiss-army-knife-card'
 
-  # entities: 
-    # - entity: sun.sun
-
   aspectratio: 1/0.05
   dev:
     debug: false
@@ -46,7 +43,6 @@ card:
   layout:
     toolsets:
       # ==============================================================================
-      # Using Neumorphic ligth button design
       - toolset: header
         position:
           cx: 2.5

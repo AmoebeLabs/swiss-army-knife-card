@@ -32,12 +32,6 @@ toolset_segarc_icon_state:
       cx: 25
       cy: 50
       scale: 1
-    # colorswatch is just for testing / experimenting. Not yet implemented!!
-    # colorswatch:
-      # - template:
-          # name: toolset_light_button
-      # - template:
-          # name: color_palette_default_gradient_white_orange
     tools:
       - type: circle
         id: 10

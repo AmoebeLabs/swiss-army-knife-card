@@ -1,7 +1,7 @@
 #
 # View			: view-sake3
 # Project   : Home Assistant / Swiss Army Knife custom card.
-# Repository: https://github.com/AmoebeLabs/
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
 #
 # Author    : Mars @ AmoebeLabs.com
 # 
@@ -178,7 +178,6 @@ cards:
     - type: custom:decluttering-card
       template: header_template
       variables:
-        # - content: '#### Luchtdruk'
         - content: 'Luchtdruk'
         - font_color: var(--secondary-text-color)
         - font_size: 3em
@@ -214,7 +213,6 @@ cards:
     - type: custom:decluttering-card
       template: header_template
       variables:
-        # - content: '#### Lichtwaarde'
         - content: 'Lichtwaarde'
         - font_color: var(--secondary-text-color)
         - font_size: 3em

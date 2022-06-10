@@ -1,7 +1,7 @@
 #
 # View			: view-sake8
 # Project   : Home Assistant / Swiss Army Knife custom card.
-# Repository: https://github.com/AmoebeLabs/
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
 #
 # Author    : Mars @ AmoebeLabs.com
 # 
@@ -377,19 +377,10 @@ cards:
                         classes:
                           rectex:
                             sak-alert--active: true
-                        # styles:
-                          # rectex:
-                            # fill: var(--md-bg-color)
-                            # opacity: 0.7
-                            # animation: flash 2s ease-in-out both
                       - state: 'off'
                         classes:
                           rectex:
                             sak-alert--clear: true
-                    # styles:
-                      # rectex:
-                        # opacity: 0
-                        # fill: none
 
                   - type: icon
                     position:
@@ -410,8 +401,6 @@ cards:
                       - state: 'on'
                         styles:
                           icon:
-                            # fill: 'darkorange'
-                            # color: 'darkorange'
                             fill: var(--md-fg-color--alert)
                             color: var(--md-fg-color--alert)
                             animation: jello 2s ease-in-out both
