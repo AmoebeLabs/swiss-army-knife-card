@@ -18,7 +18,7 @@
 *
 * Notes:
 * - This is currently a single file, and should be split into smaller, more
-*   manageable classes ;-)
+*   manageable files with 1 file per class ;-)
 *
 *******************************************************************************
 */
@@ -789,7 +789,7 @@ class BaseTool {
       // #TODO:
       // Default is item.state. But can also be item.custom_field[x], so you can compare with custom value
       // Should index then not with item.state but item[custom_field[x]].toLowerCase() or similar...
-      // Or above, with the mapping of tghe item using the name?????
+      // Or above, with the mapping of the item using the name?????
 
       // Assume equals operator if not defined...
       var operator = item.operator ? item.operator : "==";
@@ -847,7 +847,6 @@ class BaseTool {
   {
     const hover = (this.config.hasOwnProperty('entity_index') || (this.config?.user_actions?.tap_action));
     this.classes.tool.hover = hover;
-    // this.classes.tool["hover"] = hover;
   }
 
  /*******************************************************************************
@@ -999,11 +998,13 @@ class BaseTool {
   *
   */
 
-  _processTapEvent(node, hass, config, actionConfig, entityId) {
+  _processTapEvent(node, hass, config, actionConfig, entityId, parameterValue) {
     let e;
 
     if (!actionConfig) return;
     fireEvent(node, "haptic", actionConfig.haptic || 'medium');
+
+    console.log("In _processTapEvent", actionConfig, entityId, parameterValue);
 
     if (this.dev.debug) console.log('_processTapEvent', config, actionConfig, entityId);
     for (let i = 0; i < actionConfig.actions.length; i++) {
@@ -1033,6 +1034,10 @@ class BaseTool {
           if (!serviceData.entity_id) {
             serviceData.entity_id = entityId;
           };
+          // If parameter defined, add this one with the parameterValue
+          if (actionConfig.actions[i].parameter) {
+            serviceData[actionConfig.actions[i].parameter] = parameterValue;
+          }
           hass.callService(domain, service, serviceData);
         }
       }
@@ -1076,7 +1081,8 @@ class BaseTool {
                           this._card._hass,
                           this.config,
                           tapConfig,
-                          this._card.config.entities[argToolConfig.entity_index]?.entity);
+                          this._card.config.entities[argToolConfig.entity_index]?.entity,
+                          undefined);
   }
 
 } //-- CLASS
@@ -1264,7 +1270,7 @@ class RangeSliderTool extends BaseTool {
     this.svg.scale.step = this.config.scale.step;
 
     // Init slider update interval
-    this.config.slider_action.update_interval = this.config.slider_action.update_interval || 0;
+    // this.config.slider_action.update_interval = this.config.slider_action.update_interval || 0;
 
     if (this.dev.debug) console.log('RangeSliderTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -1412,25 +1418,57 @@ class RangeSliderTool extends BaseTool {
     return p;
   }
 
-  callService()
+  callDragService()
   {
     if (typeof this.labelValue2 == 'undefined') return;
     
     if (this.labelValuePrev != this.labelValue2) {
       this.labelValuePrev = this.labelValue2;
 
-      const [domain, service] = this.config.slider_action.service.split('.', 2);
-      // var serviceData = { ...this.config.slider_action.service };
-      // serviceData = {};
-      var serviceData = {};
-      // serviceData[this.config.slider_action.parameter] = this._stateValue;
-      serviceData[this.config.slider_action.parameter] = this.labelValue2;
-      serviceData.entity_id = this.config.slider_action.entity_id || this._card.entities[this.config.entity_index].entity_id;
-      this._card._hass.callService(domain, service, serviceData);
-      fireEvent(window, 'haptic', 'selection');
+    this._processTapEvent(this._card,
+                          this._card._hass,
+                          this.config,
+                          this.config.user_actions.tap_action,
+                          this._card.config.entities[this.config.entity_index]?.entity,
+                          this.labelValue2);
+
+      // const [domain, service] = this.config.slider_action.service.split('.', 2);
+      // var serviceData = {};
+      // // serviceData[this.config.slider_action.parameter] = this._stateValue;
+      // serviceData[this.config.slider_action.parameter] = this.labelValue2;
+      // serviceData.entity_id = this.config.slider_action.entity_id || this._card.entities[this.config.entity_index].entity_id;
+      // this._card._hass.callService(domain, service, serviceData);
+      // fireEvent(window, 'haptic', 'selection');
       
     }
-    if (this.dragging) this.timeOutId = setTimeout(() => this.callService(), 250);
+    if (this.dragging)
+      this.timeOutId = setTimeout(() => this.callDragService(), this.config.user_actions.drag_action.update_interval);
+  }
+
+  callTapService()
+  {
+    if (typeof this.labelValue2 == 'undefined') return;
+    
+    if (this.labelValuePrev != this.labelValue2) {
+      this.labelValuePrev = this.labelValue2;
+
+    this._processTapEvent(this._card,
+                          this._card._hass,
+                          this.config,
+                          this.config.user_actions?.tap_action,
+                          this._card.config.entities[this.config.entity_index]?.entity,
+                          this.labelValue2);
+                          
+      // const [domain, service] = this.config.user_actions.tap_actionslider_action.service.split('.', 2);
+      // var serviceData = {};
+      // // serviceData[this.config.slider_action.parameter] = this._stateValue;
+      // serviceData[this.config.slider_action.parameter] = this.labelValue2;
+      // serviceData.entity_id = this.config.slider_action.entity_id || this._card.entities[this.config.entity_index].entity_id;
+      // this._card._hass.callService(domain, service, serviceData);
+      // fireEvent(window, 'haptic', 'selection');
+      
+    }
+    // if (this.dragging) this.timeOutId = setTimeout(() => this.callService(), 250);
   }
   
   firstUpdated(changedProperties)
@@ -1480,11 +1518,17 @@ class RangeSliderTool extends BaseTool {
         return;
       }
       
+      // User is dragging the thumb of the slider!
       this.dragging = true;
-      if (this.config.slider_action.update_interval > 0) {
-        this.timeOutId = setTimeout(() => this.callService(), this.config.slider_action.update_interval);
-      } else {
-        this.timeOutId = null;
+      
+      // Check for drag_action. If none specified, or update_interval = 0, don't update while dragging...
+      
+      if ((this.config.user_actions?.drag_action) && (this.config.user_actions?.drag_action.update_interval)) {
+        if (this.config.user_actions.drag_action.update_interval > 0) {
+          this.timeOutId = setTimeout(() => this.callDragService(), this.config.user_actions.drag_action.update_interval);
+        } else {
+          this.timeOutId = null;
+        }
       }
       this.m = this.oMousePosSVG(e);
       
@@ -1517,7 +1561,7 @@ class RangeSliderTool extends BaseTool {
       // }
       if (this.dev.debug) console.log('pointerUP');
       Frame2.call(this);
-      this.callService();
+      this.callTapService();
     }, {capture: true, passive: false});
 
     this.elements.svg.addEventListener("pointermove", e => {
@@ -2985,6 +3029,32 @@ class EntityIconTool extends BaseTool {
   }
 
  /*******************************************************************************
+  * EntityIconTool::_buildIcon()
+  *
+  * Summary.
+  * Builds the Icon specification name.
+  *
+  * #TODO:
+  * Add animation state for icon?? So icon can be changed by animation.
+  * In that case svg icon should be fetched too again. Check for cache/value??
+  * entityAnimation.icon orso...
+  */
+  _buildIcon(entityState, entityConfig, toolIcon) {
+    
+    var thisIcon = toolIcon
+      || entityConfig.icon
+      || entityState.attributes.icon;
+      
+    if (thisIcon) return (thisIcon);
+    
+    // 2021.11.21
+    // If not specified by user, use state and domain icons defined by card helper.
+    
+    return (stateIcon(entityState));
+  }
+
+
+ /*******************************************************************************
   * EntityIconTool::_renderIcon()
   *
   * Summary.
@@ -2994,20 +3064,13 @@ class EntityIconTool extends BaseTool {
   * THIS IS THE ONE!!!!
   */
 
-/*  _iconSvgTimeout() {
-    this._card.requestUpdate();
-    this.iconTimeoutPending = false;
-  }
-*/
   _renderIcon() {
 
     this.MergeAnimationClassIfChanged();
     this.MergeAnimationStyleIfChanged();
     this.MergeColorFromState(this.styles.icon);
 
-    // const icon = this._card._buildIcon(
-      // this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
-    const icon = this._card._buildIcon(
+    const icon = this._buildIcon(
       this._card.entities[this.config.entity_index],
       this.config.hasOwnProperty('entity_index') ? this._card.config.entities[this.config.entity_index] : undefined,
       this.config.icon);
@@ -3078,7 +3141,6 @@ class EntityIconTool extends BaseTool {
       }
 
       if (!this.iconSvg) {
-        // this._card.pleaseReRender();
       } else {
         SwissArmyKnifeCard.sakIconCache[icon] = this.iconSvg;
       }
@@ -3194,14 +3256,6 @@ class EntityIconTool extends BaseTool {
     return svg`
       <g "" id="icongrp-${this.toolId}" class="${classMap(this.classes.tool)}"
         @click=${e => this.handleTapEvent(e, this.config)} >
-
-        ${this._renderIcon()}
-      </g>
-    `;
-
-    return svg`
-      <g "" id="icongrp-${this.toolId}" class="${classMap(this.classes.tool)}"
-        @click=${e => this._card.handleEvent(e, this._card.config.entities[this.config.entity_index])} >
 
         ${this._renderIcon()}
       </g>
@@ -3545,7 +3599,7 @@ class EntityNameTool extends BaseTool {
   }
 
 /*******************************************************************************
-  * _buildName()
+  * EntityNameTool::_buildName()
   *
   * Summary.
   * Builds the Name string.
@@ -3646,7 +3700,7 @@ class EntityAreaTool extends BaseTool {
   }
 
 /*******************************************************************************
-  * _buildArea()
+  * EntityAreaTool::_buildArea()
   *
   * Summary.
   * Builds the Area string.
@@ -6214,18 +6268,18 @@ class SwissArmyKnifeCard extends LitElement {
   *
   */
 
-  pleaseReRender() {
+  // pleaseReRender() {
 
     // if (this._reRenderCounter < 10) this._reRender = true;
     // console.log('pleaseRerender = ', this._reRender, this._reRenderCounter, this.toolId);
-  }
+  // }
 
-  _reRenderTimeout() {
-    this._reRenderPending = false;
-    this._reRender = false;
-    this.requestUpdate();
-    if (this.dev.debug) console.log("card::_reRenderTimeout CALLED", this.cardId, new Date().getTime());
-  }
+  // _reRenderTimeout() {
+    // this._reRenderPending = false;
+    // this._reRender = false;
+    // this.requestUpdate();
+    // if (this.dev.debug) console.log("card::_reRenderTimeout CALLED", this.cardId, new Date().getTime());
+  // }
 
  /*******************************************************************************
   * card::render()
@@ -6252,8 +6306,8 @@ class SwissArmyKnifeCard extends LitElement {
     }
 
     // NEW for rerendering icons and stuff
-    this._reRender = false;
-    this._reRenderCounter = 0;
+    // this._reRender = false;
+    // this._reRenderCounter = 0;
 
     var myHtml;
 
@@ -6279,15 +6333,15 @@ class SwissArmyKnifeCard extends LitElement {
     }
     // All cards have rendered, check if one of them needs another update in some time...
 
-    if (this._reRender) {
-      if (!this._reRenderPending) {
-        this._reRenderPending = true;
-        this._reRenderCounter++;
-        setTimeout(
-            () => this._reRenderTimeout(),
-            16*16);
-      }
-    }
+    // if (this._reRender) {
+      // if (!this._reRenderPending) {
+        // this._reRenderPending = true;
+        // this._reRenderCounter++;
+        // setTimeout(
+            // () => this._reRenderTimeout(),
+            // 16*16);
+      // }
+    // }
     if (this.dev.performance) console.timeEnd("--> "+ this.cardId + " PERFORMANCE card::render");
 
     return myHtml;
@@ -6485,100 +6539,8 @@ class SwissArmyKnifeCard extends LitElement {
     return svg`${svgItems}`;
   }
 
-
-/*******************************************************************************
-  * card::_handleClick()
-  *
-  * Summary.
-  * Processes the mouse click of the user and dispatches the event to the
-  * configure handler.
-  *
-  */
-
-  _handleClick(node, hass, config, actionConfig, entityId) {
-    let e;
-    
-    if (!actionConfig) return;
-    fireEvent(node, "haptic", actionConfig.haptic || 'medium');
-
-    if (this.dev.debug) console.log('_handleClick', config, actionConfig, entityId);
-    switch (actionConfig.action) {
-      case 'more-info': {
-        if (typeof entityId != 'undefined') {
-          e = new Event('hass-more-info', { composed: true });
-          e.detail = { entityId };
-          node.dispatchEvent(e);
-        }
-        break;
-      }
-      case 'navigate': {
-        if (!actionConfig.navigation_path) return;
-        window.history.pushState(null, '', actionConfig.navigation_path);
-        e = new Event('location-changed', { composed: true });
-        e.detail = { replace: false };
-        window.dispatchEvent(e);
-        break;
-      }
-      case 'call-service': {
-        if (!actionConfig.service) return;
-        const [domain, service] = actionConfig.service.split('.', 2);
-        const serviceData = { ...actionConfig.service_data };
-        hass.callService(domain, service, serviceData);
-      }
-    }
-  }
-
-/*******************************************************************************
-  * card::handlePopup()
-  * card::handleEvent()
-  *
-  * Summary.
-  * Handles the first part of mouse click processing.
-  * It stops propagation to the parent and processes the event.
-  *
-  * The action can be configured per entity. Look-up the entity, and handle the click
-  * event for further processing.
-  *
-  * Credits:
-  * Almost all credits to the mini-graph-card for this function.
-  *
-  */
-
-  handleEvent(argEvent, argEntityConfig) {
-    argEvent.stopPropagation();
-    argEvent.preventDefault();
-
-    this._handleClick(this, this._hass, this.config, argEntityConfig?.tap_action, argEntityConfig?.entity);
-  }
-
-
-/*******************************************************************************
-  * _buildIcon()
-  *
-  * Summary.
-  * Builds the Icon specification name.
-  *
-  * #TODO:
-  * Add animation state for icon?? So icon can be changed by animation.
-  * In that case svg icon should be fetched too again. Check for cache/value??
-  * entityAnimation.icon orso...
-  */
-  _buildIcon(entityState, entityConfig, toolIcon) {
-    
-    var thisIcon = toolIcon
-      || entityConfig.icon
-      || entityState.attributes.icon;
-      
-    if (thisIcon) return (thisIcon);
-    
-    // 2021.11.21
-    // If not specified by user, use state and domain icons defined by card helper.
-    
-    return (stateIcon(entityState));
-  }
-
  /*******************************************************************************
-  * _buildUom()
+  * card::_buildUom()
   *
   * Summary.
   * Builds the Unit of Measurement string.
@@ -6601,7 +6563,7 @@ class SwissArmyKnifeCard extends LitElement {
   }
   
 /*******************************************************************************
-  * _buildState()
+  * card::_buildState()
   *
   * Summary.
   * Builds the State string.
@@ -6634,7 +6596,7 @@ class SwissArmyKnifeCard extends LitElement {
 
 
 /*******************************************************************************
-  * _buildSecondaryInfo()
+  * card::_buildSecondaryInfo()
   *
   * Summary.
   * Builds the SecondaryInfo string.
@@ -6708,7 +6670,7 @@ class SwissArmyKnifeCard extends LitElement {
   }
 
  /*******************************************************************************
-  * _computeState()
+  * card::_computeState()
   *
   * Summary.
   *
@@ -6729,12 +6691,12 @@ class SwissArmyKnifeCard extends LitElement {
   }
 
  /*******************************************************************************
-  * _calculateColor()
+  * card::_calculateColor()
   *
   * Summary.
   *
   * #TODO:
-  * replace by TinyColor library? Is that possible/feasable??
+  * replace by TinyColor library? Is that possible/feasible??
   *
   */
 
@@ -6766,12 +6728,12 @@ class SwissArmyKnifeCard extends LitElement {
   }
 
 /*******************************************************************************
-  * _calculateColor2()
+  * card::_calculateColor2()
   *
   * Summary.
   *
   * #TODO:
-  * replace by TinyColor library? Is that possible/feasable??
+  * replace by TinyColor library? Is that possible/feasible??
   *
   */
 
@@ -6804,7 +6766,7 @@ class SwissArmyKnifeCard extends LitElement {
   }
 
  /*******************************************************************************
-  * _calculateValueBetween()
+  * card::_calculateValueBetween()
   *
   * Summary.
   * Clips the argValue value between argStart and argEnd, and returns the between value ;-)
@@ -6816,11 +6778,11 @@ class SwissArmyKnifeCard extends LitElement {
   }
 
  /*******************************************************************************
-  * _getColorVariable()
+  * card::_getColorVariable()
   *
   * Summary.
   * Get value of CSS color variable, specified as var(--color-value)
-  * These variables are defined in the lovelace element so it appears...
+  * These variables are defined in the Lovelace element so it appears...
   *
   */
 
@@ -6832,7 +6794,7 @@ class SwissArmyKnifeCard extends LitElement {
   }
 
  /*******************************************************************************
-  * _getGradientValue()
+  * card::_getGradientValue()
   *
   * Summary.
   * Get gradient value of color as a result of a color_stop.
@@ -6887,7 +6849,7 @@ class SwissArmyKnifeCard extends LitElement {
   }
 
  /*******************************************************************************
-  * _colorToRGBA()
+  * card::_colorToRGBA()
   *
   * Summary.
   * Get RGBA color value of argColor.
