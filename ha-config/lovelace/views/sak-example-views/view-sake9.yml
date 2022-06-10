@@ -1,7 +1,7 @@
 #
-# View			: view-sake8
+# View			: view-sake9
 # Project   : Home Assistant / Swiss Army Knife custom card.
-# Repository: https://github.com/AmoebeLabs/
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
 #
 # Author    : Mars @ AmoebeLabs.com
 # 
@@ -406,20 +406,10 @@ cards:
                         classes:
                           rectex:
                             sak-alert--active: true
-                        # styles:
-                          # rectex:
-                            # fill: var(--md-bg-color)
-                            # opacity: 0.7
-                            # animation: flash 2s ease-in-out both
                       - state: 'off'
                         classes:
                           rectex:
                             sak-alert--clear: true
-                    # styles:
-                      # rectex:
-                        # opacity: 0
-                        # fill: none
-
                   - type: icon
                     position:
                       cx: 22.5
@@ -439,8 +429,6 @@ cards:
                       - state: 'on'
                         styles:
                           icon:
-                            # fill: 'darkorange'
-                            # color: 'darkorange'
                             fill: var(--md-fg-color--alert)
                             color: var(--md-fg-color--alert)
                             animation: jello 2s ease-in-out both
@@ -482,10 +470,8 @@ cards:
                         text-anchor: start
                         font-size: 8em
                         font-weight: 700
-                        # fill: var(--primary-text-color)
                         fill: var(--md-fg-color)
                       uom:
-                        # fill: var(--primary-text-color)
                         fill: var(--md-fg-color)
                         font-weight: 700
 
@@ -570,17 +556,6 @@ cards:
                         top: 0
                         bottom: 2
                     entity_index: 0
-                    # show:
-                      # style: colorstops
-                    # colorstops:
-                      # fill: true
-                      # colors:
-                        # 0: '#A8E05F'
-                        # 51: '#FDD74B'
-                        # 101: '#FE9B57'
-                        # 151: '#FE6A69'
-                        # 201: '#A97ABC'
-                        # 301: '#A87383'
                     styles:
                       rectex:
                         fill: yellow
@@ -647,11 +622,6 @@ cards:
               name: Duo Rechts
               area: Woonkamer
               icon: mdi:floor-lamp-dual
-              tap_action:
-                action: call-service
-                service: light.toggle
-                service_data: { "entity_id" : "light.livingroom_light_duo_right_light" }
-                haptic: light
 
             - entity: light.livingroom_light_duo_right_light
               name: Duo Rechts
@@ -659,9 +629,6 @@ cards:
               icon: mdi:floor-lamp-dual
               attribute: brightness
               unit_of_measurement: "%"
-              tap_action:
-                action: more-info
-                haptic: success
 
           # Define aspect ratio as square
           aspectratio: 1/1
@@ -714,6 +681,12 @@ cards:
                         top: 5
                         bottom: 0
                     entity_index: 0
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.toggle
                     styles:
                       rectex:
                         fill: var(--primary-text-color)
@@ -728,17 +701,6 @@ cards:
                         all: 0
                         top_left: 2
                     entity_index: 0
-                    # show:
-                      # style: colorstops
-                    # colorstops:
-                      # fill: true
-                      # colors:
-                        # 0: '#A8E05F'
-                        # 51: '#FDD74B'
-                        # 101: '#FE9B57'
-                        # 151: '#FE6A69'
-                        # 201: '#A97ABC'
-                        # 301: '#A87383'
                     styles:
                       rectex:
                         fill: grey
@@ -758,45 +720,10 @@ cards:
                         classes:
                           rectex:
                             sak-switch--on: true
-                        # styles:
-                          # rectex:
-                            # fill: var(--md-bg-color)
-                            # opacity: 0.7
-                            # animation: flash 2s ease-in-out both
                       - state: 'off'
                         classes:
                           rectex:
                             sak-switch--off: true
-                    # show:
-                      # style: colorstops
-                    # colorstops:
-                      # fill: true
-                      # colors:
-                        # 0: '#A8E05F'
-                        # 51: '#FDD74B'
-                        # 101: '#FE9B57'
-                        # 151: '#FE6A69'
-                        # 201: '#A97ABC'
-                        # 301: '#A87383'
-                    # styles:
-                      # rectex:
-                        # fill: grey
-
-                  # - type: state
-                    # position:
-                      # cx: 20
-                      # cy: 20
-                    # entity_index: 0
-                    # styles:
-                      # state:
-                        # text-anchor: start
-                        # font-size: 16em
-                        # font-weight: 700
-                        # fill: var(--primary-background-color)
-                      # uom:
-                        # fill: var(--primary-background-color)
-                        # font-weight: 700
-
                   - type: icon
                     position:
                       cx: 30
@@ -804,6 +731,12 @@ cards:
                       align: center
                       icon_size: 22.5
                     entity_index: 0
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.toggle
                     styles:
                       icon:
                         fill: var(--primary-background-color)
@@ -875,9 +808,13 @@ cards:
                           if (typeof(state) === 'undefined') return undefined;
                           return '%';
                         ]]]
-                    slider_action:
-                      service: light.turn_on
-                      parameter: brightness_pct
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
                     scale:
                       min: 1
                       max: 100
@@ -1051,10 +988,8 @@ cards:
                         text-anchor: start
                         font-size: 8em
                         font-weight: 700
-                        # fill: var(--primary-text-color)
                         fill: var(--md-fg-color)
                       uom:
-                        # fill: var(--primary-text-color)
                         fill: var(--md-fg-color)
                         font-weight: 700
 
@@ -1105,7 +1040,6 @@ cards:
                       rectex:
                         stroke-width: 15
                         stroke: lightgrey
-                        # stroke: url(#sak-light-color-temperature-gradient)
                         fill: var(--primary-text-color)
 
                   - type: rectex
@@ -1197,11 +1131,6 @@ cards:
               name: Duo Rechts
               area: Woonkamer
               icon: mdi:floor-lamp-dual
-              tap_action:
-                action: call-service
-                service: light.toggle
-                service_data: { "entity_id" : "light.livingroom_light_duo_right_light" }
-                haptic: light
 
             - entity: light.livingroom_light_duo_right_light
               name: Duo Rechts
@@ -1209,9 +1138,6 @@ cards:
               icon: mdi:floor-lamp-dual
               attribute: brightness
               unit_of_measurement: "%"
-              tap_action:
-                action: more-info
-                haptic: success
 
           # Define aspect ratio as square
           aspectratio: 1/1
@@ -1264,6 +1190,12 @@ cards:
                         all: 0
                         bottom_right: 10
                     entity_index: 0
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.toggle
                     animations:
                       - state: 'on'
                         classes:
@@ -1285,6 +1217,12 @@ cards:
                       align: center
                       icon_size: 22.5
                     entity_index: 0
+                    user_actions:
+                      tap_action:
+                        haptic: success
+                        actions:
+                          - action: call-service
+                            service: light.toggle
                     styles:
                       icon:
                         fill: var(--primary-background-color)
@@ -1372,9 +1310,13 @@ cards:
                           if (typeof(state) === 'undefined') return undefined;
                           return '%';
                         ]]]
-                    slider_action:
-                      service: light.turn_on
-                      parameter: brightness_pct
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
                     scale:
                       min: 1
                       max: 100

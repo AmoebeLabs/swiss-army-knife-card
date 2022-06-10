@@ -71,7 +71,6 @@ toolset_light_button:
                 stroke: var(--theme-gradient-color-01)
                 fill: var(--theme-gradient-color-06)
                 fill-opacity: 0.9
-                # transform-origin: top
                 animation: jello 1s ease-in-out both
                 # animation: pulse 1s ease-in-out both
                 # animation: tada 1s ease-in-out both
@@ -177,9 +176,6 @@ toolset_light_button:
             ]]]
           unit: '%'
         entity_index: '[[entity_brightness]]'
-        # Animation can run on the entities 'state', or on the custom_value.
-        # so - state: 'on', or for example - custom_value: '10%' in this case for light.
-        # Something must be done still, to make sure that presentation is with uom formatted, so must know uom.
         animations:
           - state: 'on'
             entity_index: '[[entity_light]]'

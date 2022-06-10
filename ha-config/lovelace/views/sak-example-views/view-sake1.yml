@@ -1,7 +1,7 @@
 #
 # View			: view-sake1
 # Project   : Home Assistant / Swiss Army Knife custom card.
-# Repository: https://github.com/AmoebeLabs/
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
 #
 # Author    : Mars @ AmoebeLabs.com
 # 
@@ -463,12 +463,12 @@ cards:
                       width: 70
                     style: 'images'
                     images:
-                      - face1: /local/images/ic-face-1.svg
-                      - face2: /local/images/ic-face-2.svg
-                      - face3: /local/images/ic-face-3.svg
-                      - face4: /local/images/ic-face-4.svg
-                      - face5: /local/images/ic-face-5.svg
-                      - face6: /local/images/ic-face-6.svg
+                      - face1: /local/images/airvisual/ic-face-1.svg
+                      - face2: /local/images/airvisual/ic-face-2.svg
+                      - face3: /local/images/airvisual/ic-face-3.svg
+                      - face4: /local/images/airvisual/ic-face-4.svg
+                      - face5: /local/images/airvisual/ic-face-5.svg
+                      - face6: /local/images/airvisual/ic-face-6.svg
                     animations:
                       - state: '50'
                         operator: <=
@@ -723,7 +723,6 @@ cards:
             toolsets:
               # ==============================================================================
               - toolset: card-title
-                # name: card-title
                 position:
                   cx: 5
                   cy: 5
@@ -762,7 +761,6 @@ cards:
                         # alignment-baseline: central
 
               - toolset: airvisual
-                # name: airvisual
                 position:
                   cx: 173.5
                   cy: 60
@@ -839,7 +837,6 @@ cards:
                         alignment-baseline: central
 
               - toolset: weather-type
-                  # name: weather-type
                 position:
                   cx: 26.5
                   cy: 60
@@ -905,7 +902,6 @@ cards:
                         filter: url(#is-1)
                         
               - toolset: weather-temperature
-                # name: weather-temperature
                 position:
                   cx: 75.5
                   cy: 60
@@ -986,7 +982,6 @@ cards:
                         alignment-baseline: central
 
               - toolset: weather-humidity
-                # name: weather-humidity
                 position:
                   cx: 124.5
                   cy: 60
@@ -1065,7 +1060,6 @@ cards:
                         text-anchor: middle
 
               - toolset: weather-line-1
-                # name: weather-line-1
                 position:
                   cx: 100
                   # cy: 115
@@ -1084,7 +1078,6 @@ cards:
                         stroke-width: 5
                         
               - toolset: weather-pressure
-                # name: weather-pressure
                 position:
                   cx: 30
                   cy: 132.5
@@ -1115,7 +1108,6 @@ cards:
                         opacity: 0.6
 
               - toolset: weather-wind
-                # name: weather-wind
                 position:
                   cx: 30
                   cy: 150
@@ -1169,7 +1161,6 @@ cards:
                         opacity: 0.6
 
               - toolset: weather-sunset-up
-                # name: weather-sunset-up
                 position:
                   cx: 170
                   cy: 132.5
@@ -1206,7 +1197,6 @@ cards:
                         opacity: 0.6
 
               - toolset: weather-sunset-down
-                # name: weather-sunset-down
                 position:
                   cx: 170
                   cy: 150
@@ -1243,7 +1233,6 @@ cards:
                         opacity: 0.6
 
               - toolset: weather-line-2
-                # name: weather-line-2
                 position:
                   cx: 100
                   cy: 132.5
@@ -1261,7 +1250,6 @@ cards:
                         stroke-width: 5
 
               - toolset: weather-forecast-0
-                # name: weather-forecast-0
                 position:
                   cx: 22
                   cy: 190
@@ -1385,7 +1373,6 @@ cards:
                         text-anchor: middle
 
               - toolset: weather-forecast-1
-                # name: weather-forecast-1
                 position:
                   cx: 61
                   cy: 190
@@ -1508,7 +1495,6 @@ cards:
                         text-anchor: middle
 
               - toolset: weather-forecast-2
-                # name: weather-forecast-2
                 position:
                   cx: 100
                   cy: 190
@@ -1631,7 +1617,6 @@ cards:
                         text-anchor: middle
 
               - toolset: weather-forecast-3
-                # name: weather-forecast-3
                 position:
                   cx: 139
                   cy: 190
@@ -1754,7 +1739,6 @@ cards:
                         text-anchor: middle
 
               - toolset: weather-forecast-4
-                # name: weather-forecast-4
                 position:
                   cx: 178
                   cy: 190

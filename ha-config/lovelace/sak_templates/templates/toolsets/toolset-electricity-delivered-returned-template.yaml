@@ -43,7 +43,7 @@ toolset_electricity_delivered_returned:
           radius: 18
         scale:
           min: 0                    # From 0 kW
-          max: 2.5                  # to 2 kW
+          max: 2.5                  # to 2.5 kW
           width: 2
           offset: 1.75
         show:
@@ -81,7 +81,6 @@ toolset_electricity_delivered_returned:
             text-anchor: middle
             font-size: 9em
             fill: var(--primary-text-color)
-            # fill: var(--secondary-text-color)
             opacity: '[[opacity]]'
             font-weight: bold
 

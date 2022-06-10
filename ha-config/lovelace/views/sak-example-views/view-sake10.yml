@@ -1,7 +1,7 @@
 #
-# View			: view-sake10
+# View			: view-sake10.yml
 # Project   : Home Assistant / Swiss Army Knife custom card.
-# Repository: https://github.com/AmoebeLabs/
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
 #
 # Author    : Mars @ AmoebeLabs.com
 # 
@@ -9,8 +9,10 @@
 #
 # -----
 # Description:
-# SAK Example #10. Some colorful square visualisation cards.
-# Again.. But now using classes and showing switches/lights etc.
+# SAK Example #10. Some colorful square visualization cards.
+# 
+# Documentation:
+# - https://swiss-army-knife.docs.amoebelabs.com/examples/example-10/
 #
 # Refs:
 #   
@@ -700,48 +702,6 @@ cards:
                         201: '#A97ABC'
                         301: '#A87383'
 
-                    csnew:
-                      # fill: true                # Using colorstops settings for now
-                      # stroke: true
-                      colors:
-                        - stop: 0                 # The stop
-                          styles:                 # Styles / Classes
-                            rectex:                  # The part
-                              fill: '#A8E05F'
-                              stroke: black
-                        - stop: 51
-                          styles:
-                            rectex:
-                              fill: '#FDD74B'
-                              stroke: red
-                              animation: flash 2s ease-in-out 5;
-                        - stop: 101
-                          styles:
-                            rectex:
-                              fill: '#FE9B57'
-                              stroke: green
-                        - stop: 151
-                          styles:
-                            rectex:
-                              fill: '#FE6A69'
-                              stroke: blue
-                        - stop: 201
-                          styles:
-                            rectex:
-                              fill: '#A97ABC'
-                              stroke: yellow
-                        - stop: 301
-                          styles:
-                            rectex:
-                              fill: '#A87383'    
-                              stroke: orange
-                    styles:
-                      rectex:
-                        fill: grey
-                        opacity: 1
-                        stroke-width: 2
-                        stroke: darkgrey
-
                   # ------------------------------------------------------------
                   - type: icon
                     position:
@@ -903,11 +863,6 @@ cards:
               name: Duo Rechts
               area: Woonkamer
               icon: mdi:floor-lamp-dual
-              tap_action:
-                action: call-service
-                service: light.toggle
-                service_data: { "entity_id" : "light.livingroom_light_duo_right_light" }
-                haptic: light
 
             - entity: light.livingroom_light_duo_right_light
               name: Duo Rechts
@@ -915,9 +870,6 @@ cards:
               icon: mdi:floor-lamp-dual
               attribute: brightness
               unit_of_measurement: "%"
-              tap_action:
-                action: more-info
-                haptic: success
 
           # Define aspect ratio as square
           aspectratio: 1/1
@@ -998,6 +950,12 @@ cards:
                           icon:
                             fill: var(--primary-text-color)
                             color: var(--primary-text-color)
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.toggle
                     styles:
                       icon:
                         fill: var(--primary-text-color)
@@ -1108,10 +1066,20 @@ cards:
                         ]]]
                     show:
                       uom: end
-                    slider_action:
-                      update_interval: 200
-                      service: light.turn_on
-                      parameter: brightness_pct
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
                     scale:
                       min: 1
                       max: 100
@@ -1144,11 +1112,6 @@ cards:
               name: Bank TV Links
               area: Woonkamer
               icon: mdi:sofa
-              tap_action:
-                action: call-service
-                service: light.toggle
-                service_data: { "entity_id" : "light.livingroom_light_couch_tv_left_light" }
-                haptic: light
 
             - entity: light.livingroom_light_couch_tv_left_light
               name: Bank TV Links
@@ -1156,9 +1119,6 @@ cards:
               icon: mdi:sofa
               attribute: brightness
               unit_of_measurement: "%"
-              tap_action:
-                action: more-info
-                haptic: success
 
           # Define aspect ratio as square
           aspectratio: 1/1
@@ -1239,6 +1199,12 @@ cards:
                           icon:
                             fill: var(--primary-text-color)
                             color: var(--primary-text-color)
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.toggle
                     styles:
                       icon:
                         fill: var(--primary-text-color)
@@ -1354,10 +1320,20 @@ cards:
                         ]]]
                     show:
                       uom: end
-                    slider_action:
-                      update_interval: 200
-                      service: light.turn_on
-                      parameter: brightness_pct
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
                     scale:
                       min: 1
                       max: 100
@@ -1390,11 +1366,6 @@ cards:
               name: Boekenkast
               area: Woonkamer
               icon: mdi:book-open-outline
-              tap_action:
-                action: call-service
-                service: light.toggle
-                service_data: { "entity_id" : "light.livingroom_light_cupboard_light" }
-                haptic: light
 
             - entity: light.livingroom_light_cupboard_light
               name: Duo Rechts
@@ -1402,9 +1373,6 @@ cards:
               icon: mdi:floor-lamp-dual
               attribute: brightness
               unit_of_measurement: "%"
-              tap_action:
-                action: more-info
-                haptic: success
 
           # Define aspect ratio as square
           aspectratio: 1/1
@@ -1488,6 +1456,12 @@ cards:
                           icon:
                             fill: var(--primary-text-color)
                             color: var(--primary-text-color)
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.toggle
                     styles:
                       icon:
                         fill: var(--primary-text-color)
@@ -1609,10 +1583,20 @@ cards:
                     show:
                       uom: none
                       active: true
-                    slider_action:
-                      update_interval: 200
-                      service: light.turn_on
-                      parameter: brightness_pct
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
                     scale:
                       min: 1
                       max: 100

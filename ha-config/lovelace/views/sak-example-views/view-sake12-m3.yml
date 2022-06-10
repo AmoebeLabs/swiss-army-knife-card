@@ -1,7 +1,7 @@
 #
 # View			: view-sake12
 # Project   : Home Assistant / Swiss Army Knife custom card.
-# Repository: https://github.com/AmoebeLabs/
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
 #
 # Author    : Mars @ AmoebeLabs.com
 # 
@@ -378,6 +378,7 @@ cards:
                         fill: none
                         stroke-width: 2em
                         opacity: 1
+                        # Circle Animations:
                         # stroke-dasharray: 120, 20
                         # animation: spin 10s linear infinite
 
@@ -460,6 +461,7 @@ cards:
                         fill: none
                         stroke-width: 2em
                         opacity: 1
+                        # Circle Animations:
                         # stroke-dasharray: 40, 20
                         # stroke-width: 6em
                         # animation: heartBeat 10s linear infinite
@@ -616,8 +618,6 @@ cards:
                     styles:
                       rectangle:
                         stroke: none
-                        # fill: var(--theme-sys-elevation-surface-neutral4)
-                        # fill: var(--theme-sys-elevation-surface-primary1)
                         fill: var(--theme-sys-color-tertiary-container)
 
               # ================================================================
@@ -636,7 +636,6 @@ cards:
                     entity_index: 3
                     styles:
                       icon:
-                        # fill: var(--primary-text-color)
                         fill: var(--theme-sys-color-on-tertiary-container)
                         # animation: spin 2s ease-in-out both infinite
 
@@ -653,11 +652,9 @@ cards:
                         text-anchor: middle
                         font-size: 18em
                         font-weight: 700
-                        # fill: var(--primary-text-color)
                         fill: var(--theme-sys-color-on-tertiary-container)
                         # animation: blinkingText 2s ease-in-out both infinite
                       uom:
-                        # fill: var(--primary-text-color)
                         fill: var(--theme-sys-color-on-tertiary-container)
                         font-weight: 700
 
@@ -684,13 +681,11 @@ cards:
                       colorlist:
                         gap: 1
                         colors:
-                          # - var(--theme-sys-palette-primary50-darken-30)
                           - var(--theme-sys-palette-tertiary45)
                     styles:
                       foreground:
                         fill: darkgrey
                       background:
-                        # fill: var(--theme-sys-elevation-surface-neutral4)
                         fill: var(--theme-sys-palette-tertiary95)
                         opacity: 1
 
@@ -710,7 +705,6 @@ cards:
                     entity_index: 4
                     styles:
                       icon:
-                        # fill: var(--primary-text-color)
                         fill: var(--theme-sys-color-on-tertiary-container)
 
                   # ------------------------------------------------------------
@@ -726,10 +720,8 @@ cards:
                         text-anchor: middle
                         font-size: 18em
                         font-weight: 700
-                        # fill: var(--primary-text-color)
                         fill: var(--theme-sys-color-on-tertiary-container)
                       uom:
-                        # fill: var(--primary-text-color)
                         fill: var(--theme-sys-color-on-tertiary-container)
                         font-weight: 700
 
@@ -761,7 +753,6 @@ cards:
                       foreground:
                         fill: darkgrey
                       background:
-                        # fill: var(--theme-sys-elevation-surface-neutral4)
                         fill: var(--theme-sys-palette-tertiary95)
                         opacity: 1
 
@@ -858,7 +849,6 @@ cards:
                     styles:
                       circle:
                         fill: none
-                        # fill: var(--theme-default-darken-20)
                         stroke: var(--primary-text-color)
                         stroke-width: 3em
                         opacity: 1
@@ -2548,24 +2538,6 @@ cards:
               
             toolsets:
               # ================================================================
-              # - toolset: line1
-                # position:
-                  # cx: 200
-                  # cy: 50
-                # tools:
-                  # # ------------------------------------------------------------
-                  # - type: line
-                    # position:
-                      # cx: 50
-                      # cy: 50
-                      # orientation: vertical
-                      # length: 50
-                    # styles:
-                      # line:
-                        # fill: var(--primary-text-color)
-                        # opacity: 0.5
-
-              # ================================================================
               - toolset: color1
                 position:
                   cx: 100
@@ -3299,6 +3271,5 @@ cards:
                       foreground:
                         fill: darkgrey
                       background:
-                        # fill: var(--primary-background-color)
                         fill: var(--theme-sys-elevation-surface-neutral4)
                         opacity: 1

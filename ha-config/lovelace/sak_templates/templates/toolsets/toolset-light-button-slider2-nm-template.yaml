@@ -140,6 +140,12 @@ toolset_light_button_slider_nm:
             styles:
               circle:
                 filter: none
+        user_actions:
+          tap_action:
+            haptic: light
+            actions:
+              - action: call-service
+                service: light.toggle
         styles:
           circle:
             stroke-width: 0

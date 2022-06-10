@@ -76,12 +76,6 @@ card:
               scale: true
               style: 'colorstops'
             segments:
-              # colorstops:
-                # template: colorstops_temperature_inside
-                # variables:
-                  # - thegap: 3
-              # dash: 90
-              # gap: 1
               colorstops:
                 template:
                   name: '[[colorstops_template]]'

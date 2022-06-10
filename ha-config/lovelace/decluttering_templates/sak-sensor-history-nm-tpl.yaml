@@ -14,7 +14,6 @@ card:
       name: '[[name]]'
       icon: '[[icon]]'
       decimals: '[[decimals]]'
-    # - entity: weather.zoefdehaas
 
   aspectratio: 1/1
   dev:

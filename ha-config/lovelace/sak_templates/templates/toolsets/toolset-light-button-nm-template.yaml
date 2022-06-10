@@ -85,6 +85,12 @@ toolset_light_button_nm:
             styles:
               circle:
                 filter: none
+        user_actions:
+          tap_action:
+            haptic: light
+            actions:
+              - action: call-service
+                service: light.toggle
         styles:
           circle:
             stroke-width: 0
@@ -165,8 +171,6 @@ toolset_light_button_nm:
               return '%';
             ]]]
         entity_index: '[[entity_brightness]]'
-        # Animation can run on the entities 'state', or on the derived_entity.
-        # so - state: 'on', or for example - derived_entity: '10%' in this case for light.
         animations:
           - state: 'on'
             entity_index: '[[entity_light]]'

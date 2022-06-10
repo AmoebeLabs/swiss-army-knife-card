@@ -1,7 +1,7 @@
 #
 # View			: view-sake6
 # Project   : Home Assistant / Swiss Army Knife custom card.
-# Repository: https://github.com/AmoebeLabs/
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
 #
 # Author    : Mars @ AmoebeLabs.com
 # 
@@ -131,8 +131,7 @@ cards:
                     styles:
                       circle:
                         opacity: 1
-                        fill: white #var(--primary-background-color)
-                        # filter: url(#filter)
+                        fill: white
 
                   - type: state
                     position:
@@ -176,8 +175,7 @@ cards:
                     styles:
                       circle:
                         opacity: 1
-                        fill: white #var(--primary-background-color)
-                        # filter: url(#filter)
+                        fill: white
 
                   - type: state
                     position:
@@ -190,7 +188,6 @@ cards:
                         font-size: 6em
                         font-weight: 700
                         fill: var(--primary-text-color)
-                        # filter: url(#ds)
                       uom:
                         fill: var(--primary-text-color)
                         font-weight: 700
@@ -222,8 +219,7 @@ cards:
                     styles:
                       circle:
                         opacity: 1
-                        fill: white #var(--primary-background-color)
-                        # filter: url(#filter)
+                        fill: white
 
                   - type: state
                     position:
@@ -236,7 +232,6 @@ cards:
                         font-size: 6em
                         font-weight: 700
                         fill: var(--primary-text-color)
-                        # filter: url(#ds)
                       uom:
                         fill: var(--primary-text-color)
                         font-weight: 700
@@ -270,7 +265,6 @@ cards:
                       circle:
                         opacity: 1
                         fill: white
-                        # filter: url(#filter)
                         
                   - type: 'usersvg'
                     id: 2
@@ -333,7 +327,6 @@ cards:
                       circle:
                         opacity: 1
                         fill: white
-                        # filter: url(#filter)
 
                   - type: state
                     position:
