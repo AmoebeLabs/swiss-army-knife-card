@@ -7,6 +7,12 @@ assignees: ''
 
 ---
 
+## Bug report notice
+**Before** you file a bug, make sure that you did not make a configuration mistake. The Swiss Army Knife in its current state does not yet have full configuration sanity checks!
+
+So make sure your problem is not related to that!
+- [ ] Yes, I'm sure that it is not a configuration mistake
+
 ## Bug description
 A clear and concise description of what the bug is.
 
