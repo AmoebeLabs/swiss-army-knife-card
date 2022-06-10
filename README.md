@@ -1,7 +1,6 @@
 [![hacs][hacs-badge]][hacs-url]
 [![hacs][beta_badge]][hacs-url]
-
-[![release][release-badge]][release-url]
+<br>[![release][release-badge]][release-url]
 ![downloads][downloads-badge]
 ![LGTM Grade][lgtm-grade-badge]
 ![LGTM Alerts][lgtm-alerts-badge]
@@ -11,9 +10,9 @@
 # ![](assets/images/swiss-army-knife24.png) NOTE!
 Do **NOT** use this card yet!
 
-This Swiss Army Knife custom card is being prepared for a public release candidate. 
+This Swiss Army Knife custom card is being prepared for a public release candidate. There might be several 0.9.0-beta releases before the 1.0.0-rc.1 is released. That last one will be the one that can be used!
 
-Due to work on HACS integration, and (breaking) issue solving the card might be broken 😢
+Due to work on HACS integration, and (breaking) issue solving the card might be partially broken between beta's 😢
 
 Status @2022-06-06:
 ![](assets/screenshots/2022.06.06-sak-rc-issues2.png)
