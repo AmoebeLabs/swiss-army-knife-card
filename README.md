@@ -10,11 +10,7 @@
 # ![](assets/images/swiss-army-knife24.png) NOTE!
 Do **NOT** use this card yet!
 
-<<<<<<< Updated upstream
 This Swiss Army Knife custom card is being prepared for a public release candidate. There might be several 0.9.0-beta releases before the 1.0.0-rc.1 is released. That last one will be the one that can be used!
-=======
-This versatile multi-tool Swiss Army Knife custom card is being prepared for a public release candidate. 
->>>>>>> Stashed changes
 
 Due to work on HACS integration, and (breaking) issue solving the card might be partially broken between beta's 😢
 
