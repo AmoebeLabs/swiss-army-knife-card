@@ -25,11 +25,11 @@ What you can make is only limited by the 17 provided tools and your own imaginat
 
 Remember that this custom card will be/is in public **BETA** **BETA** **BETA** as of June/July 2022!
 
-Check https://swiss-army-knife.docs.amoebelabs.com/ for the documentation!
+Check https://swiss-army-knife-card-manual.amoebelabs.com/ for the documentation!
 
-And check https://ha-m3-themes.docs.amoebelabs.com/ for Material 3 themes documentation. It has 22 light and dark [example themes](https://ha-m3-themes.docs.amoebelabs.com/examples/introduction/) used by example card [11][example-11] and [12][example-12]!
+And check https://material3-themes-manual.amoebelabs.com/ for Material 3 themes documentation. It has 22 light and dark [example themes](https://material3-themes-manual.amoebelabs.com/examples/introduction/) used by example card [11][example-11] and [12][example-12]!
 
-![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-frontpage.png)
+![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-frontpage.png)
 
 <a href="https://www.buymeacoffee.com/amoebelabs" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
@@ -42,23 +42,23 @@ For installation check the [installation documentation][sak-installation]. As th
 
 Note: It may take a few weeks (as of June 2022) that this card is included into the HACS repository!
 
-## ![](assets/images/swiss-army-knife24.png) An overview of all the [12 examples](https://swiss-army-knife.docs.amoebelabs.com/examples/introduction/) from my own installation:
+## ![](assets/images/swiss-army-knife24.png) An overview of all the [12 examples](https://swiss-army-knife-card-manual.amoebelabs.com/examples/introduction/) from my own installation:
 All these examples are available on Github and described in the [installation manual][sak-installation]. Each example has its own page which describes how to adapt / use them in your own installation.
 
 | Examples...| Examples...|
 | :------------: | :------------: |
-| ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-1b.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-2.png) | 
-| ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-3.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-4.png) | 
-| ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-5.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-6.png) | 
-| ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-7.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-8.png) | 
-| ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-9.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-10.png) | 
+| ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-1b.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-2.png) | 
+| ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-3.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-4.png) | 
+| ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-5.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-6.png) | 
+| ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-7.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-8.png) | 
+| ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-9.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-10.png) | 
 
 | Examples using a Light Material 3 Theme...| Examples using a Dark Material 3 Theme.. |
 | :------------: | :------------: |
 | [Example 11: Boiler and Electricity cards][example-11] | |
-| ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-11-m3-c11-light.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-11-m3-c11-dark.png) | 
+| ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-11-m3-c11-light.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-11-m3-c11-dark.png) | 
 | [Example 12: Wide cards showing lots of sensors][example-12] | |
-| ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-12-m3-d06-light.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife/blob/master/docs/assets/screenshots/sak-example-12-m3-d06-dark.png) | 
+| ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-12-m3-d06-light.png) | ![](https://github.com/AmoebeLabs/swiss-army-knife-card-manual/blob/master/docs/assets/screenshots/sak-example-12-m3-d06-dark.png) | 
 
 <a href="https://www.buymeacoffee.com/amoebelabs" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
@@ -79,12 +79,12 @@ All these examples are available on Github and described in the [installation ma
 [home-assitant-theme-docs]: https://www.home-assistant.io/integrations/frontend/#defining-themes
 [hacs]: https://hacs.xyz
 [release-url]: https://github.com/AmoebeLabs/swiss-army-knife-card/releases
-[sak-docs-url]: https://swiss-army-knife.docs.amoebelabs.com/
+[sak-docs-url]: https://swiss-army-knife-card-manual.amoebelabs.com/
 
-[example-11]: https://swiss-army-knife.docs.amoebelabs.com/examples/example-11/
-[example-12]: https://swiss-army-knife.docs.amoebelabs.com/examples/example-12/
-[sak-tools]: https://swiss-army-knife.docs.amoebelabs.com/tools/circle-tool/
-[sak-css-styles]: https://swiss-army-knife.docs.amoebelabs.com/basics/styling/styles/
-[sak-css-animations]: https://swiss-army-knife.docs.amoebelabs.com/basics/animations/css-animations/
-[sak-installation]: https://swiss-army-knife.docs.amoebelabs.com/start/installation/
-[sak-how-to-design-your-card]: https://swiss-army-knife.docs.amoebelabs.com/design/how-to-design-your-card/
+[example-11]: https://swiss-army-knife-card-manual.amoebelabs.com/examples/example-11/
+[example-12]: https://swiss-army-knife-card-manual.amoebelabs.com/examples/example-12/
+[sak-tools]: https://swiss-army-knife-card-manual.amoebelabs.com/tools/circle-tool/
+[sak-css-styles]: https://swiss-army-knife-card-manual.amoebelabs.com/basics/styling/styles/
+[sak-css-animations]: https://swiss-army-knife-card-manual.amoebelabs.com/basics/animations/css-animations/
+[sak-installation]: https://swiss-army-knife-card-manual.amoebelabs.com/start/installation/
+[sak-how-to-design-your-card]: https://swiss-army-knife-card-manual.amoebelabs.com/design/how-to-design-your-card/
