@@ -1,9 +1,9 @@
 [![hacs][hacs-badge]][hacs-url]
 [![hacs][beta_badge]][hacs-url]
 <br>[![release][release-badge]][release-url]
-![downloads][downloads-badge]
-![LGTM Grade][lgtm-grade-badge]
-![LGTM Alerts][lgtm-alerts-badge]
+[![downloads][downloads-badge]][release-url]
+[![LGTM Grade][lgtm-grade-badge]][lgtm-url]
+[![LGTM Alerts][lgtm-alerts-badge]][lgtm-url]
 <!--- ![beta_badge](https://img.shields.io/badge/State-Beta-orange?style=for-the-badge) -->
 <!---[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration) -->
 
@@ -80,6 +80,7 @@ All these examples are available on Github and described in the [installation ma
 [hacs]: https://hacs.xyz
 [release-url]: https://github.com/AmoebeLabs/swiss-army-knife-card/releases
 [sak-docs-url]: https://swiss-army-knife-card-manual.amoebelabs.com/
+[lgtm-url]: https://lgtm.com/
 
 [example-11]: https://swiss-army-knife-card-manual.amoebelabs.com/examples/example-11/
 [example-12]: https://swiss-army-knife-card-manual.amoebelabs.com/examples/example-12/
