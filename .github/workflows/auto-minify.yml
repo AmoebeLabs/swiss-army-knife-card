@@ -1,5 +1,5 @@
   # Checks-out your repository under $GITHUB_WORKSPACE, so auto-minify job can access it
-  - uses: actions/checkout@v2
+  #- uses: actions/checkout@v2
 
   - name: Auto Minify
     uses: nizarmah/auto-minify@v2.1.1
