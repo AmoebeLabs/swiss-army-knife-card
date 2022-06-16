@@ -1,6 +1,6 @@
-  name: Auto Minify
+name: Auto Minify
   
-  on:
+on:
   push:
   pull_request:
   schedule:
