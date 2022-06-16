@@ -131,7 +131,6 @@ cards:
                     styles:
                       icon:
                         fill: var(--primary-text-color)
-                        color: var(--primary-text-color)
               
               # Using Neumorphic ligth button design
               - toolset: light-button
@@ -267,7 +266,6 @@ cards:
                     styles:
                       icon:
                         fill: var(--primary-text-color)
-                        color: var(--primary-text-color)
               
               # Using Neumorphic ligth button design
               - toolset: light-button
@@ -411,7 +409,6 @@ cards:
                         opacity: 0
                       icon:
                         fill: var(--primary-text-color)
-                        color: var(--primary-text-color)
               
               # Using Neumorphic ligth button design
               - toolset: light-button

@@ -10,11 +10,12 @@
 *
 * -----
 * Description:
-*   The swiss army knife card, a versatile mult-tool custom card for HA.
+*   The swiss army knife card, a versatile multi-tool custom card for
+#   the one and only Home Assistant.
 *
 * Documentation Refs:
-*   - https://swiss-army-knife.docs.amoebelabs.com/
-*   - https://ha-m3-themes.docs.amoebelabs.com/
+*   - https://swiss-army-knife-card-manual.amoebelabs.com/
+*   - https://material3-themes-manual.amoebelabs.com/
 *
 * Notes:
 * - This is currently a single file, and should be split into smaller, more
@@ -32,10 +33,6 @@ import {
   LitElement, html, css, svg, unsafeCSS
 } from "https://unpkg.com/lit-element@2.5.1/lit-element.js?module";
 
-// import {
-  // unsafeHTML
-// } from "https://unpkg.com/lit-html@1/directives/unsafe-html.js?module";
-
 import {
   unsafeSVG
 } from "https://unpkg.com/lit-html@1/directives/unsafe-svg.js?module";
@@ -50,7 +47,6 @@ import { selectUnit} from 'https://unpkg.com/@formatjs/intl-utils@3.8.4/lib/inde
 import { fireEvent, stateIcon, getLovelace } from 'https://unpkg.com/custom-card-helpers@1.8.0/dist/index.m.js?module';
 
 // Original injector is buggy. Use a patched version, and store this local...
-// import * as SvgInjector from '/local/images/svginjector/SVGInjector.min.js?module';
 import * as SvgInjector from '/local/community/swiss-army-knife-card/SVGInjector.min.js?module'; // lgtm[js/unused-local-variable]
 
 console.info(
@@ -62,9 +58,7 @@ console.info(
 
 // Set sizes:
 // If svg size is changed, change the font size accordingly.
-// These two are related ;-)
-
-// for font-size, 1em = 1%
+// These two are related ;-) For font-size, 1em = 1%
 const SCALE_DIMENSIONS = 2
 const SVG_DEFAULT_DIMENSIONS = 200 * SCALE_DIMENSIONS;
 const SVG_DEFAULT_DIMENSIONS_HALF = SVG_DEFAULT_DIMENSIONS / 2;
@@ -158,11 +152,16 @@ class Utils {
     return (Math.min(Math.max(argVal, argStart), argEnd) - argStart) / (argEnd - argStart);
   }
 
-  // Calculate own (tool/tool) coordinates relative to centered toolset position.
-  // Tool coordinates are %
-  //
-  // Group is 50,40. Say SVG is 200x200. Group is 100,80 within 200x200.
-  // Tool is 10,50. 0.1 * 200 = 20 + (100 - 200/2) = 20 + 0.
+ /**
+  * Utils::calculateSvgCoordinate()
+  *
+  * Summary.
+  * Calculate own (tool/tool) coordinates relative to centered toolset position.
+  * Tool coordinates are %
+  *
+  * Group is 50,40. Say SVG is 200x200. Group is 100,80 within 200x200.
+  * Tool is 10,50. 0.1 * 200 = 20 + (100 - 200/2) = 20 + 0.
+  */
   static calculateSvgCoordinate(argOwn, argToolset) {
 
     return (argOwn / 100) * (SVG_DEFAULT_DIMENSIONS)
@@ -396,6 +395,7 @@ class Toolset {
       if (this.dev.debug) console.log("Toolset::constructor toolConfig", this.toolsetId, argConfig, argPos);
 
       const newTool = new toolsNew[toolConfig.type](this, argConfig, argPos);
+      this._card.entityHistory.needed |= (toolConfig.type == 'bar');
       this.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
     });
 
@@ -588,7 +588,7 @@ class Toolset {
   * - the toolset position is set on the svg. That one accepts x,y
   * - scaling, rotating and skewing (and translating) is done on the parent group.
   *
-  * The order of transformations are done from the childs perspective!!
+  * The order of transformations are done from the child's perspective!!
   * So, the child (tools) gets positioned FIRST, and then scaled/rotated.
   *
   * See comments for different render paths for Apple/Safari and any other browser...
@@ -603,7 +603,7 @@ class Toolset {
 
     if ((this._card.isSafari) || (this._card.iOS)) {
       //
-      // Renderpath for Safari:
+      // Render path for Safari:
       //
       // Safari seems to ignore - although not always - the transform-box:fill-box setting.
       // - It needs the explicit center point when rotating. So this is added to the rotate() command.
@@ -636,7 +636,7 @@ class Toolset {
 
     } else {
       //
-      // Renderpath for ANY other browser that usually follows the standards:
+      // Render path for ANY other browser that usually follows the standards:
       //
       // - use transform-box:fill-box to make sure every transform is about the object itself!
       // - applying the rules seen from the child's point of view.
@@ -671,10 +671,8 @@ class BaseTool {
 
     this.toolId = Math.random().toString(36).substr(2, 9);
     this.toolset = argToolset;
-    this._card = this.toolset._card;//argCard;
+    this._card = this.toolset._card;
     this.config = argConfig;
-
-    //console.time("--> "+ this.toolId + " PERFORMANCE BaseTool::constructor");
 
     this.dev = {...this._card.dev};
 
@@ -780,7 +778,6 @@ class BaseTool {
     this.activeAnimation = null;
 
     if (this.config.animations) Object.keys(this.config.animations).map(animation => {
-      // const entityIndex = this.config.entity_index;
       
       var item = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.config.animations[animation]));
       
@@ -1004,9 +1001,7 @@ class BaseTool {
     if (!actionConfig) return;
     fireEvent(node, "haptic", actionConfig.haptic || 'medium');
 
-    console.log("In _processTapEvent", actionConfig, entityId, parameterValue);
-
-    if (this.dev.debug) console.log('_processTapEvent', config, actionConfig, entityId);
+    if (this.dev.debug) console.log('_processTapEvent', config, actionConfig, entityId, parameterValue);
     for (let i = 0; i < actionConfig.actions.length; i++) {
       switch (actionConfig.actions[i].action) {
         case 'more-info': {
@@ -1059,7 +1054,7 @@ class BaseTool {
     argEvent.stopPropagation();
     argEvent.preventDefault();
 
-    console.log('handleTapEvent', argEvent, argToolConfig);
+    // console.log('handleTapEvent', argEvent, argToolConfig);
 
     let tapConfig;
     // If no user_actions defined, AND there is an entity_index,
@@ -1075,7 +1070,7 @@ class BaseTool {
     }
 
     if (!tapConfig) return;
-    console.log('handleTapEvent - calling _processTapEvent');
+    // console.log('handleTapEvent - calling _processTapEvent');
 
     this._processTapEvent(this._card,
                           this._card._hass,
@@ -1223,6 +1218,7 @@ class RangeSliderTool extends BaseTool {
 
       default:
         console.error('RangeSliderTool - constructor: invalid orientation [vertical, horizontal] = ', this.config.position.orientation);
+        throw Error('RangeSliderTool::constructor - invalid orientation [vertical, horizontal] = ', this.config.position.orientation);
     }
 
     switch (this.config.position.orientation) {
@@ -1247,6 +1243,7 @@ class RangeSliderTool extends BaseTool {
 
       default:
         console.error('RangeSliderTool - constructor: invalid label placement [none, position, thumb] = ', this.config.position.label.placement);
+        throw Error('RangeSliderTool::constructor - invalid label placement [none, position, thumb] = ', this.config.position.label.placement);
     }
     
     // Init classes
@@ -1268,9 +1265,6 @@ class RangeSliderTool extends BaseTool {
     this.svg.scale.min = this.valueToSvg(this, this.config.scale.min);
     this.svg.scale.max = this.valueToSvg(this, this.config.scale.max);
     this.svg.scale.step = this.config.scale.step;
-
-    // Init slider update interval
-    // this.config.slider_action.update_interval = this.config.slider_action.update_interval || 0;
 
     if (this.dev.debug) console.log('RangeSliderTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -1327,7 +1321,7 @@ class RangeSliderTool extends BaseTool {
   updateValue(argThis, m) {
 
     this._value = this.svgCoordinateToSliderValue(argThis, m);
-    // set dist to 0 to cancel aniumation frame
+    // set dist to 0 to cancel animation frame
     let dist = 0;
     //improvement
     if (Math.abs(dist) < 0.01) {
@@ -1432,14 +1426,6 @@ class RangeSliderTool extends BaseTool {
                           this._card.config.entities[this.config.entity_index]?.entity,
                           this.labelValue2);
 
-      // const [domain, service] = this.config.slider_action.service.split('.', 2);
-      // var serviceData = {};
-      // // serviceData[this.config.slider_action.parameter] = this._stateValue;
-      // serviceData[this.config.slider_action.parameter] = this.labelValue2;
-      // serviceData.entity_id = this.config.slider_action.entity_id || this._card.entities[this.config.entity_index].entity_id;
-      // this._card._hass.callService(domain, service, serviceData);
-      // fireEvent(window, 'haptic', 'selection');
-      
     }
     if (this.dragging)
       this.timeOutId = setTimeout(() => this.callDragService(), this.config.user_actions.drag_action.update_interval);
@@ -1459,16 +1445,7 @@ class RangeSliderTool extends BaseTool {
                           this._card.config.entities[this.config.entity_index]?.entity,
                           this.labelValue2);
                           
-      // const [domain, service] = this.config.user_actions.tap_actionslider_action.service.split('.', 2);
-      // var serviceData = {};
-      // // serviceData[this.config.slider_action.parameter] = this._stateValue;
-      // serviceData[this.config.slider_action.parameter] = this.labelValue2;
-      // serviceData.entity_id = this.config.slider_action.entity_id || this._card.entities[this.config.entity_index].entity_id;
-      // this._card._hass.callService(domain, service, serviceData);
-      // fireEvent(window, 'haptic', 'selection');
-      
     }
-    // if (this.dragging) this.timeOutId = setTimeout(() => this.callService(), 250);
   }
   
   firstUpdated(changedProperties)
@@ -1507,13 +1484,13 @@ class RangeSliderTool extends BaseTool {
       e.stopPropagation();
       
       const mousePos = this.oMousePosSVG(e);
-      console.log("pointerdown", mousePos, this.svg.thumb, this.m);
+      // console.log("pointerdown", mousePos, this.svg.thumb, this.m);
       var thumbPos = (this.svg.thumb.x1 + this.svg.thumb.cx);
       if ((mousePos.x > (thumbPos - 10)) && (mousePos.x < (thumbPos + this.svg.thumb.width + 10))) {
-        console.log("pointerdown, mousePos IS within x-width of thumb!!");
+        // console.log("pointerdown, mousePos IS within x-width of thumb!!");
         fireEvent(window, 'haptic', 'success');
       } else {
-        console.log("pointerdown, mousePos NOT within x-width of thumb!!");
+        // console.log("pointerdown, mousePos NOT within x-width of thumb!!");
         fireEvent(window, 'haptic', 'error');
         return;
       }
@@ -1575,8 +1552,6 @@ class RangeSliderTool extends BaseTool {
 
         switch (this.config.position.orientation) {
           case 'horizontal':
-            // #LGTM: Unused variable x1.
-            // const x1 = this.m.x;
             scaleValue = this.svgCoordinateToSliderValue(this, this.m);
             this.m.x = this.valueToSvg(this, scaleValue);
             this.m.x = Math.max(this.svg.scale.min, Math.min(this.m.x, this.svg.scale.max));
@@ -1584,8 +1559,6 @@ class RangeSliderTool extends BaseTool {
             break;
 
           case 'vertical':
-            // #LGTM: Unused variable y1.
-            // const y1 = this.m.y;
             scaleValue = this.svgCoordinateToSliderValue(this, this.m);
             this.m.y = this.valueToSvg(this, scaleValue);
             this.m.y = (Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step);
@@ -1710,19 +1683,19 @@ class RangeSliderTool extends BaseTool {
       case 'position':
         cx = (this.config.position.orientation == 'horizontal'
           ? this.valueToSvg(this, Number(this.renderValue)) - this.svg.cx
-          : 0);//this.svg.label.cx);
+          : 0);
         cy = (this.config.position.orientation == 'vertical'
           ? this.valueToSvg(this, Number(this.renderValue)) - this.svg.cy
-          : 0);//this.svg.label.cy);
+          : 0);
         break;
 
       case 'thumb':
         cx = (this.config.position.orientation == 'horizontal'
           ? -this.svg.label.cx + this.valueToSvg(this, Number(this.renderValue))
-          : 0); //this.svg.label.cx);
+          : 0);
         cy = (this.config.position.orientation == 'vertical'
           ? this.valueToSvg(this, Number(this.renderValue))
-          : 0); //this.svg.label.cy);
+          : 0);
         if (this.dragging) (this.config.position.orientation == 'horizontal') ? cy -= 50 : cx -=50;
         break;
         
@@ -1895,6 +1868,9 @@ class LineTool extends BaseTool {
     };
 
     super(argToolset, Merge.mergeDeep(DEFAULT_LINE_CONFIG, argConfig), argPos);
+
+    if (!["horizontal", "vertical", "fromto"].includes(this.config.position.orientation))
+        throw Error('LineTool::constructor - invalid orientation [vertical, horizontal, fromto] = ', this.config.position.orientation);
 
     if (["horizontal", "vertical"].includes(this.config.position.orientation))
         this.svg.length = Utils.calculateSvgDimension(argConfig.position.length);
@@ -2214,6 +2190,9 @@ class SwitchTool extends BaseTool {
 
     super(argToolset, Merge.mergeDeep(DEFAULT_SWITCH_CONFIG, argConfig), argPos);
 
+    if (!["horizontal", "vertical"].includes(this.config.position.orientation))
+        throw Error('SwitchTool::constructor - invalid orientation [vertical, horizontal] = ', this.config.position.orientation);
+      
     this.svg.track = {};
     this.svg.track.radius = Utils.calculateSvgDimension(this.config.position.track.radius);
     
@@ -2402,8 +2381,6 @@ class RegPolyTool extends BaseTool {
   _renderRegPoly() {
 
     var generatePoly = function(p, q, r, a, cx, cy) {
-      // #LGTM: Unused variable path.
-      // var path = '',
       var base_angle = 2 * Math.PI / p, 
           angle = a + base_angle, 
           x, y, d_attr = '';
@@ -2505,9 +2482,6 @@ class UserSvgTool extends BaseTool {
     // Note: in defs, url from gradient is changed, but NOT in the SVG fill=...
     
     this.injector = {};
-    // Elements to inject
-    // this.injector.elementsToInject = this._card.shadowRoot.querySelectorAll('svg[data-src]');
-    // this.injector.elementsToInject = this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId))?.shadowRoot?.querySelectorAll('svg[data-src]');
     // Options
     this.injector.injectorOptions = {
       evalScripts: 'once',
@@ -2555,10 +2529,6 @@ class UserSvgTool extends BaseTool {
   */
 
   updated(changedProperties) {
-    // console.log("usersvg updated...");
-
-    // console.log(this._card.shadowRoot.querySelectorAll('svg[data-src]'));
-    
     this.injector.elementsToInject = this._card.shadowRoot.querySelectorAll('svg[data-src]');
     // console.log("updated - ", this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)));
     
@@ -2988,27 +2958,15 @@ class EntityIconTool extends BaseTool {
 
     this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 3;
     this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
-    // #LGTM: Unused variable x.
-    // const x = this.config.position.cx ? this.config.position.cx / 100 : 0.5;
-    // #LGTM: Unused variable y.
-    // const y = this.config.position.cy ? this.config.position.cy / 100 : 0.5;
 
     const align = this.config.position.align ? this.config.position.align : 'center';
     const adjust = (align == 'center' ? 0.5 : (align == 'start' ? -1 : +1));
 
-  //  const parentClientWidth = this.parentElement.clientWidth;
-
-    // #TODO
-    // const clientWidth = this._card.clientWidth; // hard coded adjust for padding...
     const clientWidth = 400; // testing
     const correction = clientWidth / this._card.viewBox.width;
 
-    // icon is not calculated against viewbox, but against toolset pos
-    //this.svg.xpx = (x * this._card.viewBox.width);
-    //this.svg.ypx = (y * this._card.viewBox.height);
-
-    this.svg.xpx = this.svg.cx;//(x * this._card.viewBox.width);
-    this.svg.ypx = this.svg.cy;//(y * this._card.viewBox.height);
+    this.svg.xpx = this.svg.cx;
+    this.svg.ypx = this.svg.cy;
 
 
     if ((this._card.isSafari) || (this._card.iOS)) {
@@ -3079,10 +3037,6 @@ class EntityIconTool extends BaseTool {
 
       this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
       this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
-      // #LGTM: Unused variable x.
-      // const x = this.config.position.cx ? this.config.position.cx / 100 : 0.5;
-      // #LGTM: Unused variable y.
-      // const y = this.config.position.cy ? this.config.position.cy / 100 : 0.5;
 
       // NEW NEW NEW Use % for size of icon...
       this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
@@ -3091,18 +3045,8 @@ class EntityIconTool extends BaseTool {
       const align = this.config.position.align ? this.config.position.align : 'center';
       const adjust = (align == 'center' ? 0.5 : (align == 'start' ? -1 : +1));
 
-    //  const parentClientWidth = this.parentElement.clientWidth;
-      // #TODO:
-      // Testing performance...
-      // const clientWidth = this._card.clientWidth; // hard coded adjust for padding...
       const clientWidth = 400;
       var correction = clientWidth / (this._card.viewBox.width);
-      // #LGTM: Unused variable correctionRect.
-      // var correctionRect = clientWidth / (this._card.viewBox.width + 50);
-
-      // icon is not calculated against viewbox, but against toolset pos
-      //this.svg.xpx = (x * this._card.viewBox.width);
-      //this.svg.ypx = (y * this._card.viewBox.height);
 
       this.svg.xpx = this.svg.cx;//(x * this._card.viewBox.width);
       this.svg.ypx = this.svg.cy;//(y * this._card.viewBox.height);
@@ -3148,19 +3092,6 @@ class EntityIconTool extends BaseTool {
       this.iconSvg = SwissArmyKnifeCard.sakIconCache[icon];
     }
     
-
-    // #LGTM: This statement is unreachable.
-    // if (false) {
-    // if (!this.iconSvg) {
-      // this.iconSvg = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot.querySelectorAll("*")[0]?.path;
-      // if (!this.iconSvg) {
-        // this._card.pleaseReRender();
-      // }
-    // }
-    // }
-
-    // #LGTM: The initial value of scale is unused, since it is always overwritten.
-    // var scale = 1;
     var scale;
 
     // NTS@20201.12.24
@@ -3168,58 +3099,42 @@ class EntityIconTool extends BaseTool {
     // After the above fix, it seems to work for both Chrome and Safari browsers.
     // That is nice. Now animations also work on Chrome...
 
-    // #LGTM: This expression always evaluates to true.
-    // if ((true) || (this._card.isSafari) || (this._card.iOS)) {
-      if (this.iconSvg) {
-        // Use original size, not the corrected one!
-        this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
-        this.svg.iconPixels = Utils.calculateSvgDimension(this.svg.iconSize);
+    if (this.iconSvg) {
+      // Use original size, not the corrected one!
+      this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
+      this.svg.iconPixels = Utils.calculateSvgDimension(this.svg.iconSize);
 
-        this.svg.x1 = this.svg.cx - this.svg.iconPixels / 2;
-        this.svg.y1 = this.svg.cy - this.svg.iconPixels / 2;
-        this.svg.x1 = this.svg.cx - (this.svg.iconPixels * 0.5);
-        this.svg.y1 = this.svg.cy - (this.svg.iconPixels * 0.5);
+      this.svg.x1 = this.svg.cx - this.svg.iconPixels / 2;
+      this.svg.y1 = this.svg.cy - this.svg.iconPixels / 2;
+      this.svg.x1 = this.svg.cx - (this.svg.iconPixels * 0.5);
+      this.svg.y1 = this.svg.cy - (this.svg.iconPixels * 0.5);
 
-        scale = this.svg.iconPixels / 24;
-        // scale = 1;
-        // Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required
-        // to position the icon on its desired location.
-        // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
-        return svg`
-          <g id="icon-${this.toolId}" class="${classMap(this.classes.icon)}" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
-            <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke="yellow" stroke-width="0px" opacity="50%" fill="rgba(0,0,0,0)"></rect>
-            <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
-          <g>
+      scale = this.svg.iconPixels / 24;
+      // scale = 1;
+      // Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required
+      // to position the icon on its desired location.
+      // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
+      return svg`
+        <g id="icon-${this.toolId}" class="${classMap(this.classes.icon)}" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
+          <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke="yellow" stroke-width="0px" opacity="50%" fill="rgba(0,0,0,0)"></rect>
+          <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
+        <g>
+      `;
+    } else {
+      return svg`
+        <foreignObject width="0px" height="0px" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="visible">
+          <body>
+            <div class="div__icon, hover" xmlns="http://www.w3.org/1999/xhtml"
+                style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
+                <ha-icon icon=${icon} id="icon-${this.toolId}" class="${classMap(this.classes.icon)}"
+                @animationstart=${e => this._handleAnimationEvent(e, this)}
+                @animationiteration=${e => this._handleAnimationEvent(e, this)}
+                style="animation: flash 0.15s 20;"></ha-icon>
+            </div>
+          </body>
+        </foreignObject>
         `;
-      } else {
-        return svg`
-          <foreignObject width="0px" height="0px" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="visible">
-            <body>
-              <div class="div__icon, hover" xmlns="http://www.w3.org/1999/xhtml"
-                  style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-                  <ha-icon icon=${icon} id="icon-${this.toolId}" class="${classMap(this.classes.icon)}"
-                  @animationstart=${e => this._handleAnimationEvent(e, this)}
-                  @animationiteration=${e => this._handleAnimationEvent(e, this)}
-                  style="animation: flash 0.15s 20;"></ha-icon>
-              </div>
-            </body>
-          </foreignObject>
-          `;
-      }
-    // #LGTM: This expression always evaluates to true.
-    //        This is the else clause of that if!
-    // } else {
-      // return svg`
-        // <foreignObject width="${this.svg.iconPixels}px" height="${this.svg.iconPixels}px" x="${this.svg.xpx}" y="${this.svg.ypx}"
-                        // >
-          // <div class="div__icon" xmlns="http://www.w3.org/1999/xhtml"
-                // style="line-height:${this.svg.iconPixels}px;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-            // <ha-icon class="${classMap(this.classes.icon)}" icon=${icon} id="icon-${this.toolId}" style="${styleMap(this.styles.icon)}"></ha-icon>
-          // </div>
-        // </foreignObject>
-        // `;
-    // }
-
+    }
   }
 
   _handleAnimationEvent(argEvent, argThis) {
@@ -4197,8 +4112,8 @@ class SparklineBarChartTool extends BaseTool {
 
     this.svg.barWidth = (theWidth - (((this.config.hours / this.config.barhours) - 1) *
                                 this.svg.margin)) / (this.config.hours / this.config.barhours);
-    this._data = []; //new Array(this.hours).fill(0);
-    this._bars = []; //new Array(this.hours).fill({});
+    this._data = [];
+    this._bars = [];
     this._scale = {};
     this._needsRendering = false;
 
@@ -4487,11 +4402,6 @@ class SegmentedArcTool extends BaseTool {
         }
     }
 
-    // #LGTM: Unused variable tcolorstops.
-    // var tcolorstops = {};
-    // #LGTM: Unused variable colorstops.
-    // var colorstops = null;
-
     // FIXEDCOLOR
     if (this.config.show.style == 'fixedcolor') {
     }
@@ -4522,7 +4432,6 @@ class SegmentedArcTool extends BaseTool {
     // COLORSTOPS
     else if (this.config.show.style == 'colorstops') {
       // Get colorstops, remove outliers and make a key/value store...
-      // console.log("colorstops", this.toolId, this.config.segments, this.config.segments.colorstops, this.config.segments.colorstops.colors);
 
       this._segments.colorStops = {};
       Object.keys(this.config.segments.colorstops.colors).forEach((key) => {
@@ -4575,7 +4484,7 @@ class SegmentedArcTool extends BaseTool {
     else if (this.config.show.style == 'simplegradient') {
     }
 
-    // Just dump to console for verifiation. Nothing is used yet of the new calculation method...
+    // Just dump to console for verification. Nothing is used yet of the new calculation method...
 
     if (this.config.isScale) {
       this._stateValue = this.config.scale.max;
@@ -4595,10 +4504,7 @@ class SegmentedArcTool extends BaseTool {
         scaleConfig.position.radius_x = ((this.config.position.radius_x || this.config.position.radius)) - (this.config.position.width/2) + (scaleConfig.position.width/2) + (this.config.scale.offset);
         scaleConfig.position.radius_y = ((this.config.position.radius_y || this.config.position.radius)) - (this.config.position.width/2) + (scaleConfig.position.width/2) + (this.config.scale.offset);
 
-        //this._segmentedArcScale = new SegmentedArc(this._card, scaleConfig);
         this._segmentedArcScale = new SegmentedArcTool(this, scaleConfig, argPos);
-        // #LGTM: Unused variable scaleId.
-        // const scaleId = this._segmentedArcScale.objectId;
       } else {
         this._segmentedArcScale = null;
       }
@@ -4720,27 +4626,9 @@ class SegmentedArcTool extends BaseTool {
     if (this.skipOriginal) {
       // Here we can rebuild all needed. Much will be the same I guess...
 
-      // Added temp vars. animation doesn't work!!!!
-      // #LGTM: Unused variable arcStart.
-      // var arcStart = this.config.position.start_angle;
-      // #LGTM: The initial value of arcEnd is unused, since it is always overwritten.
-      // var arcEnd = this.config.position.end_angle;
       var arcEnd;
-      // #LGTM: The initial value of arcEndPrev is unused, since it is always overwritten.
-      // var arcEndPrev = this.config.position.end_angle;
       var arcEndPrev;
-      //var arcWidth = this.config.position.width;
       var arcWidth = this.svg.width;
-
-      // #LGTM: Unused variable arcEndFull.
-      // var arcEndFull = this.config.position.end_angle;
-      // #LGTM: Unused variable arcClockwise.
-      // var arcClockwise = arcEnd > arcStart;
-      // #LGTM: Unused variable arcPart.
-      // var arcPart = this.config.segments.dash;
-      // #LGTM: Unused variable arcDivider.
-      // var arcDivider = this.config.segments.gap;
-
       var arcRadiusX = this.svg.radiusX;
       var arcRadiusY = this.svg.radiusY;
 
@@ -4755,10 +4643,6 @@ class SegmentedArcTool extends BaseTool {
 
           arcEnd = (val * this._arc.size * this._arc.direction) + this.config.position.start_angle;
           arcEndPrev = (valPrev * this._arc.size * this._arc.direction) + this.config.position.start_angle;
-      // #LGTM: Unused variable arcSize.
-      // var arcSize = Math.abs(arcEnd - this.config.position.start_angle);
-      // #LGTM: Unused variable arcSizePrev.
-      // var arcSizePrev = Math.abs(arcEndPrev - this.config.position.start_angle);
 
       var svgItems = [];
 
@@ -4788,8 +4672,6 @@ class SegmentedArcTool extends BaseTool {
           // extra, set color from colorlist as a test
           if (this.config.isScale) {
             var fill = this.config.color;
-            // #LGTM: Unused variable stroke.
-            // var stroke = '';
             if (this.config.show.style =="colorlist") {
               fill = this.config.segments.colorlist.colors[index];
             }
@@ -4901,13 +4783,8 @@ class SegmentedArcTool extends BaseTool {
                 // #WIP
                 // Testing 'lastcolor'
                 if (thisTool.config.show.lastcolor) {
-                  // #LGTM: The initial value of fill is unused, since it is always overwritten.
-                  // var fill = thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]];
                   var fill;
 
-                  //thisTool.styles.foreground[runningSegment]['fill'];
-                  // console.log('testing...', thisTool.config.show, runningSegment, fill);
-                  
                   var boundsStart = thisTool._arc.clockwise
                                 ? (thisTool._segmentAngles[runningSegment].drawStart)
                                 : (thisTool._segmentAngles[runningSegment].drawEnd);
@@ -4915,13 +4792,9 @@ class SegmentedArcTool extends BaseTool {
                                 ? (thisTool._segmentAngles[runningSegment].drawEnd)
                                 : (thisTool._segmentAngles[runningSegment].drawStart);
                   var value = Math.min(Math.max(0, (runningSegmentAngle - boundsStart) / (boundsEnd - boundsStart)), 1);
-                  // #LGTM: Unused variable sortedMax.
-                  // var sortedMax = thisTool._segments.sortedStops.length;
                   fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                                            thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment+1]],
                                            value);
-                  // console.log('runningsegment, runningcolor = ', fill, 'value=', value, 'ra= ', runningSegmentAngle, 'sa=', boundsStart, 'ea=', boundsEnd);
-                  
                   thisTool.styles.foreground[0]['fill'] = fill;
                   thisTool.as[0].style.fill = fill;
 
@@ -4935,7 +4808,6 @@ class SegmentedArcTool extends BaseTool {
                       }
                         thisTool.styles.foreground[j]['fill'] = fill;
                         thisTool.as[j].style.fill = fill;
-                      // console.log('in segarc draw', j, runningSegment, fill);
                     }
                   } else {
                   }
@@ -4954,12 +4826,6 @@ class SegmentedArcTool extends BaseTool {
                 thisTool._arc.clockwise
                 ? ((runningSegmentAngle <= currentValue.boundsEnd) && (runningSegmentAngle >= currentValue.boundsStart))
                 : ((runningSegmentAngle <= currentValue.boundsStart) && (runningSegmentAngle >= currentValue.boundsEnd)));
-
-              // #LGTM: The value assigned to frameSegment here is unused.
-              // frameSegment = thisTool._segmentAngles.findIndex((currentValue, index) =>
-                // thisTool._arc.clockwise
-                // ? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
-                // : ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd)));
 
               if (!increase) {
                 if (runningSegmentPrev != runningSegment) {
@@ -4996,9 +4862,6 @@ class SegmentedArcTool extends BaseTool {
         } // function animateSegmentsNEW
 
         var mySelf = this;
-        // #LGTM: Unused variable arcCur.
-        // var arcCur = arcEndPrev;
-
         // 2021.10.31
         // Edge case where brightness percentage is set to undefined (attribute is gone) if light is set to off.
         // Now if light is switched on again, the brightness is set to old value, and val and valPrev are the same again, so NO drawing!!!!!
@@ -5098,9 +4961,6 @@ class SegmentedArcTool extends BaseTool {
             }
           }
 
-//                            style="${styleMap(this.config.styles.foreground)}"
-
-          // this.config.styles.foreground['fill'] = fill;
           svgItems.push(svg`<path id="arc-segment-${this.toolId}-${i}" class="arc__segment"
                             style="${styleMap(this.styles.foreground[i])}"
                             d="${d}"
@@ -5196,9 +5056,12 @@ class SwissArmyKnifeCard extends LitElement {
     this.styles.card = {};
     
     // For history query interval updates.
+    this.entityHistory = {};
+    this.entityHistory.needed = false;
     this.stateChanged = true;
-    this.updating = false;
-    this.update_interval = 300;
+    this.entityHistory.updating = false;
+    this.entityHistory.update_interval = 300;
+    // console.log("SAK Constructor,", this.entityHistory);
 
     // Development settings
     this.dev = {};
@@ -5221,11 +5084,6 @@ class SwissArmyKnifeCard extends LitElement {
     // After iOS 13 you should detect iOS devices like this, since iPad will not be detected as iOS devices
     // by old ways (due to new "desktop" options, enabled by default)
 
-    // var browser=get_browser();
-    // console.log(browser);
-    
-    // this.browser = BrowserCheck();
-    // console.log(this.browser);
     this.isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
     this.iOS = (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
@@ -5676,9 +5534,6 @@ class SwissArmyKnifeCard extends LitElement {
       // Get attribute state if specified and available
       if (this.config.entities[index].attribute) {
 
-        // #LGTM: The value assigned to attrSet here is unused.
-        // attrSet = true;
-
         // #WIP:
         // Check for indexed or mapped attributes, like weather forecast (array of 5 days with a map containing attributes)....
         //
@@ -5735,14 +5590,6 @@ class SwissArmyKnifeCard extends LitElement {
         // Due to change in light percentage, check for undefined.
         // If bulb is off, NO percentage is given anymore, so is probably 'undefined'.
         // Any tool should still react to a percentag going from a valid value to undefined!
-        // #LGTM: This statement is unreachable.
-        // else {
-          // if (undefined != this.attributesStr[index]) {
-            // this.attributesStr[index] = undefined;
-            // entityHasChanged = true;
-            // console.log('changed attribute is undefined for entity', this.entities[index].entity_id);
-          // }
-        // }
       }
       if ((!attrSet) && (!secInfoSet)) {
         newStateStr = this._buildState(this.entities[index].state, this.config.entities[index]);
@@ -5766,7 +5613,7 @@ class SwissArmyKnifeCard extends LitElement {
 
       // ############################TODO. Temp disabled...
       // @2022.01.24
-      // For some reason, this returns, altough something has changed and should be rendered.
+      // For some reason, this returns, although something has changed and should be rendered.
       // Now this is not done, and for instance the background of cards is not changed at the moment it should be: but the icon changes. That is weird.
       // Icon changes, and changes color, but background seems to wait for another update of the card orso ?!?!?!?!?!?!?
       //
@@ -5783,15 +5630,10 @@ class SwissArmyKnifeCard extends LitElement {
 
     // For now, always force update to render the card if any of the states or attributes have changed...
     
-    // #LGTM: This use of variable 'entityHasChanged' always evaluates to true.
-    //        Yep, that is the case. This line can be removed as the next this.requestUpdate() is on the next line!
-    // if ((entityHasChanged) && (this.connected)) { this.requestUpdate();}
-    
     // Force update as test... ###########################################
     this.requestUpdate();
 
     this.counter--;
-    // console.log("set hass, counter = ", this.counter);
 
     //console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
   }
@@ -5844,16 +5686,6 @@ class SwissArmyKnifeCard extends LitElement {
     // @2020.11.24 new instead of previous lines.
     const newConfig = Merge.mergeDeep(config);
     
-    // Set default tap_action, if none given for an entity
-    // if (newConfig.entities) {
-      // newConfig.entities.forEach((entity, i) => {
-        // if (!entity.tap_action) {
-          // newConfig.entities[i].tap_action = {action: 'more-info'};
-        // }
-      // }
-      // );
-    // }
-
     // #TODO must be removed after removal of segmented arcs part below
     this.config = newConfig;
 
@@ -5872,18 +5704,13 @@ class SwissArmyKnifeCard extends LitElement {
           var secondValue = Merge.mergeDeep(replacedValue);
           secondValue.from_template = 'replaced';
 
-        // var newValue = {};
-        // newValue = replacedValue;//template[template.type];
         return secondValue;
-        // return replacedValue;
       }
       if (key == 'template') {
         // Template is gone via replace!!!! No template anymore, as there is no merge done.
         console.log("findTemplate return key=template/value", key, undefined);
         
         return value;
-        // #LGTM: This statement is unreachable.
-        // return new string('replaced');
       }
       // console.log("findTemplate return key/value", key, value);
       return value;
@@ -5893,26 +5720,9 @@ class SwissArmyKnifeCard extends LitElement {
     var cfg = JSON.stringify(this.config.layout.toolsets, findTemplate);
     var cfgobj = JSON.parse(cfg);
 
-    // Set default tap_action, if none given for an entity
-    // if (this.config.entities) {
-      // this.config.entities.forEach((entity, i) => {
-        // if (!entity.tap_action) {
-          // this.config.entities[i].tap_action = {action: 'more-info', haptic: light};
-          // this.config.entities[i].hold_action = {action: 'more-info', haptic: success};
-        // }
-      // }
-      // );
-    // }
-    
     this.config.layout.toolsets.map((toolsetCfg, toolidx) => {
 
-      // #LGTM: Unused variable argToolset.
-      // var argToolset = { config: toolsetCfg,
-                          // tools: []};
       var toolList = null;
-
-      // #LGTM: Unused variable toolsetCfgFromTemplate.
-      // var toolsetCfgFromTemplate = null;
 
       if (!this.toolsets) this.toolsets = [];
 
@@ -5920,8 +5730,6 @@ class SwissArmyKnifeCard extends LitElement {
         
         var found = false;
         var toolAdd = [];
-        // #LGTM: Unused variable atIndex.
-        // var atIndex = null;
 
         toolList = cfgobj[toolidx].tools;
         // Check for empty tool list. This can be if template is used. Tools come from template, not from config...
@@ -5939,13 +5747,8 @@ class SwissArmyKnifeCard extends LitElement {
                   // After merging/replacing. We might get some template definitions back!!!!!!
                   toolList[indexT] = JSON.parse(JSON.stringify(toolList[indexT], findTemplate));
                 
-                // toolList[indexT] = Merge.mergeDeep(tool, toolList[indexT]);
-                // #TODO
-                // No deep cloning/merging is done??
-                //toolList[indexT].scale = {...toolList[indexT].scale, ...tool.scale};
                 found = true;
                 }
-//                atIndex = indexT;
                 if (this.dev.debug) console.log("card::setConfig - got toolsetCfg toolid", tool, index, toolT, indexT, tool);
               }
             });
@@ -5972,10 +5775,7 @@ class SwissArmyKnifeCard extends LitElement {
         var m3 = this.lovelace.config.sak_user_templates.templates.m3;
         
         console.log("*** M3 - Found. Material 3 conversion starting...");
-        // #hier m3
         var palette = "";
-        // #LGTM: Unused variable palette2.
-        // var palette2 = "";
         var colordefault = "";
         var colorlight = "";
         var colordark = "";
@@ -5990,6 +5790,7 @@ class SwissArmyKnifeCard extends LitElement {
 
         var colorEntities = {};
         var cssNames = {};
+        var cssNamesRgb = {};
         
         m3.entities.map((entity, index) => {
           if (['ref.palette', 'sys.color', 'sys.color.light', 'sys.color.dark'].includes(entity.category_id)) {
@@ -6078,10 +5879,24 @@ class SwissArmyKnifeCard extends LitElement {
         });
 
         for (const [index, entity] of Object.entries(colorEntities)) {
-          cssNames[index] = "theme-" + entity.tags[1] + "-"  + entity.tags[2] + "-" + entity.tags[3] + ": '" + entity.value + "'";
+          cssNames[index] = "theme-" + entity.tags[1] + "-"  + entity.tags[2] + "-" + entity.tags[3] + ": rgb(" + hex2rgb(entity.value) + ")";
+          cssNamesRgb[index] = "theme-" + entity.tags[1] + "-"  + entity.tags[2] + "-" + entity.tags[3] + "-rgb: " +  hex2rgb(entity.value);
         };
        
         // https://filosophy.org/code/online-tool-to-lighten-color-without-alpha-channel/
+
+
+        function hex2rgb(hexColor) {
+          var rgbCol = {};
+
+          rgbCol.r = Math.round(parseInt(hexColor.substr(1,2), 16));
+          rgbCol.g = Math.round(parseInt(hexColor.substr(3,2), 16));
+          rgbCol.b = Math.round(parseInt(hexColor.substr(5,2), 16));
+          
+          // const cssRgbColor = "rgb(" + rgbCol.r + "," + rgbCol.g + "," + rgbCol.b + ")";
+          const cssRgbColor = rgbCol.r + "," + rgbCol.g + "," + rgbCol.b;
+          return cssRgbColor;
+        }
 
         function getSurfaces(surfaceColor, paletteColor, opacities, cssName, mode) {
           var bgCol = {};
@@ -6103,6 +5918,7 @@ class SwissArmyKnifeCard extends LitElement {
             b = Math.round(opacity * fgCol.b + (1 - opacity) * bgCol.b);
             
             surfaceColors += cssName + (index+1).toString() + "-" + mode + ": rgb(" + r + "," + g + "," + b + ")\n";
+            surfaceColors += cssName + (index+1).toString() + "-" + mode + "-rgb: " + r + "," + g + "," + b + "\n";
           });
           
           return surfaceColors;
@@ -6146,15 +5962,11 @@ class SwissArmyKnifeCard extends LitElement {
         var errordark = colorEntities["md.ref.palette.error80"].value;
         var surfaceeD = getSurfaces(surfacedark, errordark, opacitysurfacedark, "  theme-ref-elevation-surface-error", "dark");
 
-        // #LGTM: Unused variable bgCol.
-        // var bgCol = {};
-        // #LGTM: Unused variable fgCol.
-        // var fgCol = {};
-
         var themeDefs = "";
         for (const [index, cssName] of Object.entries(cssNames)) { // lgtm[js/unused-local-variable]
           if (cssName.substring(0,9) == 'theme-ref') {
             themeDefs += "  " + cssName + "\n";
+            themeDefs += "  " + cssNamesRgb[index] + "\n";
           }
         };
         // Dump full theme contents to console.
@@ -6188,15 +6000,18 @@ class SwissArmyKnifeCard extends LitElement {
     super.connectedCallback();
 
 //    if (this._hass) {
-      if (this.update_interval) {
+      if (this.entityHistory.update_interval) {
+
+      // console.log("card::connectedCallback, set interval", this.entityHistory);
 
       // Fix crash while set hass not yet called, and thus no access to entities!
         this.updateOnInterval();
         // #TODO, modify to total interval
         // Use fast interval at start, and normal interval after that, if _hass is defined...
+        clearInterval(this.interval);
         this.interval = setInterval(
           () => this.updateOnInterval(),
-          this._hass ? this.update_interval * 1000 : 2000,
+          this._hass ? this.entityHistory.update_interval * 1000 : 1000,
         );
       }
 //    }
@@ -6219,6 +6034,8 @@ class SwissArmyKnifeCard extends LitElement {
     if (this.dev.debug) console.log('*****Event - disconnectedCallback', this.cardId, new Date().getTime());
     if (this.interval) {
       clearInterval(this.interval);
+      this.interval = 0;
+      // console.log("card::disconnectedCallback, clear interval", this.entityHistory);
     }
     super.disconnectedCallback();
     if (this.dev.debug) console.log('disconnectedCallback', this.cardId);
@@ -6263,24 +6080,6 @@ class SwissArmyKnifeCard extends LitElement {
     }
   }
 
-/*******************************************************************************
-  * card::pleaseReRender()
-  *
-  */
-
-  // pleaseReRender() {
-
-    // if (this._reRenderCounter < 10) this._reRender = true;
-    // console.log('pleaseRerender = ', this._reRender, this._reRenderCounter, this.toolId);
-  // }
-
-  // _reRenderTimeout() {
-    // this._reRenderPending = false;
-    // this._reRender = false;
-    // this.requestUpdate();
-    // if (this.dev.debug) console.log("card::_reRenderTimeout CALLED", this.cardId, new Date().getTime());
-  // }
-
  /*******************************************************************************
   * card::render()
   *
@@ -6305,10 +6104,6 @@ class SwissArmyKnifeCard extends LitElement {
       return;
     }
 
-    // NEW for rerendering icons and stuff
-    // this._reRender = false;
-    // this._reRenderCounter = 0;
-
     var myHtml;
 
     try {
@@ -6331,17 +6126,6 @@ class SwissArmyKnifeCard extends LitElement {
     } catch (error) {
       console.error(error);
     }
-    // All cards have rendered, check if one of them needs another update in some time...
-
-    // if (this._reRender) {
-      // if (!this._reRenderPending) {
-        // this._reRenderPending = true;
-        // this._reRenderCounter++;
-        // setTimeout(
-            // () => this._reRenderTimeout(),
-            // 16*16);
-      // }
-    // }
     if (this.dev.performance) console.timeEnd("--> "+ this.cardId + " PERFORMANCE card::render");
 
     return myHtml;
@@ -6465,35 +6249,24 @@ class SwissArmyKnifeCard extends LitElement {
 
   _renderCardAttributes() {
 
-    // #LGTM: Unused variable svgItems.
-    // const svgItems = [];
     var entityValue;
-    // #LGTM: Unused variable attributeStr.
-    // var attributeStr;
     var attributes = [];
     
     this._attributes = "";
-    // return attributes;
 
-    // console.log("entities.length = ", this.entities.length);
     for (let i = 0; i < this.entities.length; i++) {
-      // #LGTM: The value assigned to attributeStr here is unused.
-      // attributeStr = "data-entity-" + String(i) + "=";
       entityValue = this.attributesStr[i]
                       ? this.attributesStr[i]
                       : this.secondaryInfoStr[i]
                       ? this.secondaryInfoStr[i]
                       : this.entitiesStr[i];
-      // attributes += attributeStr + "\"" + entityValue + "\"" + " ";
       attributes.push(entityValue);
-      // console.log("attributes = ", attributes);
     }
     this._attributes = attributes;
     return attributes;
   }
   
   _renderSvg() {
-    // const { viewBoxSize, } = this;
 
     const cardFilter = this.config.card_filter ? this.config.card_filter : 'card--filter-none';
 
@@ -6798,7 +6571,7 @@ class SwissArmyKnifeCard extends LitElement {
   *
   * Summary.
   * Get gradient value of color as a result of a color_stop.
-  * An RGBA value is calculated, so transparancy is possible...
+  * An RGBA value is calculated, so transparency is possible...
   *
   * The colors (colorA and colorB) can be specified as:
   * - a css variable, var(--color-value)
@@ -6894,7 +6667,7 @@ class SwissArmyKnifeCard extends LitElement {
   // Reset interval to 5 minutes: is now short I think after connectedCallback().
   // Only if _hass exists / is set --> set to 5 minutes!
   //
-  // BUG: If no history entity, the interval check keeps running. Initally set to 200ms, and
+  // BUG: If no history entity, the interval check keeps running. Initially set to 2000ms, and
   // keeps running with that interval. If history present, interval is larger ????????
   //
   // There is no check yet, if history is requested. That is the only reason to have this
@@ -6906,13 +6679,28 @@ class SwissArmyKnifeCard extends LitElement {
       if (this.dev.debug) console.log("UpdateOnInterval - NO hass, returning");
       return;
     }
-    if (this.stateChanged && !this.updating) {
+    if (this.stateChanged && !this.entityHistory.updating) {
 
       // 2020.10.24
       // Leave true, as multiple entities can be fetched. fetch every 5 minutes...
       //this.stateChanged = false;
       this.updateData();
-      // console.log("updateOnInterval -> updateData");
+      // console.log("*RC* updateOnInterval -> updateData", this.entityHistory);
+    }
+    
+    if (!this.entityHistory.needed) {
+      // console.log("*RC* updateOnInterval -> stop timer", this.entityHistory, this.interval);
+      if (this.interval) {
+        window.clearInterval(this.interval);
+        this.interval = 0;
+      }
+    } else {
+      window.clearInterval(this.interval);
+      this.interval = setInterval(
+          () => this.updateOnInterval(),
+          // 5 * 1000);
+          this.entityHistory.update_interval * 1000);
+      // console.log("*RC* updateOnInterval -> start timer", this.entityHistory, this.interval);
     }
   }
 
@@ -6929,7 +6717,7 @@ class SwissArmyKnifeCard extends LitElement {
   }
 
   async updateData({ config } = this) {
-    this.updating = true;
+    this.entityHistory.updating = true;
 
     if (this.dev.debug) console.log("card::updateData - ENTRY", this.cardId);
 
@@ -6969,7 +6757,7 @@ class SwissArmyKnifeCard extends LitElement {
       const promise = entityList.map((item, i) => this.updateEntity(item, i, item.start, item.end));
       await Promise.all(promise);
     } finally {
-      this.updating = false;
+      this.entityHistory.updating = false;
     }
   }
   async updateEntity(entity, index, initStart, end) {
@@ -6984,8 +6772,6 @@ class SwissArmyKnifeCard extends LitElement {
     // Now we have some history, check if it has valid data and filter out either the entity state or
     // the entity attribute. Ain't that nice!
 
-    // #LGTM: The initial value of theState is unused, since it is always overwritten.
-    // let theState = entity.state;
     let theState;
 
     if (newStateHistory[0] && newStateHistory[0].length > 0) {
@@ -7012,6 +6798,7 @@ class SwissArmyKnifeCard extends LitElement {
     if (!hist) return;
 
     // #LGTM: Unused variable getMin.
+    // Keep this one for later use!!!!!!!!!!!!!!!!!
     // const getMin = (arr, val) => arr.reduce((min, p) => (
           // Number(p[val]) < Number(min[val]) ? p : min
           // ), arr[0]);
@@ -7034,7 +6821,6 @@ class SwissArmyKnifeCard extends LitElement {
 
     const reduce = (res, item) => {
       const age = now - new Date(item.last_changed).getTime();
-//      const interval = (age / (1000 * 3600) * this.points) - this.hours * this.points;
       const interval = (age / (1000 * 3600) / barhours) - (hours / barhours);
       const key = Math.floor(Math.abs(interval));
       if (!res[key]) res[key] = [];

@@ -21,269 +21,533 @@ M3-C11-Purple:
   # --------------------------------------------------------------------------
   
   theme-ref-elevation-surface-neutral1-light: rgb(250,246,247)
+  theme-ref-elevation-surface-neutral1-light-rgb: 250,246,247
   theme-ref-elevation-surface-neutral2-light: rgb(247,243,244)
+  theme-ref-elevation-surface-neutral2-light-rgb: 247,243,244
   theme-ref-elevation-surface-neutral3-light: rgb(242,238,240)
+  theme-ref-elevation-surface-neutral3-light-rgb: 242,238,240
   theme-ref-elevation-surface-neutral4-light: rgb(238,234,235)
+  theme-ref-elevation-surface-neutral4-light-rgb: 238,234,235
   theme-ref-elevation-surface-neutral5-light: rgb(231,227,229)
+  theme-ref-elevation-surface-neutral5-light-rgb: 231,227,229
   theme-ref-elevation-surface-neutral6-light: rgb(225,221,223)
+  theme-ref-elevation-surface-neutral6-light-rgb: 225,221,223
   theme-ref-elevation-surface-neutral7-light: rgb(217,213,215)
+  theme-ref-elevation-surface-neutral7-light-rgb: 217,213,215
   theme-ref-elevation-surface-neutral8-light: rgb(209,205,207)
+  theme-ref-elevation-surface-neutral8-light-rgb: 209,205,207
   theme-ref-elevation-surface-neutral9-light: rgb(200,196,198)
+  theme-ref-elevation-surface-neutral9-light-rgb: 200,196,198
   theme-ref-elevation-surface-neutral10-light: rgb(192,188,190)
+  theme-ref-elevation-surface-neutral10-light-rgb: 192,188,190
   theme-ref-elevation-surface-neutral-variant1-light: rgb(250,246,248)
+  theme-ref-elevation-surface-neutral-variant1-light-rgb: 250,246,248
   theme-ref-elevation-surface-neutral-variant2-light: rgb(247,243,244)
+  theme-ref-elevation-surface-neutral-variant2-light-rgb: 247,243,244
   theme-ref-elevation-surface-neutral-variant3-light: rgb(242,238,240)
+  theme-ref-elevation-surface-neutral-variant3-light-rgb: 242,238,240
   theme-ref-elevation-surface-neutral-variant4-light: rgb(238,234,236)
+  theme-ref-elevation-surface-neutral-variant4-light-rgb: 238,234,236
   theme-ref-elevation-surface-neutral-variant5-light: rgb(231,227,230)
+  theme-ref-elevation-surface-neutral-variant5-light-rgb: 231,227,230
   theme-ref-elevation-surface-neutral-variant6-light: rgb(225,221,224)
+  theme-ref-elevation-surface-neutral-variant6-light-rgb: 225,221,224
   theme-ref-elevation-surface-neutral-variant7-light: rgb(217,213,216)
+  theme-ref-elevation-surface-neutral-variant7-light-rgb: 217,213,216
   theme-ref-elevation-surface-neutral-variant8-light: rgb(209,205,209)
+  theme-ref-elevation-surface-neutral-variant8-light-rgb: 209,205,209
   theme-ref-elevation-surface-neutral-variant9-light: rgb(200,195,200)
+  theme-ref-elevation-surface-neutral-variant9-light-rgb: 200,195,200
   theme-ref-elevation-surface-neutral-variant10-light: rgb(192,187,192)
+  theme-ref-elevation-surface-neutral-variant10-light-rgb: 192,187,192
   theme-ref-elevation-surface-primary1-light: rgb(251,245,250)
+  theme-ref-elevation-surface-primary1-light-rgb: 251,245,250
   theme-ref-elevation-surface-primary2-light: rgb(248,241,249)
+  theme-ref-elevation-surface-primary2-light-rgb: 248,241,249
   theme-ref-elevation-surface-primary3-light: rgb(244,236,248)
+  theme-ref-elevation-surface-primary3-light-rgb: 244,236,248
   theme-ref-elevation-surface-primary4-light: rgb(240,230,246)
+  theme-ref-elevation-surface-primary4-light-rgb: 240,230,246
   theme-ref-elevation-surface-primary5-light: rgb(235,222,244)
+  theme-ref-elevation-surface-primary5-light-rgb: 235,222,244
   theme-ref-elevation-surface-primary6-light: rgb(230,214,242)
+  theme-ref-elevation-surface-primary6-light-rgb: 230,214,242
   theme-ref-elevation-surface-primary7-light: rgb(223,205,239)
+  theme-ref-elevation-surface-primary7-light-rgb: 223,205,239
   theme-ref-elevation-surface-primary8-light: rgb(216,195,236)
+  theme-ref-elevation-surface-primary8-light-rgb: 216,195,236
   theme-ref-elevation-surface-primary9-light: rgb(208,183,233)
+  theme-ref-elevation-surface-primary9-light-rgb: 208,183,233
   theme-ref-elevation-surface-primary10-light: rgb(202,174,230)
+  theme-ref-elevation-surface-primary10-light-rgb: 202,174,230
   theme-ref-elevation-surface-secondary1-light: rgb(250,246,248)
+  theme-ref-elevation-surface-secondary1-light-rgb: 250,246,248
   theme-ref-elevation-surface-secondary2-light: rgb(247,243,245)
+  theme-ref-elevation-surface-secondary2-light-rgb: 247,243,245
   theme-ref-elevation-surface-secondary3-light: rgb(243,238,241)
+  theme-ref-elevation-surface-secondary3-light-rgb: 243,238,241
   theme-ref-elevation-surface-secondary4-light: rgb(238,233,237)
+  theme-ref-elevation-surface-secondary4-light-rgb: 238,233,237
   theme-ref-elevation-surface-secondary5-light: rgb(232,227,231)
+  theme-ref-elevation-surface-secondary5-light-rgb: 232,227,231
   theme-ref-elevation-surface-secondary6-light: rgb(226,220,225)
+  theme-ref-elevation-surface-secondary6-light-rgb: 226,220,225
   theme-ref-elevation-surface-secondary7-light: rgb(218,212,218)
+  theme-ref-elevation-surface-secondary7-light-rgb: 218,212,218
   theme-ref-elevation-surface-secondary8-light: rgb(210,204,211)
+  theme-ref-elevation-surface-secondary8-light-rgb: 210,204,211
   theme-ref-elevation-surface-secondary9-light: rgb(201,195,203)
+  theme-ref-elevation-surface-secondary9-light-rgb: 201,195,203
   theme-ref-elevation-surface-secondary10-light: rgb(193,187,196)
+  theme-ref-elevation-surface-secondary10-light-rgb: 193,187,196
   theme-ref-elevation-surface-tertiary1-light: rgb(251,246,247)
+  theme-ref-elevation-surface-tertiary1-light-rgb: 251,246,247
   theme-ref-elevation-surface-tertiary2-light: rgb(249,243,244)
+  theme-ref-elevation-surface-tertiary2-light-rgb: 249,243,244
   theme-ref-elevation-surface-tertiary3-light: rgb(245,237,239)
+  theme-ref-elevation-surface-tertiary3-light-rgb: 245,237,239
   theme-ref-elevation-surface-tertiary4-light: rgb(241,232,234)
+  theme-ref-elevation-surface-tertiary4-light-rgb: 241,232,234
   theme-ref-elevation-surface-tertiary5-light: rgb(236,226,228)
+  theme-ref-elevation-surface-tertiary5-light-rgb: 236,226,228
   theme-ref-elevation-surface-tertiary6-light: rgb(231,219,221)
+  theme-ref-elevation-surface-tertiary6-light-rgb: 231,219,221
   theme-ref-elevation-surface-tertiary7-light: rgb(225,210,213)
+  theme-ref-elevation-surface-tertiary7-light-rgb: 225,210,213
   theme-ref-elevation-surface-tertiary8-light: rgb(218,202,205)
+  theme-ref-elevation-surface-tertiary8-light-rgb: 218,202,205
   theme-ref-elevation-surface-tertiary9-light: rgb(211,192,195)
+  theme-ref-elevation-surface-tertiary9-light-rgb: 211,192,195
   theme-ref-elevation-surface-tertiary10-light: rgb(204,183,187)
+  theme-ref-elevation-surface-tertiary10-light-rgb: 204,183,187
   theme-ref-elevation-surface-error1-light: rgb(253,244,245)
+  theme-ref-elevation-surface-error1-light-rgb: 253,244,245
   theme-ref-elevation-surface-error2-light: rgb(252,240,241)
+  theme-ref-elevation-surface-error2-light-rgb: 252,240,241
   theme-ref-elevation-surface-error3-light: rgb(249,233,234)
+  theme-ref-elevation-surface-error3-light-rgb: 249,233,234
   theme-ref-elevation-surface-error4-light: rgb(247,226,227)
+  theme-ref-elevation-surface-error4-light-rgb: 247,226,227
   theme-ref-elevation-surface-error5-light: rgb(245,217,218)
+  theme-ref-elevation-surface-error5-light-rgb: 245,217,218
   theme-ref-elevation-surface-error6-light: rgb(242,208,209)
+  theme-ref-elevation-surface-error6-light-rgb: 242,208,209
   theme-ref-elevation-surface-error7-light: rgb(238,197,198)
+  theme-ref-elevation-surface-error7-light-rgb: 238,197,198
   theme-ref-elevation-surface-error8-light: rgb(235,186,187)
+  theme-ref-elevation-surface-error8-light-rgb: 235,186,187
   theme-ref-elevation-surface-error9-light: rgb(231,173,173)
+  theme-ref-elevation-surface-error9-light-rgb: 231,173,173
   theme-ref-elevation-surface-error10-light: rgb(227,161,162)
+  theme-ref-elevation-surface-error10-light-rgb: 227,161,162
   theme-ref-elevation-surface-neutral1-dark: rgb(38,36,39)
+  theme-ref-elevation-surface-neutral1-dark-rgb: 38,36,39
   theme-ref-elevation-surface-neutral2-dark: rgb(43,41,44)
+  theme-ref-elevation-surface-neutral2-dark-rgb: 43,41,44
   theme-ref-elevation-surface-neutral3-dark: rgb(48,46,49)
+  theme-ref-elevation-surface-neutral3-dark-rgb: 48,46,49
   theme-ref-elevation-surface-neutral4-dark: rgb(55,53,56)
+  theme-ref-elevation-surface-neutral4-dark-rgb: 55,53,56
   theme-ref-elevation-surface-neutral5-dark: rgb(62,59,63)
+  theme-ref-elevation-surface-neutral5-dark-rgb: 62,59,63
   theme-ref-elevation-surface-neutral6-dark: rgb(71,68,71)
+  theme-ref-elevation-surface-neutral6-dark-rgb: 71,68,71
   theme-ref-elevation-surface-neutral7-dark: rgb(79,76,80)
+  theme-ref-elevation-surface-neutral7-dark-rgb: 79,76,80
   theme-ref-elevation-surface-neutral8-dark: rgb(90,86,90)
+  theme-ref-elevation-surface-neutral8-dark-rgb: 90,86,90
   theme-ref-elevation-surface-neutral9-dark: rgb(99,95,99)
+  theme-ref-elevation-surface-neutral9-dark-rgb: 99,95,99
   theme-ref-elevation-surface-neutral10-dark: rgb(107,104,107)
+  theme-ref-elevation-surface-neutral10-dark-rgb: 107,104,107
   theme-ref-elevation-surface-neutral-variant1-dark: rgb(38,35,39)
+  theme-ref-elevation-surface-neutral-variant1-dark-rgb: 38,35,39
   theme-ref-elevation-surface-neutral-variant2-dark: rgb(43,41,44)
+  theme-ref-elevation-surface-neutral-variant2-dark-rgb: 43,41,44
   theme-ref-elevation-surface-neutral-variant3-dark: rgb(48,46,49)
+  theme-ref-elevation-surface-neutral-variant3-dark-rgb: 48,46,49
   theme-ref-elevation-surface-neutral-variant4-dark: rgb(55,52,57)
+  theme-ref-elevation-surface-neutral-variant4-dark-rgb: 55,52,57
   theme-ref-elevation-surface-neutral-variant5-dark: rgb(62,59,64)
+  theme-ref-elevation-surface-neutral-variant5-dark-rgb: 62,59,64
   theme-ref-elevation-surface-neutral-variant6-dark: rgb(71,68,72)
+  theme-ref-elevation-surface-neutral-variant6-dark-rgb: 71,68,72
   theme-ref-elevation-surface-neutral-variant7-dark: rgb(80,76,81)
+  theme-ref-elevation-surface-neutral-variant7-dark-rgb: 80,76,81
   theme-ref-elevation-surface-neutral-variant8-dark: rgb(90,86,92)
+  theme-ref-elevation-surface-neutral-variant8-dark-rgb: 90,86,92
   theme-ref-elevation-surface-neutral-variant9-dark: rgb(99,95,101)
+  theme-ref-elevation-surface-neutral-variant9-dark-rgb: 99,95,101
   theme-ref-elevation-surface-neutral-variant10-dark: rgb(108,103,110)
+  theme-ref-elevation-surface-neutral-variant10-dark-rgb: 108,103,110
   theme-ref-elevation-surface-primary1-dark: rgb(39,35,41)
+  theme-ref-elevation-surface-primary1-dark-rgb: 39,35,41
   theme-ref-elevation-surface-primary2-dark: rgb(44,40,48)
+  theme-ref-elevation-surface-primary2-dark-rgb: 44,40,48
   theme-ref-elevation-surface-primary3-dark: rgb(50,44,55)
+  theme-ref-elevation-surface-primary3-dark-rgb: 50,44,55
   theme-ref-elevation-surface-primary4-dark: rgb(58,51,64)
+  theme-ref-elevation-surface-primary4-dark-rgb: 58,51,64
   theme-ref-elevation-surface-primary5-dark: rgb(65,57,73)
+  theme-ref-elevation-surface-primary5-dark-rgb: 65,57,73
   theme-ref-elevation-surface-primary6-dark: rgb(75,65,84)
+  theme-ref-elevation-surface-primary6-dark-rgb: 75,65,84
   theme-ref-elevation-surface-primary7-dark: rgb(84,73,95)
+  theme-ref-elevation-surface-primary7-dark-rgb: 84,73,95
   theme-ref-elevation-surface-primary8-dark: rgb(96,82,109)
+  theme-ref-elevation-surface-primary8-dark-rgb: 96,82,109
   theme-ref-elevation-surface-primary9-dark: rgb(105,90,120)
+  theme-ref-elevation-surface-primary9-dark-rgb: 105,90,120
   theme-ref-elevation-surface-primary10-dark: rgb(115,98,131)
+  theme-ref-elevation-surface-primary10-dark-rgb: 115,98,131
   theme-ref-elevation-surface-secondary1-dark: rgb(38,35,39)
+  theme-ref-elevation-surface-secondary1-dark-rgb: 38,35,39
   theme-ref-elevation-surface-secondary2-dark: rgb(43,40,45)
+  theme-ref-elevation-surface-secondary2-dark-rgb: 43,40,45
   theme-ref-elevation-surface-secondary3-dark: rgb(49,45,51)
+  theme-ref-elevation-surface-secondary3-dark-rgb: 49,45,51
   theme-ref-elevation-surface-secondary4-dark: rgb(56,52,58)
+  theme-ref-elevation-surface-secondary4-dark-rgb: 56,52,58
   theme-ref-elevation-surface-secondary5-dark: rgb(63,59,66)
+  theme-ref-elevation-surface-secondary5-dark-rgb: 63,59,66
   theme-ref-elevation-surface-secondary6-dark: rgb(72,67,75)
+  theme-ref-elevation-surface-secondary6-dark-rgb: 72,67,75
   theme-ref-elevation-surface-secondary7-dark: rgb(81,75,85)
+  theme-ref-elevation-surface-secondary7-dark-rgb: 81,75,85
   theme-ref-elevation-surface-secondary8-dark: rgb(91,85,96)
+  theme-ref-elevation-surface-secondary8-dark-rgb: 91,85,96
   theme-ref-elevation-surface-secondary9-dark: rgb(100,93,105)
+  theme-ref-elevation-surface-secondary9-dark-rgb: 100,93,105
   theme-ref-elevation-surface-secondary10-dark: rgb(109,102,115)
+  theme-ref-elevation-surface-secondary10-dark-rgb: 109,102,115
   theme-ref-elevation-surface-tertiary1-dark: rgb(40,35,38)
+  theme-ref-elevation-surface-tertiary1-dark-rgb: 40,35,38
   theme-ref-elevation-surface-tertiary2-dark: rgb(46,39,43)
+  theme-ref-elevation-surface-tertiary2-dark-rgb: 46,39,43
   theme-ref-elevation-surface-tertiary3-dark: rgb(52,44,48)
+  theme-ref-elevation-surface-tertiary3-dark-rgb: 52,44,48
   theme-ref-elevation-surface-tertiary4-dark: rgb(61,50,54)
+  theme-ref-elevation-surface-tertiary4-dark-rgb: 61,50,54
   theme-ref-elevation-surface-tertiary5-dark: rgb(69,57,61)
+  theme-ref-elevation-surface-tertiary5-dark-rgb: 69,57,61
   theme-ref-elevation-surface-tertiary6-dark: rgb(80,64,69)
+  theme-ref-elevation-surface-tertiary6-dark-rgb: 80,64,69
   theme-ref-elevation-surface-tertiary7-dark: rgb(91,72,77)
+  theme-ref-elevation-surface-tertiary7-dark-rgb: 91,72,77
   theme-ref-elevation-surface-tertiary8-dark: rgb(104,82,87)
+  theme-ref-elevation-surface-tertiary8-dark-rgb: 104,82,87
   theme-ref-elevation-surface-tertiary9-dark: rgb(114,89,95)
+  theme-ref-elevation-surface-tertiary9-dark-rgb: 114,89,95
   theme-ref-elevation-surface-tertiary10-dark: rgb(125,97,103)
+  theme-ref-elevation-surface-tertiary10-dark-rgb: 125,97,103
   theme-ref-elevation-surface-error1-dark: rgb(40,35,37)
+  theme-ref-elevation-surface-error1-dark-rgb: 40,35,37
   theme-ref-elevation-surface-error2-dark: rgb(47,39,41)
+  theme-ref-elevation-surface-error2-dark-rgb: 47,39,41
   theme-ref-elevation-surface-error3-dark: rgb(54,44,45)
+  theme-ref-elevation-surface-error3-dark-rgb: 54,44,45
   theme-ref-elevation-surface-error4-dark: rgb(63,50,51)
+  theme-ref-elevation-surface-error4-dark-rgb: 63,50,51
   theme-ref-elevation-surface-error5-dark: rgb(72,56,56)
+  theme-ref-elevation-surface-error5-dark-rgb: 72,56,56
   theme-ref-elevation-surface-error6-dark: rgb(83,64,63)
+  theme-ref-elevation-surface-error6-dark-rgb: 83,64,63
   theme-ref-elevation-surface-error7-dark: rgb(95,71,70)
+  theme-ref-elevation-surface-error7-dark-rgb: 95,71,70
   theme-ref-elevation-surface-error8-dark: rgb(108,81,79)
+  theme-ref-elevation-surface-error8-dark-rgb: 108,81,79
   theme-ref-elevation-surface-error9-dark: rgb(119,88,86)
+  theme-ref-elevation-surface-error9-dark-rgb: 119,88,86
   theme-ref-elevation-surface-error10-dark: rgb(131,96,93)
-  theme-ref-palette-primary100: '#ffffff'
-  theme-ref-palette-primary99: '#fffbfc'
-  theme-ref-palette-primary95: '#f9ecff'
-  theme-ref-palette-primary90: '#efdbff'
-  theme-ref-palette-primary80: '#dbb9ff'
-  theme-ref-palette-primary70: '#c695ff'
-  theme-ref-palette-primary60: '#af71fc'
-  theme-ref-palette-primary50: '#9456e0'
-  theme-ref-palette-primary40: '#7a3ac5'
-  theme-ref-palette-primary30: '#6119ac'
-  theme-ref-palette-primary20: '#450087'
-  theme-ref-palette-primary10: '#290055'
-  theme-ref-palette-primary0: '#000000'
-  theme-ref-palette-secondary100: '#ffffff'
-  theme-ref-palette-secondary99: '#fffbfc'
-  theme-ref-palette-secondary95: '#f9ecff'
-  theme-ref-palette-secondary90: '#ebddf6'
-  theme-ref-palette-secondary80: '#cfc1da'
-  theme-ref-palette-secondary70: '#b3a6be'
-  theme-ref-palette-secondary60: '#988ca3'
-  theme-ref-palette-secondary50: '#7e7389'
-  theme-ref-palette-secondary40: '#655a70'
-  theme-ref-palette-secondary30: '#4c4357'
-  theme-ref-palette-secondary20: '#362d40'
-  theme-ref-palette-secondary10: '#20182a'
-  theme-ref-palette-secondary0: '#000000'
-  theme-ref-palette-tertiary100: '#ffffff'
-  theme-ref-palette-tertiary99: '#fcfcfc'
-  theme-ref-palette-tertiary95: '#ffecef'
-  theme-ref-palette-tertiary90: '#ffd9df'
-  theme-ref-palette-tertiary80: '#f2b7c0'
-  theme-ref-palette-tertiary70: '#d49ca5'
-  theme-ref-palette-tertiary60: '#b8838c'
-  theme-ref-palette-tertiary50: '#9b6a72'
-  theme-ref-palette-tertiary40: '#80525a'
-  theme-ref-palette-tertiary30: '#653a42'
-  theme-ref-palette-tertiary20: '#4b252c'
-  theme-ref-palette-tertiary10: '#321018'
-  theme-ref-palette-tertiary0: '#000000'
-  theme-ref-palette-neutral100: '#ffffff'
-  theme-ref-palette-neutral99: '#fffbfc'
-  theme-ref-palette-neutral95: '#f5eff3'
-  theme-ref-palette-neutral90: '#e7e1e5'
-  theme-ref-palette-neutral80: '#cbc5ca'
-  theme-ref-palette-neutral70: '#afaaae'
-  theme-ref-palette-neutral60: '#948f94'
-  theme-ref-palette-neutral50: '#7a767a'
-  theme-ref-palette-neutral40: '#615d62'
-  theme-ref-palette-neutral30: '#49464a'
-  theme-ref-palette-neutral20: '#323033'
-  theme-ref-palette-neutral10: '#1d1b1e'
-  theme-ref-palette-neutral0: '#000000'
-  theme-ref-palette-neutral-variant100: '#ffffff'
-  theme-ref-palette-neutral-variant99: '#fffbfc'
-  theme-ref-palette-neutral-variant95: '#f7eef9'
-  theme-ref-palette-neutral-variant90: '#e8dfeb'
-  theme-ref-palette-neutral-variant80: '#ccc4cf'
-  theme-ref-palette-neutral-variant70: '#b0a9b3'
-  theme-ref-palette-neutral-variant60: '#958e99'
-  theme-ref-palette-neutral-variant50: '#7b757e'
-  theme-ref-palette-neutral-variant40: '#625c66'
-  theme-ref-palette-neutral-variant30: '#4a454e'
-  theme-ref-palette-neutral-variant20: '#332f37'
-  theme-ref-palette-neutral-variant10: '#1e1a22'
-  theme-ref-palette-neutral-variant0: '#000000'
-  theme-ref-palette-error100: '#ffffff'
-  theme-ref-palette-error99: '#fcfcfc'
-  theme-ref-palette-error95: '#ffede9'
-  theme-ref-palette-error90: '#ffdad4'
-  theme-ref-palette-error80: '#ffb4a9'
-  theme-ref-palette-error70: '#ff897a'
-  theme-ref-palette-error60: '#ff5449'
-  theme-ref-palette-error50: '#dd3730'
-  theme-ref-palette-error40: '#ba1b1b'
-  theme-ref-palette-error30: '#930006'
-  theme-ref-palette-error20: '#680003'
-  theme-ref-palette-error10: '#410001'
-  theme-ref-palette-error0: '#000000'
-  theme-ref-palette-primary5: '#14002aff'
-  theme-ref-palette-primary15: '#37006eff'
-  theme-ref-palette-primary25: '#530c99ff'
-  theme-ref-palette-primary35: '#6d29b8ff'
-  theme-ref-palette-primary45: '#8748d2ff'
-  theme-ref-palette-primary65: '#ba83fdff'
-  theme-ref-palette-primary75: '#d0a7ffff'
-  theme-ref-palette-primary85: '#e5caffff'
-  theme-ref-palette-primary7: '#1e003fff'
-  theme-ref-palette-primary92: '#f4e3ffff'
-  theme-ref-palette-primary97: '#fcf3fdff'
-  theme-ref-palette-secondary5: '#100c15ff'
-  theme-ref-palette-secondary15: '#2b2235ff'
-  theme-ref-palette-secondary25: '#41384bff'
-  theme-ref-palette-secondary35: '#584e63ff'
-  theme-ref-palette-secondary45: '#71667cff'
-  theme-ref-palette-secondary65: '#a599b0ff'
-  theme-ref-palette-secondary75: '#c1b3ccff'
-  theme-ref-palette-secondary85: '#ddcfe8ff'
-  theme-ref-palette-secondary7: '#18121fff'
-  theme-ref-palette-secondary92: '#f2e4faff'
-  theme-ref-palette-secondary97: '#fcf3fdff'
-  theme-ref-palette-tertiary5: '#19080cff'
-  theme-ref-palette-tertiary15: '#3e1a22ff'
-  theme-ref-palette-tertiary25: '#582f37ff'
-  theme-ref-palette-tertiary35: '#72464eff'
-  theme-ref-palette-tertiary45: '#8d5e66ff'
-  theme-ref-palette-tertiary65: '#c68f98ff'
-  theme-ref-palette-tertiary75: '#e3a9b2ff'
-  theme-ref-palette-tertiary85: '#f8c8cfff'
-  theme-ref-palette-tertiary7: '#250c12ff'
-  theme-ref-palette-tertiary92: '#ffe2e7ff'
-  theme-ref-palette-tertiary97: '#fdf4f5ff'
-  theme-ref-palette-error5: '#200000ff'
-  theme-ref-palette-error15: '#540002ff'
-  theme-ref-palette-error25: '#7d0004ff'
-  theme-ref-palette-error35: '#a60d10ff'
-  theme-ref-palette-error45: '#cb2925ff'
-  theme-ref-palette-error65: '#ff6e61ff'
-  theme-ref-palette-error75: '#ff9e91ff'
-  theme-ref-palette-error85: '#ffc7beff'
-  theme-ref-palette-error7: '#300000ff'
-  theme-ref-palette-error92: '#ffe3deff'
-  theme-ref-palette-error97: '#fdf4f2ff'
-  theme-ref-palette-neutral5: '#0e0d0fff'
-  theme-ref-palette-neutral15: '#272528ff'
-  theme-ref-palette-neutral25: '#3d3b3eff'
-  theme-ref-palette-neutral35: '#555156ff'
-  theme-ref-palette-neutral45: '#6d696eff'
-  theme-ref-palette-neutral65: '#a19ca1ff'
-  theme-ref-palette-neutral75: '#bdb7bcff'
-  theme-ref-palette-neutral85: '#d9d3d7ff'
-  theme-ref-palette-neutral7: '#151416ff'
-  theme-ref-palette-neutral92: '#eee8ecff'
-  theme-ref-palette-neutral97: '#faf5f7ff'
-  theme-ref-palette-neutral-variant5: '#0f0d11ff'
-  theme-ref-palette-neutral-variant15: '#28242cff'
-  theme-ref-palette-neutral-variant25: '#3e3a42ff'
-  theme-ref-palette-neutral-variant35: '#56505aff'
-  theme-ref-palette-neutral-variant45: '#6e6872ff'
-  theme-ref-palette-neutral-variant65: '#a29ba6ff'
-  theme-ref-palette-neutral-variant75: '#beb6c1ff'
-  theme-ref-palette-neutral-variant85: '#dad1ddff'
-  theme-ref-palette-neutral-variant7: '#161319ff'
-  theme-ref-palette-neutral-variant92: '#efe6f2ff'
-  theme-ref-palette-neutral-variant97: '#fbf4faff'
+  theme-ref-elevation-surface-error10-dark-rgb: 131,96,93
+  theme-ref-palette-primary100: rgb(255,255,255)
+  theme-ref-palette-primary100-rgb: 255,255,255
+  theme-ref-palette-primary99: rgb(255,251,252)
+  theme-ref-palette-primary99-rgb: 255,251,252
+  theme-ref-palette-primary95: rgb(249,236,255)
+  theme-ref-palette-primary95-rgb: 249,236,255
+  theme-ref-palette-primary90: rgb(239,219,255)
+  theme-ref-palette-primary90-rgb: 239,219,255
+  theme-ref-palette-primary80: rgb(219,185,255)
+  theme-ref-palette-primary80-rgb: 219,185,255
+  theme-ref-palette-primary70: rgb(198,149,255)
+  theme-ref-palette-primary70-rgb: 198,149,255
+  theme-ref-palette-primary60: rgb(175,113,252)
+  theme-ref-palette-primary60-rgb: 175,113,252
+  theme-ref-palette-primary50: rgb(148,86,224)
+  theme-ref-palette-primary50-rgb: 148,86,224
+  theme-ref-palette-primary40: rgb(122,58,197)
+  theme-ref-palette-primary40-rgb: 122,58,197
+  theme-ref-palette-primary30: rgb(97,25,172)
+  theme-ref-palette-primary30-rgb: 97,25,172
+  theme-ref-palette-primary20: rgb(69,0,135)
+  theme-ref-palette-primary20-rgb: 69,0,135
+  theme-ref-palette-primary10: rgb(41,0,85)
+  theme-ref-palette-primary10-rgb: 41,0,85
+  theme-ref-palette-primary0: rgb(0,0,0)
+  theme-ref-palette-primary0-rgb: 0,0,0
+  theme-ref-palette-secondary100: rgb(255,255,255)
+  theme-ref-palette-secondary100-rgb: 255,255,255
+  theme-ref-palette-secondary99: rgb(255,251,252)
+  theme-ref-palette-secondary99-rgb: 255,251,252
+  theme-ref-palette-secondary95: rgb(249,236,255)
+  theme-ref-palette-secondary95-rgb: 249,236,255
+  theme-ref-palette-secondary90: rgb(235,221,246)
+  theme-ref-palette-secondary90-rgb: 235,221,246
+  theme-ref-palette-secondary80: rgb(207,193,218)
+  theme-ref-palette-secondary80-rgb: 207,193,218
+  theme-ref-palette-secondary70: rgb(179,166,190)
+  theme-ref-palette-secondary70-rgb: 179,166,190
+  theme-ref-palette-secondary60: rgb(152,140,163)
+  theme-ref-palette-secondary60-rgb: 152,140,163
+  theme-ref-palette-secondary50: rgb(126,115,137)
+  theme-ref-palette-secondary50-rgb: 126,115,137
+  theme-ref-palette-secondary40: rgb(101,90,112)
+  theme-ref-palette-secondary40-rgb: 101,90,112
+  theme-ref-palette-secondary30: rgb(76,67,87)
+  theme-ref-palette-secondary30-rgb: 76,67,87
+  theme-ref-palette-secondary20: rgb(54,45,64)
+  theme-ref-palette-secondary20-rgb: 54,45,64
+  theme-ref-palette-secondary10: rgb(32,24,42)
+  theme-ref-palette-secondary10-rgb: 32,24,42
+  theme-ref-palette-secondary0: rgb(0,0,0)
+  theme-ref-palette-secondary0-rgb: 0,0,0
+  theme-ref-palette-tertiary100: rgb(255,255,255)
+  theme-ref-palette-tertiary100-rgb: 255,255,255
+  theme-ref-palette-tertiary99: rgb(252,252,252)
+  theme-ref-palette-tertiary99-rgb: 252,252,252
+  theme-ref-palette-tertiary95: rgb(255,236,239)
+  theme-ref-palette-tertiary95-rgb: 255,236,239
+  theme-ref-palette-tertiary90: rgb(255,217,223)
+  theme-ref-palette-tertiary90-rgb: 255,217,223
+  theme-ref-palette-tertiary80: rgb(242,183,192)
+  theme-ref-palette-tertiary80-rgb: 242,183,192
+  theme-ref-palette-tertiary70: rgb(212,156,165)
+  theme-ref-palette-tertiary70-rgb: 212,156,165
+  theme-ref-palette-tertiary60: rgb(184,131,140)
+  theme-ref-palette-tertiary60-rgb: 184,131,140
+  theme-ref-palette-tertiary50: rgb(155,106,114)
+  theme-ref-palette-tertiary50-rgb: 155,106,114
+  theme-ref-palette-tertiary40: rgb(128,82,90)
+  theme-ref-palette-tertiary40-rgb: 128,82,90
+  theme-ref-palette-tertiary30: rgb(101,58,66)
+  theme-ref-palette-tertiary30-rgb: 101,58,66
+  theme-ref-palette-tertiary20: rgb(75,37,44)
+  theme-ref-palette-tertiary20-rgb: 75,37,44
+  theme-ref-palette-tertiary10: rgb(50,16,24)
+  theme-ref-palette-tertiary10-rgb: 50,16,24
+  theme-ref-palette-tertiary0: rgb(0,0,0)
+  theme-ref-palette-tertiary0-rgb: 0,0,0
+  theme-ref-palette-neutral100: rgb(255,255,255)
+  theme-ref-palette-neutral100-rgb: 255,255,255
+  theme-ref-palette-neutral99: rgb(255,251,252)
+  theme-ref-palette-neutral99-rgb: 255,251,252
+  theme-ref-palette-neutral95: rgb(245,239,243)
+  theme-ref-palette-neutral95-rgb: 245,239,243
+  theme-ref-palette-neutral90: rgb(231,225,229)
+  theme-ref-palette-neutral90-rgb: 231,225,229
+  theme-ref-palette-neutral80: rgb(203,197,202)
+  theme-ref-palette-neutral80-rgb: 203,197,202
+  theme-ref-palette-neutral70: rgb(175,170,174)
+  theme-ref-palette-neutral70-rgb: 175,170,174
+  theme-ref-palette-neutral60: rgb(148,143,148)
+  theme-ref-palette-neutral60-rgb: 148,143,148
+  theme-ref-palette-neutral50: rgb(122,118,122)
+  theme-ref-palette-neutral50-rgb: 122,118,122
+  theme-ref-palette-neutral40: rgb(97,93,98)
+  theme-ref-palette-neutral40-rgb: 97,93,98
+  theme-ref-palette-neutral30: rgb(73,70,74)
+  theme-ref-palette-neutral30-rgb: 73,70,74
+  theme-ref-palette-neutral20: rgb(50,48,51)
+  theme-ref-palette-neutral20-rgb: 50,48,51
+  theme-ref-palette-neutral10: rgb(29,27,30)
+  theme-ref-palette-neutral10-rgb: 29,27,30
+  theme-ref-palette-neutral0: rgb(0,0,0)
+  theme-ref-palette-neutral0-rgb: 0,0,0
+  theme-ref-palette-neutral-variant100: rgb(255,255,255)
+  theme-ref-palette-neutral-variant100-rgb: 255,255,255
+  theme-ref-palette-neutral-variant99: rgb(255,251,252)
+  theme-ref-palette-neutral-variant99-rgb: 255,251,252
+  theme-ref-palette-neutral-variant95: rgb(247,238,249)
+  theme-ref-palette-neutral-variant95-rgb: 247,238,249
+  theme-ref-palette-neutral-variant90: rgb(232,223,235)
+  theme-ref-palette-neutral-variant90-rgb: 232,223,235
+  theme-ref-palette-neutral-variant80: rgb(204,196,207)
+  theme-ref-palette-neutral-variant80-rgb: 204,196,207
+  theme-ref-palette-neutral-variant70: rgb(176,169,179)
+  theme-ref-palette-neutral-variant70-rgb: 176,169,179
+  theme-ref-palette-neutral-variant60: rgb(149,142,153)
+  theme-ref-palette-neutral-variant60-rgb: 149,142,153
+  theme-ref-palette-neutral-variant50: rgb(123,117,126)
+  theme-ref-palette-neutral-variant50-rgb: 123,117,126
+  theme-ref-palette-neutral-variant40: rgb(98,92,102)
+  theme-ref-palette-neutral-variant40-rgb: 98,92,102
+  theme-ref-palette-neutral-variant30: rgb(74,69,78)
+  theme-ref-palette-neutral-variant30-rgb: 74,69,78
+  theme-ref-palette-neutral-variant20: rgb(51,47,55)
+  theme-ref-palette-neutral-variant20-rgb: 51,47,55
+  theme-ref-palette-neutral-variant10: rgb(30,26,34)
+  theme-ref-palette-neutral-variant10-rgb: 30,26,34
+  theme-ref-palette-neutral-variant0: rgb(0,0,0)
+  theme-ref-palette-neutral-variant0-rgb: 0,0,0
+  theme-ref-palette-error100: rgb(255,255,255)
+  theme-ref-palette-error100-rgb: 255,255,255
+  theme-ref-palette-error99: rgb(252,252,252)
+  theme-ref-palette-error99-rgb: 252,252,252
+  theme-ref-palette-error95: rgb(255,237,233)
+  theme-ref-palette-error95-rgb: 255,237,233
+  theme-ref-palette-error90: rgb(255,218,212)
+  theme-ref-palette-error90-rgb: 255,218,212
+  theme-ref-palette-error80: rgb(255,180,169)
+  theme-ref-palette-error80-rgb: 255,180,169
+  theme-ref-palette-error70: rgb(255,137,122)
+  theme-ref-palette-error70-rgb: 255,137,122
+  theme-ref-palette-error60: rgb(255,84,73)
+  theme-ref-palette-error60-rgb: 255,84,73
+  theme-ref-palette-error50: rgb(221,55,48)
+  theme-ref-palette-error50-rgb: 221,55,48
+  theme-ref-palette-error40: rgb(186,27,27)
+  theme-ref-palette-error40-rgb: 186,27,27
+  theme-ref-palette-error30: rgb(147,0,6)
+  theme-ref-palette-error30-rgb: 147,0,6
+  theme-ref-palette-error20: rgb(104,0,3)
+  theme-ref-palette-error20-rgb: 104,0,3
+  theme-ref-palette-error10: rgb(65,0,1)
+  theme-ref-palette-error10-rgb: 65,0,1
+  theme-ref-palette-error0: rgb(0,0,0)
+  theme-ref-palette-error0-rgb: 0,0,0
+  theme-ref-palette-primary5: rgb(20,0,42)
+  theme-ref-palette-primary5-rgb: 20,0,42
+  theme-ref-palette-primary15: rgb(55,0,110)
+  theme-ref-palette-primary15-rgb: 55,0,110
+  theme-ref-palette-primary25: rgb(83,12,153)
+  theme-ref-palette-primary25-rgb: 83,12,153
+  theme-ref-palette-primary35: rgb(109,41,184)
+  theme-ref-palette-primary35-rgb: 109,41,184
+  theme-ref-palette-primary45: rgb(135,72,210)
+  theme-ref-palette-primary45-rgb: 135,72,210
+  theme-ref-palette-primary65: rgb(186,131,253)
+  theme-ref-palette-primary65-rgb: 186,131,253
+  theme-ref-palette-primary75: rgb(208,167,255)
+  theme-ref-palette-primary75-rgb: 208,167,255
+  theme-ref-palette-primary85: rgb(229,202,255)
+  theme-ref-palette-primary85-rgb: 229,202,255
+  theme-ref-palette-primary7: rgb(30,0,63)
+  theme-ref-palette-primary7-rgb: 30,0,63
+  theme-ref-palette-primary92: rgb(244,227,255)
+  theme-ref-palette-primary92-rgb: 244,227,255
+  theme-ref-palette-primary97: rgb(252,243,253)
+  theme-ref-palette-primary97-rgb: 252,243,253
+  theme-ref-palette-secondary5: rgb(16,12,21)
+  theme-ref-palette-secondary5-rgb: 16,12,21
+  theme-ref-palette-secondary15: rgb(43,34,53)
+  theme-ref-palette-secondary15-rgb: 43,34,53
+  theme-ref-palette-secondary25: rgb(65,56,75)
+  theme-ref-palette-secondary25-rgb: 65,56,75
+  theme-ref-palette-secondary35: rgb(88,78,99)
+  theme-ref-palette-secondary35-rgb: 88,78,99
+  theme-ref-palette-secondary45: rgb(113,102,124)
+  theme-ref-palette-secondary45-rgb: 113,102,124
+  theme-ref-palette-secondary65: rgb(165,153,176)
+  theme-ref-palette-secondary65-rgb: 165,153,176
+  theme-ref-palette-secondary75: rgb(193,179,204)
+  theme-ref-palette-secondary75-rgb: 193,179,204
+  theme-ref-palette-secondary85: rgb(221,207,232)
+  theme-ref-palette-secondary85-rgb: 221,207,232
+  theme-ref-palette-secondary7: rgb(24,18,31)
+  theme-ref-palette-secondary7-rgb: 24,18,31
+  theme-ref-palette-secondary92: rgb(242,228,250)
+  theme-ref-palette-secondary92-rgb: 242,228,250
+  theme-ref-palette-secondary97: rgb(252,243,253)
+  theme-ref-palette-secondary97-rgb: 252,243,253
+  theme-ref-palette-tertiary5: rgb(25,8,12)
+  theme-ref-palette-tertiary5-rgb: 25,8,12
+  theme-ref-palette-tertiary15: rgb(62,26,34)
+  theme-ref-palette-tertiary15-rgb: 62,26,34
+  theme-ref-palette-tertiary25: rgb(88,47,55)
+  theme-ref-palette-tertiary25-rgb: 88,47,55
+  theme-ref-palette-tertiary35: rgb(114,70,78)
+  theme-ref-palette-tertiary35-rgb: 114,70,78
+  theme-ref-palette-tertiary45: rgb(141,94,102)
+  theme-ref-palette-tertiary45-rgb: 141,94,102
+  theme-ref-palette-tertiary65: rgb(198,143,152)
+  theme-ref-palette-tertiary65-rgb: 198,143,152
+  theme-ref-palette-tertiary75: rgb(227,169,178)
+  theme-ref-palette-tertiary75-rgb: 227,169,178
+  theme-ref-palette-tertiary85: rgb(248,200,207)
+  theme-ref-palette-tertiary85-rgb: 248,200,207
+  theme-ref-palette-tertiary7: rgb(37,12,18)
+  theme-ref-palette-tertiary7-rgb: 37,12,18
+  theme-ref-palette-tertiary92: rgb(255,226,231)
+  theme-ref-palette-tertiary92-rgb: 255,226,231
+  theme-ref-palette-tertiary97: rgb(253,244,245)
+  theme-ref-palette-tertiary97-rgb: 253,244,245
+  theme-ref-palette-error5: rgb(32,0,0)
+  theme-ref-palette-error5-rgb: 32,0,0
+  theme-ref-palette-error15: rgb(84,0,2)
+  theme-ref-palette-error15-rgb: 84,0,2
+  theme-ref-palette-error25: rgb(125,0,4)
+  theme-ref-palette-error25-rgb: 125,0,4
+  theme-ref-palette-error35: rgb(166,13,16)
+  theme-ref-palette-error35-rgb: 166,13,16
+  theme-ref-palette-error45: rgb(203,41,37)
+  theme-ref-palette-error45-rgb: 203,41,37
+  theme-ref-palette-error65: rgb(255,110,97)
+  theme-ref-palette-error65-rgb: 255,110,97
+  theme-ref-palette-error75: rgb(255,158,145)
+  theme-ref-palette-error75-rgb: 255,158,145
+  theme-ref-palette-error85: rgb(255,199,190)
+  theme-ref-palette-error85-rgb: 255,199,190
+  theme-ref-palette-error7: rgb(48,0,0)
+  theme-ref-palette-error7-rgb: 48,0,0
+  theme-ref-palette-error92: rgb(255,227,222)
+  theme-ref-palette-error92-rgb: 255,227,222
+  theme-ref-palette-error97: rgb(253,244,242)
+  theme-ref-palette-error97-rgb: 253,244,242
+  theme-ref-palette-neutral5: rgb(14,13,15)
+  theme-ref-palette-neutral5-rgb: 14,13,15
+  theme-ref-palette-neutral15: rgb(39,37,40)
+  theme-ref-palette-neutral15-rgb: 39,37,40
+  theme-ref-palette-neutral25: rgb(61,59,62)
+  theme-ref-palette-neutral25-rgb: 61,59,62
+  theme-ref-palette-neutral35: rgb(85,81,86)
+  theme-ref-palette-neutral35-rgb: 85,81,86
+  theme-ref-palette-neutral45: rgb(109,105,110)
+  theme-ref-palette-neutral45-rgb: 109,105,110
+  theme-ref-palette-neutral65: rgb(161,156,161)
+  theme-ref-palette-neutral65-rgb: 161,156,161
+  theme-ref-palette-neutral75: rgb(189,183,188)
+  theme-ref-palette-neutral75-rgb: 189,183,188
+  theme-ref-palette-neutral85: rgb(217,211,215)
+  theme-ref-palette-neutral85-rgb: 217,211,215
+  theme-ref-palette-neutral7: rgb(21,20,22)
+  theme-ref-palette-neutral7-rgb: 21,20,22
+  theme-ref-palette-neutral92: rgb(238,232,236)
+  theme-ref-palette-neutral92-rgb: 238,232,236
+  theme-ref-palette-neutral97: rgb(250,245,247)
+  theme-ref-palette-neutral97-rgb: 250,245,247
+  theme-ref-palette-neutral-variant5: rgb(15,13,17)
+  theme-ref-palette-neutral-variant5-rgb: 15,13,17
+  theme-ref-palette-neutral-variant15: rgb(40,36,44)
+  theme-ref-palette-neutral-variant15-rgb: 40,36,44
+  theme-ref-palette-neutral-variant25: rgb(62,58,66)
+  theme-ref-palette-neutral-variant25-rgb: 62,58,66
+  theme-ref-palette-neutral-variant35: rgb(86,80,90)
+  theme-ref-palette-neutral-variant35-rgb: 86,80,90
+  theme-ref-palette-neutral-variant45: rgb(110,104,114)
+  theme-ref-palette-neutral-variant45-rgb: 110,104,114
+  theme-ref-palette-neutral-variant65: rgb(162,155,166)
+  theme-ref-palette-neutral-variant65-rgb: 162,155,166
+  theme-ref-palette-neutral-variant75: rgb(190,182,193)
+  theme-ref-palette-neutral-variant75-rgb: 190,182,193
+  theme-ref-palette-neutral-variant85: rgb(218,209,221)
+  theme-ref-palette-neutral-variant85-rgb: 218,209,221
+  theme-ref-palette-neutral-variant7: rgb(22,19,25)
+  theme-ref-palette-neutral-variant7-rgb: 22,19,25
+  theme-ref-palette-neutral-variant92: rgb(239,230,242)
+  theme-ref-palette-neutral-variant92-rgb: 239,230,242
+  theme-ref-palette-neutral-variant97: rgb(251,244,250)
+  theme-ref-palette-neutral-variant97-rgb: 251,244,250
 
   # --------------------------------------------------------------------------
   # ==================== END of M3 copy/paste configuration ==================
@@ -299,18 +563,22 @@ M3-C11-Purple:
       # Start with the M3 generated colors for dark mode...
       #
       theme-sys-color-primary: var(--theme-ref-palette-primary80)
+      theme-sys-color-primary-rgb: var(--theme-ref-palette-primary80-rgb)
       theme-sys-color-on-primary: var(--theme-ref-palette-primary20)
       theme-sys-color-primary-container: var(--theme-ref-palette-primary30)
       theme-sys-color-on-primary-container: var(--theme-ref-palette-primary90)
 
       theme-sys-color-secondary: var(--theme-ref-palette-secondary80)
+      theme-sys-color-secondary-rgb: var(--theme-ref-palette-secondary80-rgb)
       theme-sys-color-on-secondary: var(--theme-ref-palette-secondary20)
       theme-sys-color-secondary-container: var(--theme-ref-palette-secondary30)
       theme-sys-color-on-secondary-container: var(--theme-ref-palette-secondary90)
 
       theme-sys-color-tertiary: var(--theme-ref-palette-tertiary80)
+      theme-sys-color-tertiary-rgb: var(--theme-ref-palette-tertiary80-rgb)
       theme-sys-color-on-tertiary: var(--theme-ref-palette-tertiary20)
       theme-sys-color-tertiary-container: var(--theme-ref-palette-tertiary30)
+      theme-sys-color-tertiary-container-rgb: var(--theme-ref-palette-tertiary30-rgb)
       theme-sys-color-on-tertiary-container: var(--theme-ref-palette-tertiary90)
 
       theme-sys-color-error: var(--theme-ref-palette-error80)
@@ -319,10 +587,12 @@ M3-C11-Purple:
       theme-sys-color-on-error-container: var(--theme-ref-palette-error90)
 
       theme-sys-color-background: var(--theme-ref-palette-neutral10)
+      theme-sys-color-background-rgb: var(--theme-ref-palette-neutral10-rgb)
       theme-sys-color-on-background:  var(--theme-ref-palette-neutral90)
 
       theme-sys-color-surface: var(--theme-ref-palette-neutral10)
       theme-sys-color-on-surface: var(--theme-ref-palette-neutral80)
+      theme-sys-color-on-surface-rgb: var(--theme-ref-palette-neutral80-rgb)
       theme-sys-color-surface-variant: var(--theme-ref-palette-neutral-variant30)
       theme-sys-color-on-surface-variant: var(--theme-ref-palette-neutral-variant80)
 
@@ -519,6 +789,7 @@ M3-C11-Purple:
       # - primary for general backgrounds
       # - secondary for cards (and more)
       theme-sys-ha-primary-background-color: var(--theme-sys-color-background)
+      theme-sys-ha-primary-background-color-rgb: var(--theme-sys-color-background-rgb)
       theme-sys-ha-secondary-background-color: var(--theme-sys-elevation-surface-primary3)
 
       # For boxshadow: darker and lighter colors relative to secondary background color (cards!)
@@ -526,9 +797,13 @@ M3-C11-Purple:
       theme-sys-ha-shadow-lighter: var(--theme-background-color-darken-20)
       
       # Primary color is header for instance with view menu
-      theme-sys-ha-primary-color: var(--theme-sys-color-primary)
-      theme-sys-ha-light-primary-color: 'var(--theme-ref-palette-primary90)'
-      theme-sys-ha-dark-primary-color: 'var(--theme-ref-palette-primary10)'
+      theme-sys-ha-primary-color: var(--theme-ref-palette-primary80)
+      theme-sys-ha-light-primary-color: var(--theme-ref-palette-primary90)
+      theme-sys-ha-dark-primary-color: var(--theme-ref-palette-primary10)
+
+      theme-sys-ha-primary-color-rgb: var(--theme-ref-palette-primary80-rgb)
+      theme-sys-ha-light-primary-color-rgb: var(--theme-ref-palette-primary90-rgb)
+      theme-sys-ha-dark-primary-color-rgb: var(--theme-ref-palette-primary10-rgb)
 
       # Set text colors
       theme-sys-ha-primary-text-color: var(--theme-sys-color-on-surface)
@@ -622,19 +897,24 @@ M3-C11-Purple:
     light:
       # Light
       theme-sys-color-primary: var(--theme-ref-palette-primary40)
+      theme-sys-color-primary-rgb: var(--theme-ref-palette-primary40-rgb)
       theme-sys-color-on-primary: var(--theme-ref-palette-primary100)
       theme-sys-color-primary-container: var(--theme-ref-palette-primary90)
       theme-sys-color-on-primary-container: var(--theme-ref-palette-primary10)
 
       theme-sys-color-secondary: var(--theme-ref-palette-secondary40)
+      theme-sys-color-secondary-rgb: var(--theme-ref-palette-secondary40-rgb)
       theme-sys-color-on-secondary: var(--theme-ref-palette-secondary100)
       theme-sys-color-secondary-container: var(--theme-ref-palette-secondary90)
       theme-sys-color-on-secondary-container: var(--theme-ref-palette-secondary10)
 
       theme-sys-color-tertiary: var(--theme-ref-palette-tertiary40)
+      theme-sys-color-tertiary-rgb: var(--theme-ref-palette-tertiary40-rgb)
       theme-sys-color-on-tertiary: var(--theme-ref-palette-tertiary100)
       theme-sys-color-tertiary-container: var(--theme-ref-palette-tertiary90)
+      theme-sys-color-tertiary-container-rgb: var(--theme-ref-palette-tertiary90-rgb)
       theme-sys-color-on-tertiary-container: var(--theme-ref-palette-tertiary10)
+
 
       theme-sys-color-error: var(--theme-ref-palette-error40)
       theme-sys-color-on-error: var(--theme-ref-palette-error100)
@@ -642,10 +922,12 @@ M3-C11-Purple:
       theme-sys-color-on-error-container: var(--theme-ref-palette-error10)
 
       theme-sys-color-background: var(--theme-ref-palette-neutral99)
+      theme-sys-color-background-rgb: var(--theme-ref-palette-neutral99-rgb)
       theme-sys-color-on-background:  var(--theme-ref-palette-neutral20)
 
       theme-sys-color-surface: var(--theme-ref-palette-neutral99)
       theme-sys-color-on-surface: var(--theme-ref-palette-neutral10)
+      theme-sys-color-on-surface-rgb: var(--theme-ref-palette-neutral10-rgb)
       theme-sys-color-surface-variant: var(--theme-ref-palette-neutral-variant90)
       theme-sys-color-on-surface-variant: var(--theme-ref-palette-neutral-variant30)
 
@@ -850,13 +1132,19 @@ M3-C11-Purple:
       theme-sys-ha-shadow-lighter: var(--theme-ref-palette-neutral90)
       
       # Primary color is header for instance with view menu
-      theme-sys-ha-primary-color: 'var(--theme-sys-color-primary)'
-      theme-sys-ha-light-primary-color: 'var(--theme-ref-palette-primary90)'
-      theme-sys-ha-dark-primary-color: 'var(--theme-ref-palette-primary10)'
+      theme-sys-ha-primary-color: var(--theme-ref-palette-primary40)
+      theme-sys-ha-light-primary-color: var(--theme-ref-palette-primary90)
+      theme-sys-ha-dark-primary-color: var(--theme-ref-palette-primary10)
+
+      theme-sys-ha-primary-color-rgb: var(--theme-ref-palette-primary40-rgb)
+      theme-sys-ha-light-primary-color-rgb: var(--theme-ref-palette-primary90-rgb)
+      theme-sys-ha-dark-primary-color-rgb: var(--theme-ref-palette-primary10-rgb)
 
       # Set text colors
       theme-sys-ha-primary-text-color: var(--theme-sys-color-on-surface)
+      theme-sys-ha-primary-text-color-rgb: var(--theme-sys-color-on-surface-rgb)
       theme-sys-ha-secondary-text-color: var(--theme-sys-color-secondary)
+      theme-sys-ha-secondary-text-color-rgb: var(--theme-sys-color-secondary-rgb)
       theme-sys-ha-disabled-text-color: var(--theme-sys-elevation-surface-neutral5)
 
       theme-sys-ha-primary-icon-color: var(--theme-text-primary-color)
@@ -867,6 +1155,7 @@ M3-C11-Purple:
       
       # Card state colors
       theme-sys-ha-card-background-color: var(--theme-sys-color-background)
+      theme-sys-ha-card-background-color-rgb: var(--theme-sys-color-background-rgb)
       theme-sys-ha-card-background-color-active: white
       theme-sys-ha-card-background-color-inactive: rgb(0, 0, 0, 0.05)
       theme-sys-ha-card-background-color-undefined: rgb(0, 0, 0, 0.2)
@@ -876,10 +1165,12 @@ M3-C11-Purple:
       theme-sys-ha-accent-color: var(--theme-sys-color-tertiary-container)
       theme-sys-ha-on-accent-color: var(--theme-sys-color-on-tertiary-container)
 
+      theme-sys-ha-accent-color-rgb: var(--theme-sys-color-tertiary-container-rgb)
+
       # Neumorphic colors for shadows
       theme-sys-ha-shadow-lighter-nm: '#ffffff'
       theme-sys-ha-shadow-darker-nm: '#d6d8cf'
-      
+
     # --------------------------------------------------------------------------
     # ==================== END of LIGHT mode configuration  ====================
     # --------------------------------------------------------------------------
@@ -919,6 +1210,7 @@ M3-C11-Purple:
   theme-text-primary-color-on-background: var(--theme-sys-ha-primary-text-color)
   theme-text-primary-color-on-light: var(--theme-sys-ha-primary-text-color)
   theme-text-primary-color-on-dark: var(--theme-sys-ha-primary-background-color)
+  theme-text-primary-color-on-dark-rgb: var(--theme-sys-ha-primary-background-color-rgb)
 
   theme-text-secondary-color-on-background: var(--theme-sys-ha-primary-text-color)
   theme-text-secondary-color-on-light: var(--theme-sys-ha-primary-text-color)
@@ -988,6 +1280,9 @@ M3-C11-Purple:
   primary-background-color: var(--theme-sys-ha-primary-background-color)
   secondary-background-color: var(--theme-sys-ha-secondary-background-color)
 
+  # Code editor
+  code-editor-background-color: var(--theme-sys-ha-secondary-background-color)
+  
   # states 
   #
   # HA state colors
@@ -1004,14 +1299,15 @@ M3-C11-Purple:
   # rgb 
   # 
   # Define some of the rgb-* colors to make checkboxes and more work with dark/light mode
-  # I assumed that these rgb-* variants would be calculated automatically ?!?!?!?!
+  # These rgb definitions are used to create rgba() colors with different opacity!
+  # For instance in the code editor to select text...
   # ----------------------------------------------------------------------------
-  rgb-primary-color: rgb(var(--primary-color))
-  rgb-accent-color: rgb(var(--accent-color))
-  rgb-primary-text-color: rgb(var(--primary-text-color))
-  rgb-secondary-text-color: rgb(var(--secondary-text-color))
-  rgb-text-primary-color: rgb(var(--text-primary-color))
-  rgb-card-background-color: rgb(var(--card-background-color))
+  rgb-primary-color: var(--theme-sys-ha-primary-color-rgb)
+  rgb-accent-color: var(--theme-sys-ha-accent-color-rgb)
+  rgb-primary-text-color: var(--theme-sys-ha-primary-text-color-rgb)
+  rgb-secondary-text-color: var(--theme-sys-ha-secondary-text-color-rgb)
+  rgb-text-primary-color: var(--theme-text-primary-color-on-dark)
+  rgb-card-background-color: var(--theme-sys-ha-card-background-color-rgb)
 
   ##
   # Extra colors of Home Assistant

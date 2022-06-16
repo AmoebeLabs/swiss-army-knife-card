@@ -430,17 +430,14 @@ cards:
                         styles:
                           icon:
                             fill: var(--md-fg-color--alert)
-                            color: var(--md-fg-color--alert)
                             animation: jello 2s ease-in-out both
                       - state: 'off'
                         styles:
                           icon:
                             fill: var(--primary-text-color)
-                            color: var(--primary-text-color)
                     styles:
                       icon:
                         fill: var(--primary-text-color)
-                        color: var(--primary-text-color)
 
                   - type: name
                     position:
@@ -585,7 +582,6 @@ cards:
                     styles:
                       icon:
                         fill: var(--primary-background-color)
-                        color: var(--primary-background-color)
 
                   - type: name
                     position:
@@ -740,7 +736,6 @@ cards:
                     styles:
                       icon:
                         fill: var(--primary-background-color)
-                        color: var(--primary-background-color)
 
                   - type: name
                     position:
@@ -948,17 +943,14 @@ cards:
                         styles:
                           icon:
                             fill: var(--md-fg-color--alert)
-                            color: var(--md-fg-color--alert)
                             animation: jello 2s ease-in-out both
                       - state: 'off'
                         styles:
                           icon:
                             fill: var(--primary-background-color)
-                            color: var(--primary-background-color)
                     styles:
                       icon:
                         fill: var(--primary-background-color)
-                        color: var(--primary-background-color)
 
                   - type: name
                     position:
@@ -1094,7 +1086,6 @@ cards:
                     styles:
                       icon:
                         fill: var(--primary-background-color)
-                        color: var(--primary-background-color)
 
                   - type: name
                     position:
@@ -1226,7 +1217,6 @@ cards:
                     styles:
                       icon:
                         fill: var(--primary-background-color)
-                        color: var(--primary-background-color)
 
                   - type: rectex
                     position:

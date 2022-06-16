@@ -597,17 +597,14 @@ cards:
                         styles:
                           icon:
                             fill: var(--md-fg-color--alert)
-                            color: var(--md-fg-color--alert)
                             animation: jello 2s ease-in-out both
                       - state: 'off'
                         styles:
                           icon:
                             fill: var(--primary-text-color)
-                            color: var(--primary-text-color)
                     styles:
                       icon:
                         fill: var(--primary-text-color)
-                        color: var(--primary-text-color)
 
                   # ------------------------------------------------------------
                   - type: name
@@ -943,13 +940,11 @@ cards:
                         styles:
                           icon:
                             fill: var(--md-fg-color--alert)
-                            color: var(--md-fg-color--alert)
                             animation: headShake 1s ease-in-out 1
                       - state: 'off'
                         styles:
                           icon:
                             fill: var(--primary-text-color)
-                            color: var(--primary-text-color)
                     user_actions:
                       tap_action:
                         haptic: light
@@ -959,7 +954,6 @@ cards:
                     styles:
                       icon:
                         fill: var(--primary-text-color)
-                        color: var(--primary-text-color)
 
                   # ------------------------------------------------------------
                   - type: name
@@ -1192,13 +1186,11 @@ cards:
                         styles:
                           icon:
                             fill: var(--md-fg-color--alert)
-                            color: var(--md-fg-color--alert)
                             animation: jello 2s ease-in-out both
                       - state: 'off'
                         styles:
                           icon:
                             fill: var(--primary-text-color)
-                            color: var(--primary-text-color)
                     user_actions:
                       tap_action:
                         haptic: light
@@ -1208,7 +1200,6 @@ cards:
                     styles:
                       icon:
                         fill: var(--primary-text-color)
-                        color: var(--primary-text-color)
 
                   # ------------------------------------------------------------
                   - type: name
@@ -1449,13 +1440,11 @@ cards:
                         styles:
                           icon:
                             fill: var(--md-fg-color--alert)
-                            color: var(--md-fg-color--alert)
                             animation: jello 2s ease-in-out both
                       - state: 'off'
                         styles:
                           icon:
                             fill: var(--primary-text-color)
-                            color: var(--primary-text-color)
                     user_actions:
                       tap_action:
                         haptic: light
@@ -1465,7 +1454,6 @@ cards:
                     styles:
                       icon:
                         fill: var(--primary-text-color)
-                        color: var(--primary-text-color)
 
                   # ------------------------------------------------------------
                   - type: name
