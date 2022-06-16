@@ -16,6 +16,7 @@ jobs:
         uses: nizarmah/auto-minify@v2.1.1
         with:
           overwrite: true
+          js_engine: 'uglify-js'
 #      directory: 'js'
           output: 'dist'
 
