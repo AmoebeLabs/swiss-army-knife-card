@@ -1,4 +1,4 @@
 path_classifiers:
   library:
-    - exclude: dist
+    - exclude: dist/*.*
     
