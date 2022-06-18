@@ -17,7 +17,7 @@ jobs:
         with:
           overwrite: true
           js_engine: 'uglify-js'
-#      directory: 'js'
+          directory: 'src'
           output: 'dist'
 
       # Auto commits minified files to the repository
