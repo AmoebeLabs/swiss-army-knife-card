@@ -1028,7 +1028,7 @@ class BaseTool {
           // Fill with current entity_id if none given
           if (!serviceData.entity_id) {
             serviceData.entity_id = entityId;
-          };
+          }
           // If parameter defined, add this one with the parameterValue
           if (actionConfig.actions[i].parameter) {
             serviceData[actionConfig.actions[i].parameter] = parameterValue;
@@ -1054,8 +1054,6 @@ class BaseTool {
     argEvent.stopPropagation();
     argEvent.preventDefault();
 
-    // console.log('handleTapEvent', argEvent, argToolConfig);
-
     let tapConfig;
     // If no user_actions defined, AND there is an entity_index,
     // define a default 'more-info' tap action
@@ -1070,7 +1068,6 @@ class BaseTool {
     }
 
     if (!tapConfig) return;
-    // console.log('handleTapEvent - calling _processTapEvent');
 
     this._processTapEvent(this._card,
                           this._card._hass,
@@ -5999,10 +5996,7 @@ class SwissArmyKnifeCard extends LitElement {
     this.connected = true;
     super.connectedCallback();
 
-//    if (this._hass) {
       if (this.entityHistory.update_interval) {
-
-      // console.log("card::connectedCallback, set interval", this.entityHistory);
 
       // Fix crash while set hass not yet called, and thus no access to entities!
         this.updateOnInterval();
@@ -6014,7 +6008,6 @@ class SwissArmyKnifeCard extends LitElement {
           this._hass ? this.entityHistory.update_interval * 1000 : 1000,
         );
       }
-//    }
     if (this.dev.debug) console.log('ConnectedCallback', this.cardId);
 
     // MUST request updates again, as no card is displayed otherwise as long as there is no data coming in...
@@ -6035,7 +6028,6 @@ class SwissArmyKnifeCard extends LitElement {
     if (this.interval) {
       clearInterval(this.interval);
       this.interval = 0;
-      // console.log("card::disconnectedCallback, clear interval", this.entityHistory);
     }
     super.disconnectedCallback();
     if (this.dev.debug) console.log('disconnectedCallback', this.cardId);
@@ -6084,10 +6076,7 @@ class SwissArmyKnifeCard extends LitElement {
   * card::render()
   *
   * Summary.
-  * Renders the complete SVG based card according to the specified layout in which
-  * the user can specify name, area, entities, lines and dots.
-  * The horseshoe is rendered on the full card. This one can be moved a bit via CSS.
-  *
+  * Renders the complete SVG based card according to the specified layout.
   *
   * render ICON TESTING pathh lzwzmegla undefined undefined
   * render ICON TESTING pathh lzwzmegla undefined NodeList [ha-svg-icon]
@@ -6129,57 +6118,6 @@ class SwissArmyKnifeCard extends LitElement {
     if (this.dev.performance) console.timeEnd("--> "+ this.cardId + " PERFORMANCE card::render");
 
     return myHtml;
-  }
-
-/*******************************************************************************
-  * renderTickMarks()
-  *
-  * Summary.
-  * Renders the tick marks on the scale.
-  *
-  */
-
-  _renderTickMarks() {
-    const { config, } = this;
-    if (!config) return;
-    if (!config.show) return;
-    if (!config.show.scale_tickmarks) return;
-
-    const stroke = config.horseshoe_scale.color ? config.horseshoe_scale.color : 'var(--primary-background-color)';
-    const tickSize = config.horseshoe_scale.ticksize ? config.horseshoe_scale.ticksize
-                    : (config.horseshoe_scale.max - config.horseshoe_scale.min) / 10;
-
-    // fullScale is 260 degrees. Hard coded for now...
-    const fullScale = 260;
-    const remainder = config.horseshoe_scale.min % tickSize;
-    const startTickValue = config.horseshoe_scale.min + (remainder == 0 ? 0 : (tickSize - remainder));
-    const startAngle = ((startTickValue - config.horseshoe_scale.min) /
-                        (config.horseshoe_scale.max - config.horseshoe_scale.min)) * fullScale;
-    var tickSteps = ((config.horseshoe_scale.max - startTickValue) / tickSize);
-
-    // new
-    var steps = Math.floor(tickSteps);
-    const angleStepSize = (fullScale - startAngle) / tickSteps;
-
-    // If steps exactly match the max. value/range, add extra step for that max value.
-    if ((Math.floor(((steps) * tickSize) + startTickValue)) <= (config.horseshoe_scale.max)) {steps++;}
-
-    const radius = config.horseshoe_scale.width ? config.horseshoe_scale.width / 2 : 6/2;
-    var angle;
-    var scaleItems = [];
-
-    // NTS:
-    // Value of -230 is weird. Should be -220. Can't find why...
-    var i;
-    for (i = 0; i < steps; i++) {
-      angle = startAngle + ((-230 + (360 - i*angleStepSize)) * Math.PI / 180);
-      scaleItems[i] = svg`
-        <circle cx="${50 + 50 - Math.sin(angle)*TICKMARKS_RADIUS_SIZE}"
-                cy="${50 + 50 - Math.cos(angle)*TICKMARKS_RADIUS_SIZE}" r="${radius}"
-                fill="${stroke}">
-      `;
-    }
-    return svg`${scaleItems}`;
   }
 
   _renderSakSvgDefinitions() {
@@ -6238,12 +6176,6 @@ class SwissArmyKnifeCard extends LitElement {
   *     aspect-ratio on the svg. Although GetCardSize is set to 4, it seems the
   *     height is forced to 150px, so part of the viewbox/svg is not shown or
   *     out of proportion!
-  * 3.  Setting the height/width also to 200/200 (same as viewbox), the horseshoe is
-  *     displayed correctly, but doesn't scale to the max space of the ha-card/viewport.
-  *     It also is displayed at the start of the viewport. For a large horizontal
-  *     card this is ok, but in other cases, the center position would be better...
-  *     - use align-self: center on the svg ...or...
-  *     - use align-items: center on the parent container of the svg.
   *
   */
 
