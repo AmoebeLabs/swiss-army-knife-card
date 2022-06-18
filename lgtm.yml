@@ -28,4 +28,5 @@ extraction:
         - ha-config/
         - ha-config-beta/
         - assets/
+        - .github/
  
