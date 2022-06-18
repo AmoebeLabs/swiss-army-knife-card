@@ -25,4 +25,7 @@ extraction:
       # Specify a list of files and folders to exclude from extraction.
       exclude:
         - dist/
+        - ha-config/
+        - ha-config-beta/
+        - assets/
  
