@@ -1,5 +1,5 @@
 [![hacs][hacs-badge]][hacs-url]
-[![hacs][beta_badge]][hacs-url]
+[![hacs][rc_badge]][hacs-url]
 <br>[![release][release-badge]][release-url]
 [![downloads][downloads-badge]][release-url]
 [![LGTM Grade][lgtm-grade-badge]][lgtm-url]
@@ -7,23 +7,13 @@
 <!--- ![beta_badge](https://img.shields.io/badge/State-Beta-orange?style=for-the-badge) -->
 <!---[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration) -->
 
-# ![](assets/images/swiss-army-knife24.png) NOTE!
-Do **NOT** use this card yet!
-
-This Swiss Army Knife custom card is being prepared for a public release candidate. There might be several 0.9.0-beta releases before the 1.0.0-rc.1 is released. That last one will be the one that can be used!
-
-Due to work on HACS integration, and (breaking) issue solving the card might be partially broken between beta's 😢
-
-Status @2022-06-06:
-![](assets/screenshots/2022.06.06-sak-rc-issues2.png)
-
 # ![](assets/images/swiss-army-knife24.png) The Swiss Army Knife Custom Card for Home Assistant
 The custom Swiss Army Knife card for [Home Assistant][home-assistant] allows you to create your own visualization using [17 basic, advanced and Home Assistant specific SVG-based tools][sak-tools] and CSS [styling][sak-css-styles] and [animation][sak-css-animations] options this card provides.
 
 It is a card with lots of possibilities, fully YAML based, and requires the [user to design a card][sak-how-to-design-your-card]!
 What you can make is only limited by the 17 provided tools and your own imagination.
 
-Remember that this custom card will be/is in public **BETA** **BETA** **BETA** as of June/July 2022!
+Remember that this custom card will is a public release candidate as of June/July 2022!
 
 Check https://swiss-army-knife-card-manual.amoebelabs.com/ for the documentation!
 
@@ -68,6 +58,7 @@ All these examples are available on Github and described in the [installation ma
 [hacs-url]: https://github.com/hacs/integration
 [hacs-badge]: https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge&logo=homeassistantcommunitystore
 [beta_badge]: https://img.shields.io/badge/State-Beta-orange?style=for-the-badge&logo=homeassistantcommunitystore
+[rc_badge]: https://img.shields.io/badge/State-Release Candidate-orange?style=for-the-badge&logo=homeassistantcommunitystore
 [release-badge]: https://img.shields.io/github/v/release/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&include_prereleases&logo=github
 [downloads-badge]: https://img.shields.io/github/downloads/AmoebeLabs/swiss-army-knife-card/total?style=for-the-badge&logo=github
 [lgtm-grade-badge]: https://img.shields.io/lgtm/grade/javascript/github/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&logo=lgtm
