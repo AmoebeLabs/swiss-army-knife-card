@@ -20,8 +20,8 @@ extraction:
     index:
       # Specify a list of files and folders to extract.
       # Default: The project root directory.
-      # include:
-              # - src/js
+      include:
+        src/
       # Specify a list of files and folders to exclude from extraction.
       exclude:
         - dist/
