@@ -320,6 +320,13 @@ class Templates {
   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
+ /*****************************************************************************
+  * Toolset class
+  *
+  * Summary.
+  *
+  */
+  
 class Toolset {
   constructor(argCard, argConfig) {
 
@@ -664,6 +671,13 @@ class Toolset {
   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
+
+ /*****************************************************************************
+  * BaseTool class
+  *
+  * Summary.
+  *
+  */
 
 class BaseTool {
   constructor(argToolset, argConfig, argPos) {
@@ -5068,6 +5082,11 @@ class SwissArmyKnifeCard extends LitElement {
 
     this.configIsSet = false;
 
+    // Theme mode support
+    this.theme = {};
+    this.theme.modeChanged = false;
+    this.theme.darkMode = false;
+
     // Safari is the new IE.
     // Check for iOS / iPadOS / Safari to be able to work around some 'features'
     // Some bugs are already 9 years old, and not fixed yet by Apple!
@@ -5468,16 +5487,13 @@ class SwissArmyKnifeCard extends LitElement {
   */
 
   set hass(hass) {
-    // testing
-    // console.log("set hass, themes...", hass.themes, hass.themes.darkMode);
     if (!this.counter) this.counter = 0;
     this.counter++;
-    // this.darkMode = false;
 
-    // #TESTING
-    if (hass.themes.darkMode != this.darkMode) {
-      // console.log("set hass, darkmode changed from/to ", this.darkMode, hass.themes.darkMode, hass.themes);
-      this.darkMode = hass.themes.darkMode;
+    // Check for theme mode and theme mode change...
+    if (hass.themes.darkMode != this.theme.darkMode) {
+      this.theme.darkMode = hass.themes.darkMode;
+      this.theme.modeChanged = true;
     };
     
     // Set ref to hass, use "_"for the name ;-)
@@ -5487,7 +5503,7 @@ class SwissArmyKnifeCard extends LitElement {
     if (!this.connected) {
       if (this.dev.debug) console.log('set hass but NOT connected', this.cardId);
 
-    // 2020.02.10 Troubels with connectcallback late, so windows are not yet calculated. ie
+    // 2020.02.10 Troubles with connectcallback late, so windows are not yet calculated. ie
     // things around icons go wrong...
     // what if return is here..
       //return;
@@ -5586,7 +5602,7 @@ class SwissArmyKnifeCard extends LitElement {
         // 2021.10.30
         // Due to change in light percentage, check for undefined.
         // If bulb is off, NO percentage is given anymore, so is probably 'undefined'.
-        // Any tool should still react to a percentag going from a valid value to undefined!
+        // Any tool should still react to a percentage going from a valid value to undefined!
       }
       if ((!attrSet) && (!secInfoSet)) {
         newStateStr = this._buildState(this.entities[index].state, this.config.entities[index]);
@@ -5603,33 +5619,26 @@ class SwissArmyKnifeCard extends LitElement {
       secInfoSet = false;
     }
 
-    // #TODO
-    // Temp disable this check, as in: don't return...
-    if (!entityHasChanged) {
+    if ((!entityHasChanged) && (!this.theme.modeChanged)) {
       //console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
 
-      // ############################TODO. Temp disabled...
-      // @2022.01.24
-      // For some reason, this returns, although something has changed and should be rendered.
-      // Now this is not done, and for instance the background of cards is not changed at the moment it should be: but the icon changes. That is weird.
-      // Icon changes, and changes color, but background seems to wait for another update of the card orso ?!?!?!?!?!?!?
-      //
-      // By commenting-out the return, the background change is instant after the state change...
-      
       return;
     }
 
+    // Either one of the entities has changed, or the theme mode. So update all toolsets with new data.
     if (this.toolsets) {
       this.toolsets.map((item, index) => {
         item.updateValues();
       });
     }
 
-    // For now, always force update to render the card if any of the states or attributes have changed...
+    // Always request update to render the card if any of the states, attributes or theme mode have changed...
     
-    // Force update as test... ###########################################
     this.requestUpdate();
 
+    // An update has been requested to recalculate / redraw the tools, so reset theme mode changed
+    this.theme.modeChanged = false;
+    
     this.counter--;
 
     //console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
@@ -6132,6 +6141,14 @@ class SwissArmyKnifeCard extends LitElement {
     `;
   }
 
+  themeIsDarkMode() {
+    return (this.theme.darkMode == true);
+  }
+  
+  themeIsLightMode() {
+    return (this.theme.darkMode == false);
+  }
+  
 /*******************************************************************************
   * card::_RenderToolsets()
   *
