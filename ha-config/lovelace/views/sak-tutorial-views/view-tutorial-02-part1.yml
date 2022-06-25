@@ -1,0 +1,169 @@
+#
+# View			: view-tutorial-02-part1.yml
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#
+# Refs:
+#   
+################################################################################
+
+title: TUT-02-P1
+path: tut-02-p1
+panel: false
+cards:
+- type: vertical-stack
+  cards:
+    - type: horizontal-stack
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            # CPU
+            - entity: sensor.processor_use
+              decimals: 0
+              name: 'Hestia'
+            # Memory
+            - entity: sensor.memory_use_percent
+              icon: mdi:memory
+              decimals: 0
+            # Disk
+            - entity: sensor.disk_use_percent
+              decimals: 0
+              icon: mdi:harddisk
+            # System Load
+            - entity: sensor.load_1m
+              decimals: 2
+              unit: '1m'
+            # Last changed
+            - entity: sensor.processor_use
+              secondary_info: last_changed
+              format: relative
+
+          # Define aspect ratio
+          aspectratio: 6/1                          # Card is 600x100 grid
+
+          layout:
+            toolsets:
+              # ================================================================
+              - toolset: half-circle
+                position:
+                  cx: 0                             # Center on cards border 
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 50
+                    styles:
+                      circle:
+                        stroke: none
+                        fill: var(--theme-sys-palette-primary30)
+
+              # ================================================================
+              - toolset: colomn-icon
+                position:
+                  cx: 30
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 30
+                    icon: mdi:server-network
+                    styles:
+                      icon:
+                        fill: var(--primary-background-color)
+                        opacity: 0.9
+                    
+              # ================================================================
+              - toolset: colomn-name
+                position:
+                  cx: 120
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: middle
+                        font-size: 25em
+                        font-weight: 700
+                        opacity: 1
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 80
+                    entity_index: 4
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: middle
+                        font-size: 14em
+                        font-weight: 500
+
+              # ================================================================
+              - toolset: line1
+                position:
+                  cx: 200                           # On 1/3 of card width
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: line
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: vertical
+                      length: 50
+                    styles:
+                      line:
+                        fill: var(--primary-text-color)
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: colomn-cpu
+                template:
+                  name: toolset_tutorial_02_part1
+                  variables:
+                    - var_toolset_position_cx: 260
+
+              # ================================================================
+              - toolset: colomn-memory
+                template:
+                  name: toolset_tutorial_02_part1
+                  variables:
+                    - var_entity_index: 1
+                    - var_toolset_position_cx: 355
+
+              # ================================================================
+              - toolset: colomn-disk
+                template:
+                  name: toolset_tutorial_02_part1
+                  variables:
+                    - var_entity_index: 2
+                    - var_toolset_position_cx: 450
+
+              # ================================================================
+              - toolset: colomn-load
+                template:
+                  name: toolset_tutorial_02_part1
+                  variables:
+                    - var_entity_index: 3
+                    - var_toolset_position_cx: 545
+                    - var_segarc_scale_max: 2

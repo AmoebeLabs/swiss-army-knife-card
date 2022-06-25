@@ -1,0 +1,39 @@
+#################################################################
+#                                                               # 
+#             Swiss Army Knife tutorials dashboard              #
+#                                                               #
+#             Created: 2022.06.24                               #
+#                                                               #
+#################################################################
+  
+# Decluttering Templates
+decluttering_templates:
+  !include lovelace/decluttering_templates/decluttering_templates.yaml
+
+# Swiss Army Knife Templates
+#
+# The system templates come with the HACS install and can be updated
+# with a new release. That part is automatic!
+sak_sys_templates:
+  !include www/community/swiss-army-knife-card/sak_templates.yaml
+
+# The user templates are created by the user, and won't be updated 
+# with a new release. If changes are required, then the user has to
+# update the template configuration files.
+sak_user_templates:
+  !include lovelace/sak_templates/sak_templates.yaml
+
+title: Swiss Army Knife Tutorials
+views:
+
+  # Swiss Army Knife tutorial views...
+  #
+  # Each tutorial is manually included, so you can select just a
+  # few for testing and integration...
+  - !include lovelace/views/sak-tutorial-views/view-tutorial-01-part1.yml
+  - !include lovelace/views/sak-tutorial-views/view-tutorial-01-part2.yml
+  - !include lovelace/views/sak-tutorial-views/view-tutorial-01-part4.yml
+
+  - !include lovelace/views/sak-tutorial-views/view-tutorial-02-part1.yml
+
+  - !include lovelace/views/sak-tutorial-views/view-tutorial-03-part1.yml

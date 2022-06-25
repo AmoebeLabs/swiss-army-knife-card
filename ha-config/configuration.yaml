@@ -58,4 +58,9 @@ lovelace:
       title: Swiss Army Knife Examples
       icon: mdi:hospital-box
       show_in_sidebar: true
-
+    sak-tutorials:
+      mode: yaml
+      filename: sak-tutorials-dashboard.yaml
+      title: Swiss Army Knife Tutorials
+      icon: mdi:hospital-box
+      show_in_sidebar: true

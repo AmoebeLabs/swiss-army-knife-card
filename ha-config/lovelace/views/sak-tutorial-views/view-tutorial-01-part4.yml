@@ -1,0 +1,44 @@
+#
+# View			: view-tutorial-01-part4.yml
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#
+# Refs:
+#   
+################################################################################
+
+title: TUT-01-P4
+path: tut-01-p4
+panel: false
+cards:
+- type: vertical-stack
+  cards:
+    - type: horizontal-stack
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          aspectratio: 1/2
+          entities: 
+            - entity: sensor.studym_iaq_humidity
+              name: Study
+            - entity: sensor.studym_iaq_temperature
+              name: Study
+          layout:
+            toolsets:
+              - toolset: first
+                template:
+                  name: toolset_tutorial_01-part3
+                  variables:
+                    - var_entity_index: 0
+              - toolset: second
+                template:
+                  name: toolset_tutorial_01-part3
+                  variables:
+                    - var_entity_index: 1
+                    - var_toolset_position_cy: 150
