@@ -45,7 +45,7 @@ cards:
           aspectratio: 1/1
           layout:
             toolsets:
-              - toolset: temp
+              - toolset: lux
                 position:
                   cx: 50
                   cy: 50
