@@ -1,0 +1,115 @@
+#
+# View			: view-tutorial-01-part2.yml
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#
+# Refs:
+#   
+################################################################################
+
+title: TUT-01-P2
+path: tut-01-p2
+panel: false
+cards:
+- type: vertical-stack
+  cards:
+    - type: horizontal-stack
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          aspectratio: 1/2
+          entities: 
+            - entity: sensor.studym_iaq_humidity
+              name: Study
+            - entity: sensor.studym_iaq_temperature
+              name: Study
+          layout:
+            toolsets:
+              - toolset: first
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 45
+                    styles:
+                      circle:
+                        stroke-width: 2em
+                        stroke: red
+                        stroke-opacity: 0.5
+                        fill: bisque
+                        fill-opacity: 0.5
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 25
+                      align: center
+                      icon_size: 25
+                    entity_index: 0
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 70
+                    entity_index: 0
+                    styles:
+                      state:
+                        font-size: 15em
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        font-size: 15em
+                        font-weight: 900
+              - toolset: second
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 45
+                    styles:
+                      circle:
+                        stroke-width: 2em
+                        stroke: red
+                        stroke-opacity: 0.5
+                        fill: bisque
+                        fill-opacity: 0.5
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 25
+                      align: center
+                      icon_size: 25
+                    entity_index: 0
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 70
+                    entity_index: 0
+                    styles:
+                      state:
+                        font-size: 15em
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        font-size: 15em
+                        font-weight: 900
