@@ -3199,6 +3199,11 @@ class BadgeTool extends BaseTool {
 
     const DEFAULT_BADGE_CONFIG = {
       position: {
+        cx: 50,
+        cy: 50,
+        width: 100,
+        height: 25,
+        radius: 5,
         ratio: 30,
         divider: 30,
       },
@@ -3224,7 +3229,7 @@ class BadgeTool extends BaseTool {
     super(argToolset, Merge.mergeDeep(DEFAULT_BADGE_CONFIG, argConfig), argPos);
 
     // Coordinates from left and right part.
-    this.svg.radius = 5;
+    this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius);
     this.svg.leftXpos = this.svg.x;
     this.svg.leftYpos = this.svg.y;
     this.svg.leftWidth = (this.config.position.ratio / 100) * this.svg.width;
@@ -3233,7 +3238,7 @@ class BadgeTool extends BaseTool {
 
     this.svg.rightXpos = this.svg.x + this.svg.leftWidth;
     this.svg.rightYpos = this.svg.y;
-    this.svg.rightWidth = ((100 - this.config.ratio) / 100) * this.svg.width;
+    this.svg.rightWidth = ((100 - this.config.position.ratio) / 100) * this.svg.width;
 
     this.classes.left = {};
     this.classes.right = {};
