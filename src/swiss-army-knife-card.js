@@ -5707,8 +5707,6 @@ class SwissArmyKnifeCard extends LitElement {
       throw Error('card::setConfig - No layout defined');
     }
 
-    if (!config.layout.toolsets) {
-      throw Error('card::setConfig - No toolsets defined');
     if (config.layout.styles?.card) {
       // console.log("setConfig, styles.card", config.layout.styles.card);
       this.styles.card = config.layout.styles.card;
