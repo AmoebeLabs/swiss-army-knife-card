@@ -3091,7 +3091,7 @@ class EntityIconTool extends BaseTool {
       }
     };
 
-    if (!this.alternateColor) {this.alternateColor = 'white';}
+    if (!this.alternateColor) {this.alternateColor = 'rgba(0,0,0,0)';}
 
     if (!SwissArmyKnifeCard.sakIconCache[icon]) {
       var theQuery = this._card.shadowRoot.getElementById("icon-".concat(this.toolId))?.shadowRoot?.querySelectorAll("*");
@@ -3133,17 +3133,20 @@ class EntityIconTool extends BaseTool {
       // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
       return svg`
         <g id="icon-${this.toolId}" class="${classMap(this.classes.icon)}" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
-          <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke="yellow" stroke-width="0px" opacity="50%" fill="rgba(0,0,0,0)"></rect>
+          <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke-width="0px" fill="rgba(0,0,0,0)"></rect>
           <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
         <g>
       `;
     } else {
+      // Note @2022.06.26
+      // overflow="hidden" is ignored by latest and greatest Safari 15.5. Wow. Nice! Good work!
+      // So use a fill/color of rgba(0,0,0,0)...
       return svg`
-        <foreignObject width="0px" height="0px" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="visible">
+        <foreignObject width="0px" height="0px" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="hidden">
           <body>
             <div class="div__icon, hover" xmlns="http://www.w3.org/1999/xhtml"
-                style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};">
-                <ha-icon icon=${icon} id="icon-${this.toolId}" class="${classMap(this.classes.icon)}"
+                style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};fill:${this.alternateColor};color:${this.alternateColor};">
+                <ha-icon icon=${icon} id="icon-${this.toolId}"
                 @animationstart=${e => this._handleAnimationEvent(e, this)}
                 @animationiteration=${e => this._handleAnimationEvent(e, this)}
                 style="animation: flash 0.15s 20;"></ha-icon>
