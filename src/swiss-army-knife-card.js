@@ -765,7 +765,7 @@ class BaseTool {
     let localState = state;
 
     if (this.dev.debug) console.log('BaseTool set value(state)', localState);
-    if (typeof(localState) != 'undefined') if (this._stateValue?.toLowerCase() == localState.toLowerCase()) return false;
+    if (typeof(localState) != 'undefined') if (this._stateValue?.toLowerCase() === localState.toLowerCase()) return false;
 
     this.derivedEntity = null;
     
@@ -781,8 +781,9 @@ class BaseTool {
 
     // If animations defined, calculate style for current state.
 
-    if (this._stateValue == undefined) return;
-    if (typeof(this._stateValue) === 'undefined') return;
+    // 2022.07.04 Temp disable this return, as animations should be able to process the 'undefined' state too!!!!
+    // if (this._stateValue == undefined) return;
+    // if (typeof(this._stateValue) === 'undefined') return;
 
     var isMatch = false;
     // #TODO:
@@ -807,22 +808,34 @@ class BaseTool {
 
       switch(operator) {
         case "==":
-          isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
+          if (typeof(this._stateValue) === 'undefined') {
+            isMatch = (item.state.toLowerCase() === "undefined");
+          } else {
+            isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
+          }
           break;
         case "!=":
-          isMatch = this._stateValue.toLowerCase() != item.state.toLowerCase();
+          if (typeof(this._stateValue) === 'undefined') {
+            isMatch = (item.state.toLowerCase() != 'undefined');
+          } else {
+            isMatch = this._stateValue.toLowerCase() != item.state.toLowerCase();
+          }
           break;
         case ">":
-          isMatch = Number(this._stateValue.toLowerCase()) > Number(item.state.toLowerCase());
+          if (typeof(this._stateValue) != 'undefined')
+            isMatch = Number(this._stateValue.toLowerCase()) > Number(item.state.toLowerCase());
           break;
         case "<":
-          isMatch = Number(this._stateValue.toLowerCase()) < Number(item.state.toLowerCase());
+          if (typeof(this._stateValue) != 'undefined')
+            isMatch = Number(this._stateValue.toLowerCase()) < Number(item.state.toLowerCase());
           break;
         case ">=":
-          isMatch = Number(this._stateValue.toLowerCase()) >= Number(item.state.toLowerCase());
+          if (typeof(this._stateValue) != 'undefined')
+            isMatch = Number(this._stateValue.toLowerCase()) >= Number(item.state.toLowerCase());
           break;
         case "<=":
-          isMatch = Number(this._stateValue.toLowerCase()) <= Number(item.state.toLowerCase());
+          if (typeof(this._stateValue) != 'undefined')
+            isMatch = Number(this._stateValue.toLowerCase()) <= Number(item.state.toLowerCase());
           break;
         default:
           // Unknown operator. Just do nothing and return;
