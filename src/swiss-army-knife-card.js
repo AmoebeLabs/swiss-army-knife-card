@@ -4815,9 +4815,16 @@ class SegmentedArcTool extends BaseTool {
                                 ? (thisTool._segmentAngles[runningSegment].drawEnd)
                                 : (thisTool._segmentAngles[runningSegment].drawStart);
                   var value = Math.min(Math.max(0, (runningSegmentAngle - boundsStart) / (boundsEnd - boundsStart)), 1);
-                  fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
+                  // 2022.07.03 Fixing lastcolor for true stop
+                  if (thisTool.config.show.style == 'colorstops') {
+                    fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
+                                           thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
+                                           value);
+                  } else {
+                    fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                                            thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment+1]],
                                            value);
+                  }
                   thisTool.styles.foreground[0]['fill'] = fill;
                   thisTool.as[0].style.fill = fill;
 
