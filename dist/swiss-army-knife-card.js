@@ -598,8 +598,8 @@ import{LitElement,html,css,svg,unsafeCSS}from"https://unpkg.com/lit-element@2.5.
                     ${this._renderSvg()}
                   </div>
                   `:html`
-                  <ha-card>
-                    <div class="container" id="container"
+                  <ha-card style="${styleMap(this.styles.card)}">
+                    <div class="container" id="container" 
                     >
                       ${this._renderSvg()}
                     </div>
