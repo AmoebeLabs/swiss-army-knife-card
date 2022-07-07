@@ -3003,23 +3003,16 @@ class EntityIconTool extends BaseTool {
   * Summary.
   * Builds the Icon specification name.
   *
-  * #TODO:
-  * Add animation state for icon?? So icon can be changed by animation.
-  * In that case svg icon should be fetched too again. Check for cache/value??
-  * entityAnimation.icon orso...
   */
   _buildIcon(entityState, entityConfig, toolIcon) {
-    
-    var thisIcon = toolIcon
-      || entityConfig.icon
-      || entityState.attributes.icon;
-      
-    if (thisIcon) return (thisIcon);
-    
-    // 2021.11.21
-    // If not specified by user, use state and domain icons defined by card helper.
-    
-    return (stateIcon(entityState));
+
+    return (
+         this.activeAnimation?.icon           // Icon from animation
+      || toolIcon                             // Defined by tool
+      || entityConfig?.icon                   // Defined by configuration
+      || entityState?.attributes?.icon        // Using entity icon
+      || stateIcon(entityState)               // Use card helper logic (2021.11.21)
+      );
   }
 
 
@@ -3534,7 +3527,8 @@ class EntityNameTool extends BaseTool {
 
   _buildName(entityState, entityConfig) {
     return (
-      entityConfig.name
+         this.activeAnimation?.name             // Name from animation
+      || entityConfig.name
       || entityState.attributes.friendly_name
     );
   }
