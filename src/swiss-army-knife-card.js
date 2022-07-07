@@ -1100,7 +1100,9 @@ class BaseTool {
                           this._card._hass,
                           this.config,
                           tapConfig,
-                          this._card.config.entities[argToolConfig.entity_index]?.entity,
+                          this._card.config.hasOwnProperty('entities')
+                              ? this._card.config.entities[argToolConfig.entity_index]?.entity
+                              : undefined,
                           undefined);
   }
 
