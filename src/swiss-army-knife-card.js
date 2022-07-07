@@ -1514,7 +1514,7 @@ class RangeSliderTool extends BaseTool {
       var thumbPos = (this.svg.thumb.x1 + this.svg.thumb.cx);
       if ((mousePos.x > (thumbPos - 10)) && (mousePos.x < (thumbPos + this.svg.thumb.width + 10))) {
         // console.log("pointerdown, mousePos IS within x-width of thumb!!");
-        fireEvent(window, 'haptic', 'success');
+        fireEvent(window, 'haptic', 'heavy');
       } else {
         // console.log("pointerdown, mousePos NOT within x-width of thumb!!");
         fireEvent(window, 'haptic', 'error');
@@ -1688,10 +1688,17 @@ class RangeSliderTool extends BaseTool {
     if (this.dev.debug) console.log('slider - _renderRangeSlider');
 
     this.MergeAnimationClassIfChanged();
-    this.MergeColorFromState(this.styles);
-    this.MergeAnimationStyleIfChanged(this.styles);
-    this.MergeColorFromState(this.styles);
+    // this.MergeColorFromState(this.styles);
+    // this.MergeAnimationStyleIfChanged(this.styles);
+    // this.MergeColorFromState(this.styles);
 
+    this.MergeColorFromState();
+    this.MergeAnimationStyleIfChanged();
+    this.MergeColorFromState();
+
+    // this.MergeAnimationStyleIfChanged();
+    // console.log("renderRangeSlider, styles", this.styles);
+    
     this.renderValue = this._stateValue;
     if (this.dragging) {
       this.renderValue = this.labelValue2;
@@ -2172,6 +2179,7 @@ class SwitchTool extends BaseTool {
                 "pointer-events": 'auto',
               },
               thumb: {
+                fill: 'var(--switch-unchecked-button-color)',
                 transform: 'translateX(-4.5em)',
                 "pointer-events": 'auto',
               },
@@ -2206,6 +2214,7 @@ class SwitchTool extends BaseTool {
                 "pointer-events": 'auto',
               },
               thumb: {
+                fill: 'var(--switch-unchecked-button-color)',
                 transform: 'translateY(4.5em)',
                 "pointer-events": 'auto',
               },
@@ -2293,7 +2302,8 @@ class SwitchTool extends BaseTool {
 
     this.MergeAnimationClassIfChanged();
     // this.MergeColorFromState(this.styles);
-    this.MergeAnimationStyleIfChanged();
+    this.MergeAnimationStyleIfChanged(this.styles);
+    // this.MergeAnimationStyleIfChanged(this.styles.thumb);
 
     return svg`
       <g>
