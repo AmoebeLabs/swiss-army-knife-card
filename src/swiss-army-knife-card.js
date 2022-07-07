@@ -6113,8 +6113,8 @@ class SwissArmyKnifeCard extends LitElement {
                   `;
       } else {
         myHtml = html`
-                  <ha-card>
-                    <div class="container" id="container"
+                  <ha-card style="${styleMap(this.styles.card)}">
+                    <div class="container" id="container" 
                     >
                       ${this._renderSvg()}
                     </div>
