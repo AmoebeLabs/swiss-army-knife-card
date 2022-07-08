@@ -49,7 +49,7 @@
         fill: var(--primary-text-color);
         opacity: 0.8;
         text-anchor: middle;
-        alignment-baseline: central;
+        dominant-baseline: central;
         letter-spacing: 0.05em;
       }
 
@@ -133,7 +133,7 @@
         fill: var(--primary-text-color);
         opacity: 1.0;
         text-anchor: middle;
-        alignment-baseline: central;
+        dominant-baseline: central;
         letter-spacing: 0.05em;
       }
 
@@ -235,13 +235,13 @@
         font-weight: 400;
         transition: all .5s cubic-bezier(0.4, 0, 0.2, 1);
         pointer-events: none;
-        alignment-baseline: central;
+        dominant-baseline: central;
       }
       .sak-slider__uom {
         overflow: visible;
         fill: var(--primary-text-color);
         text-anchor: middle;
-        alignment-baseline: central;
+        dominant-baseline: central;
         opacity: 0.7;
         letter-spacing: 0.05em;
       }
@@ -256,13 +256,13 @@
         fill: var(--primary-text-color);
         opacity: 1.0;
         text-anchor: middle;
-        alignment-baseline: central;
+        dominant-baseline: central;
         letter-spacing: 0.05em;
       }
       .sak-state__uom {
         fill: var(--primary-text-color);
         text-anchor: middle;
-        alignment-baseline: central;
+        dominant-baseline: central;
         opacity: 0.7;
         letter-spacing: 0.05em;
       }
@@ -296,7 +296,7 @@
         fill: var(--primary-text-color);
         opacity: 1.0;
         text-anchor: middle;
-        alignment-baseline: central;
+        dominant-baseline: central;
       }
 
   - descr: Usersvg tool
@@ -356,7 +356,30 @@
         }
       }
       
+      @-webkit-keyframes flash {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.2;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
       @keyframes flash {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.2;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      
+      @keyframes flashold {
         from,
         50%,
         to {
@@ -558,14 +581,45 @@
         }
       }
       
+      @-webkit-keyframes spin {
+        0% {
+          -webkit-transform: rotate(0);
+                  transform: rotate(0);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+                  transform: rotate(360deg);
+        }
+      }
       @keyframes spin {
+        0% {
+          -webkit-transform: rotate(0);
+                  transform: rotate(0);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+                  transform: rotate(360deg);
+        }
+      }
+      @keyframes spinold {
+          from {
+              -webkit-transform: -webkit-rotate(0deg);
+              transform:rotate(0deg);
+          }
+          to {
+              -webkit-transform: -webkit-rotate(360deg);
+              transform:rotate(360deg);
+          }
+      }
+      
+      @keyframes spinn {
         100% {
           -webkit-transform: -webkit-rotate(360deg);
           transform: rotate(360deg);
         }
       }
       
-      @-webkit-keyframes spin {
+      @-webkit-keyframes spinn {
         100% {
           -webkit-transform: -webkit-rotate(360deg);
           transform: rotate(360deg);
