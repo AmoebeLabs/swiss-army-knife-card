@@ -899,6 +899,26 @@ M3-D07-DarkOliveGreen:
   # ----------------------------------------------------------------------------
 
   #
+  # Some Brand colors...
+  # ----------------------------------------------------------------------------
+
+  brand-google-blue:    '#4285F4'
+  brand-google-red:     '#DB4437'
+  brand-google-yellow:  '#F4B400' 
+  brand-google-green:   '#0F9D58'
+  
+  brand-android-green:  '#78C257' 
+
+  brand-apple-black:    '#000000'
+  brand-apple-grey:     '#555555'
+  
+  brand-microsoft-orangered:  '#F25022'
+  brand-microsoft-green:      '#7FBA00'
+  brand-microsoft-blue:       '#00A4EF'
+  brand-microsoft-yellow:     '#FFB900'
+  brand-microsoft-gray:       '#737373'
+
+  #
   # Card box shadow around HA cards
   # ----------------------------------------------------------------------------
   
