@@ -13,6 +13,9 @@ The custom Swiss Army Knife card for [Home Assistant][home-assistant] allows you
 It is a card with lots of possibilities, fully YAML based, and requires the [user to design a card][sak-how-to-design-your-card]!
 What you can make is only limited by the 17 provided tools and your own imagination.
 
+The 3rd Release Candidate will have support for layout templates, which makes using predefined cards much easier.
+The [30 functional card examples](https://swiss-army-knife-card-manual.amoebelabs.com/design/example-set-functional-cards/) will be made available as layout templates for easy use and integration.
+
 Remember that this custom card will is a public release candidate as of June/July 2022!
 
 Check https://swiss-army-knife-card-manual.amoebelabs.com/ for the documentation!
@@ -30,9 +33,13 @@ For installation check the [installation documentation][sak-installation]. As th
 - The card requires extra configuration files to function
 - If you want to use the examples and example dashboard, you must download the themes, views and templates too!
 
-Note: It may take a few weeks (as of June 2022) that this card is included into the HACS repository!
+Note: It may take some time before this card is included into the default HACS repository! Use custom repository for the time being.
 
-## ![](assets/images/swiss-army-knife24.png) An overview of all the [12 examples](https://swiss-army-knife-card-manual.amoebelabs.com/examples/introduction/) from my own installation:
+## ![](assets/images/swiss-army-knife24.png) An overview of the [functional card examples](https://swiss-army-knife-card-manual.amoebelabs.com/design/example-set-functional-cards/) I created as demo and inspiration:
+
+![](https://swiss-army-knife-card-manual.amoebelabs.com/assets/screenshots/sak-functional-cards-all-screenshot.png)
+
+## ![](assets/images/swiss-army-knife24.png) An overview of all the [12 example views](https://swiss-army-knife-card-manual.amoebelabs.com/examples/introduction/) from my own installation:
 All these examples are available on Github and described in the [installation manual][sak-installation]. Each example has its own page which describes how to adapt / use them in your own installation.
 
 | Examples...| Examples...|
