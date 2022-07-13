@@ -934,8 +934,11 @@ class BaseTool {
     if (this.config.hasOwnProperty('entity_index')) {
       const color = this.getColorFromState(this._stateValue);
       if (color != '') {
-        this.config[this.config.show.style].fill ? argStyleMap['fill'] = color : '';
-        this.config[this.config.show.style].stroke ? argStyleMap['stroke'] = color : '';
+        argStyleMap['fill'] = this.config[this.config.show.style].fill ? color : '';
+        argStyleMap['stroke'] = this.config[this.config.show.style].stroke ?  color : '';
+
+        // this.config[this.config.show.style].fill ? argStyleMap['fill'] = color : '';
+        // this.config[this.config.show.style].stroke ? argStyleMap['stroke'] = color : '';
       }
     }
   }
