@@ -754,6 +754,24 @@ class BaseTool {
   }
 
  /*******************************************************************************
+  * BaseTool::textEllipsis()
+  *
+  * Summary.
+  * Very simple form of ellipsis, which is not supported by SVG.
+  * Cutoff text at number of characters and add '...'.
+  * This does NOT take into account the actual width of a character!
+  *
+  */
+  textEllipsis(argText, argEllipsis) {
+    if ((argEllipsis) && (argEllipsis <= argText.length)) {
+      return argText.slice(0, argEllipsis - 1).concat("...");
+    } else {
+      return argText;
+    }
+  }
+
+
+ /*******************************************************************************
   * BaseTool::set value()
   *
   * Summary.
@@ -3411,6 +3429,7 @@ class EntityStateTool extends BaseTool {
     if ((inState) && isNaN(inState)) {
       const localeTag = this.config.locale_tag || 'component.' + this._card._computeDomain(this._card.config.entities[this.config.entity_index].entity) + '.state._.'
       inState = this._card.toLocale(localeTag + inState.toLowerCase(), inState);
+      inState = this.textEllipsis(inState, this.config?.show?.ellipsis);
     }
     
     return svg`
@@ -3584,8 +3603,10 @@ class EntityNameTool extends BaseTool {
     this.MergeColorFromState(this.styles.name);
     this.MergeAnimationStyleIfChanged();
 
-    const name = this._buildName(this._card.entities[this.config.entity_index],
-                                 this._card.config.entities[this.config.entity_index]);
+    const name = this.textEllipsis(
+                    this._buildName(this._card.entities[this.config.entity_index],
+                                    this._card.config.entities[this.config.entity_index]),
+                    this.config?.show?.ellipsis);
 
     return svg`
         <text>
@@ -3684,8 +3705,10 @@ class EntityAreaTool extends BaseTool {
     this.MergeColorFromState(this.styles.area);
     this.MergeAnimationStyleIfChanged();
 
-    const area = this._buildArea(this._card.entities[this.config.entity_index],
-                                 this._card.config.entities[this.config.entity_index]);
+    const area = this.textEllipsis(
+                    this._buildArea(this._card.entities[this.config.entity_index],
+                                    this._card.config.entities[this.config.entity_index]),
+                    this.config?.show?.ellipsis);
 
     return svg`
         <text>
