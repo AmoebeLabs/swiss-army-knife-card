@@ -2584,16 +2584,15 @@ class UserSvgTool extends BaseTool {
   }
 
   _renderUserSvg() {
-
-    
     this.MergeAnimationStyleIfChanged();
 
     if (this.injector.svg) {
-      // console.log("re-using injected svg...");
       return svg`${this.injector.svg}`;
     } else {
+      var images = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.images))
+
       return svg`
-        <svg id="image-one" data-src="${this.images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
+        <svg id="image-one" data-src="${images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
         </svg>
         `;
     }
