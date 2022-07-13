@@ -6346,11 +6346,13 @@ class SwissArmyKnifeCard extends LitElement {
     const state = Number(inState);
     const sign = Math.sign(inState);
 
+    if (["0", "-0"].includes(sign)) return sign;
+
     if (entityConfig.decimals === undefined || Number.isNaN(entityConfig.decimals) || Number.isNaN(state))
-      return (sign == "-0" ? "-" + (Math.round(state * 100) / 100).toString() : (Math.round(state * 100) / 100).toString());
+      return (sign == "-1" ? "-" + (Math.round(state * 100) / 100).toString() : (Math.round(state * 100) / 100).toString());
 
     const x = 10 ** entityConfig.decimals;
-    return (sign == "-0" ? "-" + (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString() :
+    return (sign == "-1" ? "-" + (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString() :
                                  (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString());
   }
 
