@@ -252,23 +252,26 @@ class Templates {
   *
   * The arguments passed to the function are:
   * - state, state of the current entity
-  * - states, the full array of states provied by hass
+  * - states, the full array of states provided by hass
   * - entity, the current entity and its configuration
   * - user, the currently logged in user
   * - hass, the hass object...
+  * - tool_config, the YAML configuration of the current tool
+  * - entity_config, the YAML configuration of configured entity in this tool
   *
   */
 
   static evaluateJsTemplate(argTool, state, jsTemplate) {
     try {
-      return new Function('state', 'states', 'entity', 'user', 'hass', 'config', `'use strict'; ${jsTemplate}`).call(
+      return new Function('state', 'states', 'entity', 'user', 'hass', 'tool_config', 'entity_config', `'use strict'; ${jsTemplate}`).call(
         this,
         state,
         argTool._card._hass.states,
-        argTool.config.entity_index ? argTool._card.entities[argTool.config.entity_index] : undefined,
+        argTool.config.hasOwnProperty('entity_index') ? argTool._card.entities[argTool.config.entity_index] : undefined,
         argTool._card._hass.user,
         argTool._card._hass,
         argTool.config,
+        argTool.config.hasOwnProperty('entity_index') ? argTool._card.config.entities[argTool.config.entity_index] : undefined
       );
     } catch (e) {
       e.name = 'Sak-evaluateJsTemplate-Error';
