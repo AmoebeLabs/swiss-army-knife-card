@@ -1661,7 +1661,6 @@ class RangeSliderTool extends BaseTool {
         Frame2.call(this);
       }
     }, {capture: true, passive: false});
-
   }
 
 /*******************************************************************************
@@ -3341,7 +3340,7 @@ class EntityIconTool extends BaseTool {
   render() {
 
     return svg`
-      <g "" id="icongrp-${this.toolId}" class="${classMap(this.classes.tool)}"
+      <g "" id="icongrp-${this.toolId}" class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${e => this.handleTapEvent(e, this.config)} >
 
         ${this._renderIcon()}
@@ -5856,21 +5855,14 @@ class SwissArmyKnifeCard extends LitElement {
 
     if (this.dev.debug) console.log('setConfig', this.cardId);
 
-    this.aspectratio = config.aspectratio || "1/1";
-    
-    var ar = config.aspectratio.trim().split("/");
-    if (!this.viewBox) this.viewBox = {};
-    this.viewBox.width = ar[0] * SVG_DEFAULT_DIMENSIONS;
-    this.viewBox.height= ar[1] * SVG_DEFAULT_DIMENSIONS;
-
     if (!config.layout) {
       throw Error('card::setConfig - No layout defined');
     }
 
-    if (config.layout.styles?.card) {
-      // console.log("setConfig, styles.card", config.layout.styles.card);
-      this.styles.card = config.layout.styles.card;
-    }
+    // Temp disable for layout template check...
+    // if (!config.layout.toolsets) {
+      // throw Error('card::setConfig - No toolsets defined');
+    // }
 
     // testing
     if (config.entities) {
@@ -5883,8 +5875,7 @@ class SwissArmyKnifeCard extends LitElement {
       }
     }
 
-    // #TODO
-    // @2020.11.24 new instead of previous lines.
+    // Copy config, as we must have write access to replace templates!
     const newConfig = Merge.mergeDeep(config);
     
     // #TODO must be removed after removal of segmented arcs part below
@@ -5897,13 +5888,16 @@ class SwissArmyKnifeCard extends LitElement {
     function findTemplate(key, value) {
       // Filtering out properties
       // console.log("findTemplate, key=", key, "value=", value);
-      if (value.template) {
+      if (value?.template) {
         const template = thisMe.lovelace.config.sak_user_templates.templates[value.template.name];
+        if (!template)
+          console.error('Template not found...', value.template, template);
+
           var replacedValue = Templates.replaceVariables3(value.template.variables, template);
           // Hmm. cannot add .template var. object is not extensible...
           // replacedValue.template = 'replaced';
           var secondValue = Merge.mergeDeep(replacedValue);
-          secondValue.from_template = 'replaced';
+          // secondValue.from_template = 'replaced';
 
         return secondValue;
       }
@@ -5917,10 +5911,18 @@ class SwissArmyKnifeCard extends LitElement {
       return value;
     }
 
-    
-    var cfg = JSON.stringify(this.config.layout.toolsets, findTemplate);
-    var cfgobj = JSON.parse(cfg);
+    // Find & Replace template definitions. This also supports layout templates
+    var cfg = JSON.stringify(this.config, findTemplate);
 
+    // To further process toolset templates, get reference to toolsets
+    var cfgobj = JSON.parse(cfg).layout.toolsets;
+    
+    // Set layout template if found
+    if (this.config.layout.template) {
+      this.config.layout = JSON.parse(cfg).layout;
+    }
+    
+    // Continue to check & replace partial toolset templates and overrides
     this.config.layout.toolsets.map((toolsetCfg, toolidx) => {
 
       var toolList = null;
@@ -6175,6 +6177,18 @@ class SwissArmyKnifeCard extends LitElement {
 
         console.log("*** M3 - Material 3 conversion DONE. You should copy the above output...");
       }
+    }
+
+    // Get aspectratio. This can be defined at card level or layout level
+    this.aspectratio = (this.config.layout.aspectratio || this.config.aspectratio || "1/1").trim();
+
+    var ar = this.aspectratio.split("/");
+    if (!this.viewBox) this.viewBox = {};
+    this.viewBox.width = ar[0] * SVG_DEFAULT_DIMENSIONS;
+    this.viewBox.height= ar[1] * SVG_DEFAULT_DIMENSIONS;
+
+    if (this.config.layout.styles?.card) {
+      this.styles.card = this.config.layout.styles.card;
     }
 
     if (this.dev.debug) console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
@@ -6509,7 +6523,6 @@ class SwissArmyKnifeCard extends LitElement {
     return (sign == "-1" ? "-" + (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString() :
                                  (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString());
   }
-
 
 /*******************************************************************************
   * card::_buildSecondaryInfo()
