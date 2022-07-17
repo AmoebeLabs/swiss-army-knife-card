@@ -2568,6 +2568,9 @@ class UserSvgTool extends BaseTool {
       },
       styles: {
         usersvg: {
+        },
+        mask: {
+          fill: 'white'
         }
       }
     };
@@ -2600,13 +2603,41 @@ class UserSvgTool extends BaseTool {
     this.injector.perInjectionCallback = function (svg) {
       // Callback after each SVG is injected
       this.injector.svg = svg;
-      // console.log('SVG injected: ' + svg);
+      // console.log('SVG injected: ', svg, this.injector);
     }.bind(this);
 
     // create injector configured by options
     this.injector.injector = new SVGInjector(this.injector.injectorOptions);
 
+    this.clipPath = {};
 
+    if (this.config.clip_path) {
+      this.svg.cp_cx = Utils.calculateSvgCoordinate(this.config.clip_path.position.cx || this.config.position.cx, 0);
+      this.svg.cp_cy = Utils.calculateSvgCoordinate(this.config.clip_path.position.cy || this.config.position.cy, 0);
+      this.svg.cp_height = Utils.calculateSvgDimension(this.config.clip_path.position.height || this.config.position.height);
+      this.svg.cp_width = Utils.calculateSvgDimension(this.config.clip_path.position.width || this.config.position.width);
+
+      let maxRadius = Math.min(this.svg.cp_height, this.svg.cp_width) / 2;
+      let radius = 0;
+      radius = Utils.calculateSvgDimension(this.config.clip_path.position.radius.all);
+
+      this.svg.radiusTopLeft = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
+                                this.config.clip_path.position.radius.top_left || this.config.clip_path.position.radius.left || 
+                                this.config.clip_path.position.radius.top || this.config.clip_path.position.radius.all))) || 0;
+
+      this.svg.radiusTopRight = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
+                                this.config.clip_path.position.radius.top_right || this.config.clip_path.position.radius.right ||
+                                this.config.clip_path.position.radius.top || this.config.clip_path.position.radius.all))) || 0;
+
+      this.svg.radiusBottomLeft = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
+                                this.config.clip_path.position.radius.bottom_left || this.config.clip_path.position.radius.left ||
+                                this.config.clip_path.position.radius.bottom || this.config.clip_path.position.radius.all))) || 0;
+
+      this.svg.radiusBottomRight = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
+                                this.config.clip_path.position.radius.bottom_right || this.config.clip_path.position.radius.right ||
+                                this.config.clip_path.position.radius.bottom || this.config.clip_path.position.radius.all))) || 0;
+    }
+    
     if (this.dev.debug) console.log('UserSvgTool constructor config, svg', this.toolId, this.config, this.svg);
   }
 
@@ -2654,12 +2685,55 @@ class UserSvgTool extends BaseTool {
     if (this.injector.svg) {
       return svg`${this.injector.svg}`;
     } else {
+      if (this.item.image == "none")
+        return svg``;
+
+      var clipPath = "";
+      if (this.config.clip_path) {
+        clipPath = svg`
+          <defs>
+            <path  id="path-${this.toolId}"
+              d="
+                M ${this.svg.cp_cx + this.svg.radiusTopLeft + ((this.svg.width - this.svg.cp_width)/2)} ${this.svg.cp_cy + ((this.svg.height - this.svg.cp_height)/2)}
+                h ${this.svg.cp_width - this.svg.radiusTopLeft - this.svg.radiusTopRight}
+                a ${this.svg.radiusTopRight} ${this.svg.radiusTopRight} 0 0 1 ${this.svg.radiusTopRight} ${this.svg.radiusTopRight}
+                v ${this.svg.cp_height - this.svg.radiusTopRight - this.svg.radiusBottomRight}
+                a ${this.svg.radiusBottomRight} ${this.svg.radiusBottomRight} 0 0 1 -${this.svg.radiusBottomRight} ${this.svg.radiusBottomRight}
+                h -${this.svg.cp_width - this.svg.radiusBottomRight - this.svg.radiusBottomLeft}
+                a ${this.svg.radiusBottomLeft} ${this.svg.radiusBottomLeft} 0 0 1 -${this.svg.radiusBottomLeft} -${this.svg.radiusBottomLeft}
+                v -${this.svg.cp_height - this.svg.radiusBottomLeft - this.svg.radiusTopLeft}
+                a ${this.svg.radiusTopLeft} ${this.svg.radiusTopLeft}  0 0 1 ${this.svg.radiusTopLeft} -${this.svg.radiusTopLeft}
+                ">
+            </path>
+            <clipPath id="clip-path-${this.toolId}">
+              <use href="#path-${this.toolId}"/>
+            </clipPath>
+            <mask id="mask-${this.toolId}">
+              <use href="#path-${this.toolId}" style="${styleMap(this.styles.mask)}"/>
+            </mask>
+          </defs>
+          `;
+      }
+      
       var images = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.images))
 
-      return svg`
-        <svg id="image-one" data-src="${images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
-        </svg>
-        `;
+      // If svg, use injector for rendering. If jpg or png, use default image renderer...
+      if (["png", "jpg"].includes((images[this.item.image].substring(images[this.item.image].lastIndexOf(".") + 1)))) {
+        // Render jpg or png
+        return svg`
+          <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
+            "${clipPath}"
+            <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})" href="${images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
+          </svg>
+          `;
+      } else {
+        // Inject and render SVG...
+        return svg`
+          <svg id="image-one" data-src="${images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" 
+          style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
+          </svg>
+          `;
+      }
     }
   }
  /*******************************************************************************
@@ -2673,6 +2747,7 @@ class UserSvgTool extends BaseTool {
 
     return svg`
       <g id="usersvg-${this.toolId}" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+        style="${styleMap(this.styles.tool)}"
         @click=${e => this.handleTapEvent(e, this.config)}>
         ${this._renderUserSvg()}
       </g>
