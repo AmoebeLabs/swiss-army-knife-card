@@ -244,6 +244,46 @@ class Templates {
     return (JSON.parse(jsonConfig));
   }
 
+  static getJsTemplateOrValueConfig(argTool, argValue) {
+
+    // Check for 'undefined' or 'null'
+    if (!argValue) return argValue;
+
+    // Check for primitive data types 
+    if (['number', 'boolean', 'bigint', 'symbol'].includes(typeof argValue)) return argValue;
+
+    // We might have an object.
+    // Beware of the fact that this recursive function overwrites the argValue object,
+    // so clone argValue if this is the tool configuration...
+    if (typeof argValue === 'object') {
+      Object.keys(argValue).forEach((key) => {
+        argValue[key] = Templates.getJsTemplateOrValueConfig(argTool, argValue[key]);
+      });
+      return argValue;
+    }
+
+    // typeof should be a string now.
+    // The string might be a Javascript template surrounded by [[[<js>]]], or just a string.
+    const trimmedValue = argValue.trim();
+    if (trimmedValue.substring(0, 4) === '[[[[' && trimmedValue.slice(-4) === ']]]]') {
+      return Templates.evaluateJsTemplateConfig(argTool, trimmedValue.slice(4, -4));
+    } else {
+      // Just a plain string, return value.
+      return argValue;
+    }
+  }
+
+  static evaluateJsTemplateConfig(argTool, jsTemplate) {
+    try {
+      return new Function('tool_config', `'use strict'; ${jsTemplate}`).call(
+        this,
+        argTool,
+      );
+    } catch (e) {
+      e.name = 'Sak-evaluateJsTemplateConfig-Error';
+      throw e;
+    }
+  }
  /*******************************************************************************
   * Templates::evaluateJsTemplate()
   *
@@ -278,6 +318,8 @@ class Templates {
       throw e;
     }
   }
+
+
  /*******************************************************************************
   * Templates::getJsTemplateOrValue()
   *
@@ -404,9 +446,11 @@ class Toolset {
 
       if (this.dev.debug) console.log("Toolset::constructor toolConfig", this.toolsetId, argConfig, argPos);
 
-      const newTool = new toolsNew[toolConfig.type](this, argConfig, argPos);
-      this._card.entityHistory.needed |= (toolConfig.type == 'bar');
-      this.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
+      if (!toolConfig.disabled) {
+        const newTool = new toolsNew[toolConfig.type](this, argConfig, argPos);
+        this._card.entityHistory.needed |= (toolConfig.type == 'bar');
+        this.tools.push({type: toolConfig.type, index: toolConfig.id, tool: newTool});
+      }
     });
 
     if (this.dev.performance) console.timeEnd("--> "+ this.toolsetId + " PERFORMANCE Toolset::constructor");
@@ -5815,11 +5859,12 @@ class SwissArmyKnifeCard extends LitElement {
                   
                   // After merging/replacing. We might get some template definitions back!!!!!!
                   toolList[indexT] = JSON.parse(JSON.stringify(toolList[indexT], findTemplate));
-                
+
                 found = true;
                 }
                 if (this.dev.debug) console.log("card::setConfig - got toolsetCfg toolid", tool, index, toolT, indexT, tool);
               }
+              cfgobj[toolidx].tools[indexT] = Templates.getJsTemplateOrValueConfig(cfgobj[toolidx].tools[indexT], Merge.mergeDeep(cfgobj[toolidx].tools[indexT]));
             });
             if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
           });
@@ -5827,12 +5872,8 @@ class SwissArmyKnifeCard extends LitElement {
         toolList = toolList.concat(toolAdd);
       }
 
-      // Testing new template replace stuff...
-      if (true) {
-        toolsetCfg = cfgobj[toolidx];
-      }
+      toolsetCfg = cfgobj[toolidx];
       const newToolset = new Toolset(this, toolsetCfg);
-
       this.toolsets.push(newToolset);
     });
 
