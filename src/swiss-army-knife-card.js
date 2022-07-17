@@ -2618,7 +2618,6 @@ class UserSvgTool extends BaseTool {
       this.svg.cp_width = Utils.calculateSvgDimension(this.config.clip_path.position.width || this.config.position.width);
 
       let maxRadius = Math.min(this.svg.cp_height, this.svg.cp_width) / 2;
-      let radius = Utils.calculateSvgDimension(this.config.clip_path.position.radius.all);
 
       this.svg.radiusTopLeft = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
                                 this.config.clip_path.position.radius.top_left || this.config.clip_path.position.radius.left || 
