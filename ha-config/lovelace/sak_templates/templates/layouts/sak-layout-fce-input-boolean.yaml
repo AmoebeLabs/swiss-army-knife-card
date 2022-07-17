@@ -1,0 +1,149 @@
+sak_layout_fce_input_boolean:
+  template:
+    type: layout
+    defaults: 
+      - dummy: 0
+  layout:
+    aspectratio: 4/1
+    toolsets:
+      # ================================================================
+      - toolset: half-circle
+        position:
+          cx: 0                             # Center on cards border 
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 50
+            entity_index: 0
+            animations:
+              - state: 'on'
+                styles:
+                  circle:
+                    fill: var(--theme-sys-color-primary)
+              - state: 'off'
+                styles:
+                  circle:                     # Use as filled tonal button (m3)
+                    fill: var(--theme-sys-color-secondary-container)
+            styles:
+              circle:
+                stroke: none
+      # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 25
+          cy: 45
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 45
+            entity_index: 0
+            animations:
+              - state: 'on'
+                styles:
+                  icon:
+                    fill: var(--primary-background-color)
+              - state: 'off'
+                styles:
+                  icon:
+                    fill: var(--theme-sys-color-secondary)
+            styles:
+              icon:
+                opacity: 0.9
+                pointer-events: none
+            
+      # ================================================================
+      - toolset: switch
+        position:
+          cx: 25                           # On 1/3 of card width
+          cy: 75
+          scale: 1.8
+        tools:
+          # ------------------------------------------------------------
+          - type: switch
+            position:
+              cx: 50
+              cy: 50
+              orientation: 'horizontal'
+              track:
+                width: 15
+                height: 5
+                radius: 2.5
+              thumb:
+                width: 3
+                height: 3
+                radius: 2.5
+                offset: 4.5
+            entity_index: 0
+            styles:
+              track:
+                --switch-checked-track-color: var(--primary-background-color)
+                --switch-unchecked-track-color: var(--theme-sys-color-secondary)
+                # --switch-checked-button-color: 
+                pointer-events: none
+              thumb:
+                --thumb-stroke: 'var(--primary-background-color)'
+                pointer-events: none
+      # ================================================================
+      - toolset: tap-area
+        position:
+          cx: 25                              # tap area for toggle
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: rectangle
+            position:
+              cx: 50
+              cy: 50
+              width: 50
+              height: 100
+            entity_index: 0
+            user_actions:
+              tap_action:
+                haptic: light
+                actions:
+                  - action: call-service
+                    service: input_boolean.toggle
+            styles:
+              rectangle:
+                stroke: none
+                fill: rgba(0,0,0,0)
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 70                # Left part = 75, so 75+(300-75)/2
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 37
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: start
+                font-size: 30em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 70
+            entity_index: 0
+            show:
+              uom: none
+            styles:
+              state:
+                text-anchor: start
+                font-size: 26em
+                font-weight: 500
+                opacity: 0.7

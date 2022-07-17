@@ -1149,6 +1149,7 @@ cards:
                     derived_entity:
                       state: |
                         [[[
+                          //const DIRECTION = ["n", "nne", "ne", "ene", "e", "ese", "se", "sse", "s", "ssw", "sw", "wsw", "w", "wnw", "nw", "nnw", ];
                           const DIRECTION = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW", ];
                           const dir = Math.floor((state / 22.5) + .5);
                           return DIRECTION[(dir % 16)];
@@ -1784,7 +1785,7 @@ cards:
                     styles:
                       circle:
                         fill: var(--primary-background-color)
-                        # filter: url(#filter)
+                        filter: url(#filter)
 
                   - type: 'usersvg'
                     id: 10

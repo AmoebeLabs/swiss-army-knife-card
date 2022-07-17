@@ -1,0 +1,103 @@
+sak_layout_fce_binary:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_binary_icon_spin: false
+  layout:
+    aspectratio: 4/1
+    toolsets:
+      # ================================================================
+      - toolset: half-circle
+        position:
+          cx: 0                             # Center on cards border 
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 50
+            entity_index: 0
+            animations:
+              - state: 'on'
+                styles:
+                  circle:
+                    fill: var(--theme-sys-color-primary)
+              - state: 'off'
+                styles:
+                  circle:
+                    fill: var(--theme-sys-elevation-surface-neutral4)
+            styles:
+              circle:
+                stroke: none
+      # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 25
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 45
+            entity_index: 0
+            # Define template variable for this icon tool, so it can be
+            # processed by a piece of JavaScript ;-)
+            # The template engine will replace the variable!
+            variables:
+              sak_layout_binary_icon_spin : '[[sak_layout_binary_icon_spin]]'
+            animations:
+              - state: 'on'
+                styles:
+                  icon:
+                    # Use template variable as the source to spin or not.
+                    # the config JavaScript parameter is this tools config...
+                    animation: >
+                      [[[ if (tool_config.variables.sak_layout_binary_icon_spin) return "spin 3s linear infinite";
+                          return "";
+                      ]]]
+                    fill: var(--primary-background-color)
+              - state: 'off'
+                styles:
+                  icon:
+                    fill: var(--theme-sys-color-secondary)
+            styles:
+              icon:
+                opacity: 0.9
+            
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 70                # Left part = 75, so 75+(300-75)/2
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 37
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: start
+                font-size: 30em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 70
+            entity_index: 0
+            show:
+              uom: none
+            styles:
+              state:
+                text-anchor: start
+                font-size: 26em
+                font-weight: 500
+                opacity: 0.7

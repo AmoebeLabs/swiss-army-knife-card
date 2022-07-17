@@ -29,9 +29,13 @@
     content: >
       .toolset__group-outer {
         overflow: visible;
+        /*filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.8));*/
+        /*filter: url(#shadow);*/
       }
       .toolset__group {
         overflow: visible;
+        /*filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.8));*/
+        /*filter: url(#shadow);*/
       }
 
 

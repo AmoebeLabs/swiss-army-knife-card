@@ -1,0 +1,852 @@
+#
+# View			: view-functional-card-examples.yml
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#
+# Refs:
+#   
+################################################################################
+
+title: FCE
+path: fce
+panel: false
+cards:
+  - type: vertical-stack
+    cards:
+      # ========================================================================
+      # ========================================================================
+      # ========================================================================
+    - type: grid
+      columns: 1
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.u_s_air_quality_index
+              name: 'AirVisual #1'
+            - entity: sensor.u_s_air_pollution_level
+            - entity: sensor.u_s_air_quality_index
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_airvisual1
+
+      ##########################################################################
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.u_s_air_quality_index
+              name: 'AirVisual #2'
+          layout:
+            template:
+              name: sak_layout_fce_airvisual2
+
+      # ========================================================================
+      # ========================================================================
+      # ========================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.iphone_van_marco_battery_level
+              name: 'Battery #1-1'
+          layout:
+            template:
+              name: sak_layout_fce_sensor1
+              variables:
+                - sak_layout_sensor_name_above_state: true
+                - sak_layout_sensor_history_disabled: true
+                - sak_layout_sensor_segarc_style: colorlist
+                - sak_layout_sensor_scale_max: 100                
+              # name: sak_layout_fce_battery1a
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.ipad_van_marco_battery_level
+              # name: 'iPad Battery'
+              name: 'Battery #1-2'
+          layout:
+            template:
+              # name: sak_layout_fce_battery1b
+              name: sak_layout_fce_sensor1
+              variables:
+                - sak_layout_sensor_name_above_state: false
+                - sak_layout_sensor_history_disabled: false
+                - sak_layout_sensor_colorstops_template: colorstops_battery_level
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_scale_max: 100                
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.iphone_van_marco_battery_level
+              name: 'Battery #2'
+            - entity: sensor.iphone_van_marco_battery_level
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_colorstops_template: colorstops_battery_level
+                - sak_layout_sensor_icon_style: colorstops
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_scale_max: 100                
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.ipad_van_marco_battery_level
+              name: 'Battery #2'
+            - entity: sensor.ipad_van_marco_battery_level
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_colorstops_template: colorstops_battery_level
+                - sak_layout_sensor_icon_style: colorstops
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_scale_max: 100                
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Pump Pool'
+              icon: mdi:pump
+          layout:
+            template:
+              name: sak_layout_fce_binary
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Pump Pool'
+              icon: mdi:pump
+          layout:
+            template:
+              name: sak_layout_fce_binary
+              variables:
+                - sak_layout_binary_icon_spin: true
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: binary_sensor.livingroom_movement_occupancy
+              name: 'Bin Alert #1'
+              # name: 'Movement'
+            - entity: binary_sensor.livingroom_movement_occupancy
+              secondary_info: last_changed
+              format: relative
+            - entity: sensor.livingroom_movement_battery
+              decimals: 0
+            - entity: sensor.livingroom_movement_linkquality
+              decimals: 0
+          layout:
+            template:
+              name: sak_layout_fce_binary_alert1
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: binary_sensor.livingroom_movement_occupancy
+              name: 'Bin Alert #2'
+              # name: 'Livingroom #2'
+            - entity: binary_sensor.livingroom_movement_occupancy
+              secondary_info: last_changed
+              format: relative
+            - entity: sensor.livingroom_movement_battery
+              decimals: 0
+          layout:
+            template:
+              name: sak_layout_fce_binary_alert2
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 3
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: binary_sensor.livingroom_movement_occupancy
+              name: 'Bin Alert #3'
+            - entity: binary_sensor.livingroom_movement_occupancy
+              secondary_info: last_changed
+              format: relative
+            - entity: sensor.studym_iaq_battery
+              decimals: 0
+          layout:
+            template:
+              name: sak_layout_fce_binary_alert3
+                    
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: binary_sensor.livingroom_movement_occupancy
+              name: 'Bin Alert #4'
+            - entity: binary_sensor.livingroom_movement_occupancy
+              secondary_info: last_changed
+              format: relative
+            - entity: sensor.studym_iaq_battery
+              decimals: 0
+          layout:
+            template:
+              name: sak_layout_fce_binary_alert4
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 1
+      square: false
+      cards:
+        # 
+        # Indoor Environment: Bath #2
+        # 
+        ########################################################################
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.bathroom_2f_iaq_temperature
+              name: 'Environment'
+              icon: mdi:home-thermometer-outline
+              decimals: 1
+            - entity: sensor.bathroom_2f_iaq_humidity
+              decimals: 0
+            - entity: sensor.bathroom_2f_iaq_pressure
+              decimals: 0
+            - entity: sensor.bathroom_2f_iaq_battery
+              decimals: 0
+            - entity: sensor.bathroom_2f_iaq_linkquality
+              decimals: 0
+            - entity: sensor.bathroom_2f_iaq_temperature
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_environment
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 1
+      square: false
+      cards:
+        - type: custom:swiss-army-knife-card
+          disable_card: true
+          layout:
+            template:
+              name: sak_layout_fce_header
+              variables:
+                - sak_layout_header_content: 'Livingroom'
+                - sak_layout_header_font_color: var(--secondary-text-color)
+                - sak_layout_header_font_size: 5em
+
+        ########################################################################
+
+        - type: custom:swiss-army-knife-card
+          disable_card: true
+          layout:
+            template:
+              name: sak_layout_fce_header
+              variables:
+                - sak_layout_header_content: 'All those beautiful lights'
+                - sak_layout_header_font_color: var(--theme-sys-color-tertiary)
+                - sak_layout_header_font_size: 3em    
+                - sak_layout_header_font_text_transform: none
+                
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: input_boolean.pump_enabled
+              name: 'Input Boolean'
+              # name: 'Pump Pool Enable'
+          layout:
+            template:
+              name: sak_layout_fce_input_boolean
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.1st_floor_hall_light
+              name: 'Light'
+              icon: mdi:dome-light
+          layout:
+            template:
+              name: sak_layout_fce_light
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Light /w Slider'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit_of_measurement: "%"
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_light_with_slider
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 3
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          layout:
+            template:
+              name: sak_layout_fce_navigate
+              variables:
+                # - sak_layout_navigate_icon:
+                - sak_layout_navigate_text: 'Navigate'
+                - sak_layout_navigate_path: 'tut-03-p1'
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: person.zoefdehaas
+              name: 'Person'
+              icon: mdi:face-man
+          layout:
+            template:
+              name: sak_layout_fce_person
+              variables:
+                - sak_layout_fce_person_zone_entities:
+                    - zone.buiten
+                    - zone.marco_werk
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: person.zoefdehaas
+              name: 'Tha Washer'
+              icon: mdi:face-man
+              entity_picture: "/local/images/clip-test.jpg"
+          layout:
+            template:
+              name: sak_layout_fce_person
+              variables:
+                - sak_layout_fce_person_use_entity_picture: true
+                - sak_layout_fce_person_zone_entities:
+                    - zone.buiten
+                    - zone.marco_werk
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.washingmachine_energy_power
+              name: 'PwrOutl #1'
+            - entity: sensor.washingmachine_energy_power
+              secondary_info: last_changed
+              format: relative
+            - entity: switch.washingmachine_energy
+              name: 'Air'
+          layout:
+            template:
+              name: sak_layout_fce_power_outlet1
+              variables:
+                - sak_layout_power_outlet_segarc_scale_max_watt: 200
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.kitchen_group_energy_power
+              name: 'PwrOutl #2'
+            - entity: sensor.kitchen_group_energy_power
+              secondary_info: last_changed
+              format: relative
+            - entity: switch.washingmachine_energy
+              name: 'Air #2'
+          layout:
+            template:
+              name: sak_layout_fce_power_outlet2
+              variables:
+                - sak_layout_power_outlet_segarc_scale_max_watt: 200
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'PwrOutl #3'
+            - entity: switch.washingmachine_energy
+              name: 'Kitchen Switch'
+            - entity: sensor.washingmachine_energy_power  # Just for the demo!!!!
+              name: 'Kitchen Switch #2'
+          layout:
+            template:
+              name: sak_layout_fce_power_outlet3
+              variables:
+                - sak_layout_power_outlet_segarc_scale_max_watt: 200
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.washingmachine_energy_power
+              name: 'PwrOutl #4'
+            - entity: switch.washingmachine_energy
+              name: 'Kitchen Switch #2'
+          layout:
+            template:
+              name: sak_layout_fce_power_outlet4
+              variables:
+                - sak_layout_power_outlet_segarc_scale_max_watt: 200
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 3
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          layout:
+            template:
+              name: sak_layout_fce_scene
+              variables:
+                - sak_layout_scene_icon: mdi:script
+                - sak_layout_scene_text: 'Scene'
+                - sak_layout_scene_id: 'scene.unknown'
+                - sak_layout_scene_transition: 2.5
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #1-1'
+          layout:
+            template:
+              name: sak_layout_fce_sensor1
+              variables:
+                - sak_layout_sensor_history_disabled: true
+                - sak_layout_sensor_scale_max: 2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #1-2'
+          layout:
+            template:
+              name: sak_layout_fce_sensor1
+              variables:
+                - sak_layout_sensor_name_above_state: false
+                - sak_layout_sensor_scale_max: 2
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #2-1'
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_scale_max: 2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #2-2'
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_name_above_state: false
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_scale_max: 2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #2-3'
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_icon_style: colorstops
+                - sak_layout_sensor_scale_max: 2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #2-4'
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_name_above_state: false
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_icon_style: colorstops
+                - sak_layout_sensor_circle_style: colorstops
+                - sak_layout_sensor_scale_max: 2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #2-5'
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_circle_style: colorstops
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_scale_max: 2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #2-6'
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_name_above_state: false
+                - sak_layout_sensor_history_disabled: true
+                - sak_layout_sensor_circle_style: default
+                - sak_layout_sensor_icon_style: default
+                - sak_layout_sensor_segarc_style: colorlist
+                - sak_layout_sensor_scale_max: 2
+                
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 1
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            # CPU
+            - entity: sensor.processor_use
+              decimals: 0
+              name: 'Server Stats'
+            # Memory
+            - entity: sensor.memory_use_percent
+              icon: mdi:memory
+              decimals: 0
+            # Disk
+            - entity: sensor.disk_use_percent
+              decimals: 0
+              icon: mdi:harddisk
+            # System Load
+            - entity: sensor.load_1m
+              decimals: 2
+              unit: '1m'
+            # Last changed
+            - entity: sensor.processor_use
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_server_statistics
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Switch #1'
+              icon: mdi:fan
+              # name: 'Fan'
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_switch1
+              variables:
+                - sak_layout_switch_icon_spin: true
+                - sak_layout_switch_service: light.toggle
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Switch #2a'
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_switch2
+              variables:
+                - sak_layout_switch_icon_spin: false
+                # - sak_layout_switch_service: light.toggle
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Switch #2b'
+              icon: mdi:fan
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_switch2
+              variables:
+                - sak_layout_switch_icon_spin: true
+                # - sak_layout_switch_service: light.toggle
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 3
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Switch #3'
+              icon: mdi:fan
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_switch3
+              variables:
+                - sak_layout_switch_icon_spin: true
+              
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.tomorrow_io_zoefdehaas_tree_pollen_index
+              name: 'Tree Pollen Index'
+          layout:
+            template:
+              name: sak_layout_fce_tomorrow_pollen
+              variables:
+                - sak_layout_tomorrow_pollen_image_path: tomorrow/
+                - sak_layout_tomorrow_pollen_file_prefix: pollen_tree_
+                
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.tomorrow_io_zoefdehaas_grass_pollen_index
+              name: 'Grass Pollen Index'
+          layout:
+            template:
+              name: sak_layout_fce_tomorrow_pollen
+              variables:
+                - sak_layout_tomorrow_pollen_image_path: tomorrow/
+                - sak_layout_tomorrow_pollen_file_prefix: pollen_grass_
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.tomorrow_io_zoefdehaas_weed_pollen_index
+              name: 'Weed Pollen Index'
+          layout:
+            template:
+              name: sak_layout_fce_tomorrow_pollen
+              variables:
+                - sak_layout_tomorrow_pollen_image_path: tomorrow/
+                - sak_layout_tomorrow_pollen_file_prefix: pollen_weed_
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 1
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.tomorrow_io_zoefdehaas_tree_pollen_index
+              name: 'Trees'
+            - entity: sensor.tomorrow_io_zoefdehaas_grass_pollen_index
+              name: 'Grass'
+            - entity: sensor.tomorrow_io_zoefdehaas_weed_pollen_index
+              name: 'Weed'
+          layout:
+            template:
+              name: sak_layout_fce_tomorrow_pollen_all
+              variables:
+                - sak_layout_tomorrow_pollen_image_path: tomorrow/
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.tomorrow_io_zoefdehaas_tree_pollen_index
+              name: 'Trees'
+            - entity: sensor.tomorrow_io_zoefdehaas_grass_pollen_index
+              name: 'Grass'
+            - entity: sensor.tomorrow_io_zoefdehaas_weed_pollen_index
+              name: 'Weed'
+            - entity: sensor.u_s_air_quality_index
+              name: 'AQI'
+            - entity: sensor.u_s_air_pollution_level
+          layout:
+            template:
+              name: sak_layout_fce_tomorrow_pollen_all_aqi
+              variables:
+                - sak_layout_tomorrow_pollen_image_path: tomorrow/
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.tomorrow_io_zoefdehaas_tree_pollen_index
+              name: 'Trees'
+            - entity: sensor.tomorrow_io_zoefdehaas_grass_pollen_index
+              name: 'Grass'
+            - entity: sensor.tomorrow_io_zoefdehaas_weed_pollen_index
+              name: 'Weed'
+            - entity: sensor.u_s_air_quality_index
+              name: 'AQI'
+            - entity: sensor.u_s_air_pollution_level
+          layout:
+            template:
+              name: sak_layout_fce_clippath_test
+              variables:
+                - sak_layout_tomorrow_pollen_image_path: tomorrow/
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 1
+      square: true
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          aspectratio: 3/1
+          layout:
+            styles:
+              card:
+                border-radius: 25em
+                height: 50px
+                display: none
+            toolsets:
+              - toolset: dummy
+                position:
+                  cx: 0
+                  cy: 0
+                tools:
+                  - type: circle
+                    position:
+                      radius: 0

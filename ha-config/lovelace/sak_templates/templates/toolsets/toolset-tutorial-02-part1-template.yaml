@@ -21,6 +21,9 @@ toolset_tutorial_02_part1:
           align: center
           icon_size: 25
         entity_index: '[[var_entity_index]]'
+        styles:
+          icon:
+            fill: var(--theme-sys-color-secondary)
 
       # ------------------------------------------------------------------------
       - type: state
@@ -39,6 +42,7 @@ toolset_tutorial_02_part1:
           uom:
             fill: var(--primary-text-color)
             font-weight: 700
+            opacity: 0.8
 
       # ------------------------------------------------------------------------
       - type: 'segarc'

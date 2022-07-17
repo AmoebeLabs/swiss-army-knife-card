@@ -940,7 +940,8 @@ cards:
                         styles:
                           icon:
                             fill: var(--md-fg-color--alert)
-                            animation: headShake 1s ease-in-out 1
+                            # animation: headShake 1s ease-in-out 1
+                            animation: spin 3s linear infinite
                       - state: 'off'
                         styles:
                           icon:
