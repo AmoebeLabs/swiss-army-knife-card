@@ -1,0 +1,171 @@
+sak_layout_fce_binary_alert2:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_binary_alert_battery_entity_disabled: false
+  layout:
+    aspectratio: 4/1
+    toolsets:
+      # ================================================================
+      - toolset: half-circle
+        position:
+          cx: 0                             # Center on cards border 
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 50
+            entity_index: 0
+            animations:
+              - state: 'on'
+                styles:
+                  circle:
+                    fill: var(--theme-sys-color-secondary-container)
+              - state: 'off'
+                styles:
+                  circle:
+                    fill: var(--theme-sys-elevation-surface-neutral2)
+            styles:
+              circle:
+                stroke: none
+      # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 25
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 45
+            entity_index: 0
+            animations:
+              - state: 'on'
+                styles:
+                  icon:
+                    fill: var(--theme-sys-color-secondary)
+              - state: 'off'
+                styles:
+                  icon:
+                    fill: var(--theme-sys-elevation-surface-neutral10)
+            styles:
+              icon:
+                opacity: 0.9
+            
+      # ================================================================
+      - toolset: alert-icon
+        position:
+          cx: 40
+          cy: 18
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 15
+            entity_index: 0                 # Use state from 0
+            animations:
+              - state: 'on'                 # If ON
+                styles:
+                  circle:
+                    fill: var(--primary-background-color)
+              - state: 'off'                # If OFF
+                styles:
+                  circle:
+                    display: none           # Hide icon
+
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 28
+            entity_index: 0                 # Use state from 0
+            icon: mdi:alert-circle          # Use alert circle icon
+            animations:
+              - state: 'on'                 # If ON
+                styles:
+                  icon:
+                    fill: var(--brand-google-red, red) # Set icon to red color
+              - state: 'off'                # If OFF
+                styles:
+                  icon:
+                    display: none           # Hide icon
+            styles:
+              icon:
+                fill: grey                  # Default grey color
+
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 70                # Left part = 75, so 75+(300-75)/2
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 37
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: start
+                font-size: 30em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 70
+            entity_index: 1
+            show:
+              uom: none
+            styles:
+              state:
+                text-anchor: start
+                font-size: 26em
+                font-weight: 500
+                opacity: 0.7
+
+      # ================================================================
+      - toolset: battery-icon
+        disabled: '[[sak_layout_binary_alert_battery_entity_disabled]]'
+        position:
+          cx: 370
+          cy: 15
+          scale_y: 1.5                      # Make battery taller
+          rotate: 90
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: end
+              icon_size: 30
+            entity_index: 2
+            animations:
+              - state: '20'             # Battery almost dead!
+                operator: <=
+                styles:
+                  icon:
+                    animation: blinkingText 2s ease-in-out both infinite
+                    fill: var(--brand-google-red)
+              - state: '30'             # Battery warning!
+                operator: <=
+                styles:
+                  icon:
+                    fill: var(--brand-google-yellow)
+            styles:
+              icon:
+                fill: var(--theme-sys-color-tertiary)
+                opacity: 0.5

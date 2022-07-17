@@ -18,9 +18,20 @@ title: TUT-99-P1
 path: tut-99-p1
 panel: false
 cards:
-- type: vertical-stack
-  cards:
-    - type: horizontal-stack
+
+################################################################################
+################################################################################
+##
+## Full Width Cards
+##
+################################################################################
+################################################################################
+
+  - type: vertical-stack
+    cards:
+    - type: grid
+      columns: 1
+      square: false
       cards:
         - type: 'custom:swiss-army-knife-card'
           entities:
@@ -258,10 +269,8 @@ cards:
                     styles:
                       bar:
                         stroke-linecap: square
-            
+                
 
-    - type: horizontal-stack
-      cards:
         # 
         # Indoor Environment: Bath #2
         # 
@@ -737,9 +746,7 @@ cards:
                         fill: var(--theme-sys-elevation-surface-neutral4)
                         opacity: 1
 
-    - type: horizontal-stack
-      cards:
-        ########################################################################
+            ########################################################################
         - type: 'custom:swiss-army-knife-card'
           entities:
             # CPU
@@ -888,11 +895,21 @@ cards:
                     - var_toolset_position_cx: 545
                     - var_segarc_scale_max: 2
 
-        ########################################################################
+            ########################################################################
 
-    - type: horizontal-stack
+
+    ################################################################################
+    ################################################################################
+    ##
+    ## Half Width Cards
+    ##
+    ################################################################################
+    ################################################################################
+
+    - type: grid
+      columns: 2
+      square: false
       cards:
-
         - type: 'custom:swiss-army-knife-card'
           entities:
             - entity: sensor.kitchen_group_energy_power
@@ -1002,7 +1019,7 @@ cards:
                     - var_toolset_position_cx: 250
                     - var_segarc_scale_max: 200
 
-        ########################################################################
+          ########################################################################
 
         - type: 'custom:swiss-army-knife-card'
           aspectratio: 3/1                          # Card is 300x100 grid
@@ -1022,12 +1039,9 @@ cards:
                       radius: 0
 
 
-        ########################################################################
-        ########################################################################
-        ########################################################################
-
-    - type: horizontal-stack
-      cards:
+            ########################################################################
+            ########################################################################
+            ########################################################################
 
         - type: 'custom:swiss-army-knife-card'
           entities:
@@ -1381,10 +1395,7 @@ cards:
                     - var_toolset_position_cx: 250
                     - var_segarc_scale_max: 200
 
-        ########################################################################
-
-    - type: horizontal-stack
-      cards:
+            ########################################################################
 
         - type: 'custom:swiss-army-knife-card'
           entities:
@@ -2005,10 +2016,7 @@ cards:
                         fill: var(--theme-sys-elevation-surface-neutral4)
                         opacity: 1
 
-        ########################################################################
-
-    - type: horizontal-stack
-      cards:
+            ########################################################################
 
         - type: 'custom:swiss-army-knife-card'
           entities:
@@ -2151,17 +2159,19 @@ cards:
                           - action: call-service
                             service: light.toggle
 
+        ########################################################################
+
         - type: 'custom:swiss-army-knife-card'
           entities:
-            - entity: light.livingroom_light_duo_left_light
-              name: 'Heater'
-            - entity: light.livingroom_light_duo_left_light
-              secondary_info: last_changed
-              format: relative
+            - entity: sensor.u_s_air_quality_index
+              name: 'Tha Moon'
+
           # Define aspect ratio
           aspectratio: 3/1                          # Card is 300x100 grid
 
           layout:
+            styles:
+              card:
             toolsets:
               # ================================================================
               - toolset: half-circle
@@ -2176,148 +2186,312 @@ cards:
                       cy: 50
                       radius: 50
                     entity_index: 0
-                    animations:
-                      - state: 'on'
-                        styles:
-                          circle:
-                            fill: var(--theme-sys-color-primary)
-                      - state: 'off'
-                        styles:
-                          circle:
-                            fill: var(--theme-sys-elevation-surface-neutral4)
-                            # opacity: 0.4
+                    show:
+                      style: 'colorstops'
+                    colorstops:
+                      template:
+                        name: colorstops_airvisual
+                        variables:
+                          - thegap: 2
                     styles:
                       circle:
                         stroke: none
-                        # transition: fill 1s ease
+                        fill: var(--theme-sys-elevation-surface-neutral4)
 
-              # ================================================================
-              - toolset: column-icon
-                position:
-                  cx: 25
-                  cy: 50
-                tools:
-                  # ------------------------------------------------------------
-                  - type: icon
+                  - type: 'usersvg'
+                    id: 2
+                    entity_index: 0
                     position:
                       cx: 50
                       cy: 50
-                      align: center
-                      icon_size: 30
-                    icon: mdi:35
-                    entity_index: 0
+                      height: 100
+                      width: 100
+                    style: 'images'
+                    images:
+                      - face1: /local/images/airvisual/ic-face-1.svg
+                      - face2: /local/images/airvisual/ic-face-2.svg
+                      - face3: /local/images/airvisual/ic-face-3.svg
+                      - face4: /local/images/airvisual/ic-face-4.svg
+                      - face5: /local/images/airvisual/ic-face-5.svg
+                      - face6: /local/images/airvisual/ic-face-6.svg
                     animations:
-                      - state: 'on'
-                        icon: mdi:radiator
-                        styles:
-                          icon:
-                            # animation: pulse 3s linear infinite
-                            fill: var(--primary-background-color)
-                      - state: 'off'
-                        icon: mdi:radiator-off
-                        styles:
-                          icon:
-                            fill: var(--theme-sys-color-secondary)
+                      - state: '50'
+                        operator: <=
+                        image: face1
+                      - state: '100'
+                        operator: <=
+                        image: face2
+                      - state: '150'
+                        operator: <=
+                        image: face3
+                      - state: '200'
+                        operator: <=
+                        image: face4
+                      - state: '300'
+                        operator: <=
+                        image: face5
+                      - state: '9999'
+                        operator: <=
+                        image: face6
+                        
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 25
+                      end_angle: 155
+                      width: 6
+                      radius: 59
+                    entity_index: 0
+                    scale:
+                      min: 0
+                      max: 300
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorstops'
+                      lastcolor: true
+                    segments:
+                      colorstops:
+                        template:
+                          name: colorstops_airvisual
+                          variables:
+                            - thegap: 2
                     styles:
-                      icon:
-                        fill: var(--primary-background-color)
-                        opacity: 0.9
-                        # transition: fill 1s ease
-                    
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+
+              # ================================================================
+              - toolset: column-bar
+                position:
+                  cx: 185                     # 300-70/2 + 70=185
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: bar
+                    id: 1
+                    entity_index: 0
+                    position:
+                      orientation: vertical
+                      cx: 50
+                      cy: 50
+                      width: 230              # 300-70=230
+                      height: 100
+                      margin: 1
+                    hours: 24
+                    barhours: 1
+                    show:
+                      style: 'colorstops'
+                    colorstops:
+                      template:
+                        name: colorstops_airvisual
+                        variables:
+                          - thefill: true
+                    styles:
+                      bar:
+                        stroke-linecap: square
+                        opacity: 0.25
+
               # ================================================================
               - toolset: column-name
                 position:
-                  cx: 120
+                  cx: 70
                   cy: 50
                 tools:
                   # ------------------------------------------------------------
                   - type: name
                     position:
                       cx: 50
-                      cy: 50
+                      cy: 70
                     entity_index: 0
                     styles:
                       name:
-                        text-anchor: middle
-                        font-size: 25em
-                        font-weight: 700
-                        opacity: 1
+                        text-anchor: start
+                        font-size: 26em
+                        font-weight: 500
+                        opacity: 0.7
                   # ------------------------------------------------------------
                   - type: state
                     position:
                       cx: 50
-                      cy: 80
-                    entity_index: 1
-                    show:
-                      uom: none
+                      cy: 37
+                    entity_index: 0
                     styles:
                       state:
-                        text-anchor: middle
-                        font-size: 14em
-                        font-weight: 500
-                        opacity: 0.7
+                        text-anchor: start
+                        font-size: 30em
+                        font-weight: 700
 
-              # ================================================================
-              - toolset: line1
-                position:
-                  cx: 200                           # On 1/3 of card width
-                  cy: 50
-                tools:
-                  # ------------------------------------------------------------
-                  - type: line
-                    position:
-                      cx: 50
-                      cy: 50
-                      orientation: vertical
-                      length: 50
-                    styles:
-                      line:
-                        fill: var(--primary-text-color)
-                        opacity: 0.5
+        # - type: 'custom:swiss-army-knife-card'
+          # entities:
+            # - entity: light.livingroom_light_duo_left_light
+              # name: 'Heater'
+            # - entity: light.livingroom_light_duo_left_light
+              # secondary_info: last_changed
+              # format: relative
+          # # Define aspect ratio
+          # aspectratio: 3/1                          # Card is 300x100 grid
 
-              # ================================================================
-              - toolset: button-like
-                position:
-                  cx: 250                           # On 1/3 of card width
-                  cy: 50
-                tools:
-                  # ------------------------------------------------------------
-                  - type: icon
-                    position:
-                      cx: 50
-                      cy: 50
-                      align: center
-                      icon_size: 60
-                    entity_index: 0
-                    animations:
-                      - state: 'on'
-                        icon: mdi:toggle-switch-variant
-                        styles:
-                          icon:
-                            # animation: pulse 3s linear infinite
-                            fill: var(--theme-sys-color-primary)
-                      - state: 'off'
-                        icon: mdi:toggle-switch-variant-off
-                        styles:
-                          icon:
-                            fill: var(--theme-sys-color-secondary-container)
-                    user_actions:
-                      tap_action:
-                        haptic: light
-                        actions:
-                          - action: call-service
-                            service: light.toggle
-                    styles:
-                      icon:
-                        fill: var(--primary-background-color)
-                        # transition: fill 1s ease
+          # layout:
+            # toolsets:
+              # # ================================================================
+              # - toolset: half-circle
+                # position:
+                  # cx: 0                             # Center on cards border 
+                  # cy: 50
+                # tools:
+                  # # ------------------------------------------------------------
+                  # - type: circle
+                    # position:
+                      # cx: 50
+                      # cy: 50
+                      # radius: 50
+                    # entity_index: 0
+                    # animations:
+                      # - state: 'on'
+                        # styles:
+                          # circle:
+                            # fill: var(--theme-sys-color-primary)
+                      # - state: 'off'
+                        # styles:
+                          # circle:
+                            # fill: var(--theme-sys-elevation-surface-neutral4)
+                            # # opacity: 0.4
+                    # styles:
+                      # circle:
+                        # stroke: none
+                        # # transition: fill 1s ease
+
+              # # ================================================================
+              # - toolset: column-icon
+                # position:
+                  # cx: 25
+                  # cy: 50
+                # tools:
+                  # # ------------------------------------------------------------
+                  # - type: icon
+                    # position:
+                      # cx: 50
+                      # cy: 50
+                      # align: center
+                      # icon_size: 30
+                    # icon: mdi:35
+                    # entity_index: 0
+                    # animations:
+                      # - state: 'on'
+                        # icon: mdi:radiator
+                        # styles:
+                          # icon:
+                            # # animation: pulse 3s linear infinite
+                            # fill: var(--primary-background-color)
+                      # - state: 'off'
+                        # icon: mdi:radiator-off
+                        # styles:
+                          # icon:
+                            # fill: var(--theme-sys-color-secondary)
+                    # styles:
+                      # icon:
+                        # fill: var(--primary-background-color)
+                        # opacity: 0.9
+                        # # transition: fill 1s ease
+                    
+              # # ================================================================
+              # - toolset: column-name
+                # position:
+                  # cx: 120
+                  # cy: 50
+                # tools:
+                  # # ------------------------------------------------------------
+                  # - type: name
+                    # position:
+                      # cx: 50
+                      # cy: 50
+                    # entity_index: 0
+                    # styles:
+                      # name:
+                        # text-anchor: middle
+                        # font-size: 25em
+                        # font-weight: 700
+                        # opacity: 1
+                  # # ------------------------------------------------------------
+                  # - type: state
+                    # position:
+                      # cx: 50
+                      # cy: 80
+                    # entity_index: 1
+                    # show:
+                      # uom: none
+                    # styles:
+                      # state:
+                        # text-anchor: middle
+                        # font-size: 14em
+                        # font-weight: 500
+                        # opacity: 0.7
+
+              # # ================================================================
+              # - toolset: line1
+                # position:
+                  # cx: 200                           # On 1/3 of card width
+                  # cy: 50
+                # tools:
+                  # # ------------------------------------------------------------
+                  # - type: line
+                    # position:
+                      # cx: 50
+                      # cy: 50
+                      # orientation: vertical
+                      # length: 50
+                    # styles:
+                      # line:
+                        # fill: var(--primary-text-color)
+                        # opacity: 0.5
+
+              # # ================================================================
+              # - toolset: button-like
+                # position:
+                  # cx: 250                           # On 1/3 of card width
+                  # cy: 50
+                # tools:
+                  # # ------------------------------------------------------------
+                  # - type: icon
+                    # position:
+                      # cx: 50
+                      # cy: 50
+                      # align: center
+                      # icon_size: 60
+                    # entity_index: 0
+                    # animations:
+                      # - state: 'on'
+                        # icon: mdi:toggle-switch-variant
+                        # styles:
+                          # icon:
+                            # # animation: pulse 3s linear infinite
+                            # fill: var(--theme-sys-color-primary)
+                      # - state: 'off'
+                        # icon: mdi:toggle-switch-variant-off
+                        # styles:
+                          # icon:
+                            # fill: var(--theme-sys-color-secondary-container)
+                    # user_actions:
+                      # tap_action:
+                        # haptic: light
+                        # actions:
+                          # - action: call-service
+                            # service: light.toggle
+                    # styles:
+                      # icon:
+                        # fill: var(--primary-background-color)
+                        # # transition: fill 1s ease
 
 
       # ================================================================
       # ================================================================
       # ================================================================
-    - type: horizontal-stack
-      cards:
         - type: 'custom:swiss-army-knife-card'
           entities:
             - entity: sensor.dsmr_reading_electricity_currently_delivered
@@ -2657,11 +2831,9 @@ cards:
                         opacity: 0.8
 
 
-      # ================================================================
-      # ================================================================
-      # ================================================================
-    - type: horizontal-stack
-      cards:
+          # ================================================================
+          # ================================================================
+          # ================================================================
         - type: 'custom:swiss-army-knife-card'
           entities:
             - entity: binary_sensor.livingroom_movement_occupancy
@@ -2842,28 +3014,129 @@ cards:
                         fill: var(--theme-sys-color-tertiary)
                         opacity: 0.5
 
+
+          # ================================================================
+          # ================================================================
+          # ================================================================
         - type: 'custom:swiss-army-knife-card'
-          aspectratio: 4/1
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+            # - entity: person.zoefdehaas
+              name: 'Pump Pool'
+            - entity: zone.home
+              icon: mdi:pump
+          # Define aspect ratio
+          aspectratio: 4/1                          # Card is 300x100 grid
+
           layout:
             styles:
               card:
-                border-radius: 25em
-                display: none
             toolsets:
-              - toolset: dummy
+              # ================================================================
+              - toolset: half-circle
                 position:
-                  cx: 0
-                  cy: 0
+                  cx: 0                             # Center on cards border 
+                  cy: 50
                 tools:
+                  # ------------------------------------------------------------
                   - type: circle
                     position:
-                      radius: 0
+                      cx: 50
+                      cy: 50
+                      radius: 50
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        styles:
+                          circle:
+                            fill: var(--theme-sys-color-primary)
+                      - state: 'off'
+                        styles:
+                          circle:
+                            fill: var(--theme-sys-elevation-surface-neutral4)
+                    styles:
+                      circle:
+                        stroke: none
+              # ================================================================
+              - toolset: column-icon
+                position:
+                  cx: 25
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 45
+                    entity_index: 1
+                    animations:
+                      - state: 'on'
+                        styles:
+                          icon:
+                            fill: var(--primary-background-color)
+                      - state: 'off'
+                        styles:
+                          icon:
+                            fill: var(--theme-sys-color-secondary)
+                    styles:
+                      icon:
+                        opacity: 0.9
+                    
+              # ================================================================
+              - toolset: column-name
+                position:
+                  cx: 70                # Left part = 75, so 75+(300-75)/2
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 37
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: start
+                        font-size: 30em
+                        font-weight: 700
+                        opacity: 1
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 70
+                    entity_index: 0
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: start
+                        font-size: 26em
+                        font-weight: 500
+                        opacity: 0.7
 
-      # ================================================================
-      # ================================================================
-      # ================================================================
-    - type: horizontal-stack
-      cards:
+        # - type: 'custom:swiss-army-knife-card'
+          # aspectratio: 4/1
+          # layout:
+            # styles:
+              # card:
+                # border-radius: 25em
+                # display: none
+            # toolsets:
+              # - toolset: dummy
+                # position:
+                  # cx: 0
+                  # cy: 0
+                # tools:
+                  # - type: circle
+                    # position:
+                      # radius: 0
+
+          # ================================================================
+          # ================================================================
+          # ================================================================
         - type: 'custom:swiss-army-knife-card'
           entities:
             - entity: light.livingroom_light_duo_right_light
@@ -2974,7 +3247,7 @@ cards:
                         haptic: light
                         actions:
                           - action: call-service
-                            service: switch.toggle
+                            service: light.toggle
                     styles:
                       track:
                         --switch-checked-track-color: var(--primary-background-color)
@@ -3017,30 +3290,198 @@ cards:
                         font-weight: 500
                         opacity: 0.7
 
+          # ================================================================
+          # ================================================================
+          # ================================================================
         - type: 'custom:swiss-army-knife-card'
-          aspectratio: 4/1
+          entities:
+            - entity: input_boolean.pump_enabled
+              name: 'Pump Pool Enable'
+          # Define aspect ratio
+          aspectratio: 4/1                          # Card is 300x100 grid
+
           layout:
             styles:
               card:
-                border-radius: 25em
-                height: 10px;
-                display: none
             toolsets:
-              - toolset: dummy
+              # ================================================================
+              - toolset: half-circle
                 position:
-                  cx: 0
-                  cy: 0
+                  cx: 0                             # Center on cards border 
+                  cy: 50
                 tools:
+                  # ------------------------------------------------------------
                   - type: circle
                     position:
-                      radius: 0
+                      cx: 50
+                      cy: 50
+                      radius: 50
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        styles:
+                          circle:
+                            fill: var(--theme-sys-color-primary)
+                      - state: 'off'
+                        styles:
+                          circle:                     # Use as filled tonal button (m3)
+                            fill: var(--theme-sys-color-secondary-container)
+                    # user_actions:
+                      # tap_action:
+                        # haptic: light
+                        # actions:
+                          # - action: call-service
+                            # service: input_boolean.toggle
+                    styles:
+                      circle:
+                        stroke: none
+              # ================================================================
+              - toolset: column-icon
+                position:
+                  cx: 25
+                  cy: 45
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 45
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        styles:
+                          icon:
+                            fill: var(--primary-background-color)
+                      - state: 'off'
+                        styles:
+                          icon:
+                            fill: var(--theme-sys-color-secondary)
+                    styles:
+                      icon:
+                        opacity: 0.9
+                        pointer-events: none
+                    
+              # ================================================================
+              - toolset: switch
+                position:
+                  cx: 25                           # On 1/3 of card width
+                  cy: 75
+                  scale: 1.8
+                tools:
+                  # ------------------------------------------------------------
+                  - type: switch
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: 'horizontal'
+                      track:
+                        width: 15
+                        height: 5
+                        radius: 2.5
+                      thumb:
+                        width: 3
+                        height: 3
+                        radius: 2.5
+                        offset: 4.5
+                    entity_index: 0
+                    # user_actions:
+                      # tap_action:
+                        # haptic: light
+                        # actions:
+                          # - action: call-service
+                            # service: input_boolean.toggle
+                    styles:
+                      track:
+                        --switch-checked-track-color: var(--primary-background-color)
+                        --switch-unchecked-track-color: var(--theme-sys-color-secondary)
+                        # --switch-checked-button-color: 
+                        pointer-events: none
+                      thumb:
+                        --thumb-stroke: 'var(--primary-background-color)'
+                        pointer-events: none
+              # ================================================================
+              - toolset: tap-area
+                position:
+                  cx: 25                              # tap area for toggle
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: rectangle
+                    position:
+                      cx: 50
+                      cy: 50
+                      width: 50
+                      height: 100
+                    entity_index: 0
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: input_boolean.toggle
+                    styles:
+                      rectangle:
+                        stroke: none
+                        fill: rgba(0,0,0,0)
+              # ================================================================
+              - toolset: column-name
+                position:
+                  cx: 70                # Left part = 75, so 75+(300-75)/2
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 37
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: start
+                        font-size: 30em
+                        font-weight: 700
+                        opacity: 1
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 70
+                    entity_index: 0
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: start
+                        font-size: 26em
+                        font-weight: 500
+                        opacity: 0.7
+                        
+        # - type: 'custom:swiss-army-knife-card'
+          # aspectratio: 4/1
+          # layout:
+            # styles:
+              # card:
+                # border-radius: 25em
+                # height: 10px;
+                # display: none
+            # toolsets:
+              # - toolset: dummy
+                # position:
+                  # cx: 0
+                  # cy: 0
+                # tools:
+                  # - type: circle
+                    # position:
+                      # radius: 0
 
 
-      # ================================================================
-      # ================================================================
-      # ================================================================
-    - type: horizontal-stack
-      cards:
+
+
+          # ================================================================
+          # ================================================================
+          # ================================================================
         - type: 'custom:swiss-army-knife-card'
           entities:
             - entity: sensor.dsmr_reading_electricity_currently_delivered
@@ -3150,6 +3591,9 @@ cards:
                         font-weight: 500
                         opacity: 0.7
 
+          # ================================================================
+          # ================================================================
+          # ================================================================
         - type: 'custom:swiss-army-knife-card'
           entities:
             - entity: sensor.dsmr_reading_electricity_currently_delivered
@@ -3186,8 +3630,8 @@ cards:
                       cy: 50
                       start_angle: 25
                       end_angle: 155
-                      width: 4
-                      radius: 58
+                      width: 6
+                      radius: 59
                     entity_index: 0
                     scale:
                       min: 0
@@ -3199,15 +3643,16 @@ cards:
                       style: 'colorlist'
                     segments:
                       colorlist:
-                        gap: 1
+                        gap: 2
                         colors:
-                          - var(--theme-sys-color-secondary)
+                          - var(--brand-google-green)
+                          - var(--brand-google-yellow)
+                          - var(--brand-google-red)
                     styles:
                       foreground:
                         fill: darkgrey
                       background:
-                        fill: var(--theme-sys-color-secondary)
-                        opacity: 0.5
+                        fill: var(--theme-sys-elevation-surface-neutral4)
 
               # ================================================================
               - toolset: column-icon
@@ -3290,53 +3735,302 @@ cards:
                         font-weight: 500
                         opacity: 0.7
 
+        ########################################################################
 
-      # ================================================================
-      # ================================================================
-      # ================================================================
-    - type: horizontal-stack
-      cards:
         - type: 'custom:swiss-army-knife-card'
-          aspectratio: 6/1
+          entities:
+            - entity: sensor.iphone_van_marco_battery_level
+              name: 'iPhone Battery'
+          # Define aspect ratio
+          aspectratio: 4/1                          # Card is 400x100 grid
+
           layout:
             styles:
               card:
-                border-radius: 25em
-                height: 10px;
-                display: none
             toolsets:
-              - toolset: dummy
+              # ================================================================
+              - toolset: half-circle
                 position:
-                  cx: 0
-                  cy: 0
+                  cx: 0                             # Center on cards border 
+                  cy: 50
                 tools:
+                  # ------------------------------------------------------------
                   - type: circle
                     position:
-                      radius: 0
+                      cx: 50
+                      cy: 50
+                      radius: 50
+                    styles:
+                      circle:
+                        stroke: none
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 25
+                      end_angle: 155
+                      width: 6
+                      radius: 59
+                    entity_index: 0
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorstops'
+                      lastcolor: true
+                    segments:
+                      colorstops:
+                        template:
+                          name: colorstops_battery_level
+                          variables:
+                            - thegap: 2
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+
+              # ================================================================
+              - toolset: column-icon
+                position:
+                  cx: 25
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 45
+                    entity_index: 0
+                    styles:
+                      icon:
+                        fill: var(--theme-sys-color-secondary)
+                        opacity: 0.9
+                    
+
+              # ================================================================
+              - toolset: column-bar
+                position:
+                  cx: 235                     # 400-70/2 + 70=235
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: bar
+                    id: 1
+                    entity_index: 0
+                    position:
+                      orientation: vertical
+                      cx: 50
+                      cy: 50
+                      width: 330              # 400-70=330
+                      height: 100
+                      margin: 1
+                    hours: 24
+                    barhours: 1
+                    show:
+                      style: 'minmaxgradient'
+                    minmaxgradient:
+                      fill: true
+                      colors:
+                        min: var(--theme-sys-palette-secondary85)
+                        max: var(--theme-sys-palette-secondary65)
+                    styles:
+                      bar:
+                        stroke-linecap: square
+                        opacity: 0.25
+
+              # ================================================================
+              - toolset: column-name
+                position:
+                  cx: 70                # Left part = 75, so 75+(300-75)/2
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 37
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: start
+                        font-size: 30em
+                        font-weight: 700
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 70
+                    entity_index: 0
+                    styles:
+                      state:
+                        text-anchor: start
+                        font-size: 26em
+                        font-weight: 500
+                        opacity: 0.7
+
+        ########################################################################
 
         - type: 'custom:swiss-army-knife-card'
-          aspectratio: 6/1
+          entities:
+            - entity: sensor.ipad_van_marco_battery_level
+              name: 'iPad Battery'
+
+          # Define aspect ratio
+          aspectratio: 4/1                          # Card is 400x100 grid
+
           layout:
             styles:
               card:
-                border-radius: 25em
-                height: 10px;
-                display: none
             toolsets:
-              - toolset: dummy
+              # ================================================================
+              - toolset: half-circle
                 position:
-                  cx: 0
-                  cy: 0
+                  cx: 0                             # Center on cards border 
+                  cy: 50
                 tools:
+                  # ------------------------------------------------------------
                   - type: circle
                     position:
-                      radius: 0
+                      cx: 50
+                      cy: 50
+                      radius: 50
+                    styles:
+                      circle:
+                        stroke: none
+                        fill: var(--theme-sys-elevation-surface-neutral4)
 
-      # ================================================================
-      # ================================================================
-      # ================================================================
-    - type: horizontal-stack
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 25
+                      end_angle: 155
+                      width: 6
+                      radius: 59
+                    entity_index: 0
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorstops'
+                      lastcolor: true
+                    segments:
+                      colorstops:
+                        template:
+                          name: colorstops_battery_level
+                          variables:
+                            - thegap: 2
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+
+              # ================================================================
+              - toolset: column-icon
+                position:
+                  cx: 25
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 45
+                    entity_index: 0
+                    styles:
+                      icon:
+                        fill: var(--theme-sys-color-secondary)
+                        opacity: 0.9
+                    
+
+              # ================================================================
+              - toolset: column-bar
+                position:
+                  cx: 235                     # 400-70/2 + 70=235
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: bar
+                    id: 1
+                    entity_index: 0
+                    position:
+                      orientation: vertical
+                      cx: 50
+                      cy: 50
+                      width: 330              # 400-70=330
+                      height: 100
+                      margin: 1
+                    hours: 24
+                    barhours: 1
+                    show:
+                      style: 'minmaxgradient'
+                    minmaxgradient:
+                      fill: true
+                      colors:
+                        min: var(--theme-sys-palette-secondary85)
+                        max: var(--theme-sys-palette-secondary65)
+                    styles:
+                      bar:
+                        stroke-linecap: square
+                        opacity: 0.25
+
+              # ================================================================
+              - toolset: column-name
+                position:
+                  cx: 70                # Left part = 75, so 75+(300-75)/2
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 70
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: start
+                        font-size: 26em
+                        font-weight: 500
+                        opacity: 0.7
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 37
+                    entity_index: 0
+                    styles:
+                      state:
+                        text-anchor: start
+                        font-size: 30em
+                        font-weight: 700
+
+
+          # ================================================================
+          # ================================================================
+          # ================================================================
+    - type: grid
+      columns: 3
+      square: false
       cards:
+
         # 3 badges...
         - type: 'custom:swiss-army-knife-card'
           entities:
@@ -3675,11 +4369,9 @@ cards:
                     position:
                       radius: 0
 
-      # ================================================================
-      # ================================================================
-      # ================================================================
-    - type: horizontal-stack
-      cards:
+          # ================================================================
+          # ================================================================
+          # ================================================================
         - type: 'custom:swiss-army-knife-card'
           entities:
             - entity: light.livingroom_light_duo_right_light
@@ -3837,29 +4529,1159 @@ cards:
                         font-weight: 500
                         opacity: 0.7
 
-        - type: 'custom:swiss-army-knife-card'
-          aspectratio: 3/1                          # Card is 300x100 grid
-          layout:
-            styles:
-              card:
-                border-radius: 25em
-                display: none
-            toolsets:
-              - toolset: dummy
-                position:
-                  cx: 0
-                  cy: 0
-                tools:
-                  - type: circle
-                    position:
-                      radius: 0
+        ########################################################################
+        ########################################################################
+        ########################################################################
 
         - type: 'custom:swiss-army-knife-card'
+          # Define aspect ratio
           aspectratio: 3/1                          # Card is 300x100 grid
+
           layout:
             styles:
               card:
                 border-radius: 25em
+                background: var(--theme-sys-color-secondary-container)
+            toolsets:
+              # ================================================================
+              - toolset: column-icon
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 50
+                    icon: mdi:arrow-right-bold-circle
+                    styles:
+                      icon:
+                        fill: var(--secondary-text-color)
+                        opacity: 0.9
+                    
+              # ================================================================
+              - toolset: button-text
+                position:
+                  cx: 175
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: text
+                    position:
+                      cx: 50
+                      cy: 50
+                    text: Some View
+                    styles:
+                      text:
+                        text-anchor: middle
+                        font-size: 30em
+                        font-weight: 700
+                        opacity: 1
+
+              # ================================================================
+              - toolset: button-cover
+                position:
+                  cx: 150
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: rectex
+                    position:
+                      cx: 50
+                      cy: 50
+                      height: 100
+                      width: 300
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: navigate
+                            navigation_path: 'tut-03-p1'
+                    styles:
+                      rectex:
+                        fill: rgba(0,0,0,0)
+
+
+        ########################################################################
+        ########################################################################
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          # Define aspect ratio
+          aspectratio: 3/1                          # Card is 300x100 grid
+
+          layout:
+            styles:
+              card:
+                border-radius: 25em
+                background: var(--theme-sys-color-secondary-container)
+            toolsets:
+              # ================================================================
+              - toolset: column-icon
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 50
+                    icon: mdi:script
+                    styles:
+                      icon:
+                        fill: var(--secondary-text-color)
+                        opacity: 0.9
+                    
+              # ================================================================
+              - toolset: button-text
+                position:
+                  cx: 175
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: text
+                    position:
+                      cx: 50
+                      cy: 50
+                    text: Demo Scene
+                    styles:
+                      text:
+                        text-anchor: middle
+                        font-size: 30em
+                        font-weight: 700
+                        opacity: 1
+
+              # ================================================================
+              - toolset: button-cover
+                position:
+                  cx: 150
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: rectex
+                    position:
+                      cx: 50
+                      cy: 50
+                      height: 100
+                      width: 300
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: scene.turn_on
+                            service_data:
+                              entity_id: scene.demo
+                              transition: 2.5
+                    styles:
+                      rectex:
+                        fill: rgba(0,0,0,0)
+
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        ########################################################################
+        ########################################################################
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Duo Right'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit_of_measurement: "%"
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+
+          aspectratio: 3/1
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: column-icon
+                position:
+                  cx: 0
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 50
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        styles:
+                          circle:
+                            fill: var(--theme-sys-color-primary)
+                            # animation: flash 2s ease-in-out 5
+                      - state: 'off'
+                        styles:
+                          circle:
+                            fill: var(--theme-sys-color-secondary-container)
+                    # Remove user actions part to just display the state
+                    # or disable pointer-events via a class or style
+                    # Using a class enables the use of variables that can
+                    # disable pointer-events to none!
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.toggle
+                    styles:
+                      circle:
+                        fill: var(--theme-sys-color-secondary-container)
+                        stroke: var(--theme-sys-color-secondary)
+                        stroke-width: 0em
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 25
+                      end_angle: 155
+                      width: 6
+                      radius: 59
+                    entity_index: 1
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    derived_entity:
+                      input : '[[[ return state ]]]'
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return;
+                          if (typeof(state) === 'undefined') return;
+                          
+                          var bri = Math.round(state / 2.55);
+                          return (bri ? bri : '0');
+                        ]]]
+                      unit: >
+                        [[[
+                          if (typeof(state) === 'undefined') return undefined;
+                          return '%';
+                        ]]]
+                    segments:
+                      colorlist:
+                        gap: 1
+                        colors:
+                          - 'var(--primary-text-color)'
+                    animation:
+                      duration: 5
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        
+
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 75
+                      cy: 50
+                      align: center
+                      icon_size: 30
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        styles:
+                          icon:
+                            # animation: spin 3s linear infinite
+                            fill: var(--primary-background-color)
+                      - state: 'off'
+                        styles:
+                          icon:
+                            # fill: var(--theme-sys-color-on-secondary-container)
+                            fill: var(--theme-sys-color-secondary)
+                    styles:
+                      icon:
+                        fill: var(--theme-sys-color-secondary)
+                        # opacity: 0.7
+                        pointer-events: none
+
+              # ================================================================
+              - toolset: switch
+                position:
+                  cx: 25                           # On 1/3 of card width
+                  cy: 75
+                  scale: 1.8
+                tools:
+                  # ------------------------------------------------------------
+                  - type: switch
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: 'horizontal'
+                      track:
+                        width: 15
+                        height: 5
+                        radius: 2.5
+                      thumb:
+                        width: 3
+                        height: 3
+                        radius: 2.5
+                        offset: 4.5
+                    entity_index: 0
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: switch.toggle
+                    styles:
+                      track:
+                        --switch-checked-track-color: var(--primary-background-color)
+                        --switch-unchecked-track-color: var(--theme-sys-color-secondary)
+                        # --switch-checked-button-color: 
+                      thumb:
+                        --thumb-stroke: 'var(--primary-background-color)'
+                        
+              # ================================================================
+              - toolset: column-name
+                position:
+                  cx: 80
+                  cy: 25
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: start
+                        font-size: 25em
+                        font-weight: 700
+                        opacity: 1
+
+              # ================================================================
+              - toolset: slider
+                position:
+                  cx: 180
+                  cy: 80
+                tools:
+                  # ------------------------------------------------------------
+                  - type: slider
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: horizontal
+                      capture:
+                        width: 200
+                        height: 35
+                      active:
+                        # width: 200
+                        height: 30
+                        radius: 5
+                      track:
+                        width: 200
+                        height: 30
+                        radius: 5
+                      thumb:
+                        width: 30
+                        height: 30
+                        radius: 5
+                      label:
+                        # placement can be none, thumb, position (cx,cy)
+                        placement: position
+                        cx: -50
+                        cy: 20
+                    entity_index: 1
+                    # Does this work??
+                    animations:
+                      # - state: >
+                          # [[[
+                            # if (typeof(state) === 'undefined') return state;
+                            # return 'no-match';
+                          # ]]]
+                      - state: 'undefined'
+                        operator: '=='
+                        styles:
+                          thumb:
+                            # animation: spin 3s linear infinite
+                            # fill: var(--primary-background-color)
+                            fill: var(--theme-sys-color-secondary-container)
+                      # - state: '50'
+                        # operator: '<='
+                        # styles:
+                          # track:
+                            # # fill: var(--theme-sys-color-on-secondary-container)
+                            # fill: var(--theme-sys-color-secondary)
+                      - state: 'undefined'
+                        operator: '!='
+                        styles:
+                          track:
+                            dummy: 1
+                    derived_entity:
+                      input : '[[[ return state ]]]'
+                      state: >
+                        [[[
+                          if (typeof(entity) === 'undefined') return;
+                          if (typeof(state) === 'undefined') return;
+                          
+                          var bri = Math.round(state / 2.55);
+                          return (bri ? bri : '0');
+                        ]]]
+                      unit: >
+                        [[[
+                          if (typeof(state) === 'undefined') return undefined;
+                          return '%';
+                        ]]]
+                    show:
+                      # uom: none
+                      active: true
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                    styles:
+                      label:
+                        text-anchor: start
+                        font-size: 20em
+                        font-weight: 500
+                        pointer-events: auto
+                      uom:
+                        font-weight: 600
+                      capture:
+                        pointer-events: all
+                        touch-action: none
+                      active:
+                        # fill: url(#sak-light-brightness-gradient--orange) #white
+                        fill: var(--theme-sys-elevation-surface-neutral10)
+                        fill: var(--theme-sys-color-secondary)
+                        fill: var(--theme-sys-color-primary)
+                        fill-opacity: 0.3
+                        pointer-events: none
+                      track:
+                        # fill: url(#sak-light-brightness-gradient)
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        fill-opacity: 1
+                        stroke-width: 0.2em
+                        stroke: var(--theme-sys-elevation-surface-neutral10)
+                        pointer-events: none
+                      thumb:
+                        # stroke-width: 1.2em
+                        # stroke: var(--primary-background-color)
+                        # stroke-opacity: 1
+                        # fill: var(--primary-text-color)
+                        fill: var(--theme-sys-color-primary)
+                        fill-opacity: 1
+                        pointer-events: none
+                        transition: all .5s ease
+
+        ########################################################################
+        ########################################################################
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.1st_floor_hall_light
+              name: 'Hall 1st Floor'
+              icon: mdi:dome-light
+
+          aspectratio: 3/1
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: column-icon
+                position:
+                  cx: 0
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 50
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        styles:
+                          circle:
+                            fill: var(--theme-sys-color-primary)
+                      - state: 'off'
+                        styles:
+                          circle:
+                            fill: var(--theme-sys-color-secondary-container)
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.toggle
+                    styles:
+                      circle:
+                        fill: var(--theme-sys-color-secondary-container)
+                        stroke: var(--theme-sys-color-secondary)
+                        stroke-width: 0em
+
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 75
+                      cy: 50
+                      align: center
+                      icon_size: 30
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        styles:
+                          icon:
+                            fill: var(--primary-background-color)
+                      - state: 'off'
+                        styles:
+                          icon:
+                            fill: var(--theme-sys-color-secondary)
+                    styles:
+                      icon:
+                        fill: var(--theme-sys-color-secondary)
+                        pointer-events: none
+
+              # ================================================================
+              - toolset: switch
+                position:
+                  cx: 25                           # On 1/3 of card width
+                  cy: 75
+                  scale: 1.8
+                tools:
+                  # ------------------------------------------------------------
+                  - type: switch
+                    position:
+                      cx: 50
+                      cy: 50
+                      orientation: 'horizontal'
+                      track:
+                        width: 15
+                        height: 5
+                        radius: 2.5
+                      thumb:
+                        width: 3
+                        height: 3
+                        radius: 2.5
+                        offset: 4.5
+                    entity_index: 0
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: switch.toggle
+                    styles:
+                      track:
+                        --switch-checked-track-color: var(--primary-background-color)
+                        --switch-unchecked-track-color: var(--theme-sys-color-secondary)
+                        # --switch-checked-button-color: 
+                      thumb:
+                        --thumb-stroke: 'var(--primary-background-color)'
+                        
+              # ================================================================
+              - toolset: column-name
+                position:
+                  cx: 70
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 30
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: start
+                        font-size: 25em
+                        font-weight: 700
+                        opacity: 1
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 70
+                    entity_index: 0
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: start
+                        font-size: 20em
+                        font-weight: 500
+                        opacity: 0.7
+
+          # ================================================================
+          # ================================================================
+          # ================================================================
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: person.zoefdehaas
+              name: 'Marco'
+              icon: mdi:face-man
+          # Define aspect ratio
+          aspectratio: 4/1                          # Card is 400x100 grid
+
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+                # Extra background icon. Just for fun and filling some space
+              - toolset: background-icon
+                position:
+                  cx: 350
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 100
+                    icon: mdi:map-marker-radius-outline
+                    styles:
+                      icon:
+                        fill: var(--theme-sys-elevation-surface-neutral2)
+
+              # ================================================================
+              - toolset: half-circle
+                position:
+                  cx: 0                             # Center on cards border 
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 50
+                    styles:
+                      circle:
+                        stroke: var(--theme-sys-color-secondary)
+                        stroke-width: 3em
+                        opacity: 0.5
+
+              # ================================================================
+              - toolset: column-icon
+                position:
+                  cx: 25
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 45
+                    entity_index: 0
+                    animations:
+                        # Return current state, so always a match!
+                      - state: '[[[ return state; ]]]'
+                        styles:
+                          icon:
+                            # Set fill depending on being at home!
+                            fill: >
+                              [[[ if (['home', 'not_home'].includes(state)) return 'var(--theme-sys-color-primary)';
+                                  return 'var(--theme-sys-color-tertiary)';
+                              ]]]
+                    styles:
+                      icon:
+                        fill: var(--theme-sys-color-secondary)
+                        opacity: 0.9
+                    
+              # ================================================================
+              - toolset: zone-icon
+                position:
+                  cx: 40
+                  cy: 18
+                tools:
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 13
+                    entity_index: 0
+                    animations:
+                        # Return current state, so always a match!
+                      - state: '[[[ return state; ]]]'
+                        styles:
+                          circle:
+                            # Set fill depending on being at home or some unwanted state!
+                            fill: >
+                              [[[ if (state == 'home') return 'var(--theme-sys-color-primary)';
+                                  if (state == 'not_home') return 'var(--brand-google-red)';
+                                  if (['unavailable', 'unknown'].includes(state)) return 'black';
+                                  return 'var(--theme-sys-color-tertiary)';
+                              ]]]
+                    styles:
+                      circle:
+                        fill: var(--brand-google-red)
+                        stroke: var(--primary-background-color)
+                        stroke-width: 2em
+
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 20
+                    entity_index: 0
+                    animations:
+                        # Return current state, so always a match!
+                      - state: '[[[ return state; ]]]'
+                        # Fetch icon of zone. If no match on zone, the state 'not_home' is given.
+                        # Check that state, and return the 'not home' icon in that case!
+                        # One could also just return the 'home' icon:
+                        #   return states['zone.home'].attributes.icon;
+                        icon: >
+                          [[[ if (state == 'not_home') return 'mdi:home-off-outline';
+                              return states['zone.' + state].attributes?.icon;
+                          ]]]
+                        styles:
+                          icon:
+                            fill: var(--primary-background-color)
+                    styles:
+                      icon:
+                        fill: var(--primary-background-color)
+
+              # ================================================================
+              - toolset: column-name
+                position:
+                  cx: 70
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 37
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: start
+                        font-size: 30em
+                        font-weight: 700
+                        opacity: 1
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 70
+                    entity_index: 0
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: start
+                        font-size: 26em
+                        font-weight: 500
+                        opacity: 0.7
+
+        ########################################################################
+        ########################################################################
+        ########################################################################
+
+
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+          # ================================================================
+          # ================================================================
+          # ================================================================
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Power Usage Total'
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              secondary_info: last_changed
+              format: relative
+          # Define aspect ratio
+          aspectratio: 3/1                          # Card is 300x100 grid
+
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: half-circle
+                position:
+                  cx: 0                             # Center on cards border 
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 50
+                    show:
+                      style: 'colorstops'
+                    entity_index: 0
+                    colorstops:
+                      fill: true
+                      colors:
+                        0: var(--brand-google-green)
+                        0.66: var(--brand-google-yellow)
+                        1.32: var(--brand-google-red)
+                    styles:
+                      circle:
+                        stroke: none
+                        opacity: 0.25
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 25
+                      end_angle: 155
+                      width: 6
+                      radius: 59
+                    entity_index: 0
+                    scale:
+                      min: 0
+                      max: 2
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorlist'
+                    segments:
+                      colorlist:
+                        gap: 2
+                        colors:
+                          - var(--brand-google-green)
+                          - var(--brand-google-yellow)
+                          - var(--brand-google-red)
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+
+              # ================================================================
+              - toolset: column-icon
+                position:
+                  cx: 25
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 45
+                    entity_index: 0
+                    styles:
+                      icon:
+                        fill: var(--theme-sys-color-secondary)
+                        opacity: 0.9
+                    
+
+              # ================================================================
+              - toolset: column-bar
+                position:
+                  cx: 185                     # 300-70/2 + 70=185
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: bar
+                    id: 1
+                    entity_index: 0
+                    position:
+                      orientation: vertical
+                      cx: 50
+                      cy: 50
+                      width: 230              # 300-70=230
+                      height: 100
+                      margin: 1
+                    hours: 24
+                    barhours: 1
+                    show:
+                      style: 'minmaxgradient'
+                    minmaxgradient:
+                      fill: true
+                      colors:
+                        min: var(--theme-sys-palette-secondary85)
+                        max: var(--theme-sys-palette-secondary65)
+                    styles:
+                      bar:
+                        stroke-linecap: square
+                        opacity: 0.2
+
+              # ================================================================
+              - toolset: column-name
+                position:
+                  cx: 70                # Left part = 75, so 75+(300-75)/2
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 33
+                    entity_index: 0
+                    styles:
+                      state:
+                        text-anchor: start
+                        font-size: 30em
+                        font-weight: 700
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 61
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: start
+                        font-size: 22em
+                        font-weight: 500
+                        opacity: 0.7
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 85
+                    entity_index: 1
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: start
+                        font-size: 15em
+                        font-weight: 500
+                        opacity: 0.7
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.iphone_van_marco_battery_level
+              name: 'iPhone Battery'
+            - entity: sensor.iphone_van_marco_battery_level
+              secondary_info: last_changed
+              format: relative
+          # Define aspect ratio
+          aspectratio: 3/1                          # Card is 400x100 grid
+
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: half-circle
+                position:
+                  cx: 0                             # Center on cards border 
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 50
+                    styles:
+                      circle:
+                        stroke: none
+                        fill: var(--theme-sys-elevation-surface-neutral1)
+
+                  # ------------------------------------------------------------ 
+                  - type: 'segarc'
+                    id: 0
+                    position:
+                      cx: 50
+                      cy: 50
+                      start_angle: 25
+                      end_angle: 155
+                      width: 6
+                      radius: 59
+                    entity_index: 0
+                    scale:
+                      min: 0
+                      max: 100
+                      width: 6
+                      offset: 12
+                    show:
+                      scale: false
+                      style: 'colorstops'
+                      lastcolor: true
+                    segments:
+                      colorstops:
+                        template:
+                          name: colorstops_battery_level
+                          variables:
+                            - thegap: 2
+                    styles:
+                      foreground:
+                        fill: darkgrey
+                      background:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+
+              # ================================================================
+              - toolset: column-icon
+                position:
+                  cx: 25
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 45
+                    entity_index: 0
+                    show:
+                      style: 'colorstops'
+                    colorstops:
+                      template:
+                        name: colorstops_battery_level
+                        variables:
+                          - thegap: 2
+                    styles:
+                      icon:
+                        fill: var(--theme-sys-color-secondary)
+                        opacity: 0.9
+                    
+
+              # ================================================================
+              - toolset: column-bar
+                position:
+                  cx: 185                     # 300-70/2 + 70=185
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: bar
+                    id: 1
+                    entity_index: 0
+                    position:
+                      orientation: vertical
+                      cx: 50
+                      cy: 50
+                      width: 230              # 300-70=230
+                      height: 100
+                      margin: 1
+                    hours: 24
+                    barhours: 1
+                    show:
+                      style: 'minmaxgradient'
+                    minmaxgradient:
+                      fill: true
+                      colors:
+                        min: var(--theme-sys-palette-secondary80)
+                        max: var(--theme-sys-palette-secondary60)
+                    styles:
+                      bar:
+                        stroke-linecap: square
+                        opacity: 0.15
+
+              # ================================================================
+              - toolset: column-name
+                position:
+                  cx: 70                # Left part = 75, so 75+(300-75)/2
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 33
+                    entity_index: 0
+                    styles:
+                      state:
+                        text-anchor: start
+                        font-size: 30em
+                        font-weight: 700
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 61
+                    entity_index: 0
+                    styles:
+                      name:
+                        text-anchor: start
+                        font-size: 22em
+                        font-weight: 500
+                        opacity: 0.7
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 50
+                      cy: 85
+                    entity_index: 1
+                    show:
+                      uom: none
+                    styles:
+                      state:
+                        text-anchor: start
+                        font-size: 15em
+                        font-weight: 500
+                        opacity: 0.7
+
+        ########################################################################
+        ########################################################################
+        ########################################################################
+
+
+    - type: grid
+      columns: 1
+      square: true
+      cards:
+          # ================================================================
+          # ================================================================
+          # ================================================================
+        - type: 'custom:swiss-army-knife-card'
+          aspectratio: 3/1
+          layout:
+            styles:
+              card:
+                border-radius: 25em
+                height: 50px
                 display: none
             toolsets:
               - toolset: dummy

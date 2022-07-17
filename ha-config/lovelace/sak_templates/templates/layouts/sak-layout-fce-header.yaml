@@ -1,0 +1,32 @@
+sak_layout_fce_header:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_header_content: 'Your Header comes here'
+      - sak_layout_header_font_color: var(--primary-text-color)
+      - sak_layout_header_font_size: 3.5em
+      - sak_layout_header_font_text_transform: uppercase
+      - sak_layout_header_aspectratio: 1/0.05
+      - sak_layout_header_position_cy: '2.5'
+
+  layout:
+    aspectratio: '[[sak_layout_header_aspectratio]]'
+    toolsets:
+      # ==============================================================================
+      - toolset: header
+        position:
+          cx: 2.5
+          cy: '[[sak_layout_header_position_cy]]'
+        tools:
+          - type: text
+            position:
+              cx: 50
+              cy: 50
+            text: '[[sak_layout_header_content]]'
+            styles:
+              text:
+                fill: '[[sak_layout_header_font_color]]'
+                letter-spacing: 0.1em
+                text-transform: '[[sak_layout_header_font_text_transform]]'
+                text-anchor: start
+                font-size: '[[sak_layout_header_font_size]]'

@@ -1,0 +1,153 @@
+sak_layout_fce_tomorrow_pollen:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_tomorrow_pollen_image_path: ''
+      - sak_layout_tomorrow_pollen_file_prefix: '' 
+  layout:
+    aspectratio: 4/1
+    toolsets:
+      # ================================================================
+      - toolset: half-circle
+        position:
+          cx: 0                             # Center on cards border 
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 50
+            entity_index: 0
+            animations:
+              - state: 'none'
+                styles:
+                  circle:
+                    fill: '#848484'
+              - state: 'very_low'
+                styles:
+                  circle:
+                    fill: '#ffe99d'
+              - state: 'low'
+                styles:
+                  circle:
+                    fill: '#fcc449'
+              - state: 'medium'
+                styles:
+                  circle:
+                    fill: '#f79f23'
+              - state: 'high'
+                styles:
+                  circle:
+                    fill: '#ef7f01'
+              - state: 'very_high'
+                styles:
+                  circle:
+                    fill: '#e73f10'
+            styles:
+              circle:
+                stroke: none
+      # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 25
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 45
+            entity_index: 0
+            animations:
+              - state: 'none'
+                styles:
+                  icon:
+                    fill: var(--primary-background-color)
+              - state: 'very_low'
+                styles:
+                  icon:
+                    fill: var(--theme-ref-palette-secondary20)
+              - state: 'low'
+                styles:
+                  icon:
+                    fill: var(--theme-ref-palette-secondary20)
+              - state: 'medium'
+                styles:
+                  icon:
+                    fill: var(--primary-background-color)
+              - state: 'high'
+                styles:
+                  icon:
+                    fill: var(--primary-background-color)
+              - state: 'very_high'
+                styles:
+                  icon:
+                    fill: var(--primary-background-color)
+            styles:
+              icon:
+                opacity: 0.9
+                fill: var(--primary-background-color)
+            
+      # ================================================================
+      - toolset: background-svg
+        position:
+          cx: 350
+          cy: 50
+        tools:
+          - type: 'usersvg'
+            entity_index: 0
+            position:
+              cx: 50
+              cy: 50
+              height: 100
+              width: 100
+            style: 'images'
+            variables:
+              path: '[[sak_layout_tomorrow_pollen_image_path]]'
+              prefix: '[[sak_layout_tomorrow_pollen_file_prefix]]'
+            images:
+              - default: >
+                  [[[
+                    return "/local/images/"+ tool_config.variables.path + tool_config.variables.prefix + state + ".svg";
+                  ]]]
+            styles:
+              usersvg:
+                opacity: 0.5
+
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 70
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 37
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: start
+                font-size: 30em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 70
+            entity_index: 0
+            show:
+              uom: none
+            styles:
+              state:
+                text-anchor: start
+                font-size: 26em
+                font-weight: 500
+                opacity: 0.7
+

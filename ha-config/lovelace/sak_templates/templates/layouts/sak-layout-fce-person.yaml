@@ -1,0 +1,221 @@
+sak_layout_fce_person:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_fce_person_use_entity_picture: false
+  layout:
+    aspectratio: 4/1
+    toolsets:
+      # ================================================================
+        # Extra background icon. Just for fun and filling some space
+      - toolset: background-icon
+        position:
+          cx: 350
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 100
+            icon: mdi:map-marker-radius-outline
+            styles:
+              icon:
+                fill: var(--theme-sys-elevation-surface-neutral2)
+
+      # ================================================================
+      - toolset: half-circle
+        position:
+          cx: 0                             # Center on cards border 
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 50
+            styles:
+              circle:
+                stroke: var(--theme-sys-color-secondary)
+                stroke-width: 3em
+                opacity: 0.5
+
+      # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 25
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 45
+            entity_index: 0
+            variables:
+              sak_layout_fce_person_use_entity_picture: '[[sak_layout_fce_person_use_entity_picture]]'
+            animations:
+                # Return current state, so always a match!
+              - state: '[[[ return state; ]]]'
+                styles:
+                  icon:
+                    # Set fill depending on being at home!
+                    fill: >
+                      [[[ if (['home', 'not_home'].includes(state)) return 'var(--theme-sys-color-primary)';
+                          return 'var(--theme-sys-color-tertiary)';
+                      ]]]
+                    # Hide icon if using entity_picture!
+                    display: >
+                      [[[ if (tool_config.variables.sak_layout_fce_person_use_entity_picture) return 'none';
+                          return 'initial';
+                      ]]]
+            styles:
+              icon:
+                fill: var(--theme-sys-color-secondary)
+                opacity: 0.9
+
+          # ------------------------------------------------------------
+          - type: usersvg
+            position:
+              cx: 50
+              cy: 50
+              height: 45
+              width: 45
+            entity_index: 0
+            variables:
+              sak_layout_fce_person_use_entity_picture: '[[sak_layout_fce_person_use_entity_picture]]'
+            clip_path:
+              position:
+                cx: 50
+                cy: 50
+                height: 40            # Slightly crop image (from 45->40)
+                width: 40
+                radius:
+                  all: 20             # Radius 20 results in full circle
+            style: 'images'
+            images:                   # Fetch entity_picture from config or entity itself
+              - default: >
+                  [[[
+                    if (tool_config.variables.sak_layout_fce_person_use_entity_picture) {
+                      return (entity_config?.entity_picture ||
+                             entity.attributes?.entity_picture || 'none');
+                    } else {
+                      return 'none';
+                    }
+                  ]]]
+            animations:
+                # Return current state, so always a match!
+              - state: '[[[ return state; ]]]'
+                image: default
+                styles:
+                  icon:
+                    # Hide usersvg tool if using icon!
+                    display: >
+                      [[[ if (!tool_config.variables.sak_layout_fce_person_use_entity_picture) return 'none';
+                          return 'initial';
+                      ]]]
+            
+      # ================================================================
+      - toolset: zone-icon
+        position:
+          cx: 40
+          cy: 18
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 14
+            entity_index: 0
+            animations:
+                # Return current state, so always a match!
+              - state: '[[[ return state; ]]]'
+                styles:
+                  circle:
+                    # Set fill depending on being at home or some unwanted state!
+                    fill: >
+                      [[[ if (state == 'home') return 'var(--theme-sys-color-primary)';
+                          if (state == 'not_home') return 'var(--brand-google-red)';
+                          if (['unavailable', 'unknown'].includes(state)) return 'black';
+                          return 'var(--theme-sys-color-tertiary)';
+                      ]]]
+            styles:
+              circle:
+                fill: var(--brand-google-red)
+                stroke: var(--primary-background-color)
+                stroke-width: 2em
+
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 18
+            entity_index: 0
+            variables:
+              zone_ids: '[[sak_layout_fce_person_zone_entities]]'
+            animations:
+                # Return current state, so always a match!
+              - state: '[[[ return state; ]]]'
+                # Fetch icon of zone. If no match on zone, the state 'not_home' is given.
+                # Check that state, and return the 'not home' icon in that case!
+                icon: >
+                  [[[ if (state == 'not_home') return 'mdi:home-off-outline';
+                      if (state == 'home') return states['zone.home'].attributes.icon;
+                      // For not home, we get the friendly name as input. Must find that one to retrieve
+                      // the zone's id...
+                      
+                      for (var i=0; i<tool_config.variables.zone_ids.length; i++) {
+                        var zone = states[tool_config.variables.zone_ids[i]];
+                        if (zone && zone.attributes.friendly_name == state) {
+                          return states[zone.entity_id].attributes.icon;
+                        }
+                      }
+                      return 'mdi:map-marker-question';
+                  ]]]
+                styles:
+                  icon:
+                    fill: var(--primary-background-color)
+            styles:
+              icon:
+                fill: var(--primary-background-color)
+
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 70
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 37
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: start
+                font-size: 30em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 70
+            entity_index: 0
+            show:
+              uom: none
+            styles:
+              state:
+                text-anchor: start
+                font-size: 26em
+                font-weight: 500
+                opacity: 0.7

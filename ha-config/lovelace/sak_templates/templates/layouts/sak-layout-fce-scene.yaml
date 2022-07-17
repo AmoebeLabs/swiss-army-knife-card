@@ -1,0 +1,78 @@
+sak_layout_fce_scene:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_scene_icon: mdi:script
+      - sak_layout_scene_text: 'Scene'
+      - sak_layout_scene_id: 'scene.unknown'
+      - sak_layout_scene_transition: 2.5
+  layout:
+    styles:
+      card:
+        border-radius: 25em
+        background: var(--theme-sys-color-secondary-container)
+    aspectratio: 3/1
+    toolsets:
+      # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 50
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 50
+            icon: '[[sak_layout_scene_icon]]'
+            styles:
+              icon:
+                fill: var(--secondary-text-color)
+                opacity: 0.9
+            
+      # ================================================================
+      - toolset: button-text
+        position:
+          cx: 175
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: text
+            position:
+              cx: 50
+              cy: 50
+            text: '[[sak_layout_scene_text]]'
+            styles:
+              text:
+                text-anchor: middle
+                font-size: 30em
+                font-weight: 700
+                opacity: 1
+
+      # ================================================================
+      - toolset: button-cover
+        position:
+          cx: 150
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position:
+              cx: 50
+              cy: 50
+              height: 100
+              width: 300
+            user_actions:
+              tap_action:
+                haptic: light
+                actions:
+                  - action: navigate
+                    service: scene.turn_on
+                    service_data:
+                      entity_id: '[[sak_layout_scene_id]]'
+                      transition: '[[sak_layout_scene_transition]]'
+            styles:
+              rectex:
+                fill: rgba(0,0,0,0)

@@ -1,0 +1,171 @@
+sak_layout_fce_power_outlet1:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_power_outlet_segarc_scale_max_watt: 200
+  layout:
+    aspectratio: 3/1
+    toolsets:
+      # ================================================================
+      - toolset: half-circle
+        position:
+          cx: 0                             # Center on cards border 
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 48
+            styles:
+              circle:
+                fill: none
+                stroke: var(--theme-sys-color-secondary)
+                stroke-width: 3em
+                opacity: 0.5
+
+      # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 25
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 30
+            entity_index: 0
+            styles:
+              icon:
+                fill: var(--theme-sys-color-secondary)
+            
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 120
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 50
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: middle
+                font-size: 25em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 80
+            entity_index: 1
+            show:
+              uom: none
+            styles:
+              state:
+                text-anchor: middle
+                font-size: 14em
+                font-weight: 500
+                opacity: 0.7
+
+      # ================================================================
+      - toolset: line1
+        position:
+          cx: 200                           # On 1/3 of card width
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: line
+            position:
+              cx: 50
+              cy: 50
+              orientation: vertical
+              length: 50
+            styles:
+              line:
+                fill: var(--primary-text-color)
+                opacity: 0.5
+
+      # ================================================================
+      - toolset: column-power
+        position:
+          cx: 250
+          cy: 50
+        tools:
+          # ------------------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 50
+            entity_index: 0
+            styles:
+              state:
+                text-anchor: middle
+                font-size: 20em
+                font-weight: 700
+                fill: var(--primary-text-color)
+              uom:
+                fill: var(--primary-text-color)
+                font-weight: 700
+
+          # ------------------------------------------------------------------------
+          - type: 'segarc'
+            position:
+              cx: 50
+              cy: 50
+              start_angle: -90                            # Arc clockwise from
+              end_angle: 90                               # -90 to 90 degrees
+              width: 6
+              radius: 40                                # Radius on 100x100 grid
+            entity_index: 0
+            scale:
+              min: 0
+              max: '[[sak_layout_power_outlet_segarc_scale_max_watt]]'
+              width: 6
+              offset: 12
+            show:
+              scale: false                              # Disable scale of segarc
+              style: 'colorlist'
+            segments:
+              colorlist:
+                gap: 1                                  # Gap between segments
+                colors:
+                  - var(--theme-sys-palette-primary50)  # Use 4 system palette
+                  - var(--theme-sys-palette-primary45)  # colors that adhere
+                  - var(--theme-sys-palette-primary40)  # to light and dark
+                  - var(--theme-sys-palette-primary35)  # theme modes!
+            styles:
+              foreground:
+                fill: darkgrey
+              background:
+                fill: var(--theme-sys-elevation-surface-neutral4)
+                opacity: 1
+
+      # ================================================================
+      - toolset: switch
+        position:
+          cx: 250                           # On 1/3 of card width
+          cy: 80
+          scale: 3
+        tools:
+          # ------------------------------------------------------------
+          - type: switch
+            position:
+              cx: 50
+              cy: 50
+            entity_index: 2
+            user_actions:
+              tap_action:
+                haptic: light
+                actions:
+                  - action: call-service
+                    service: switch.toggle
+

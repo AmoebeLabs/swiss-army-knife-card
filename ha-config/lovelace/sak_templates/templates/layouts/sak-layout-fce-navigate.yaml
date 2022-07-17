@@ -1,0 +1,74 @@
+sak_layout_fce_navigate:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_navigate_icon: mdi:arrow-right-bold-circle
+      - sak_layout_navigate_text: 'Navigate'
+      - sak_layout_navigate_path: 'Unknown'
+  layout:
+    styles:
+      card:
+        border-radius: 25em
+        background: var(--theme-sys-color-secondary-container)
+    aspectratio: 3/1
+    toolsets:
+      # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 50
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 50
+            icon: '[[sak_layout_navigate_icon]]'
+            styles:
+              icon:
+                fill: var(--secondary-text-color)
+                opacity: 0.9
+            
+      # ================================================================
+      - toolset: button-text
+        position:
+          cx: 175
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: text
+            position:
+              cx: 50
+              cy: 50
+            text: '[[sak_layout_navigate_text]]'
+            styles:
+              text:
+                text-anchor: middle
+                font-size: 30em
+                font-weight: 700
+                opacity: 1
+
+      # ================================================================
+      - toolset: button-cover
+        position:
+          cx: 150
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position:
+              cx: 50
+              cy: 50
+              height: 100
+              width: 300
+            user_actions:
+              tap_action:
+                haptic: light
+                actions:
+                  - action: navigate
+                    navigation_path: '[[sak_layout_navigate_path]]'
+            styles:
+              rectex:
+                fill: rgba(0,0,0,0)
