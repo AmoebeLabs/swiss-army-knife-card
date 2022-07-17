@@ -3545,13 +3545,28 @@ class EntityStateTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
     this.MergeColorFromState(this.styles.state);
 
+    // var inState = this._stateValue?.toLowerCase();
     var inState = this._stateValue;
+
     if ((inState) && isNaN(inState)) {
-      const localeTag = this.config.locale_tag || 'component.' + this._card._computeDomain(this._card.config.entities[this.config.entity_index].entity) + '.state._.'
-      inState = this._card.toLocale(localeTag + inState.toLowerCase(), inState);
+      // const stateObj = this._card.config.entities[this.config.entity_index].entity;
+      const stateObj = this._card.entities[this.config.entity_index];
+      const domain = this._card._computeDomain(this._card.config.entities[this.config.entity_index].entity);
+      
+      const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
+      const localeTag1 = stateObj.attributes?.device_class ? `component.${domain}.state.${stateObj.attributes.device_class}.${inState}` : '--';
+      const localeTag2 = `component.${domain}.state._.${inState}`;
+
+      inState = 
+          (localeTag && this._card.toLocale(localeTag, inState)) ||
+          (stateObj.attributes?.device_class &&
+          this._card.toLocale(localeTag1, inState)) ||
+          this._card.toLocale(localeTag2, inState) ||
+          stateObj.state;
+
       inState = this.textEllipsis(inState, this.config?.show?.ellipsis);
     }
-    
+
     return svg`
       <tspan class="${classMap(this.classes.state)}" x="${this.svg.x}" y="${this.svg.y}"
         style="${styleMap(this.styles.state)}">
