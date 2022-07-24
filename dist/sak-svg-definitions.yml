@@ -337,17 +337,25 @@
   - descr: shadow from https://css-tricks.com/adding-shadows-to-svg-icons-with-css-and-svg-filters/
     content: |
       <filter id='shadow' color-interpolation-filters="sRGB">
-        <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.5"/>
+        <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="var(--cs-theme-shadow-darker)" flood-opacity="0.5"/>
       </filter>      
 
   - descr: sak-drop-shadow filters
     content: |
       <filter id="sak-drop-1" y="-50%" x="-50%" width="200%" height="400%">
-        <feDropShadow dx="0" dy="1.5" stdDeviation=".3"/>
+        <feDropShadow dx="0" dy="1.5" flood-color="var(--cs-theme-shadow-darker)" stdDeviation=".3"/>
+      </filter>
+      
+      <filter id="sak-drop-1a" y="-50%" x="-50%" width="200%" height="400%">
+        <feDropShadow dx="1" dy="2" flood-color="var(--cs-theme-shadow-darker)" stdDeviation=".5"/>
+      </filter>
+      
+      <filter id="sak-drop-1b" y="-50%" x="-50%" width="200%" height="400%">
+        <feDropShadow dx="2" dy="4" flood-color="var(--cs-theme-shadow-darker)" stdDeviation="6"/>
       </filter>
       
       <filter id="sak-drop-2" width="10" height="10">
-        <feDropShadow dx="2" dy="3" stdDeviation="0.5"/>
+        <feDropShadow dx="2" dy="3" flood-color="var(--cs-theme-shadow-darker)" stdDeviation="0.5"/>
       </filter>
       
       <filter id="sak-drop-3" x="0" y="0" width="200%" height="200%">

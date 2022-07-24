@@ -26,6 +26,8 @@ sak_user_templates:
 title: Swiss Army Knife Tutorials
 views:
 
+  - !include lovelace/views/sak-tutorial-views/view-functional-card-examples.yml
+
   # Swiss Army Knife tutorial views...
   #
   # Each tutorial is manually included, so you can select just a
@@ -34,6 +36,5 @@ views:
   - !include lovelace/views/sak-tutorial-views/view-tutorial-01-part2.yml
   - !include lovelace/views/sak-tutorial-views/view-tutorial-01-part4.yml
 
-  - !include lovelace/views/sak-tutorial-views/view-tutorial-02-part1.yml
 
   - !include lovelace/views/sak-tutorial-views/view-tutorial-03-part1.yml
