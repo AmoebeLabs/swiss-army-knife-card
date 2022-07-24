@@ -844,7 +844,7 @@ class BaseTool {
       switch(operator) {
         case "==":
           if (typeof(this._stateValue) === 'undefined') {
-            isMatch = (item.state.toLowerCase() === "undefined");
+            isMatch = (typeof item.state === 'undefined') || (item.state.toLowerCase() === "undefined");
           } else {
             isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
           }
