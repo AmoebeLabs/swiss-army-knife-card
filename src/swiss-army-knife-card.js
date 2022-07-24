@@ -2634,21 +2634,11 @@ class UserSvgTool extends BaseTool {
     return changed;
   }
 
- /*******************************************************************************
-  * UserSvgTool::_renderUserSvg()
-  *
-  * Summary.
-  * Renders the usersvg using precalculated coordinates and dimensions.
-  * Only the runtime style is calculated before rendering the usersvg
-  *
-  */
-
   updated(changedProperties) {
     this.injector.elementsToInject = this._card.shadowRoot.querySelectorAll('svg[data-src]');
-    // console.log("updated - ", this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)));
-    
+    // console.log("updated - ", this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)), this.injector.elementsToInject);
+
     this.injector.elementsToInject = this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)).querySelectorAll('svg[data-src]:not(.injected-svg)');
-    // console.log("updated - elements...", this.injector.elementsToInject);
 
     // Trigger the injection if there is something to inject...
     if (this.injector.elementsToInject.length > 0)
@@ -2659,13 +2649,25 @@ class UserSvgTool extends BaseTool {
       );    
   }
 
+ /*******************************************************************************
+  * UserSvgTool::_renderUserSvg()
+  *
+  * Summary.
+  * Renders the usersvg using precalculated coordinates and dimensions.
+  * Only the runtime style is calculated before rendering the usersvg
+  *
+  */
+
   _renderUserSvg() {
     this.MergeAnimationStyleIfChanged();
 
-    if (this.injector.svg) {
-      return svg`${this.injector.svg}`;
+    var images = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.images))
+
+    // if ((this.injector.svg) && (this.injector.image2.trim() === images[this.item.image].trim())) {
+      // return svg`${this.injector.svg}`;
+    if (false) {
     } else {
-      if (this.item.image == "none")
+      if (images[this.item.image] === "none")
         return svg``;
 
       var clipPath = "";
@@ -2695,8 +2697,6 @@ class UserSvgTool extends BaseTool {
           `;
       }
       
-      var images = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.images))
-
       // If svg, use injector for rendering. If jpg or png, use default image renderer...
       if (["png", "jpg"].includes((images[this.item.image].substring(images[this.item.image].lastIndexOf(".") + 1)))) {
         // Render jpg or png
@@ -2707,12 +2707,21 @@ class UserSvgTool extends BaseTool {
           </svg>
           `;
       } else {
-        // Inject and render SVG...
+
         return svg`
-          <svg id="image-one" data-src="${images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" 
-          style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
+          <svg class="sak-usersvg__image" data-some="${images[this.item.image]}" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
+            "${clipPath}"
+            <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})" href="${images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
           </svg>
           `;
+
+        // It seems new stuff is NOT injected for some reason. Donno why. Cant find it. Simply NOT injected, although injector is called in updated...
+        // 2022.07.24 For now, disable injector stuff...
+        // return svg`
+          // <svg id="image-one" data-src="${images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" 
+          // style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
+          // </svg>
+          // `;
       }
     }
   }
