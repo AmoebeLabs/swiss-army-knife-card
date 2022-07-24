@@ -1547,7 +1547,7 @@ class RangeSliderTool extends BaseTool {
       e.preventDefault();
       e.stopPropagation();
       
-      const mousePos = this.oMousePosSVG(e);
+      const mousePos = this.mouseEventToPoint(e);
       // console.log("pointerdown", mousePos, this.svg.thumb, this.m);
       var thumbPos = (this.svg.thumb.x1 + this.svg.thumb.cx);
       if ((mousePos.x > (thumbPos - 10)) && (mousePos.x < (thumbPos + this.svg.thumb.width + 10))) {
