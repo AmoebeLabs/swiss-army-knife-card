@@ -153,8 +153,6 @@ sak_layout_fce_clippath_test:
               cx: 43
               cy: 125
             entity_index: 3
-            show:
-              ellipsis: 5
             styles:
               state:
                 text-anchor: end
@@ -170,6 +168,8 @@ sak_layout_fce_clippath_test:
             entity_index: 4
             text:
               before: ' | '
+            show:
+              ellipsis: 5
             styles:
               state:
                 text-anchor: start
@@ -221,6 +221,9 @@ sak_layout_fce_clippath_test:
                     if (state == "-ua-") return 'none';
                     return "/local/images/"+ tool_config.variables.path + tool_config.variables.prefix + state + ".svg";
                   ]]]
+            styles:
+              mask:
+                fill: url(#sak-mask-radial-gradient)
 
           # ------------------------------------------------------------
           - type: state
@@ -262,6 +265,14 @@ sak_layout_fce_clippath_test:
               cy: 50
               height: 100
               width: 100
+            clip_path:
+              position:
+                cx: 50
+                cy: 50
+                height: 80
+                width: 80
+                radius:
+                  all: 10
             style: 'images'
             variables:
               path: '[[sak_layout_tomorrow_pollen_image_path]]'
@@ -272,6 +283,10 @@ sak_layout_fce_clippath_test:
                     if (state == "-ua-") return 'none';
                     return "/local/images/"+ tool_config.variables.path + tool_config.variables.prefix + state + ".svg";
                   ]]]
+            styles:
+              mask:
+                fill: url(#sak-mask-radial-gradient)
+
           # ------------------------------------------------------------
           - type: state
             position:
@@ -313,6 +328,14 @@ sak_layout_fce_clippath_test:
               cy: 50
               height: 100
               width: 100
+            clip_path:
+              position:
+                cx: 50
+                cy: 50
+                height: 80
+                width: 80
+                radius:
+                  all: 10
             style: 'images'
             variables:
               path: '[[sak_layout_tomorrow_pollen_image_path]]'
@@ -322,6 +345,10 @@ sak_layout_fce_clippath_test:
                   [[[
                     return "/local/images/"+ tool_config.variables.path + tool_config.variables.prefix + state + ".svg";
                   ]]]
+            styles:
+              mask:
+                fill: url(#sak-mask-radial-gradient)
+
           # ------------------------------------------------------------
           - type: state
             position:

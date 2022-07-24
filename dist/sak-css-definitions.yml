@@ -43,6 +43,72 @@
   # Tools in slphabetical order
   #
   #------------------------------------------------------------------------------
+  - descr: ArcSlider tool
+    content: >
+      .sak-circslider__group-inner {
+        pointer-events: none;
+        }
+      #as-thumb-group {
+        overflow: visible;
+        pointer-events: all;
+      }
+      #as-label {
+        overflow: visible;
+      }
+      .sak-circslider {
+        overflow: visible;
+        fill: none;
+        stroke: none;
+        pointer-events: none;
+      }
+      .sak-circslider__capture {
+        overflow: visible;
+        pointer-events: all;
+        fill: none;
+        stroke-width: 0;
+        touch-action: manipulation;
+        fill: grey;
+        fill-opacity: 0.1;
+        stroke-width: 0em;
+        stroke: red;
+      }
+      .sak-circslider__active {
+        stroke: var(--theme-sys-color-primary);
+        stroke-width: 4em;
+        pointer-events: all;
+      }
+      .sak-circslider__track {
+        fill: none;
+        stroke-width: 2em;
+        stroke: var(--theme-sys-elevation-surface-neutral10);
+        overflow: visible;
+        pointer-events: all;
+      }
+      .sak-circslider__thumb {
+        overflow: visible;
+        fill: var(--theme-sys-color-primary);
+        fill-opacity: 1;
+        transform-origin: center;
+        transform-box: fill-box;
+      }
+      .sak-circslider__value {
+        overflow: visible;
+        fill: var(--primary-text-color);
+        font-size: 8em;
+        font-weight: 400;
+        dominant-baseline: central;
+        pointer-events: none;
+      }
+      .sak-circslider__uom {
+        overflow: visible;
+        fill: var(--primary-text-color);
+        text-anchor: middle;
+        dominant-baseline: central;
+        opacity: 0.7;
+        letter-spacing: 0.05em;
+        pointer-events: none;
+      }
+
   - descr: Area tool
     content: >
       .sak-area {

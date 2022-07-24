@@ -140,7 +140,7 @@ sak_layout_fce_tomorrow_pollen_all:
             entity_index: 0
             show:
               uom: none
-              ellipsis: 8
+              ellipsis: 9
             styles:
               state:
                 text-anchor: middle
