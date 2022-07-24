@@ -417,24 +417,24 @@ class Toolset {
 
     // Create the tools configured in the toolset list.
     const toolsNew = {
-      "area"      : EntityAreaTool,
-      "badge"     : BadgeTool,
-      "bar"       : SparklineBarChartTool,
-      "circle"    : CircleTool,
-      "ellipse"   : EllipseTool,
-      "horseshoe" : HorseshoeTool,
-      "icon"      : EntityIconTool,
-      "line"      : LineTool,
-      "name"      : EntityNameTool,
-      "rectangle" : RectangleTool,
-      "rectex"    : RectangleToolEx,
-      "regpoly"   : RegPolyTool,
-      "segarc"    : SegmentedArcTool,
-      "state"     : EntityStateTool,
-      "slider"    : RangeSliderTool,
-      "switch"    : SwitchTool,
-      "text"      : TextTool,
-      "usersvg"   : UserSvgTool,
+      "area"        : EntityAreaTool,
+      "badge"       : BadgeTool,
+      "bar"         : SparklineBarChartTool,
+      "circle"      : CircleTool,
+      "ellipse"     : EllipseTool,
+      "horseshoe"   : HorseshoeTool,
+      "icon"        : EntityIconTool,
+      "line"        : LineTool,
+      "name"        : EntityNameTool,
+      "rectangle"   : RectangleTool,
+      "rectex"      : RectangleToolEx,
+      "regpoly"     : RegPolyTool,
+      "segarc"      : SegmentedArcTool,
+      "state"       : EntityStateTool,
+      "slider"      : RangeSliderTool,
+      "switch"      : SwitchTool,
+      "text"        : TextTool,
+      "usersvg"     : UserSvgTool,
     };
 
     this.config.tools.map(toolConfig => {
@@ -557,29 +557,7 @@ class Toolset {
 
     if (this.tools) {
       this.tools.map((item, index) => {
-
-        if (item.type == "segarc") {
-          if (this.dev.debug) console.log('Toolset::firstUpdated - calling SegmentedArcTool firstUpdated');
-          item.tool.firstUpdated(changedProperties);
-        }
-
-        if (item.type == "slider") {
-          if (this.dev.debug) console.log('Toolset::firstUpdated - calling Slider firstUpdated');
-          item.tool.firstUpdated(changedProperties);
-        }
-
-        if (item.type == "slider2") {
-          if (this.dev.debug) console.log('Toolset::firstUpdated - calling Slider firstUpdated');
-          item.tool.firstUpdated(changedProperties);
-        }
-
-        if (item.type == "icon") {
-          if (this.dev.debug) console.log('Toolset::firstUpdated - calling Icon firstUpdated');
-          item.tool.firstUpdated(changedProperties);
-        }
-
-        if (item.type == "state") {
-          if (this.dev.debug) console.log('Toolset::firstUpdated - calling State firstUpdated');
+        if (typeof item.tool.firstUpdated === "function") { 
           item.tool.firstUpdated(changedProperties);
         }
       });
@@ -599,17 +577,9 @@ class Toolset {
 
     if (this.tools) {
       this.tools.map((item, index) => {
-
-        if (item.type == "state") {
-          if (this.dev.debug) console.log('Toolset::updated - calling State firstUpdated');
+        if (typeof item.tool.updated === "function") { 
           item.tool.updated(changedProperties);
         }
-
-        if (item.type == "usersvg") {
-          if (this.dev.debug) console.log('Toolset::updated - calling Usersvg firstUpdated');
-          item.tool.updated(changedProperties);
-        }
-
       });
     }
   }
