@@ -5267,6 +5267,9 @@ class SwissArmyKnifeCard extends LitElement {
     this.iOS = (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
                 !window.MSStream;
+    this.isSafari14 = this.isSafari && /Version\/14\.[^0-1]/.test(navigator.userAgent);
+    this.isSafari15 = this.isSafari && /Version\/15\.[^0-1]/.test(navigator.userAgent);
+    this.isSafari16 = this.isSafari && /Version\/16\.[^0-1]/.test(navigator.userAgent);
 
     this.lovelace = SwissArmyKnifeCard.lovelace;
     
