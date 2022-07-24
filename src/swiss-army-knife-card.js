@@ -1543,18 +1543,27 @@ class RangeSliderTool extends BaseTool {
 
     if (this.dev.debug) console.log('slider - firstUpdated svg = ', this.elements.svg, 'path=', this.elements.path, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
 
-    this.elements.svg.addEventListener("pointerdown", e => {
+    function pointerDown(e) {
       e.preventDefault();
-      e.stopPropagation();
       
+      // @NTS: Keep this comment for later!!
+      // Safari: We use mouse stuff for pointerdown, but have to use pointer stuff to make sliding work on Safari. WHY??
+      window.addEventListener('pointermove', pointerMove.bind(this), false);
+      window.addEventListener('pointerup', pointerUp.bind(this), false);
+
+      // @NTS: Keep this comment for later!!
+      // Below lines prevent slider working on Safari...
+      //
+      // window.addEventListener('mousemove', pointerMove.bind(this), false);
+      // window.addEventListener('touchmove', pointerMove.bind(this), false);
+      // window.addEventListener('mouseup', pointerUp.bind(this), false);
+      // window.addEventListener('touchend', pointerUp.bind(this), false);
+
       const mousePos = this.mouseEventToPoint(e);
-      // console.log("pointerdown", mousePos, this.svg.thumb, this.m);
       var thumbPos = (this.svg.thumb.x1 + this.svg.thumb.cx);
       if ((mousePos.x > (thumbPos - 10)) && (mousePos.x < (thumbPos + this.svg.thumb.width + 10))) {
-        // console.log("pointerdown, mousePos IS within x-width of thumb!!");
         fireEvent(window, 'haptic', 'heavy');
       } else {
-        // console.log("pointerdown, mousePos NOT within x-width of thumb!!");
         fireEvent(window, 'haptic', 'error');
         return;
       }
@@ -1573,43 +1582,42 @@ class RangeSliderTool extends BaseTool {
       }
       this.m = this.mouseEventToPoint(e);
       
-      // WHY again not working for Safari/iPad!!!!!
-      // Capture on Safari needs about 0.5 sec for the glass to kick in and then capturing works... No idea why...
-      // if ((!this.elements.capture.hasPointerCapture(e.pointerId)) ) {//&& !(this._card.isSafari || this._card.iOS)) {
-        this.elements.capture.setPointerCapture(e.pointerId);
-      // }
       if (this.config.position.orientation == 'horizontal') {
         this.m.x =  (Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step);
       } else {
         this.m.y = (Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step);
       }
       if (this.dev.debug) console.log('pointerDOWN',Math.round(this.m.x * 100) / 100);
-      // Frame();
       Frame2.call(this);
-    }, {capture: true, passive: false});
-
-    this.elements.svg.addEventListener("pointerup", e => {
+    }
+    
+    function pointerUp(e) {
       e.preventDefault();
-      e.stopPropagation();
+
+      // @NTS: Keep this comment for later!!
+      // Safari: Fixes unable to grab pointer
+      window.removeEventListener('pointermove', pointerMove.bind(this), false);
+      window.removeEventListener('pointerup', pointerUp.bind(this), false);
+
+      window.removeEventListener('mousemove', pointerMove.bind(this), false);
+      window.removeEventListener('touchmove', pointerMove.bind(this), false);
+      window.removeEventListener('mouseup', pointerUp.bind(this), false);
+      window.removeEventListener('touchend', pointerUp.bind(this), false);
 
       if (!this.dragging) return;
 
       this.dragging = false;
       clearTimeout(this.timeOutId);
       this.target = 0;
-      // if ((this.elements.capture.hasPointerCapture(e.pointerId)) ) {//&& !(this._card.isSafari || this._card.iOS)) {
-        this.elements.capture.releasePointerCapture(e.pointerId);
-      // }
       if (this.dev.debug) console.log('pointerUP');
       Frame2.call(this);
       this.callTapService();
-    }, {capture: true, passive: false});
-
-    this.elements.svg.addEventListener("pointermove", e => {
+    }
+    
+    function pointerMove(e) {
       let scaleValue;
 
       e.preventDefault();
-      e.stopPropagation();
 
       if (this.dragging) {
         this.m = this.mouseEventToPoint(e);
@@ -1630,7 +1638,17 @@ class RangeSliderTool extends BaseTool {
         }
         Frame2.call(this);
       }
-    }, {capture: true, passive: false});
+    }
+    
+    // @NTS: Keep this comment for later!!
+    // For things to work in Safari, we need separate touch and mouse down handlers...
+    // DON't as WHY! The pointerdown method prevents listening on window events later on.
+    // ie, we can't move our finger 
+    
+    // this.elements.svg.addEventListener("pointerdown", pointerDown.bind(this), false);
+    
+    this.elements.svg.addEventListener("touchstart", pointerDown.bind(this), false);
+    this.elements.svg.addEventListener("mousedown", pointerDown.bind(this), false);
   }
 
 /*******************************************************************************
