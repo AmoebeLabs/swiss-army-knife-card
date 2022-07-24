@@ -3998,8 +3998,8 @@ class HorseshoeTool extends BaseTool {
     // Adjust x and y positions within the svg viewport to re-center the circle after rotating
     this.svg.rotate = {};
     this.svg.rotate.degrees = -220;
-    this.svg.rotate.shiftX = this.svg.cx;
-    this.svg.rotate.shiftY = this.svg.cy;
+    this.svg.rotate.cx = this.svg.cx;
+    this.svg.rotate.cy = this.svg.cy;
 
     // Get colorstops and make a key/value store...
     this.colorStops = {};
@@ -4187,7 +4187,7 @@ class HorseshoeTool extends BaseTool {
           stroke-dasharray="${this.svg.horseshoe_scale.dasharray}"
           stroke-width="${this.svg.horseshoe_scale.width}"
           stroke-linecap="square"
-          transform="rotate(-220 ${this.svg.rotate.shiftX} ${this.svg.rotate.shiftY})"/>
+          transform="rotate(-220 ${this.svg.rotate.cx} ${this.svg.rotate.cy})"/>
 
         <circle id="horseshoe__state__value" class="horseshoe__state__value" cx="${this.svg.cx}" cy="${this.svg.cy}" r="${this.svg.radius}"
           fill="${this.config.fill || 'rgba(0, 0, 0, 0)'}"
@@ -4195,7 +4195,7 @@ class HorseshoeTool extends BaseTool {
           stroke-dasharray="${this.dashArray}"
           stroke-width="${this.svg.horseshoe_state.width}"
           stroke-linecap="square"
-          transform="rotate(-220 ${this.svg.rotate.shiftX} ${this.svg.rotate.shiftY})"/>
+          transform="rotate(-220 ${this.svg.rotate.cx} ${this.svg.rotate.cy})"/>
 
         ${this._renderTickMarks()}
       </g>
