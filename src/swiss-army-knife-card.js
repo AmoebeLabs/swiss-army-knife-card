@@ -829,7 +829,12 @@ class BaseTool {
 
     if (this.config.animations) Object.keys(this.config.animations).map(animation => {
       
-      var item = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.config.animations[animation]));
+      // NEW!!!
+      // Config more than 1 level deep is overwritten, so never changed after first evaluation. Stuff is overwritten???
+      var tempConfig = JSON.parse(JSON.stringify(this.config.animations[animation]));
+
+      var item = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(tempConfig));
+      // var item = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.config.animations[animation]));
       
       if (isMatch) return true;
 
@@ -844,7 +849,7 @@ class BaseTool {
       switch(operator) {
         case "==":
           if (typeof(this._stateValue) === 'undefined') {
-            isMatch = (item.state.toLowerCase() === "undefined");
+            isMatch = (typeof item.state === 'undefined') || (item.state.toLowerCase() === "undefined");
           } else {
             isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
           }
