@@ -1150,9 +1150,9 @@ class BaseTool {
   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
- 
+
  /*****************************************************************************
-  * RangeSliderTool class
+  * RangeSliderTool::constructor class
   *
   * Summary.
   *
@@ -1462,15 +1462,15 @@ class RangeSliderTool extends BaseTool {
   }
 
   /*
-  * oMousePosSVG
+  * mouseEventToPoint
   *
   * Translate mouse/touch client window coordinates to SVG window coordinates
   *
   */
-  oMousePosSVG(e) {
+  mouseEventToPoint(e) {
     var p = this.elements.svg.createSVGPoint();
-    p.x = e.clientX;
-    p.y = e.clientY;
+    p.x = e.touches ? e.touches[0].clientX : e.clientX;
+    p.y = e.touches ? e.touches[0].clientY : e.clientY;
     var ctm = this.elements.svg.getScreenCTM().inverse();
     var p = p.matrixTransform(ctm);
     return p;
@@ -1571,7 +1571,7 @@ class RangeSliderTool extends BaseTool {
           this.timeOutId = null;
         }
       }
-      this.m = this.oMousePosSVG(e);
+      this.m = this.mouseEventToPoint(e);
       
       // WHY again not working for Safari/iPad!!!!!
       // Capture on Safari needs about 0.5 sec for the glass to kick in and then capturing works... No idea why...
@@ -1612,7 +1612,7 @@ class RangeSliderTool extends BaseTool {
       e.stopPropagation();
 
       if (this.dragging) {
-        this.m = this.oMousePosSVG(e);
+        this.m = this.mouseEventToPoint(e);
 
         switch (this.config.position.orientation) {
           case 'horizontal':
