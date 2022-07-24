@@ -810,7 +810,7 @@ class BaseTool {
   *
   */
   textEllipsis(argText, argEllipsis) {
-    if ((argEllipsis) && (argEllipsis <= argText.length)) {
+    if ((argEllipsis) && (argEllipsis < argText.length)) {
       return argText.slice(0, argEllipsis - 1).concat("...");
     } else {
       return argText;
