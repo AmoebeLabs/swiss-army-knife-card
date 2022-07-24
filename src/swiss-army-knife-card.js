@@ -4839,10 +4839,10 @@ class SegmentedArcTool extends BaseTool {
           // extra, set color from colorlist as a test
           if (this.config.isScale) {
             var fill = this.config.color;
-            if (this.config.show.style =="colorlist") {
+            if (this.config.show.style === "colorlist") {
               fill = this.config.segments.colorlist.colors[index];
             }
-            if (this.config.show.style =="colorstops") {
+            if (this.config.show.style === "colorstops") {
               fill = this._segments.colorStops[this._segments.sortedStops[index]];
               // stroke = this.config.segments.colorstops.stroke ? this._segments.colorStops[this._segments.sortedStops[index]] : '';
             }
@@ -4943,7 +4943,7 @@ class SegmentedArcTool extends BaseTool {
                 // Can't use gradients probably because of custom path. Conic-gradient would be fine.
                 //
                 // First try...
-                if (thisTool.config.show.style =="colorlist") {
+                if (thisTool.config.show.style === "colorlist") {
                   as.style.fill = thisTool.config.segments.colorlist.colors[runningSegment];
                   thisTool.styles.foreground[runningSegment]['fill'] = thisTool.config.segments.colorlist.colors[runningSegment];
                 }
@@ -4960,14 +4960,15 @@ class SegmentedArcTool extends BaseTool {
                                 : (thisTool._segmentAngles[runningSegment].drawStart);
                   var value = Math.min(Math.max(0, (runningSegmentAngle - boundsStart) / (boundsEnd - boundsStart)), 1);
                   // 2022.07.03 Fixing lastcolor for true stop
-                  if (thisTool.config.show.style == 'colorstops') {
+                  if (thisTool.config.show.style === 'colorstops') {
                     fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                                            thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                                            value);
                   } else {
-                    fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
-                                           thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment+1]],
-                                           value);
+                    // 2022.07.12 Fix bug as this is no colorstops, but a colorlist!!!!
+                    if (thisTool.config.show.style === "colorlist") {
+                      fill = thisTool.config.segments.colorlist.colors[runningSegment];
+                    }
                   }
                   thisTool.styles.foreground[0]['fill'] = fill;
                   thisTool.as[0].style.fill = fill;
@@ -5109,10 +5110,10 @@ class SegmentedArcTool extends BaseTool {
 
           // extra, set color from colorlist as a test
           var fill = this.config.color;
-          if (this.config.show.style =="colorlist") {
+          if (this.config.show.style === "colorlist") {
             fill = this.config.segments.colorlist.colors[i];
           }
-          if (this.config.show.style =="colorstops") {
+          if (this.config.show.style === "colorstops") {
             fill = this._segments.colorStops[this._segments.sortedStops[i]];
           }
 //                            style="${styleMap(this.config.styles.foreground)} fill: ${fill};"
