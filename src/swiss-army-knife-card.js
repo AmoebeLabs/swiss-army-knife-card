@@ -1692,21 +1692,11 @@ class RangeSliderTool extends BaseTool {
 
       // Check for location of uom. end = next to state, bottom = below state ;-), etc.
       if (this.config.show.uom === 'end') {
-
-        if ((this.svg.label.cx == 0) || (this.svg.label.cy == 0)) {
-        return svg`
-          <tspan class="${classMap(this.classes.uom)}" dx="-0.1em" dy="-0.35em"
-            style="${styleMap(this.styles.uom)}">
-            ERR</tspan>
-        `;
-        }
-        else {
         return svg`
           <tspan class="${classMap(this.classes.uom)}" dx="-0.1em" dy="-0.35em"
             style="${styleMap(this.styles.uom)}">
             ${uom}</tspan>
         `;
-        }
       } else if (this.config.show.uom === 'bottom') {
         return svg`
           <tspan class="${classMap(this.classes.uom)}" x="${this.svg.label.cx}" dy="1.5em"
@@ -1724,7 +1714,7 @@ class RangeSliderTool extends BaseTool {
         return svg`
           <tspan class="${classMap(this.classes.uom)}"  dx="-0.1em" dy="-0.35em"
             style="${styleMap(this.styles.uom)}">
-            ERR</tspan>
+            ERRR</tspan>
         `;
       }
     }
