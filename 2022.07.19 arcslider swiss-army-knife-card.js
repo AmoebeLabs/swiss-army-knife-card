@@ -417,24 +417,25 @@ class Toolset {
 
     // Create the tools configured in the toolset list.
     const toolsNew = {
-      "area"        : EntityAreaTool,
-      "badge"       : BadgeTool,
-      "bar"         : SparklineBarChartTool,
-      "circle"      : CircleTool,
-      "ellipse"     : EllipseTool,
-      "horseshoe"   : HorseshoeTool,
-      "icon"        : EntityIconTool,
-      "line"        : LineTool,
-      "name"        : EntityNameTool,
-      "rectangle"   : RectangleTool,
-      "rectex"      : RectangleToolEx,
-      "regpoly"     : RegPolyTool,
-      "segarc"      : SegmentedArcTool,
-      "state"       : EntityStateTool,
-      "slider"      : RangeSliderTool,
-      "switch"      : SwitchTool,
-      "text"        : TextTool,
-      "usersvg"     : UserSvgTool,
+      "area"      : EntityAreaTool,
+      "arcslider" : ArcSliderTool,
+      "badge"     : BadgeTool,
+      "bar"       : SparklineBarChartTool,
+      "circle"    : CircleTool,
+      "ellipse"   : EllipseTool,
+      "horseshoe" : HorseshoeTool,
+      "icon"      : EntityIconTool,
+      "line"      : LineTool,
+      "name"      : EntityNameTool,
+      "rectangle" : RectangleTool,
+      "rectex"    : RectangleToolEx,
+      "regpoly"   : RegPolyTool,
+      "segarc"    : SegmentedArcTool,
+      "state"     : EntityStateTool,
+      "slider"    : RangeSliderTool,
+      "switch"    : SwitchTool,
+      "text"      : TextTool,
+      "usersvg"   : UserSvgTool,
     };
 
     this.config.tools.map(toolConfig => {
@@ -557,7 +558,34 @@ class Toolset {
 
     if (this.tools) {
       this.tools.map((item, index) => {
-        if (typeof item.tool.firstUpdated === "function") { 
+
+        if (item.type == "segarc") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling SegmentedArcTool firstUpdated');
+          item.tool.firstUpdated(changedProperties);
+        }
+
+        if (item.type == "arcslider") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling ArcSlider firstUpdated');
+          item.tool.firstUpdated(changedProperties);
+        }
+
+        if (item.type == "slider") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling Slider firstUpdated');
+          item.tool.firstUpdated(changedProperties);
+        }
+
+        if (item.type == "slider2") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling Slider firstUpdated');
+          item.tool.firstUpdated(changedProperties);
+        }
+
+        if (item.type == "icon") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling Icon firstUpdated');
+          item.tool.firstUpdated(changedProperties);
+        }
+
+        if (item.type == "state") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling State firstUpdated');
           item.tool.firstUpdated(changedProperties);
         }
       });
@@ -577,9 +605,17 @@ class Toolset {
 
     if (this.tools) {
       this.tools.map((item, index) => {
-        if (typeof item.tool.updated === "function") { 
+
+        if (item.type == "state") {
+          if (this.dev.debug) console.log('Toolset::updated - calling State firstUpdated');
           item.tool.updated(changedProperties);
         }
+
+        if (item.type == "usersvg") {
+          if (this.dev.debug) console.log('Toolset::updated - calling Usersvg firstUpdated');
+          item.tool.updated(changedProperties);
+        }
+
       });
     }
   }
@@ -780,7 +816,7 @@ class BaseTool {
   *
   */
   textEllipsis(argText, argEllipsis) {
-    if ((argEllipsis) && (argEllipsis < argText.length)) {
+    if ((argEllipsis) && (argEllipsis <= argText.length)) {
       return argText.slice(0, argEllipsis - 1).concat("...");
     } else {
       return argText;
@@ -829,7 +865,12 @@ class BaseTool {
 
     if (this.config.animations) Object.keys(this.config.animations).map(animation => {
       
-      var item = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.config.animations[animation]));
+      // NEW!!!
+      // Config more than 1 level deep is overwritten, so never changed after first evaluation. Stuff is overwritten???
+      var tempConfig = JSON.parse(JSON.stringify(this.config.animations[animation]));
+
+      var item = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(tempConfig));
+      // var item = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.config.animations[animation]));
       
       if (isMatch) return true;
 
@@ -844,7 +885,7 @@ class BaseTool {
       switch(operator) {
         case "==":
           if (typeof(this._stateValue) === 'undefined') {
-            isMatch = (typeof item.state === 'undefined') || (item.state.toLowerCase() === "undefined");
+            isMatch = (item.state.toLowerCase() === "undefined");
           } else {
             isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
           }
@@ -1151,6 +1192,1088 @@ class BaseTool {
   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
+/******************************************************************************
+  * ArcSliderTool::constructor class
+  *
+  * Summary.
+  *
+  */
+
+class ArcSliderTool extends BaseTool {
+    // Donut starts at -220 degrees and is 260 degrees in size.
+    // zero degrees is at 3 o'clock.
+
+  constructor(argToolset, argConfig, argPos) {
+
+    const DEFAULT_ARCSLIDER_CONFIG = {
+      position: {
+        cx: 50,
+        cy: 50,
+        radius: 45,
+        start_angle: 30,
+        end_angle: 230,
+        track: {
+          width: 2
+        },
+        active: {
+          width: 4
+        },
+        thumb: {
+          height: 10,
+          width: 10,
+          radius: 5,
+        },
+        capture: {
+          height: 25,
+          width: 25,
+          radius: 25,
+        },
+        label: {
+          placement: 'none',
+          cx: 10,
+          cy: 10,
+        },
+      },
+      show: {
+        uom: 'end',
+        active: false,
+      },
+      classes: {
+        tool: {
+          "sak-arcslider": true,
+          "hover": true,
+        },
+        capture: {
+          "sak-arcslider__capture": true,
+        },
+        active: {
+          "sak-arcslider__active": true,
+        },
+        track: {
+          "sak-arcslider__track": true,
+        },
+        thumb: {
+          "sak-arcslider__thumb": true,
+        },
+        label: {
+          "sak-arcslider__value": true,
+        },
+        uom: {
+          "sak-arcslider__uom": true,
+        }
+      },
+      styles: {
+        tool: {
+        },
+        active: {
+        },
+        capture: {
+        },
+        track: {
+        },
+        thumb: {
+        },
+        label: {
+        },
+        uom: {
+        }
+      },
+      scale: {
+        min: 0,
+        max: 100,
+        step: 1,
+      },
+    };
+
+    super(argToolset, Merge.mergeDeep(DEFAULT_ARCSLIDER_CONFIG, argConfig), argPos);
+
+    this.svg.radius = Utils.calculateSvgDimension(this.config.position.radius);
+
+    // Init arc settings
+    this.arc = {};
+    this.arc.startAngle = this.config.position.start_angle;
+    this.arc.endAngle = this.config.position.end_angle;
+    this.arc.size = Math.abs(this.config.position.end_angle - this.config.position.start_angle);
+    this.arc.clockwise = this.config.position.end_angle > this.config.position.start_angle;
+    this.arc.direction = this.arc.clockwise ? 1 : -1;
+    this.arc.pathLength = 2 * this.arc.size/360 * Math.PI * this.svg.radius;
+    this.arc.arcLength = 2 * Math.PI * this.svg.radius;
+
+    this.arc.startAnglePositive = (this.arc.startAngle < 0 || this.arc.endAngle < 0)  ? this.arc.startAngle + 360 : this.arc.startAngle;    
+    this.arc.endAnglePositive   = (this.arc.startAngle < 0 || this.arc.endAngle < 0) ? this.arc.endAngle + 360 : this.arc.endAngle;  
+
+    this.arc.startAngleSvgPoint = this.polarToCartesian(this.svg.cx, this.svg.cy, this.svg.radius, this.svg.radius, this.arc.startAnglePositive)
+    this.arc.endAngleSvgPoint = this.polarToCartesian(this.svg.cx, this.svg.cy, this.svg.radius, this.svg.radius, this.arc.endAnglePositive)
+
+    this.arc.scaleDasharray = 2 * this.arc.size/360 * Math.PI * this.svg.radius;
+    this.arc.dashOffset = this.arc.clockwise ? 0 : - this.arc.scaleDasharray - this.arc.arcLength;
+    
+    this.arc.currentAngle = this.arc.startAngle;
+
+    this.svg.startAngle = this.config.position.start_angle;
+    this.svg.endAngle = this.config.position.end_angle;
+    this.svg.diffAngle = (this.config.position.end_angle - this.config.position.start_angle);
+
+    // this.svg.pathLength = 2 * 260/360 * Math.PI * this.svg.radius;
+    this.svg.pathLength = 2 * this.arc.size/360 * Math.PI * this.svg.radius;
+    this.svg.circleLength = 2 * Math.PI * this.svg.radius;
+
+    this.svg.label = {};
+    switch (this.config.position.label.placement) {
+      case 'position':
+        this.svg.label.cx = Utils.calculateSvgCoordinate(this.config.position.label.cx, 0);
+        this.svg.label.cy = Utils.calculateSvgCoordinate(this.config.position.label.cy, 0);
+        break;
+        
+      case 'thumb':
+        this.svg.label.cx = this.svg.cx;
+        this.svg.label.cy = this.svg.cy;
+        break;
+      
+      case 'none':
+        break;
+
+      default:
+        console.error('ArcSliderTool - constructor: invalid label placement [none, position, thumb] = ', this.config.position.label.placement);
+        throw Error('ArcSliderTool::constructor - invalid label placement [none, position, thumb] = ', this.config.position.label.placement);
+    }
+    
+    this.svg.track = {};
+    this.svg.track.width = Utils.calculateSvgDimension(this.config.position.track.width);
+    this.svg.active = {};
+    this.svg.active.width = Utils.calculateSvgDimension(this.config.position.active.width);
+    this.svg.thumb = {};
+    this.svg.thumb.width = Utils.calculateSvgDimension(this.config.position.thumb.width);
+    this.svg.thumb.height = Utils.calculateSvgDimension(this.config.position.thumb.height);
+    this.svg.thumb.radius = Utils.calculateSvgDimension(this.config.position.thumb.radius);
+    this.svg.thumb.cx = this.svg.cx;
+    this.svg.thumb.cy = this.svg.cy;
+    this.svg.thumb.x1 = this.svg.cx - this.svg.thumb.width/2;
+    this.svg.thumb.y1 = this.svg.cy - this.svg.thumb.height/2;
+
+    // This should be a moving capture element, larger than the thumb!!
+    this.svg.capture = {};
+    this.svg.capture.width = Utils.calculateSvgDimension(Math.max(this.config.position.capture.width, this.config.position.thumb.width * 1.2));
+    this.svg.capture.height = Utils.calculateSvgDimension(Math.max(this.config.position.capture.height, this.config.position.thumb.height * 1.2));
+    this.svg.capture.radius = Utils.calculateSvgDimension(this.config.position.capture.radius);
+    this.svg.capture.x1 = this.svg.cx - this.svg.capture.width/2;
+    this.svg.capture.y1 = this.svg.cy - this.svg.capture.height/2;
+    
+    // The ArcSliderTool is rotated around its svg base point. This is NOT the center of the circle!
+    // Adjust x and y positions within the svg viewport to re-center the circle after rotating
+    this.svg.rotate = {};
+    this.svg.rotate.degrees = this.arc.clockwise ? (-90 + this.arc.startAngle) : (this.arc.endAnglePositive - 90);
+    this.svg.rotate.shiftX = this.svg.cx;
+    this.svg.rotate.shiftY = this.svg.cy;
+
+    // Init classes
+    this.classes.track = {};
+    this.classes.active = {};
+    this.classes.thumb = {};
+    this.classes.label = {};
+    this.classes.uom = {};
+
+    // Init styles
+    this.styles.track = {};
+    this.styles.active = {};
+    this.styles.thumb = {};
+    this.styles.label = {};
+    this.styles.uom = {};
+
+    // Init scale
+    this.svg.scale = {};
+    this.svg.scale.min = this.valueToSvg(this, this.config.scale.min);
+    this.svg.scale.max = this.valueToSvg(this, this.config.scale.max);
+    this.svg.scale.step = this.config.scale.step;
+    
+    this.rid = null;
+
+    // Hmmm. Does not help on safari to get the refresh ok. After data change, everything is ok!!
+    this.thumbPos = this.valueToSvg(this, this.config.scale.min);
+    this.svg.thumb.x1 = this.thumbPos.x - this.svg.thumb.width/2;
+    this.svg.thumb.y1 = this.thumbPos.y - this.svg.thumb.height/2;
+
+    this.svg.capture.x1 = this.thumbPos.x - this.svg.capture.width/2;
+    this.svg.capture.y1 = this.thumbPos.y - this.svg.capture.height/2;    
+
+    if (this.dev.debug) console.log("ArcSliderTool::constructor", this.config, this.svg);
+  }
+
+  // From roundSlider... https://github.com/soundar24/roundSlider/blob/master/src/roundslider.js
+  _getNormalizedAngleFromPoint (point, center, isDrag) {
+    var radian = Math.atan2(point.y - center.y, center.x - point.x);
+    var angle = (-radian / (Math.PI / 180));
+    // the angle value between -180 to 180.. so convert to a 360 angle
+    angle += -90;
+    
+    if (angle < 0) angle += 360;
+
+    // With this addition, the clockwise stuff, including passing 0 works. but anti clockwise stopped working!!
+    if (this.arc.clockwise) if (angle < this.arc.startAnglePositive) angle += 360;
+   
+    // yep. werkt met onderstaande test op endAnglePositive
+    if (!this.arc.clockwise) if (angle < this.arc.endAnglePositive) angle += 360;
+
+    // angle = this._checkAngle(angle, isDrag);
+    // return this._processStepByAngle(angle);
+    return angle;
+  }
+  
+  // na cw goed, gaat nu ccw allemaal fout. zit niet inBetween meer...
+  // is nadat angle dus die +360 heeft gekregen adh startAnglePositive
+  // die kijkt niet naar cw/ccw
+  
+  isNormalizedAngleInBetween(argAngle) {
+    var inBetween;
+    if (this.arc.clockwise) {
+      inBetween = ((argAngle >= this.arc.startAnglePositive) && (argAngle <= this.arc.endAnglePositive));
+    } else {
+      inBetween = ((argAngle <= this.arc.startAnglePositive) && (argAngle >= this.arc.endAnglePositive));
+    }
+    return inBetween;
+  }
+
+  polarToCartesian(centerX, centerY, radiusX, radiusY, angleInDegrees) {
+    var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+
+    return {
+      x: centerX + (radiusX * Math.cos(angleInRadians)),
+      y: centerY + (radiusY * Math.sin(angleInRadians))
+    }
+  }
+  
+  toDegrees(radian) {
+    return (-radian / (Math.PI / 180));
+  }
+  
+  // getSomeAngle(centerX, centerY, touchX, touchY) {
+    // var angle, rads;
+    // var x2 = centerX - touchX;// - centerX
+    // var y2 = touchY - centerY;
+    // var d1 = Math.sqrt((centerY * centerY));
+    // var d2 = Math.sqrt((x2 * x2 + y2 * y2));
+    // if (touchX >= centerX) {
+        // rads = Math.acos((-centerY * y2) / (d1 * d2));
+        // angle = this.toDegrees(rads);
+    // } else {
+        // rads = Math.acos((-centerY * y2) / (d1 * d2));
+        // angle = 360 - this.toDegrees(rads);
+    // }
+    // console.log("getSomeAngle", centerX, centerY, touchX, touchY, x2, y2, d1, d2, rads, angle);
+    // return angle
+  // }
+
+  svgPointToArcSliderValue(argThis, m) {
+
+    let state;
+    let scalePos;
+    var x, y, result, a;
+    x = m.x;
+    y = m.y;
+    
+    var center = {};
+    center.x = argThis.svg.cx;
+    center.y = argThis.svg.cy;
+    var denormAngle;
+    var newAngle = argThis._getNormalizedAngleFromPoint(m, center, true);
+    var myAngle = this.myAngle;
+
+    var inBetween = argThis.isNormalizedAngleInBetween(newAngle);
+    if (inBetween) {
+      this.myAngle = newAngle;
+      myAngle = newAngle;
+      this.arc.currentAngle = myAngle;
+    }
+
+    var oldAngle = this.myAngle;
+
+    // NO, has some flaws and stuff
+    if ((false) && (!inBetween)) {
+      // Clipp...
+      // Edge cases with 360 degrees vs 0 degrees ??? Value flips from end to start!!!!
+      // slider: -90 0. norm: 270 360. if angle -> 10, 270. Should be 360!!!
+
+      var diffStartX = m.x - this.arc.startAngleSvgPoint.x;
+      var diffStartY = m.y - this.arc.startAngleSvgPoint.y;
+      var diffEndX = m.x - this.arc.endAngleSvgPoint.x;
+      var diffEndY = m.y - this.arc.endAngleSvgPoint.y;
+
+      var xWithinBounds = (m.x > Math.min(this.arc.startAngleSvgPoint.x, this.arc.endAngleSvgPoint.x)) &&
+                          (m.x < Math.max(this.arc.startAngleSvgPoint.x, this.arc.endAngleSvgPoint.x));
+      var yWithinBounds = (m.y > Math.min(this.arc.startAngleSvgPoint.y, this.arc.endAngleSvgPoint.y)) &&
+                          (m.y < Math.max(this.arc.startAngleSvgPoint.y, this.arc.endAngleSvgPoint.y));
+
+      var xRight = (m.x >= this.arc.startAngleSvgPoint.x) && (m.x >= this.arc.endAngleSvgPoint.x);
+      var xLeft = (m.x < this.arc.startAngleSvgPoint.x) && (m.x < this.arc.endAngleSvgPoint.x);
+
+      if (xWithinBounds) {
+        // Assume Y not, so flip angle...
+        
+        // Should I check if y > or < to center??
+        // y < center, second quadrant, is OK?? 3de ook wat betreft de x dan he. Y niet...
+        
+        
+        var newPoint = {};
+        newPoint.y = Math.sqrt((this.svg.radius * this.svg.radius) - ((m.x - this.svg.cx) * (m.x - this.svg.cx)));
+        newPoint.x = m.x;
+        myAngle = argThis._getNormalizedAngleFromPoint(newPoint, center, true);
+        if (this.arc.clockwise) if (myAngle < this.arc.startAnglePositive) myAngle += 360;
+        if (!this.arc.clockwise) if (myAngle < this.arc.endAnglePositive) myAngle += 360;
+        
+        // if (m.y < this.svg.cy) {
+          // newPoint.y = Match.abs(newPoint.y - this.svg.cy) + this.svg.cy;
+          // myAngle = argThis._getNormalizedAngleFromPoint(newPoint, center, true);
+        // }
+        console.log("newpoint - xWithinBounds", newPoint, m, myAngle);
+        
+        // (x-a)^2 + (y-b)^2 = r^2
+        //a,b = center, r radius
+        // y^2 = r^2 - x^2
+        
+        // myAngle = m.x > argThis.svg.cx ? myAngle -90 : myAngle + 90;
+      }
+      if (yWithinBounds) {
+        // Assume Y not, so flip angle...
+        
+        var newPoint = {};
+        newPoint.x = Math.sqrt((this.svg.radius * this.svg.radius) - ((m.y - this.svg.cy) * (m.y - this.svg.cy)));
+        newPoint.y = m.y;
+        myAngle = argThis._getNormalizedAngleFromPoint(newPoint, center, true);
+        // if (this.arc.clockwise) if (myAngle < this.arc.startAnglePositive) myAngle += 360;
+        // if (!this.arc.clockwise) if (myAngle < this.arc.endAnglePositive) myAngle += 360;
+
+        console.log("newpoint - yWithinBounds", newPoint, m, myAngle);
+
+        // console.log("newpoint", newPoint, m, myAngle);
+        
+        // (x-a)^2 + (y-b)^2 = r^2
+        //a,b = center, r radius
+        // y^2 = r^2 - x^2
+        
+        // myAngle = m.x > argThis.svg.cx ? myAngle -90 : myAngle + 90;
+      }
+
+      // myAngle = (Math.abs(diffStart) <= Math.abs(diffEnd)) ? argThis.arc.startAnglePositive : argThis.arc.endAnglePositive;
+      console.log("svgPointToArcSliderValue", inBetween, myAngle, xWithinBounds, yWithinBounds, myAngle, oldAngle);
+     
+    } else {
+    }
+    
+    denormAngle = argThis.arc.startAngle < 0 ? myAngle - 360 : myAngle;
+    
+    argThis.arc.currentAngle = myAngle;
+    if (argThis.arc.clockwise) scalePos = (myAngle - argThis.arc.startAnglePositive) / argThis.arc.size;
+    if (!argThis.arc.clockwise) scalePos = (argThis.arc.startAnglePositive - myAngle) / argThis.arc.size;
+    
+    state = ((argThis.config.scale.max - argThis.config.scale.min) * scalePos) + argThis.config.scale.min;
+    state = Math.round(state / argThis.svg.scale.step) * argThis.svg.scale.step;
+    state = Math.max(Math.min(argThis.config.scale.max, state), argThis.config.scale.min);
+
+    // console.log("myAngle, scalepos, state", myAngle, scalePos, state);
+
+    argThis.arc.currentAngle = myAngle;
+
+    return state;
+  }
+
+  valueToSvg(argThis, argValue) {
+
+    let state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, argValue);
+    
+    let angle;
+    if (argThis.arc.clockwise) {
+      angle = (argThis.arc.size * state) + argThis.arc.startAnglePositive;
+      // angle = (argThis.arc.size * state) + argThis.arc.startAngle;
+    } else {
+      angle = (argThis.arc.size * (1 - state)) + argThis.arc.endAnglePositive;
+      // angle = (argThis.arc.size * state) + argThis.arc.endAngle;
+    }
+    
+    // angle = argThis.arc.currentAngle;
+    
+    if (angle < 0) angle +=360;
+    var svgPoint = this.polarToCartesian(argThis.svg.cx, argThis.svg.cy, argThis.svg.radius, argThis.svg.radius, angle);
+    // console.log("valueToSvg", argValue, state, angle, argThis.svg.cx, argThis.svg.cy, argThis.svg.radius, svgPoint);
+
+    argThis.arc.currentAngle = angle;
+    
+    return svgPoint;
+  }
+
+  updateValue(argThis, m) {
+
+    this._value = this.svgPointToArcSliderValue(argThis, m);
+    // console.log("updateValue", this._value);
+    // set dist to 0 to cancel animation frame
+    let dist = 0;
+    //improvement
+    if (Math.abs(dist) < 0.01) {
+      if (this.rid) {
+        window.cancelAnimationFrame(this.rid);
+        this.rid = null;
+      }
+    }
+  }
+
+  updateThumb(argThis, m) {
+
+    // var thumbPos = this.polarToCartesian(argThis.svg.cx, argThis.svg.cy, argThis.svg.radius, Math.abs(argThis.arc.currentAngle));
+    //var thumbPos = argThis.polarToCartesian(argThis.svg.cx, argThis.svg.cy, argThis.svg.radius, 90);
+  if (false) {
+  if (this.dragging) {
+      this.thumbPos = this.valueToSvg(argThis, argThis._value);
+      argThis.svg.thumb.x1 = this.thumbPos.x - this.svg.thumb.width/2;
+      argThis.svg.thumb.y1 = this.thumbPos.y - this.svg.thumb.height/2;
+
+      argThis.svg.capture.x1 = this.thumbPos.x - this.svg.capture.width/2;
+      argThis.svg.capture.y1 = this.thumbPos.y - this.svg.capture.height/2;
+
+      // Rotation center of thumb is currently center, 0, 0.
+      // But that might be due to centering toolset, so wrong!!!!
+      
+      const rotateStr = `rotate(${this.arc.currentAngle} ${this.svg.thumb.cx} ${this.svg.thumb.cy})`;
+      argThis.elements.thumb.setAttribute("transform", rotateStr);
+
+      argThis.elements.thumbGroup.setAttribute("x", argThis.svg.thumb.x1);
+      argThis.elements.thumbGroup.setAttribute("y", argThis.svg.thumb.y1);
+      argThis.elements.thumb.setAttribute("x", argThis.svg.thumb.x1);
+      argThis.elements.thumb.setAttribute("y", argThis.svg.thumb.y1);
+      argThis.elements.capture.setAttribute("x", argThis.svg.capture.x1);
+      argThis.elements.capture.setAttribute("y", argThis.svg.capture.y1);
+
+    }
+  }
+    argThis.updateLabel(argThis, m);
+  }
+
+  updateActiveTrack(argThis, m) {
+
+    // if (!argThis.config.show.active) return;
+    const min = this.config.scale.min || 0;
+    const max = this.config.scale.max || 100;
+    const val = Math.min(this._card._calculateValueBetween(min, max, argThis.labelValue), 1);
+    const score = val * argThis.svg.pathLength;
+    argThis.dashArray = `${score} ${this.svg.circleLength}`;
+    
+    // console.log("updateActiveTrack", argThis.dashArray, argThis.labelValue, val);
+    if (this.dragging) {
+      argThis.elements.activeTrack.setAttribute("stroke-dasharray", argThis.dashArray);
+    }
+  }
+  
+  updateLabel(argThis, m) {
+    if (this.dev.debug) console.log('SLIDER - updateLabel start', m, argThis.config.position.orientation);
+
+    const dec = (this._card.config.entities[this.config.entity_index].decimals || 0);
+    const x = 10 ** dec;
+    argThis.labelValue2 = (Math.round(argThis.svgPointToArcSliderValue(argThis, m) * x) / x).toFixed(dec);
+
+    if (this.config.position.label.placement != 'none') {
+      argThis.elements.label.textContent = argThis.labelValue2;
+    }
+  }
+
+  /*
+  * oMousePosSVG
+  *
+  * Translate mouse/touch client window coordinates to SVG window coordinates
+  *
+  */
+  oMousePosSVG(e) {
+    var p = this.elements.svg.createSVGPoint();
+    p.x = e.touches ? e.touches[0].clientX : e.clientX;
+    p.y = e.touches ? e.touches[0].clientY : e.clientY;
+    var ctm = this.elements.svg.getScreenCTM().inverse();
+    var p = p.matrixTransform(ctm);
+    return p;
+  }
+
+  callDragService()
+  {
+    if (typeof this.labelValue2 == 'undefined') return;
+    
+    if (this.labelValuePrev != this.labelValue2) {
+      this.labelValuePrev = this.labelValue2;
+
+    this._processTapEvent(this._card,
+                          this._card._hass,
+                          this.config,
+                          this.config.user_actions.tap_action,
+                          this._card.config.entities[this.config.entity_index]?.entity,
+                          this.labelValue2);
+
+    }
+    if (this.dragging)
+      this.timeOutId = setTimeout(() => this.callDragService(), this.config.user_actions.drag_action.update_interval);
+  }
+
+  callTapService()
+  {
+    if (typeof this.labelValue2 == 'undefined') return;
+    
+    if (this.labelValuePrev != this.labelValue2) {
+      this.labelValuePrev = this.labelValue2;
+
+    this._processTapEvent(this._card,
+                          this._card._hass,
+                          this.config,
+                          this.config.user_actions?.tap_action,
+                          this._card.config.entities[this.config.entity_index]?.entity,
+                          this.labelValue2);
+                          
+    }
+  }
+  
+  firstUpdated(changedProperties)
+  {
+    const thisValue = this;
+    this.labelValue = this._stateValue;
+
+    function FrameArc() {
+      this.rid = window.requestAnimationFrame(FrameArc);
+      this.updateValue(this, this.m);
+      this.updateThumb(this, this.m);
+      this.updateActiveTrack(this, this.m);
+    }
+
+    if (this.dev.debug) console.log('arcslider - firstUpdated');
+    this.elements = {};
+    this.elements.svg = this._card.shadowRoot.getElementById("arcslider-".concat(this.toolId));
+    // this.elements.capture = this.elements.svg.querySelector("#capture");
+    this.elements.track = this.elements.svg.querySelector("#as-track");
+    this.elements.activeTrack = this.elements.svg.querySelector("#sak-arcslider__active");
+    this.elements.capture = this.elements.svg.querySelector("#as-capture");
+    this.elements.thumbGroup = this.elements.svg.querySelector("#as-thumb-group");
+    this.elements.thumb = this.elements.svg.querySelector("#as-thumb");
+    this.elements.label = this.elements.svg.querySelector("#as-label tspan");
+
+    if ((false) || (this.dev.debug)) console.log('arcslider - firstUpdated svg = ', this.elements.svg, 'activeTrack=', this.elements.activeTrack, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
+
+    function pointerDown(e) {
+      e.preventDefault();
+      // e.stopPropagation();
+      
+      // NEW:
+      // We use mouse stuff for pointerdown, but have to use pointer stuff to make sliding work on Safari. Why??
+      window.addEventListener('pointermove', pointerMove.bind(this), false);
+      window.addEventListener('pointerup', pointerUp.bind(this), false);
+
+      // Below lines prevent slider working on Safari...
+      // window.addEventListener('mousemove', pointerMove.bind(this), false);
+      // window.addEventListener('touchmove', pointerMove.bind(this), false);
+      // window.addEventListener('mouseup', pointerUp.bind(this), false);
+      // window.addEventListener('touchend', pointerUp.bind(this), false);
+
+      const mousePos = this.oMousePosSVG(e);
+      console.log("pointerdown", mousePos, this.svg.thumb, this.m);
+
+      if (false) {
+      var thumbPos = (this.svg.thumb.x1 + this.svg.thumb.cx);
+      if ((mousePos.x > (thumbPos - 10)) && (mousePos.x < (thumbPos + this.svg.thumb.width + 10))) {
+        // console.log("pointerdown, mousePos IS within x-width of thumb!!");
+        fireEvent(window, 'haptic', 'heavy');
+      } else {
+        // console.log("pointerdown, mousePos NOT within x-width of thumb!!");
+        fireEvent(window, 'haptic', 'error');
+        return;
+      }
+      }
+      
+      // User is dragging the thumb of the slider!
+      this.dragging = true;
+      
+      // Check for drag_action. If none specified, or update_interval = 0, don't update while dragging...
+      
+      if ((this.config.user_actions?.drag_action) && (this.config.user_actions?.drag_action.update_interval)) {
+        if (this.config.user_actions.drag_action.update_interval > 0) {
+          this.timeOutId = setTimeout(() => this.callDragService(), this.config.user_actions.drag_action.update_interval);
+        } else {
+          this.timeOutId = null;
+        }
+      }
+      this.m = this.oMousePosSVG(e);
+      
+      // WHY again not working for Safari/iPad!!!!!
+      // Capture on Safari needs about 0.5 sec for the glass to kick in and then capturing works... No idea why...
+      // if ((!this.elements.capture.hasPointerCapture(e.pointerId)) ) {//&& !(this._card.isSafari || this._card.iOS)) {
+        // this.elements.capture.setPointerCapture(e.pointerId);
+      // }
+      // if (this.config.position.orientation == 'horizontal') {
+        // this.m.x =  (Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step);
+      // } else {
+        // this.m.y = (Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step);
+      // }
+      if (this.dev.debug) console.log('pointerDOWN',Math.round(this.m.x * 100) / 100);
+      // Frame();
+      FrameArc.call(this);
+    }
+    
+    function pointerUp(e) {
+      e.preventDefault();
+      // e.stopPropagation();
+
+      // NEW:
+      window.removeEventListener('pointermove', pointerMove.bind(this), false);
+      window.removeEventListener('pointerup', pointerUp.bind(this), false);
+
+      window.removeEventListener('mousemove', pointerMove.bind(this), false);
+      window.removeEventListener('touchmove', pointerMove.bind(this), false);
+      window.removeEventListener('mouseup', pointerUp.bind(this), false);
+      window.removeEventListener('touchend', pointerUp.bind(this), false);
+
+      if (!this.dragging) return;
+
+      this.dragging = false;
+      clearTimeout(this.timeOutId);
+      this.target = 0;
+      if (this.dev.debug) console.log('pointerUP');
+      this.labelValue2 = this.labelValue;
+      FrameArc.call(this);
+      this.callTapService();
+    }
+    
+    function pointerMove(e) {
+      let scaleValue;
+
+      e.preventDefault();
+
+      if (this.dragging) {
+        this.m = this.oMousePosSVG(e);
+
+        scaleValue = this.svgPointToArcSliderValue(this, this.m);
+        this.labelValue = scaleValue;
+        // console.log("pointerMove", e, this.m, scaleValue);
+        // this.m.x = this.valueToSvg(this, scaleValue);
+        // this.m.x = Math.max(this.svg.scale.min, Math.min(this.m.x, this.svg.scale.max));
+        // this.m.x = (Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step);
+
+        FrameArc.call(this);
+      }
+    }
+    
+    // For things to work in Safari, we need separate touch and mouse down handlers...
+    // DON't as WHY! The pointerdown method prevents listening on window events later on.
+    // ie, we can't move our finger 
+    
+    // this.elements.svg.addEventListener("pointerdown", pointerDown.bind(this), false);
+    
+    this.elements.svg.addEventListener("touchstart", pointerDown.bind(this), false);
+    this.elements.svg.addEventListener("mousedown", pointerDown.bind(this), false);
+
+  }
+ /*******************************************************************************
+  * ArcSliderTool::value()
+  *
+  * Summary.
+  * Sets the value of the ArcSliderTool. Value updated via set hass.
+  * Calculate ArcSliderTool settings & colors depending on config and new value.
+  *
+  */
+
+  set value(state) {
+
+    var changed = super.value = state;
+    if (!this.dragging) this.labelValue = this._stateValue;
+
+    // Calculate the size of the arc to fill the dasharray with this
+    // value. It will fill the ArcSliderTool relative to the state and min/max
+    // values given in the configuration.
+
+    // NOTE: thumbgroup x/y is not updated here...
+    if (!this.dragging) {
+      const min = this.config.scale.min || 0;
+      const max = this.config.scale.max || 100;
+      const val = Math.min(this._card._calculateValueBetween(min, max, this._stateValue), 1);
+      const score = val * this.svg.pathLength;
+      this.dashArray = `${score} ${this.svg.circleLength}`;
+
+      var thumbPos = this.valueToSvg(this, this._stateValue);
+      this.svg.thumb.x1 = thumbPos.x - this.svg.thumb.width/2;
+      this.svg.thumb.y1 = thumbPos.y - this.svg.thumb.height/2;
+
+      this.svg.capture.x1 = thumbPos.x - this.svg.capture.width/2;
+      this.svg.capture.y1 = thumbPos.y - this.svg.capture.height/2;
+
+    }
+    return changed;
+  }
+
+  _renderUom() {
+
+    if (this.config.show.uom === 'none') {
+      return svg``;
+    } else {
+      this.MergeAnimationStyleIfChanged();
+      this.MergeColorFromState(this.styles.uom);
+      
+      var fsuomStr = this.styles.label["font-size"];
+
+      var fsuomValue = 0.5;
+      var fsuomType = 'em';
+      const fsuomSplit = fsuomStr.match(/\D+|\d*\.?\d+/g);
+      if (fsuomSplit.length == 2) {
+        fsuomValue = Number(fsuomSplit[0]) * .6;
+        fsuomType = fsuomSplit[1];
+      }
+      else console.error('Cannot determine font-size for state/unit', fsuomStr);
+
+      fsuomStr = { "font-size": fsuomValue + fsuomType};
+
+      this.styles.uom = Merge.mergeDeep(this.config.styles.uom, fsuomStr);
+
+      const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+
+      // Check for location of uom. end = next to state, bottom = below state ;-), etc.
+      if (this.config.show.uom === 'end') {
+
+        if ((this.svg.label.cx == 0) || (this.svg.label.cy == 0)) {
+        return svg`
+          <tspan class="${classMap(this.classes.uom)}" dx="-0.1em" dy="-0.35em"
+            style="${styleMap(this.styles.uom)}">
+            ERR</tspan>
+        `;
+        }
+        else {
+        return svg`
+          <tspan class="${classMap(this.classes.uom)}" dx="-0.1em" dy="-0.35em"
+            style="${styleMap(this.styles.uom)}">
+            ${uom}</tspan>
+        `;
+        }
+      } else if (this.config.show.uom === 'bottom') {
+        return svg`
+          <tspan class="${classMap(this.classes.uom)}" x="${this.svg.label.cx}" dy="1.5em"
+            style="${styleMap(this.styles.uom)}">
+            ${uom}</tspan>
+        `;
+      } else if (this.config.show.uom === 'top') {
+        return svg`
+          <tspan class="${classMap(this.classes.uom)}" x="${this.svg.label.cx}" dy="-1.5em"
+            style="${styleMap(this.styles.uom)}">
+            ${uom}</tspan>
+        `;
+
+      } else {
+        return svg`
+          <tspan class="${classMap(this.classes.uom)}"  dx="-0.1em" dy="-0.35em"
+            style="${styleMap(this.styles.uom)}">
+            ERRR</tspan>
+        `;
+      }
+    }
+  }
+
+
+ /*******************************************************************************
+  * ArcSliderTool::_renderArcSlider()
+  *
+  * Summary.
+  * Renders the ArcSliderTool
+  *
+  * Description.
+  * The horseshoes are rendered in a viewbox of 200x200 (SVG_VIEW_BOX).
+  * Both are centered with a radius of 45%, ie 200*0.45 = 90.
+  *
+  * The horseshoes are rotated 220 degrees and are 2 * 26/36 * Math.PI * r in size
+  * There you get your value of 408.4070449,180 ;-)
+  */
+
+  _renderArcSlider() {
+
+    this.MergeAnimationClassIfChanged();
+    this.MergeColorFromState();
+    this.MergeAnimationStyleIfChanged();
+    
+    // this.MergeColorFromState();
+    
+    this.renderValue = this._stateValue;
+    if (this.dragging) {
+      this.renderValue = this.labelValue2;
+    } else {
+      // if (this.elements?.label) this.elements.label.textContent = this.renderValue;
+    }
+    function renderLabel(argGroup) {
+      // return svg``;
+      
+      if ((this.config.position.label.placement == 'thumb') && argGroup) {
+
+        return svg`
+      <text id="as-label">
+        <tspan class="${classMap(this.classes.label)}" x="${this.svg.label.cx}" y="${this.svg.label.cy}" style="${styleMap(this.styles.label)}">
+        ${this.renderValue}</tspan>
+        ${this._renderUom()}
+        </text>
+        `;
+      }
+
+      if ((this.config.position.label.placement == 'position') && !argGroup) {
+        return svg`
+          <text id="as-label" style="transform-origin:center;transform-box: fill-box;">
+            <tspan class="${classMap(this.classes.label)}" data-placement="position" x="${this.svg.label.cx}" y="${this.svg.label.cy}"
+            style="${styleMap(this.styles.label)}">${this.renderValue ? this.renderValue : ''}</tspan>
+            ${this.renderValue ? this._renderUom() : ''}
+          </text>
+          `;
+      }
+    }
+
+    function renderThumbGroup() {
+
+      // Original version but with SVG.
+      // Works in both Chrome and Safari 15.5. But rotate is only on rect... NOT on group!!!!
+//              transform="rotate(${this.arc.currentAngle} ${this.svg.thumb.cx} ${this.svg.thumb.cy})"
+      // This one works ...
+      return svg`
+        <svg id="as-thumb-group" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}">
+          <g style="transform-origin:center;transform-box: fill-box;">
+          <g transform="rotate(${this.arc.currentAngle} ${this.svg.capture.width/2} ${this.svg.capture.height/2})">
+            <rect id="as-thumb" class="${classMap(this.classes.thumb)}" x="${(this.svg.capture.width - this.svg.thumb.width)/2}" y="${(this.svg.capture.height - this.svg.thumb.height)/2}"
+              width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+              style="${styleMap(this.styles.thumb)}"
+            />
+
+            <rect id="as-capture" class="${classMap(this.classes.capture)}" x="0" y="0"
+              width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.capture.radius}" 
+              style="${styleMap(this.styles.capture)}"
+            />
+            </g>
+            </g>
+        </g>
+      `;
+
+
+      // Original version but with SVG.
+      // Works in both Chrome and Safari 15.5. But rotate is only on rect... NOT on group!!!!
+//              transform="rotate(${this.arc.currentAngle} ${this.svg.thumb.cx} ${this.svg.thumb.cy})"
+      // This one works ... BUT...
+      // Now again not after refresh on safari. Ok after udpate. Change is using a style for rotate(xxdeg), instead of transform=rotate()...
+      // Works on Safari, not on Chrome. Only change is no extra group level...
+      return svg`
+        <svg id="as-thumb-group" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}">
+          <g style="transform-origin:center;transform-box:fill-box;" transform="rotate(${this.arc.currentAngle} ${this.svg.capture.width/2} ${this.svg.capture.height/2})">
+            <rect id="as-thumb" class="${classMap(this.classes.thumb)}" x="${(this.svg.capture.width - this.svg.thumb.width)/2}" y="${(this.svg.capture.height - this.svg.thumb.height)/2}"
+              width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+              style="${styleMap(this.styles.thumb)}"
+            />
+
+            <rect id="as-capture" class="${classMap(this.classes.capture)}" x="0" y="0"
+              width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.capture.radius}" 
+              style="${styleMap(this.styles.capture)}"
+            />
+            </g>
+        </g>
+      `;
+
+
+
+
+      // Original version but with SVG.
+      // Works in both Chrome and Safari 15.5. But rotate is only on rect... NOT on group!!!!
+//              transform="rotate(${this.arc.currentAngle} ${this.svg.thumb.cx} ${this.svg.thumb.cy})"
+      return svg`
+        <svg id="as-thumb-group" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}">
+          <g style="transform-origin:center;transform-box: fill-box;">
+
+            <rect id="as-thumb" class="${classMap(this.classes.thumb)}" x="${(this.svg.capture.width - this.svg.thumb.width)/2}" y="${(this.svg.capture.height - this.svg.thumb.height)/2}"
+              width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+              style="${styleMap(this.styles.thumb)}"
+              transform="rotate(${this.arc.currentAngle} 0 0)"
+            />
+
+            <rect id="as-capture" class="${classMap(this.classes.capture)}" x="0" y="0"
+              width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.capture.radius}" 
+              style="${styleMap(this.styles.capture)}"
+            />
+            </g>
+        </g>
+      `;
+
+      // WIP!!!!!!!!!!!
+      // Now without tests for Safari and 15.1...
+      // Same behaviour in safari: first refresh wrong, then after data ok.
+      return svg`
+        <svg id="as-thumb-group" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}" height="${this.svg.capture.height}" width="${this.svg.capture.width}"
+        style="transform-box: fill-box;">
+          <g style="transform-origin:center;transform-box: fill-box;" 
+        transform="rotate(${this.arc.currentAngle})"
+        >
+            <rect id="as-thumb" class="${classMap(this.classes.thumb)}" x="${(this.svg.capture.width - this.svg.thumb.width)/2}" y="${(this.svg.capture.height - this.svg.thumb.height)/2}"
+              width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+              style="${styleMap(this.styles.thumb)}"
+              
+            />
+            <rect id="as-capture" class="${classMap(this.classes.capture)}" x="0" y="0"
+              width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.capture.radius}" 
+              style="${styleMap(this.styles.capture)}"
+            />
+            </g>
+        </svg>
+      `;
+
+      // Original version. Working on Chrome and Safari 15.5, NOT on Safari 15.1.
+      // But I want grouping to rotate and move all the components, so should be changed anyway...
+      return svg`
+        <g id="as-thumb-group" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}">
+          <g style="transform-origin:center;transform-box: fill-box;">
+            <rect id="as-thumb" class="${classMap(this.classes.thumb)}" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
+              width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+              style="${styleMap(this.styles.thumb)}"
+              transform="rotate(${this.arc.currentAngle} ${this.svg.thumb.cx} ${this.svg.thumb.cy})"
+            />
+            <rect id="as-capture" class="${classMap(this.classes.capture)}" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
+              width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.capture.radius}" 
+              style="${styleMap(this.styles.capture)}"
+            />
+            </g>
+        </g>
+      `;
+
+
+      // WIP!!!!!!!!!!!
+      // This one works on Safari 15.5 and Chrome, but on Safari not on initial refresh, but after data update...
+      // Seems the other way around compared to the solution below for 15.1 etc.
+      return svg`
+        <svg id="as-thumb-group" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}" height="${this.svg.capture.height}" width="${this.svg.capture.width}"
+        style="transform-box: fill-box;">
+          <g style="transform-origin:center;transform-box: fill-box;" 
+        transform="rotate(${this.arc.currentAngle} ${this._card.isSafari ? (this._card.isSafari15 ? "" : this.svg.capture.width/2) : " 0"}
+                                                   ${this._card.isSafari ? (this._card.isSafari15 ? "" : this.svg.capture.height/2) : " 0"})"
+        >
+            <rect id="as-thumb" class="${classMap(this.classes.thumb)}" x="${(this.svg.capture.width - this.svg.thumb.width)/2}" y="${(this.svg.capture.height - this.svg.thumb.height)/2}"
+              width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+              style="${styleMap(this.styles.thumb)}"
+              
+            />
+            <rect id="as-capture" class="${classMap(this.classes.capture)}" x="0" y="0"
+              width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.capture.radius}" 
+              style="${styleMap(this.styles.capture)}"
+            />
+            </g>
+        </svg>
+      `;
+
+
+      // This version working in all browsers, but has no rotate... So logical...
+      // return svg`
+        // <g id="as-thumb-group" style="transform-origin:center;transform-box: fill-box;"  >
+          // <g transform="rotate(${this.arc.currentAngle} ${this.svg.cx} ${this.svg.cy})" transform-box="fill-box" 
+        // >
+            // <rect id="as-thumb" class="${classMap(this.classes.thumb)}" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
+              // width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+              // style="${styleMap(this.styles.thumb)}"
+            // />
+            // <rect id="as-capture" class="${classMap(this.classes.capture)}" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
+              // width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.capture.radius}" 
+              // style="${styleMap(this.styles.capture)}"
+            // />
+            // </g>
+        // </g>
+      // `;
+
+      // This version works on Safari 14, but NOT on Safari 15 and Chrome. The thumb has weird locations...
+      // Uses an SVG to position stuff. Rest is relative positions in SVG...
+      // Rotate is from center of SVG...
+      //
+      // Works on Safari 15.5 after refresh, but not when data changes. WHY???????????????????
+      // Something seems to ruin stuff when data comes in...
+      return svg`
+        <svg id="as-thumb-group" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}" >
+          <g style="transform-origin:center;transform-box: fill-box;" 
+        transform="rotate(${this.arc.currentAngle} ${this.svg.capture.width/2} ${this.svg.capture.height/2})">
+            <rect id="as-thumb" class="${classMap(this.classes.thumb)}" x="${(this.svg.capture.width - this.svg.thumb.width)/2}" y="${(this.svg.capture.height - this.svg.thumb.height)/2}"
+              width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+              style="${styleMap(this.styles.thumb)}"
+              
+            />
+            <rect id="as-capture" class="${classMap(this.classes.capture)}" x="0" y="0"
+              width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.capture.radius}" 
+              style="${styleMap(this.styles.capture)}"
+            />
+            </g>
+        </svg>
+      `;
+
+      // Original version. Working on Chrome and Safari 15.5, NOT on Safari 15.1.
+      // But I want grouping to rotate and move all the components, so should be changed anyway...
+      return svg`
+        <g id="as-thumb-group" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}">
+          <g style="transform-origin:center;transform-box: fill-box;">
+            <rect id="as-thumb" class="${classMap(this.classes.thumb)}" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
+              width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+              style="${styleMap(this.styles.thumb)}"
+              transform="rotate(${this.arc.currentAngle} ${this.svg.thumb.cx} ${this.svg.thumb.cy})"
+            />
+            <rect id="as-capture" class="${classMap(this.classes.capture)}" x="${this.svg.capture.x1}" y="${this.svg.capture.y1}"
+              width="${this.svg.capture.width}" height="${this.svg.capture.height}" rx="${this.svg.capture.radius}" 
+              style="${styleMap(this.styles.capture)}"
+            />
+            </g>
+        </g>
+      `;
+      
+      return svg`
+        <g id="as-thumb-group" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}" style="transform:translate(${cx}px, ${cy}px);">
+          <g style="transform-origin:center;transform-box: fill-box;">
+            <rect id="as-thumb" class="${classMap(this.classes.thumb)}" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
+              width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+              style="${styleMap(this.styles.thumb)}"
+            />
+            </g>
+            ${renderLabel.call(this, true)} 
+        </g>
+      `;
+    }
+
+  return svg`
+      <g id="arcslider__group-inner" class="arcslider__group-inner">
+
+        <circle id="as-track" class="sak-arcslider__track" cx="${this.svg.cx}" cy="${this.svg.cy}" r="${this.svg.radius}"
+          style="${styleMap(this.styles.track)}"
+          stroke-dasharray="${this.arc.scaleDasharray} ${this.arc.arcLength}"
+          stroke-dashoffset="${this.arc.dashOffset}"
+          stroke-width="${this.svg.track.width}"
+          transform="rotate(${this.svg.rotate.degrees} ${this.svg.rotate.shiftX} ${this.svg.rotate.shiftY})"/>
+
+        <circle id="sak-arcslider__active" class="sak-arcslider__active" cx="${this.svg.cx}" cy="${this.svg.cy}" r="${this.svg.radius}"
+          fill="${this.config.fill || 'rgba(0, 0, 0, 0)'}"
+          style="${styleMap(this.styles.active)}"
+          stroke-dasharray="${this.dashArray}"
+          stroke-dashoffset="${this.arc.dashOffset}"
+          stroke-width="${this.svg.active.width}"
+          transform="rotate(${this.svg.rotate.degrees} ${this.svg.rotate.shiftX} ${this.svg.rotate.shiftY})"/>
+
+        ${renderThumbGroup.call(this)}
+        ${renderLabel.call(this, false)}
+      </g>
+
+    `;
+  }
+ /*******************************************************************************
+  * ArcSliderTool::render()
+  *
+  * Summary.
+  * The render() function for this object.
+  *
+  */
+  render() {
+
+    return svg`
+      <svg xmlns="http://www.w3.org/2000/svg" id="arcslider-${this.toolId}" class="arcslider__group-outer" overflow="visible"
+        touch-action="none" style="touch-action:none;"
+      >
+        ${this._renderArcSlider()}
+
+      </svg>
+    `;
+
+  }
+} // END of class
+
+ /**
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+ 
  /*****************************************************************************
   * RangeSliderTool::constructor class
   *
@@ -1462,12 +2585,12 @@ class RangeSliderTool extends BaseTool {
   }
 
   /*
-  * mouseEventToPoint
+  * oMousePosSVG
   *
   * Translate mouse/touch client window coordinates to SVG window coordinates
   *
   */
-  mouseEventToPoint(e) {
+  oMousePosSVG(e) {
     var p = this.elements.svg.createSVGPoint();
     p.x = e.touches ? e.touches[0].clientX : e.clientX;
     p.y = e.touches ? e.touches[0].clientY : e.clientY;
@@ -1543,11 +2666,22 @@ class RangeSliderTool extends BaseTool {
 
     if (this.dev.debug) console.log('slider - firstUpdated svg = ', this.elements.svg, 'path=', this.elements.path, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
 
-    this.elements.svg.addEventListener("pointerdown", e => {
+    function pointerDown(e) {
       e.preventDefault();
-      e.stopPropagation();
+      // e.stopPropagation();
       
-      const mousePos = this.mouseEventToPoint(e);
+      // NEW:
+      // We use mouse stuff for pointerdown, but have to use pointer stuff to make sliding work on Safari. Why??
+      window.addEventListener('pointermove', pointerMove.bind(this), false);
+      window.addEventListener('pointerup', pointerUp.bind(this), false);
+
+      // Below lines prevent slider working on Safari...
+      // window.addEventListener('mousemove', pointerMove.bind(this), false);
+      // window.addEventListener('touchmove', pointerMove.bind(this), false);
+      // window.addEventListener('mouseup', pointerUp.bind(this), false);
+      // window.addEventListener('touchend', pointerUp.bind(this), false);
+
+      const mousePos = this.oMousePosSVG(e);
       // console.log("pointerdown", mousePos, this.svg.thumb, this.m);
       var thumbPos = (this.svg.thumb.x1 + this.svg.thumb.cx);
       if ((mousePos.x > (thumbPos - 10)) && (mousePos.x < (thumbPos + this.svg.thumb.width + 10))) {
@@ -1571,12 +2705,12 @@ class RangeSliderTool extends BaseTool {
           this.timeOutId = null;
         }
       }
-      this.m = this.mouseEventToPoint(e);
+      this.m = this.oMousePosSVG(e);
       
       // WHY again not working for Safari/iPad!!!!!
       // Capture on Safari needs about 0.5 sec for the glass to kick in and then capturing works... No idea why...
       // if ((!this.elements.capture.hasPointerCapture(e.pointerId)) ) {//&& !(this._card.isSafari || this._card.iOS)) {
-        this.elements.capture.setPointerCapture(e.pointerId);
+        // this.elements.capture.setPointerCapture(e.pointerId);
       // }
       if (this.config.position.orientation == 'horizontal') {
         this.m.x =  (Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step);
@@ -1586,11 +2720,20 @@ class RangeSliderTool extends BaseTool {
       if (this.dev.debug) console.log('pointerDOWN',Math.round(this.m.x * 100) / 100);
       // Frame();
       Frame2.call(this);
-    }, {capture: true, passive: false});
-
-    this.elements.svg.addEventListener("pointerup", e => {
+    }
+    
+    function pointerUp(e) {
       e.preventDefault();
-      e.stopPropagation();
+      // e.stopPropagation();
+
+      // NEW:
+      window.removeEventListener('pointermove', pointerMove.bind(this), false);
+      window.removeEventListener('pointerup', pointerUp.bind(this), false);
+
+      window.removeEventListener('mousemove', pointerMove.bind(this), false);
+      window.removeEventListener('touchmove', pointerMove.bind(this), false);
+      window.removeEventListener('mouseup', pointerUp.bind(this), false);
+      window.removeEventListener('touchend', pointerUp.bind(this), false);
 
       if (!this.dragging) return;
 
@@ -1598,21 +2741,21 @@ class RangeSliderTool extends BaseTool {
       clearTimeout(this.timeOutId);
       this.target = 0;
       // if ((this.elements.capture.hasPointerCapture(e.pointerId)) ) {//&& !(this._card.isSafari || this._card.iOS)) {
-        this.elements.capture.releasePointerCapture(e.pointerId);
+        // this.elements.capture.releasePointerCapture(e.pointerId);
       // }
       if (this.dev.debug) console.log('pointerUP');
       Frame2.call(this);
       this.callTapService();
-    }, {capture: true, passive: false});
-
-    this.elements.svg.addEventListener("pointermove", e => {
+    }
+    
+    function pointerMove(e) {
       let scaleValue;
 
       e.preventDefault();
-      e.stopPropagation();
+      // e.stopPropagation();
 
       if (this.dragging) {
-        this.m = this.mouseEventToPoint(e);
+        this.m = this.oMousePosSVG(e);
 
         switch (this.config.position.orientation) {
           case 'horizontal':
@@ -1630,7 +2773,105 @@ class RangeSliderTool extends BaseTool {
         }
         Frame2.call(this);
       }
-    }, {capture: true, passive: false});
+    }
+    
+    // For things to work in Safari, we need separate touch and mouse down handlers...
+    // DON't as WHY! The pointerdown method prevents listening on window events later on.
+    // ie, we can't move our finger 
+    
+    // this.elements.svg.addEventListener("pointerdown", pointerDown.bind(this), false);
+    
+    this.elements.svg.addEventListener("touchstart", pointerDown.bind(this), false);
+    this.elements.svg.addEventListener("mousedown", pointerDown.bind(this), false);
+
+    // this.elements.svg.addEventListener("pointerdown", e => {
+      // e.preventDefault();
+      // e.stopPropagation();
+      
+      // const mousePos = this.oMousePosSVG(e);
+      // // console.log("pointerdown", mousePos, this.svg.thumb, this.m);
+      // var thumbPos = (this.svg.thumb.x1 + this.svg.thumb.cx);
+      // if ((mousePos.x > (thumbPos - 10)) && (mousePos.x < (thumbPos + this.svg.thumb.width + 10))) {
+        // // console.log("pointerdown, mousePos IS within x-width of thumb!!");
+        // fireEvent(window, 'haptic', 'heavy');
+      // } else {
+        // // console.log("pointerdown, mousePos NOT within x-width of thumb!!");
+        // fireEvent(window, 'haptic', 'error');
+        // return;
+      // }
+      
+      // // User is dragging the thumb of the slider!
+      // this.dragging = true;
+      
+      // // Check for drag_action. If none specified, or update_interval = 0, don't update while dragging...
+      
+      // if ((this.config.user_actions?.drag_action) && (this.config.user_actions?.drag_action.update_interval)) {
+        // if (this.config.user_actions.drag_action.update_interval > 0) {
+          // this.timeOutId = setTimeout(() => this.callDragService(), this.config.user_actions.drag_action.update_interval);
+        // } else {
+          // this.timeOutId = null;
+        // }
+      // }
+      // this.m = this.oMousePosSVG(e);
+      
+      // // WHY again not working for Safari/iPad!!!!!
+      // // Capture on Safari needs about 0.5 sec for the glass to kick in and then capturing works... No idea why...
+      // // if ((!this.elements.capture.hasPointerCapture(e.pointerId)) ) {//&& !(this._card.isSafari || this._card.iOS)) {
+        // this.elements.capture.setPointerCapture(e.pointerId);
+      // // }
+      // if (this.config.position.orientation == 'horizontal') {
+        // this.m.x =  (Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step);
+      // } else {
+        // this.m.y = (Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step);
+      // }
+      // if (this.dev.debug) console.log('pointerDOWN',Math.round(this.m.x * 100) / 100);
+      // // Frame();
+      // Frame2.call(this);
+    // }, {capture: true, passive: false});
+
+    // this.elements.svg.addEventListener("pointerup", e => {
+      // e.preventDefault();
+      // e.stopPropagation();
+
+      // if (!this.dragging) return;
+
+      // this.dragging = false;
+      // clearTimeout(this.timeOutId);
+      // this.target = 0;
+      // // if ((this.elements.capture.hasPointerCapture(e.pointerId)) ) {//&& !(this._card.isSafari || this._card.iOS)) {
+        // this.elements.capture.releasePointerCapture(e.pointerId);
+      // // }
+      // if (this.dev.debug) console.log('pointerUP');
+      // Frame2.call(this);
+      // this.callTapService();
+    // }, {capture: true, passive: false});
+
+    // this.elements.svg.addEventListener("pointermove", e => {
+      // let scaleValue;
+
+      // e.preventDefault();
+      // e.stopPropagation();
+
+      // if (this.dragging) {
+        // this.m = this.oMousePosSVG(e);
+
+        // switch (this.config.position.orientation) {
+          // case 'horizontal':
+            // scaleValue = this.svgCoordinateToSliderValue(this, this.m);
+            // this.m.x = this.valueToSvg(this, scaleValue);
+            // this.m.x = Math.max(this.svg.scale.min, Math.min(this.m.x, this.svg.scale.max));
+            // this.m.x = (Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step);
+            // break;
+
+          // case 'vertical':
+            // scaleValue = this.svgCoordinateToSliderValue(this, this.m);
+            // this.m.y = this.valueToSvg(this, scaleValue);
+            // this.m.y = (Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step);
+            // break;
+        // }
+        // Frame2.call(this);
+      // }
+    // }, {capture: true, passive: false});
   }
 
 /*******************************************************************************
@@ -3998,8 +5239,8 @@ class HorseshoeTool extends BaseTool {
     // Adjust x and y positions within the svg viewport to re-center the circle after rotating
     this.svg.rotate = {};
     this.svg.rotate.degrees = -220;
-    this.svg.rotate.cx = this.svg.cx;
-    this.svg.rotate.cy = this.svg.cy;
+    this.svg.rotate.shiftX = this.svg.cx;
+    this.svg.rotate.shiftY = this.svg.cy;
 
     // Get colorstops and make a key/value store...
     this.colorStops = {};
@@ -4187,7 +5428,7 @@ class HorseshoeTool extends BaseTool {
           stroke-dasharray="${this.svg.horseshoe_scale.dasharray}"
           stroke-width="${this.svg.horseshoe_scale.width}"
           stroke-linecap="square"
-          transform="rotate(-220 ${this.svg.rotate.cx} ${this.svg.rotate.cy})"/>
+          transform="rotate(-220 ${this.svg.rotate.shiftX} ${this.svg.rotate.shiftY})"/>
 
         <circle id="horseshoe__state__value" class="horseshoe__state__value" cx="${this.svg.cx}" cy="${this.svg.cy}" r="${this.svg.radius}"
           fill="${this.config.fill || 'rgba(0, 0, 0, 0)'}"
@@ -4195,7 +5436,7 @@ class HorseshoeTool extends BaseTool {
           stroke-dasharray="${this.dashArray}"
           stroke-width="${this.svg.horseshoe_state.width}"
           stroke-linecap="square"
-          transform="rotate(-220 ${this.svg.rotate.cx} ${this.svg.rotate.cy})"/>
+          transform="rotate(-220 ${this.svg.rotate.shiftX} ${this.svg.rotate.shiftY})"/>
 
         ${this._renderTickMarks()}
       </g>
@@ -4839,10 +6080,10 @@ class SegmentedArcTool extends BaseTool {
           // extra, set color from colorlist as a test
           if (this.config.isScale) {
             var fill = this.config.color;
-            if (this.config.show.style === "colorlist") {
+            if (this.config.show.style =="colorlist") {
               fill = this.config.segments.colorlist.colors[index];
             }
-            if (this.config.show.style === "colorstops") {
+            if (this.config.show.style =="colorstops") {
               fill = this._segments.colorStops[this._segments.sortedStops[index]];
               // stroke = this.config.segments.colorstops.stroke ? this._segments.colorStops[this._segments.sortedStops[index]] : '';
             }
@@ -4943,7 +6184,7 @@ class SegmentedArcTool extends BaseTool {
                 // Can't use gradients probably because of custom path. Conic-gradient would be fine.
                 //
                 // First try...
-                if (thisTool.config.show.style === "colorlist") {
+                if (thisTool.config.show.style =="colorlist") {
                   as.style.fill = thisTool.config.segments.colorlist.colors[runningSegment];
                   thisTool.styles.foreground[runningSegment]['fill'] = thisTool.config.segments.colorlist.colors[runningSegment];
                 }
@@ -4960,15 +6201,14 @@ class SegmentedArcTool extends BaseTool {
                                 : (thisTool._segmentAngles[runningSegment].drawStart);
                   var value = Math.min(Math.max(0, (runningSegmentAngle - boundsStart) / (boundsEnd - boundsStart)), 1);
                   // 2022.07.03 Fixing lastcolor for true stop
-                  if (thisTool.config.show.style === 'colorstops') {
+                  if (thisTool.config.show.style == 'colorstops') {
                     fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                                            thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                                            value);
                   } else {
-                    // 2022.07.12 Fix bug as this is no colorstops, but a colorlist!!!!
-                    if (thisTool.config.show.style === "colorlist") {
-                      fill = thisTool.config.segments.colorlist.colors[runningSegment];
-                    }
+                    fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
+                                           thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment+1]],
+                                           value);
                   }
                   thisTool.styles.foreground[0]['fill'] = fill;
                   thisTool.as[0].style.fill = fill;
@@ -5110,10 +6350,10 @@ class SegmentedArcTool extends BaseTool {
 
           // extra, set color from colorlist as a test
           var fill = this.config.color;
-          if (this.config.show.style === "colorlist") {
+          if (this.config.show.style =="colorlist") {
             fill = this.config.segments.colorlist.colors[i];
           }
-          if (this.config.show.style === "colorstops") {
+          if (this.config.show.style =="colorstops") {
             fill = this._segments.colorStops[this._segments.sortedStops[i]];
           }
 //                            style="${styleMap(this.config.styles.foreground)} fill: ${fill};"

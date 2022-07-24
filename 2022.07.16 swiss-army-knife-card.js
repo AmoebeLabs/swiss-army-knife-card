@@ -417,24 +417,24 @@ class Toolset {
 
     // Create the tools configured in the toolset list.
     const toolsNew = {
-      "area"        : EntityAreaTool,
-      "badge"       : BadgeTool,
-      "bar"         : SparklineBarChartTool,
-      "circle"      : CircleTool,
-      "ellipse"     : EllipseTool,
-      "horseshoe"   : HorseshoeTool,
-      "icon"        : EntityIconTool,
-      "line"        : LineTool,
-      "name"        : EntityNameTool,
-      "rectangle"   : RectangleTool,
-      "rectex"      : RectangleToolEx,
-      "regpoly"     : RegPolyTool,
-      "segarc"      : SegmentedArcTool,
-      "state"       : EntityStateTool,
-      "slider"      : RangeSliderTool,
-      "switch"      : SwitchTool,
-      "text"        : TextTool,
-      "usersvg"     : UserSvgTool,
+      "area"      : EntityAreaTool,
+      "badge"     : BadgeTool,
+      "bar"       : SparklineBarChartTool,
+      "circle"    : CircleTool,
+      "ellipse"   : EllipseTool,
+      "horseshoe" : HorseshoeTool,
+      "icon"      : EntityIconTool,
+      "line"      : LineTool,
+      "name"      : EntityNameTool,
+      "rectangle" : RectangleTool,
+      "rectex"    : RectangleToolEx,
+      "regpoly"   : RegPolyTool,
+      "segarc"    : SegmentedArcTool,
+      "state"     : EntityStateTool,
+      "slider"    : RangeSliderTool,
+      "switch"    : SwitchTool,
+      "text"      : TextTool,
+      "usersvg"   : UserSvgTool,
     };
 
     this.config.tools.map(toolConfig => {
@@ -446,6 +446,21 @@ class Toolset {
 
       if (this.dev.debug) console.log("Toolset::constructor toolConfig", this.toolsetId, argConfig, argPos);
 
+      // This is a bit of a hack.
+      // We want to check the tool disabled setting. That is not a problem, but evaluating a bit
+      // of JavaScript is, as this tool is not yet instantiated, and the JavaScript snippet implementation
+      // is built on a living Tool. So fake the config!
+      // var toolDisabled = false;
+      // if (toolConfig.hasOwnProperty("disabled")) {
+        // var tempConfig = {};
+        // tempConfig.config = {};
+        // tempConfig.config.variables = argConfig.variables;
+        // tempConfig.disabled = argConfig.hasOwnProperty("disabled") ? argConfig.disabled : false;
+        // var myConfig = Templates.getJsTemplateOrValueConfig(tempConfig, Merge.mergeDeep(tempConfig));
+        // toolDisabled = myConfig.disabled;
+      // }
+      
+      // if (!toolDisabled) {
       if (!toolConfig.disabled) {
         const newTool = new toolsNew[toolConfig.type](this, argConfig, argPos);
         this._card.entityHistory.needed |= (toolConfig.type == 'bar');
@@ -557,7 +572,29 @@ class Toolset {
 
     if (this.tools) {
       this.tools.map((item, index) => {
-        if (typeof item.tool.firstUpdated === "function") { 
+
+        if (item.type == "segarc") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling SegmentedArcTool firstUpdated');
+          item.tool.firstUpdated(changedProperties);
+        }
+
+        if (item.type == "slider") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling Slider firstUpdated');
+          item.tool.firstUpdated(changedProperties);
+        }
+
+        if (item.type == "slider2") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling Slider firstUpdated');
+          item.tool.firstUpdated(changedProperties);
+        }
+
+        if (item.type == "icon") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling Icon firstUpdated');
+          item.tool.firstUpdated(changedProperties);
+        }
+
+        if (item.type == "state") {
+          if (this.dev.debug) console.log('Toolset::firstUpdated - calling State firstUpdated');
           item.tool.firstUpdated(changedProperties);
         }
       });
@@ -577,9 +614,17 @@ class Toolset {
 
     if (this.tools) {
       this.tools.map((item, index) => {
-        if (typeof item.tool.updated === "function") { 
+
+        if (item.type == "state") {
+          if (this.dev.debug) console.log('Toolset::updated - calling State firstUpdated');
           item.tool.updated(changedProperties);
         }
+
+        if (item.type == "usersvg") {
+          if (this.dev.debug) console.log('Toolset::updated - calling Usersvg firstUpdated');
+          item.tool.updated(changedProperties);
+        }
+
       });
     }
   }
@@ -780,7 +825,7 @@ class BaseTool {
   *
   */
   textEllipsis(argText, argEllipsis) {
-    if ((argEllipsis) && (argEllipsis < argText.length)) {
+    if ((argEllipsis) && (argEllipsis <= argText.length)) {
       return argText.slice(0, argEllipsis - 1).concat("...");
     } else {
       return argText;
@@ -844,7 +889,7 @@ class BaseTool {
       switch(operator) {
         case "==":
           if (typeof(this._stateValue) === 'undefined') {
-            isMatch = (typeof item.state === 'undefined') || (item.state.toLowerCase() === "undefined");
+            isMatch = (item.state.toLowerCase() === "undefined");
           } else {
             isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
           }
@@ -1150,9 +1195,9 @@ class BaseTool {
   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
-
+ 
  /*****************************************************************************
-  * RangeSliderTool::constructor class
+  * RangeSliderTool class
   *
   * Summary.
   *
@@ -1462,15 +1507,15 @@ class RangeSliderTool extends BaseTool {
   }
 
   /*
-  * mouseEventToPoint
+  * oMousePosSVG
   *
   * Translate mouse/touch client window coordinates to SVG window coordinates
   *
   */
-  mouseEventToPoint(e) {
+  oMousePosSVG(e) {
     var p = this.elements.svg.createSVGPoint();
-    p.x = e.touches ? e.touches[0].clientX : e.clientX;
-    p.y = e.touches ? e.touches[0].clientY : e.clientY;
+    p.x = e.clientX;
+    p.y = e.clientY;
     var ctm = this.elements.svg.getScreenCTM().inverse();
     var p = p.matrixTransform(ctm);
     return p;
@@ -1547,7 +1592,7 @@ class RangeSliderTool extends BaseTool {
       e.preventDefault();
       e.stopPropagation();
       
-      const mousePos = this.mouseEventToPoint(e);
+      const mousePos = this.oMousePosSVG(e);
       // console.log("pointerdown", mousePos, this.svg.thumb, this.m);
       var thumbPos = (this.svg.thumb.x1 + this.svg.thumb.cx);
       if ((mousePos.x > (thumbPos - 10)) && (mousePos.x < (thumbPos + this.svg.thumb.width + 10))) {
@@ -1571,7 +1616,7 @@ class RangeSliderTool extends BaseTool {
           this.timeOutId = null;
         }
       }
-      this.m = this.mouseEventToPoint(e);
+      this.m = this.oMousePosSVG(e);
       
       // WHY again not working for Safari/iPad!!!!!
       // Capture on Safari needs about 0.5 sec for the glass to kick in and then capturing works... No idea why...
@@ -1612,7 +1657,7 @@ class RangeSliderTool extends BaseTool {
       e.stopPropagation();
 
       if (this.dragging) {
-        this.m = this.mouseEventToPoint(e);
+        this.m = this.oMousePosSVG(e);
 
         switch (this.config.position.orientation) {
           case 'horizontal':
@@ -1631,6 +1676,7 @@ class RangeSliderTool extends BaseTool {
         Frame2.call(this);
       }
     }, {capture: true, passive: false});
+
   }
 
 /*******************************************************************************
@@ -2539,6 +2585,7 @@ class UserSvgTool extends BaseTool {
         usersvg: {
         },
         mask: {
+          fill: 'url(#sak-mask-radial-gradient)',
           fill: 'white'
         }
       }
@@ -2587,7 +2634,12 @@ class UserSvgTool extends BaseTool {
       this.svg.cp_width = Utils.calculateSvgDimension(this.config.clip_path.position.width || this.config.position.width);
 
       let maxRadius = Math.min(this.svg.cp_height, this.svg.cp_width) / 2;
+      let radius = 0;
+      radius = Utils.calculateSvgDimension(this.config.clip_path.position.radius.all);
 
+
+      console.log('svg stuff', radius, maxRadius, this.svg, this.config.clip_path);
+      
       this.svg.radiusTopLeft = +Math.min(maxRadius, Math.max(0, Utils.calculateSvgDimension(
                                 this.config.clip_path.position.radius.top_left || this.config.clip_path.position.radius.left || 
                                 this.config.clip_path.position.radius.top || this.config.clip_path.position.radius.all))) || 0;
@@ -2646,7 +2698,20 @@ class UserSvgTool extends BaseTool {
       );    
   }
 
+  /* Simple clipping method...
+    <defs>
+      <rect id="rect" x="25%" y="25%" width="50%" height="50%" rx="15"/>
+      <clipPath id="clip">
+        <use xlink:href="#rect"/>
+      </clipPath>
+    </defs>
+
+    <use xlink:href="#rect" stroke-width="2" stroke="black"/>
+    <image xlink:href="boston.jpg" width="100%" height="100%" clip-path="url(#clip)"/>
+  */
   _renderUserSvg() {
+    // this.animationStyleHasChanged = true;
+    // this.MergeAnimationStyleIfChanged(this.config.styles);
     this.MergeAnimationStyleIfChanged();
 
     if (this.injector.svg) {
@@ -2655,6 +2720,15 @@ class UserSvgTool extends BaseTool {
       if (this.item.image == "none")
         return svg``;
 
+      // M 20 10 
+      // h 5
+      // a 10 10 0 0 1 10 10 
+      // v 5
+      // a 10 10 0 0 1 -10 10 
+      // h -5 
+      // a 10 10 0 0 1 -10 -10
+      // v -5
+      // a 10 10 0 0 1 10 -10
       var clipPath = "";
       if (this.config.clip_path) {
         clipPath = svg`
@@ -2680,6 +2754,40 @@ class UserSvgTool extends BaseTool {
             </mask>
           </defs>
           `;
+
+        // clipPath = svg`
+          // <defs>
+            // <clipPath id="clip-path-id">
+              // <path  d="
+                  // M ${this.svg.cp_cx + this.svg.radiusTopLeft + ((this.svg.width - this.svg.cp_width)/2)} ${this.svg.cp_cy + ((this.svg.height - this.svg.cp_height)/2)}
+                  // h ${this.svg.cp_width - this.svg.radiusTopLeft - this.svg.radiusTopRight}
+                  // a ${this.svg.radiusTopRight} ${this.svg.radiusTopRight} 0 0 1 ${this.svg.radiusTopRight} ${this.svg.radiusTopRight}
+                  // v ${this.svg.cp_height - this.svg.radiusTopRight - this.svg.radiusBottomRight}
+                  // a ${this.svg.radiusBottomRight} ${this.svg.radiusBottomRight} 0 0 1 -${this.svg.radiusBottomRight} ${this.svg.radiusBottomRight}
+                  // h -${this.svg.cp_width - this.svg.radiusBottomRight - this.svg.radiusBottomLeft}
+                  // a ${this.svg.radiusBottomLeft} ${this.svg.radiusBottomLeft} 0 0 1 -${this.svg.radiusBottomLeft} -${this.svg.radiusBottomLeft}
+                  // v -${this.svg.cp_height - this.svg.radiusBottomLeft - this.svg.radiusTopLeft}
+                  // a ${this.svg.radiusTopLeft} ${this.svg.radiusTopLeft}  0 0 1 ${this.svg.radiusTopLeft} -${this.svg.radiusTopLeft}
+                  // "
+              // </path>
+            // </clipPath>
+            // <mask id="mask-id">
+              // <path  d="
+                  // M ${this.svg.cp_cx + this.svg.radiusTopLeft + ((this.svg.width - this.svg.cp_width)/2)} ${this.svg.cp_cy + ((this.svg.height - this.svg.cp_height)/2)}
+                  // h ${this.svg.cp_width - this.svg.radiusTopLeft - this.svg.radiusTopRight}
+                  // a ${this.svg.radiusTopRight} ${this.svg.radiusTopRight} 0 0 1 ${this.svg.radiusTopRight} ${this.svg.radiusTopRight}
+                  // v ${this.svg.cp_height - this.svg.radiusTopRight - this.svg.radiusBottomRight}
+                  // a ${this.svg.radiusBottomRight} ${this.svg.radiusBottomRight} 0 0 1 -${this.svg.radiusBottomRight} ${this.svg.radiusBottomRight}
+                  // h -${this.svg.cp_width - this.svg.radiusBottomRight - this.svg.radiusBottomLeft}
+                  // a ${this.svg.radiusBottomLeft} ${this.svg.radiusBottomLeft} 0 0 1 -${this.svg.radiusBottomLeft} -${this.svg.radiusBottomLeft}
+                  // v -${this.svg.cp_height - this.svg.radiusBottomLeft - this.svg.radiusTopLeft}
+                  // a ${this.svg.radiusTopLeft} ${this.svg.radiusTopLeft}  0 0 1 ${this.svg.radiusTopLeft} -${this.svg.radiusTopLeft}
+                  // " style="${styleMap(this.styles.mask)}"
+              // </path>
+            // </mask>
+          // </defs>
+          // `;
+
       }
       
       var images = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.images))
@@ -2695,6 +2803,18 @@ class UserSvgTool extends BaseTool {
           `;
       } else {
         // Inject and render SVG...
+        // return svg`
+          // <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" 
+              // style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
+            // "${clipPath}"
+            // <g clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})">
+              // <svg id="image-one" data-src="${images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" 
+              // style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
+              // </svg>
+            // </g>
+          // </svg>
+          // `;
+
         return svg`
           <svg id="image-one" data-src="${images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" 
           style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
@@ -3998,8 +4118,8 @@ class HorseshoeTool extends BaseTool {
     // Adjust x and y positions within the svg viewport to re-center the circle after rotating
     this.svg.rotate = {};
     this.svg.rotate.degrees = -220;
-    this.svg.rotate.cx = this.svg.cx;
-    this.svg.rotate.cy = this.svg.cy;
+    this.svg.rotate.shiftX = this.svg.cx;
+    this.svg.rotate.shiftY = this.svg.cy;
 
     // Get colorstops and make a key/value store...
     this.colorStops = {};
@@ -4187,7 +4307,7 @@ class HorseshoeTool extends BaseTool {
           stroke-dasharray="${this.svg.horseshoe_scale.dasharray}"
           stroke-width="${this.svg.horseshoe_scale.width}"
           stroke-linecap="square"
-          transform="rotate(-220 ${this.svg.rotate.cx} ${this.svg.rotate.cy})"/>
+          transform="rotate(-220 ${this.svg.rotate.shiftX} ${this.svg.rotate.shiftY})"/>
 
         <circle id="horseshoe__state__value" class="horseshoe__state__value" cx="${this.svg.cx}" cy="${this.svg.cy}" r="${this.svg.radius}"
           fill="${this.config.fill || 'rgba(0, 0, 0, 0)'}"
@@ -4195,7 +4315,7 @@ class HorseshoeTool extends BaseTool {
           stroke-dasharray="${this.dashArray}"
           stroke-width="${this.svg.horseshoe_state.width}"
           stroke-linecap="square"
-          transform="rotate(-220 ${this.svg.rotate.cx} ${this.svg.rotate.cy})"/>
+          transform="rotate(-220 ${this.svg.rotate.shiftX} ${this.svg.rotate.shiftY})"/>
 
         ${this._renderTickMarks()}
       </g>
@@ -4839,10 +4959,10 @@ class SegmentedArcTool extends BaseTool {
           // extra, set color from colorlist as a test
           if (this.config.isScale) {
             var fill = this.config.color;
-            if (this.config.show.style === "colorlist") {
+            if (this.config.show.style =="colorlist") {
               fill = this.config.segments.colorlist.colors[index];
             }
-            if (this.config.show.style === "colorstops") {
+            if (this.config.show.style =="colorstops") {
               fill = this._segments.colorStops[this._segments.sortedStops[index]];
               // stroke = this.config.segments.colorstops.stroke ? this._segments.colorStops[this._segments.sortedStops[index]] : '';
             }
@@ -4943,7 +5063,7 @@ class SegmentedArcTool extends BaseTool {
                 // Can't use gradients probably because of custom path. Conic-gradient would be fine.
                 //
                 // First try...
-                if (thisTool.config.show.style === "colorlist") {
+                if (thisTool.config.show.style =="colorlist") {
                   as.style.fill = thisTool.config.segments.colorlist.colors[runningSegment];
                   thisTool.styles.foreground[runningSegment]['fill'] = thisTool.config.segments.colorlist.colors[runningSegment];
                 }
@@ -4960,15 +5080,14 @@ class SegmentedArcTool extends BaseTool {
                                 : (thisTool._segmentAngles[runningSegment].drawStart);
                   var value = Math.min(Math.max(0, (runningSegmentAngle - boundsStart) / (boundsEnd - boundsStart)), 1);
                   // 2022.07.03 Fixing lastcolor for true stop
-                  if (thisTool.config.show.style === 'colorstops') {
+                  if (thisTool.config.show.style == 'colorstops') {
                     fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                                            thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                                            value);
                   } else {
-                    // 2022.07.12 Fix bug as this is no colorstops, but a colorlist!!!!
-                    if (thisTool.config.show.style === "colorlist") {
-                      fill = thisTool.config.segments.colorlist.colors[runningSegment];
-                    }
+                    fill = thisTool._card._getGradientValue(thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
+                                           thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment+1]],
+                                           value);
                   }
                   thisTool.styles.foreground[0]['fill'] = fill;
                   thisTool.as[0].style.fill = fill;
@@ -5110,10 +5229,10 @@ class SegmentedArcTool extends BaseTool {
 
           // extra, set color from colorlist as a test
           var fill = this.config.color;
-          if (this.config.show.style === "colorlist") {
+          if (this.config.show.style =="colorlist") {
             fill = this.config.segments.colorlist.colors[i];
           }
-          if (this.config.show.style === "colorstops") {
+          if (this.config.show.style =="colorstops") {
             fill = this._segments.colorStops[this._segments.sortedStops[i]];
           }
 //                            style="${styleMap(this.config.styles.foreground)} fill: ${fill};"
@@ -5268,9 +5387,6 @@ class SwissArmyKnifeCard extends LitElement {
     this.iOS = (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
                 !window.MSStream;
-    this.isSafari14 = this.isSafari && /Version\/14\.[^0-1]/.test(navigator.userAgent);
-    this.isSafari15 = this.isSafari && /Version\/15\.[^0-1]/.test(navigator.userAgent);
-    this.isSafari16 = this.isSafari && /Version\/16\.[^0-1]/.test(navigator.userAgent);
 
     this.lovelace = SwissArmyKnifeCard.lovelace;
     
@@ -5936,8 +6052,13 @@ class SwissArmyKnifeCard extends LitElement {
         toolList = toolList.concat(toolAdd);
       }
 
-      toolsetCfg = cfgobj[toolidx];
+      // Testing new template replace stuff...
+      // if (true) {
+        toolsetCfg = cfgobj[toolidx];
+      // }
+
       const newToolset = new Toolset(this, toolsetCfg);
+
       this.toolsets.push(newToolset);
     });
 
