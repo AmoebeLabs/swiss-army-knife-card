@@ -59,7 +59,7 @@ console.info(
 // Set sizes:
 // If svg size is changed, change the font size accordingly.
 // These two are related ;-) For font-size, 1em = 1%
-const SCALE_DIMENSIONS = 2
+const SCALE_DIMENSIONS = 2;
 const SVG_DEFAULT_DIMENSIONS = 200 * SCALE_DIMENSIONS;
 const SVG_DEFAULT_DIMENSIONS_HALF = SVG_DEFAULT_DIMENSIONS / 2;
 const SVG_VIEW_BOX = SVG_DEFAULT_DIMENSIONS;
@@ -77,7 +77,7 @@ const angle360 = (start, angle, end) => (start < 0 || end < 0)  ? angle + 360 : 
 // Size or range given by two values
 const range = (value1, value2) => Math.abs(value1 - value2);
 
-const radianToDegrees = (radian) => (-radian / (Math.PI / 180));
+// const radianToDegrees = (radian) => (-radian / (Math.PI / 180));
 
 //++ Class ++++++++++
 
@@ -1281,8 +1281,8 @@ class CircularSliderTool extends BaseTool {
     this.arc.startAngle360 = angle360(this.arc.startAngle, this.arc.startAngle, this.arc.endAngle);
     this.arc.endAngle360   = angle360(this.arc.startAngle, this.arc.endAngle, this.arc.endAngle);
 
-    this.arc.startAngleSvgPoint = this.polarToCartesian(this.svg.cx, this.svg.cy, this.svg.radius, this.svg.radius, this.arc.startAngle360)
-    this.arc.endAngleSvgPoint = this.polarToCartesian(this.svg.cx, this.svg.cy, this.svg.radius, this.svg.radius, this.arc.endAngle360)
+    this.arc.startAngleSvgPoint = this.polarToCartesian(this.svg.cx, this.svg.cy, this.svg.radius, this.svg.radius, this.arc.startAngle360);
+    this.arc.endAngleSvgPoint = this.polarToCartesian(this.svg.cx, this.svg.cy, this.svg.radius, this.svg.radius, this.arc.endAngle360);
 
     this.arc.scaleDasharray = 2 * this.arc.size/360 * Math.PI * this.svg.radius;
     this.arc.dashOffset = this.arc.clockwise ? 0 : - this.arc.scaleDasharray - this.arc.arcLength;
@@ -1421,14 +1421,10 @@ class CircularSliderTool extends BaseTool {
 
     let state;
     let scalePos;
-    var x, y, result, a;
-    x = m.x;
-    y = m.y;
     
     var center = {};
     center.x = this.svg.cx;
     center.y = this.svg.cy;
-    var denormAngle;
     var newAngle = this.pointToAngle360(m, center, true);
     var myAngle = this.myAngle;
 
@@ -1585,7 +1581,6 @@ class CircularSliderTool extends BaseTool {
   
   firstUpdated(changedProperties)
   {
-    const thisValue = this;
     this.labelValue = this._stateValue;
 
     function FrameArc() {
@@ -1605,7 +1600,7 @@ class CircularSliderTool extends BaseTool {
     this.elements.thumb = this.elements.svg.querySelector("#thumb");
     this.elements.label = this.elements.svg.querySelector("#label tspan");
 
-    if ((false) || (this.dev.debug)) console.log('circslider - firstUpdated svg = ', this.elements.svg, 'activeTrack=', this.elements.activeTrack, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
+    if (this.dev.debug) console.log('circslider - firstUpdated svg = ', this.elements.svg, 'activeTrack=', this.elements.activeTrack, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
 
     const protectBorderPassing = () => {
       let diffMax = range(this.svg.scale.max, this.labelValue) <= this.rangeMax;
@@ -1614,21 +1609,21 @@ class CircularSliderTool extends BaseTool {
       // passing borders from max to min...
       let fromMaxToMin = !!(diffMin && this.diffMax);
       let fromMinToMax = !!(diffMax && this.diffMin);
-      if (diffMin && this.diffMax) {
+      if (fromMaxToMin) {
         this.labelValue = this.svg.scale.max;
         this.m = this.sliderValueToPoint(this.labelValue);
-        this.rangeMax = 10;
-        this.rangeMin = range(this.svg.scale.max, this.svg.scale.min + 20);
+        this.rangeMax = this.svg.scale.max/10;
+        this.rangeMin = range(this.svg.scale.max, this.svg.scale.min + (this.svg.scale.max / 5));
       } else if (fromMinToMax) {
         this.labelValue = this.svg.scale.min;
         this.m = this.sliderValueToPoint(this.labelValue);
-        this.rangeMax = range(this.svg.scale.min, this.svg.scale.max - 20);
-        this.rangeMin = 10;
+        this.rangeMax = range(this.svg.scale.min, this.svg.scale.max - (this.svg.scale.max / 5));
+        this.rangeMin = this.svg.scale.max/10;
       } else {
         this.diffMax = diffMax;
         this.diffMin = diffMin;
-        this.rangeMin = 20; // still fixed!
-        this.rangeMax = 20; // still fixed!
+        this.rangeMin = (this.svg.scale.max / 5);
+        this.rangeMax = (this.svg.scale.max / 5);
       }
     }
     
@@ -1643,7 +1638,7 @@ class CircularSliderTool extends BaseTool {
       window.addEventListener('pointermove', pointerMove, false);
       window.addEventListener('pointerup', pointerUp, false);
 
-      const mousePos = this.mouseEventToPoint(e);
+      // const mousePos = this.mouseEventToPoint(e);
       // console.log("pointerdown", mousePos, this.svg.thumb, this.m);
 
       // Check for drag_action. If none specified, or update_interval = 0, don't update while dragging...
@@ -3657,65 +3652,65 @@ class UserSvgTool extends BaseTool {
 
     // if ((this.injector.svg) && (this.injector.image2.trim() === images[this.item.image].trim())) {
       // return svg`${this.injector.svg}`;
-    if (false) {
-    } else {
-      if (images[this.item.image] === "none")
-        return svg``;
+    // if (false) {
+    // } else {
+    if (images[this.item.image] === "none")
+      return svg``;
 
-      var clipPath = "";
-      if (this.config.clip_path) {
-        clipPath = svg`
-          <defs>
-            <path  id="path-${this.toolId}"
-              d="
-                M ${this.svg.cp_cx + this.svg.radiusTopLeft + ((this.svg.width - this.svg.cp_width)/2)} ${this.svg.cp_cy + ((this.svg.height - this.svg.cp_height)/2)}
-                h ${this.svg.cp_width - this.svg.radiusTopLeft - this.svg.radiusTopRight}
-                a ${this.svg.radiusTopRight} ${this.svg.radiusTopRight} 0 0 1 ${this.svg.radiusTopRight} ${this.svg.radiusTopRight}
-                v ${this.svg.cp_height - this.svg.radiusTopRight - this.svg.radiusBottomRight}
-                a ${this.svg.radiusBottomRight} ${this.svg.radiusBottomRight} 0 0 1 -${this.svg.radiusBottomRight} ${this.svg.radiusBottomRight}
-                h -${this.svg.cp_width - this.svg.radiusBottomRight - this.svg.radiusBottomLeft}
-                a ${this.svg.radiusBottomLeft} ${this.svg.radiusBottomLeft} 0 0 1 -${this.svg.radiusBottomLeft} -${this.svg.radiusBottomLeft}
-                v -${this.svg.cp_height - this.svg.radiusBottomLeft - this.svg.radiusTopLeft}
-                a ${this.svg.radiusTopLeft} ${this.svg.radiusTopLeft}  0 0 1 ${this.svg.radiusTopLeft} -${this.svg.radiusTopLeft}
-                ">
-            </path>
-            <clipPath id="clip-path-${this.toolId}">
-              <use href="#path-${this.toolId}"/>
-            </clipPath>
-            <mask id="mask-${this.toolId}">
-              <use href="#path-${this.toolId}" style="${styleMap(this.styles.mask)}"/>
-            </mask>
-          </defs>
-          `;
-      }
-      
-      // If svg, use injector for rendering. If jpg or png, use default image renderer...
-      if (["png", "jpg"].includes((images[this.item.image].substring(images[this.item.image].lastIndexOf(".") + 1)))) {
-        // Render jpg or png
-        return svg`
-          <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
-            "${clipPath}"
-            <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})" href="${images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
-          </svg>
-          `;
-      } else {
-
-        return svg`
-          <svg class="sak-usersvg__image" data-some="${images[this.item.image]}" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
-            "${clipPath}"
-            <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})" href="${images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
-          </svg>
-          `;
-
-        // It seems new stuff is NOT injected for some reason. Donno why. Cant find it. Simply NOT injected, although injector is called in updated...
-        // 2022.07.24 For now, disable injector stuff...
-        // return svg`
-          // <svg id="image-one" data-src="${images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" 
-          // style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
-          // </svg>
-          // `;
-      }
+    var clipPath = "";
+    if (this.config.clip_path) {
+      clipPath = svg`
+        <defs>
+          <path  id="path-${this.toolId}"
+            d="
+              M ${this.svg.cp_cx + this.svg.radiusTopLeft + ((this.svg.width - this.svg.cp_width)/2)} ${this.svg.cp_cy + ((this.svg.height - this.svg.cp_height)/2)}
+              h ${this.svg.cp_width - this.svg.radiusTopLeft - this.svg.radiusTopRight}
+              a ${this.svg.radiusTopRight} ${this.svg.radiusTopRight} 0 0 1 ${this.svg.radiusTopRight} ${this.svg.radiusTopRight}
+              v ${this.svg.cp_height - this.svg.radiusTopRight - this.svg.radiusBottomRight}
+              a ${this.svg.radiusBottomRight} ${this.svg.radiusBottomRight} 0 0 1 -${this.svg.radiusBottomRight} ${this.svg.radiusBottomRight}
+              h -${this.svg.cp_width - this.svg.radiusBottomRight - this.svg.radiusBottomLeft}
+              a ${this.svg.radiusBottomLeft} ${this.svg.radiusBottomLeft} 0 0 1 -${this.svg.radiusBottomLeft} -${this.svg.radiusBottomLeft}
+              v -${this.svg.cp_height - this.svg.radiusBottomLeft - this.svg.radiusTopLeft}
+              a ${this.svg.radiusTopLeft} ${this.svg.radiusTopLeft}  0 0 1 ${this.svg.radiusTopLeft} -${this.svg.radiusTopLeft}
+              ">
+          </path>
+          <clipPath id="clip-path-${this.toolId}">
+            <use href="#path-${this.toolId}"/>
+          </clipPath>
+          <mask id="mask-${this.toolId}">
+            <use href="#path-${this.toolId}" style="${styleMap(this.styles.mask)}"/>
+          </mask>
+        </defs>
+        `;
     }
+    
+    // If svg, use injector for rendering. If jpg or png, use default image renderer...
+    if (["png", "jpg"].includes((images[this.item.image].substring(images[this.item.image].lastIndexOf(".") + 1)))) {
+      // Render jpg or png
+      return svg`
+        <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
+          "${clipPath}"
+          <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})" href="${images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
+        </svg>
+        `;
+    } else {
+
+      return svg`
+        <svg class="sak-usersvg__image" data-some="${images[this.item.image]}" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
+          "${clipPath}"
+          <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})" href="${images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
+        </svg>
+        `;
+
+      // It seems new stuff is NOT injected for some reason. Donno why. Cant find it. Simply NOT injected, although injector is called in updated...
+      // 2022.07.24 For now, disable injector stuff...
+      // return svg`
+        // <svg id="image-one" data-src="${images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" 
+        // style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
+        // </svg>
+        // `;
+    }
+    // }
   }
  /*******************************************************************************
   * UserSvgTool::render()
@@ -6881,11 +6876,11 @@ class SwissArmyKnifeCard extends LitElement {
         if (!template)
           console.error('Template not found...', value.template, template);
 
-          var replacedValue = Templates.replaceVariables3(value.template.variables, template);
-          // Hmm. cannot add .template var. object is not extensible...
-          // replacedValue.template = 'replaced';
-          var secondValue = Merge.mergeDeep(replacedValue);
-          // secondValue.from_template = 'replaced';
+        var replacedValue = Templates.replaceVariables3(value.template.variables, template);
+        // Hmm. cannot add .template var. object is not extensible...
+        // replacedValue.template = 'replaced';
+        var secondValue = Merge.mergeDeep(replacedValue);
+        // secondValue.from_template = 'replaced';
 
         return secondValue;
       }
