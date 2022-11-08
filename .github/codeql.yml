@@ -1,0 +1,8 @@
+paths:
+- src/
+paths-ignore:
+- dist/
+- ha-config/
+- ha-config-beta/
+- assets/
+- .github/
