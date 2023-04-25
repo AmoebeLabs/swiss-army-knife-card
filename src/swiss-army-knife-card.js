@@ -44,7 +44,7 @@ import { classMap } from 'https://unpkg.com/lit-html@1/directives/class-map.js?m
 
 import { selectUnit} from 'https://unpkg.com/@formatjs/intl-utils@3.8.4/lib/index.js?module';
 
-import { fireEvent, stateIcon, getLovelace } from 'https://unpkg.com/custom-card-helpers@1.8.0/dist/index.m.js?module';
+import { fireEvent, stateIcon } from 'https://unpkg.com/custom-card-helpers@1.8.0/dist/index.m.js?module';
 
 // Original injector is buggy. Use a patched version, and store this local...
 import * as SvgInjector from '/local/community/swiss-army-knife-card/SVGInjector.min.js?module'; // lgtm[js/unused-local-variable]
@@ -191,6 +191,24 @@ class Utils {
 
   static calculateSvgDimension(argDimension) {
     return (argDimension / 100) * (SVG_DEFAULT_DIMENSIONS);
+  }
+
+  static getLovelace() {
+    var root = document.querySelector('home-assistant');
+    root = root && root.shadowRoot;
+    root = root && root.querySelector('home-assistant-main');
+    root = root && root.shadowRoot;
+    root = root && root.querySelector('app-drawer-layout partial-panel-resolver, ha-drawer partial-panel-resolver');
+    root = (root && root.shadowRoot) || root;
+    root = root && root.querySelector('ha-panel-lovelace');
+    root = root && root.shadowRoot;
+    root = root && root.querySelector('hui-root');
+    if (root) {
+      const ll = root.lovelace;
+      ll.current_view = root.___curView;
+      return ll;
+    }
+    return null;
   }
 }
 
@@ -6625,8 +6643,21 @@ class SwissArmyKnifeCard extends LitElement {
   */
   static get styles() {
 
-    if (!SwissArmyKnifeCard.lovelace) SwissArmyKnifeCard.lovelace = getLovelace();
+    console.log("SAK - get styles");
+    if (!SwissArmyKnifeCard.lovelace) SwissArmyKnifeCard.lovelace = Utils.getLovelace();
 
+    if (!SwissArmyKnifeCard.lovelace) {
+      console.error("SAK - Can't get reference to Lovelace");
+      throw Error("card::get styles - Can't get Lovelace panel");
+    }
+    if (!SwissArmyKnifeCard.lovelace.config.sak_sys_templates) {
+      console.error("SAK - System Templates reference NOT defined.");
+      throw Error("card::get styles - System Templates reference NOT defined!");
+    }
+    if (!SwissArmyKnifeCard.lovelace.config.sak_user_templates) {
+      console.warning("SAK - User Templates reference NOT defined. Did you NOT include them?");
+    }
+    
     // #TESTING
     // Testing dark/light mode support for future functionality
     // const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -6707,6 +6738,11 @@ class SwissArmyKnifeCard extends LitElement {
     var newStateStr;
     for (value of this.config.entities) {
       this.entities[index] = hass.states[this.config.entities[index].entity];
+
+      if (this.entities[index] === undefined) {
+        console.error("SAK - set hass, entity undefined: ", this.config.entities[index].entity);
+        throw Error(`Set hass, entity undefined: ${this.config.entities[index].entity}`);
+      }
 
       // Get secondary info state if specified and available
       if (this.config.entities[index].secondary_info) {
