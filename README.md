@@ -2,8 +2,6 @@
 [![hacs][rc_badge]][hacs-url]
 <br>[![release][release-badge]][release-url]
 [![downloads][downloads-badge]][release-url]
-[![LGTM Grade][lgtm-grade-badge]][lgtm-url]
-[![LGTM Alerts][lgtm-alerts-badge]][lgtm-url]
 <!--- ![beta_badge](https://img.shields.io/badge/State-Beta-orange?style=for-the-badge) -->
 <!---[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration) -->
 
