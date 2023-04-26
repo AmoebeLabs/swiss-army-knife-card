@@ -7609,10 +7609,10 @@ class SwissArmyKnifeCard extends LitElement {
     if (isNaN(parseFloat(inSecInfoState)) || !isFinite(inSecInfoState)) {
         return inSecInfoState;
     }
-    if (config.format === 'brightness') {
+    if (entityConfig.format === 'brightness') {
         return `${Math.round((inSecInfoState / 255) * 100)} %`;
     }
-    if (config.format === 'duration') {
+    if (entityConfig.format === 'duration') {
         return secondsToDuration(inSecInfoState);
     }
   }
