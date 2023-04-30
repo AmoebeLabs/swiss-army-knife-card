@@ -50,7 +50,7 @@ import { fireEvent, stateIcon } from 'https://unpkg.com/custom-card-helpers@1.8.
 import * as SvgInjector from '/local/community/swiss-army-knife-card/SVGInjector.min.js?module'; // lgtm[js/unused-local-variable]
 
 console.info(
-  `%c   SWISS-ARMY-KNIFE-CARD   \n%c  Public Release Candidate \n%c     Version 1.0.0-rc.3    `,
+  `%c   SWISS-ARMY-KNIFE-CARD   \n%c  Public Release Candidate \n%c     Version 1.0.0-rc.4b   `,
   'color: yellow; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
   'color: white; font-weight: bold; background: dimgray',
@@ -7530,7 +7530,7 @@ class SwissArmyKnifeCard extends LitElement {
       return inState;
     }
 
-    const state = Number(inState);
+    const state = Math.abs(Number(inState));
     const sign = Math.sign(inState);
 
     if (["0", "-0"].includes(sign)) return sign;
