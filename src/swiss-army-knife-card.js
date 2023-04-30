@@ -6001,9 +6001,7 @@ class SegmentedArcTool extends BaseTool {
                   thisTool.as[0].style.fill = fill;
 
                   if (runningSegment > 0) {
-                    // #LGTM: This expression has no effect.
-                    //        I have no clue. This is a loop that works well, so what about this expression then?
-                    for (var j=runningSegment+1; j--; j>=0) { // lgtm[js/useless-expression]
+                    for (var j=runningSegment+1; j>=0; j--) {
                       if (thisTool.styles.foreground[j]['fill'] != fill) {
                         thisTool.styles.foreground[j]['fill'] = fill;
                         thisTool.as[j].style.fill = fill;
@@ -6156,8 +6154,7 @@ class SegmentedArcTool extends BaseTool {
           // Testing 'lastcolor'
           if (this.config.show.lastcolor) {
             if (i > 0) {
-              // #LGTM: This expression has no effect.
-              for (var j=i-1; j--; j>0) { // lgtm[js/useless-expression]
+              for (var j=i-1; j>0; j--) {
                 this.styles.foreground[j]['fill'] = fill;
               }
             }
