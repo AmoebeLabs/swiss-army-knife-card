@@ -2,7 +2,7 @@
 [![hacs][rc_badge]][hacs-url]
 <br>[![release][release-badge]][release-url]
 [![downloads][downloads-badge]][release-url]
-<!--- ![beta_badge](https://img.shields.io/badge/State-Beta-orange?style=for-the-badge) -->
+<!--- ![beta_badge](https://img.shields.io/maintenance/yes/2025?style=for-the-badg) -->
 <!---[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration) -->
 
 # ![](assets/images/swiss-army-knife24.png) The Swiss Army Knife Custom Card for Home Assistant
