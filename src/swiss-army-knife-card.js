@@ -1058,9 +1058,9 @@ class BaseTool {
     if (this.dev.debug) console.log('BaseTool set values(state)', localStates);
 
     // Loop through all values...
-    var state;
+    //var state;
     for (let index = 0; index < states.length; ++index) {
-      state = states[index];
+      //state = states[index];
 
       if (typeof(localStates[index]) != 'undefined') if (this._stateValues[index]?.toLowerCase() === localStates[index].toLowerCase()) {} else {
         // State has changed, process...
@@ -1085,7 +1085,7 @@ class BaseTool {
         var statesIndex = this.getIndexInEntityIndexes(this.getEntityIndexFromAnimation(aniKey));
         isMatch = this.stateIsMatch(aniKey, states[statesIndex]);
 
-        console.log("set values, animations", aniKey, aniValue, statesIndex, isMatch, states);
+//        console.log("set values, animations", aniKey, aniValue, statesIndex, isMatch, states);
 
         if (isMatch) this.mergeAnimationData(aniKey);
       }));
