@@ -658,9 +658,9 @@ class Toolset {
     // Rotating a card can produce different results on several browsers.
     // A 1:1 card / toolset gives the same results, but other aspect ratio's may give different results.
 
-    if ((this._card.isSafari) || (this._card.iOS)) {
+    if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafari16)) {
       //
-      // Render path for Safari:
+      // Render path for Safari if not Safari 16:
       //
       // Safari seems to ignore - although not always - the transform-box:fill-box setting.
       // - It needs the explicit center point when rotating. So this is added to the rotate() command.
@@ -4141,7 +4141,7 @@ class EntityIconTool extends BaseTool {
     this.svg.ypx = this.svg.cy;
 
 
-    if ((this._card.isSafari) || (this._card.iOS)) {
+    if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafari16)) {
       this.svg.iconSize = this.svg.iconSize * correction;
 
       this.svg.xpx = (this.svg.xpx * correction) - (this.svg.iconPixels * adjust * correction);
@@ -4216,7 +4216,7 @@ class EntityIconTool extends BaseTool {
       this.svg.xpx = this.svg.cx;//(x * this._card.viewBox.width);
       this.svg.ypx = this.svg.cy;//(y * this._card.viewBox.height);
 
-      if (/*true &&*/ ((this._card.isSafari) || (this._card.iOS))) {
+      if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafari16)) {
         //correction = 1; // 
         this.svg.iconSize = this.svg.iconSize * correction;
         this.svg.iconPixels = this.svg.iconPixels * correction;
@@ -6282,6 +6282,13 @@ class SwissArmyKnifeCard extends LitElement {
     // Check for iOS / iPadOS / Safari to be able to work around some 'features'
     // Some bugs are already 9 years old, and not fixed yet by Apple!
     //
+    // However: there is a new SVG engine on its way that might be released in 2023.
+    // That should fix a lot of problems, adhere to standards, allow for hardware
+    // acceleration and mixing HTML - through the foreignObject - with SVG!
+    //
+    // The first small fixes are in 16.2-16.4, which is why I have to check for
+    // Safari 16, as that version can use the same renderpath as Chrome and Firefox!! WOW!!
+    //
     // Detection from: http://jsfiddle.net/jlubean/dL5cLjxt/
     //
     // this.isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
@@ -6295,9 +6302,18 @@ class SwissArmyKnifeCard extends LitElement {
     this.iOS = (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
                 !window.MSStream;
-    this.isSafari14 = this.isSafari && /Version\/14\.[^0-1]/.test(navigator.userAgent);
-    this.isSafari15 = this.isSafari && /Version\/15\.[^0-1]/.test(navigator.userAgent);
-    this.isSafari16 = this.isSafari && /Version\/16\.[^0-1]/.test(navigator.userAgent);
+    this.isSafari14 = this.isSafari && /Version\/14\.[0-9]/.test(navigator.userAgent);
+    this.isSafari15 = this.isSafari && /Version\/15\.[0-9]/.test(navigator.userAgent);
+    this.isSafari16 = this.isSafari && /Version\/16\.[0-9]/.test(navigator.userAgent);
+    this.isSafari16 = this.isSafari && /Version\/16\.[0-9]/.test(navigator.userAgent);
+    
+    // The iOS app does not use a standard agent string...
+    // See: https://github.com/home-assistant/iOS/blob/master/Sources/Shared/API/HAAPI.swift
+    // It contains strings like "like Safari" and "OS 14_2", and "iOS 14.2.0"
+    
+    this.isSafari14 = this.isSafari14 || /os 15.*like safari/.test(navigator.userAgent.toLowerCase());
+    this.isSafari15 = this.isSafari15 || /os 14.*like safari/.test(navigator.userAgent.toLowerCase());
+    this.isSafari16 = this.isSafari16 || /os 16.*like safari/.test(navigator.userAgent.toLowerCase());
 
     this.lovelace = SwissArmyKnifeCard.lovelace;
     
