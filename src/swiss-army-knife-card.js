@@ -536,13 +536,14 @@ class Toolset {
             // The first entity is used as the state, additional entities can help with animations,
             // (used for formatting classes/styles) or can be used in a derived entity 
             
-            var valueList = {};
+            var valueList = [];
             for (let index = 0; index < item.tool.config.entity_indexes.length; ++index) {
-              valueList[index] = this._card.attributesStr[item.tool.config.entity_indexes[index]]
-                                                ? this._card.attributesStr[item.tool.config.entity_indexes[index]]
-                                                : this._card.secondaryInfoStr[item.tool.config.entity_indexes[index]]
-                                                ? this._card.secondaryInfoStr[item.tool.config.entity_indexes[index]]
-                                                : this._card.entitiesStr[item.tool.config.entity_indexes[index]];
+              
+              valueList[index] = this._card.attributesStr[item.tool.config.entity_indexes[index].entity_index]
+                                                ? this._card.attributesStr[item.tool.config.entity_indexes[index].entity_index]
+                                                : this._card.secondaryInfoStr[item.tool.config.entity_indexes[index].entity_index]
+                                                ? this._card.secondaryInfoStr[item.tool.config.entity_indexes[index].entity_index]
+                                                : this._card.entitiesStr[item.tool.config.entity_indexes[index].entity_index];
             }
             
             item.tool.values = valueList;
@@ -820,7 +821,19 @@ class BaseTool {
     }
   }
 
-
+  defaultEntityIndex() {
+    if (!this.default) {
+      this.default = {};
+      if (this.config.hasOwnProperty("entity_indexes")) {
+        this.default.entity_index = this.config.entity_indexes[0].entity_index;
+      } else {
+        // Must have entity_index! If not, just crash!
+        this.default.entity_index = this.config.entity_index;
+      }
+    }
+    return this.default.entity_index;
+  }
+  
  /*******************************************************************************
   * BaseTool::set value()
   *
@@ -939,11 +952,155 @@ class BaseTool {
     return true;
   }
 
+/*******************************************************************************
+  * BaseTool::set values()
+  *
+  * Summary.
+  * Receive new state data for the entity this is linked to. Called from set hass;
+  *
+  */
+
+  getEntityIndexFromAnimation(animation) {
+    
+    // Check if animation has entity_index specified
+    if (animation.hasOwnProperty("entity_index")) return animation.entity_index;
+
+    // We need to get the default entity. 
+    // If entity_index defined use that one...
+    if (this.config.hasOwnProperty("entity_index")) return this.config.entity_index;
+
+    // If entity_indexes is defined, take the
+    // first entity_index in the list as the default entity_index to use
+    if (this.config.entity_indexes) return (this.config.entity_indexes[0].entity_index);
+  }
+  
+  getIndexInEntityIndexes(entityIdx) {
+    return this.config.entity_indexes.findIndex((element) => element.entity_index == entityIdx);
+  }
+
+  stateIsMatch(animation, state) {
+    var isMatch;
+    // NEW!!!
+    // Config more than 1 level deep is overwritten, so never changed after first evaluation. Stuff is overwritten???
+    var tempConfig = JSON.parse(JSON.stringify(animation));
+
+    var item = Templates.getJsTemplateOrValue(this, state, Merge.mergeDeep(tempConfig));
+    
+    // Assume equals operator if not defined...
+    var operator = item.operator ? item.operator : "==";
+
+    switch(operator) {
+      case "==":
+        if (typeof(state) === 'undefined') {
+          isMatch = (typeof item.state === 'undefined') || (item.state.toLowerCase() === "undefined");
+        } else {
+          isMatch = state.toLowerCase() == item.state.toLowerCase();
+        }
+        break;
+      case "!=":
+        if (typeof(state) === 'undefined') {
+          isMatch = (typeof item.state != 'undefined') || (item.state.toLowerCase() != 'undefined');
+        } else {
+          isMatch = state.toLowerCase() != item.state.toLowerCase();
+        }
+        break;
+      case ">":
+        if (typeof(state) != 'undefined')
+          isMatch = Number(state.toLowerCase()) > Number(item.state.toLowerCase());
+        break;
+      case "<":
+        if (typeof(state) != 'undefined')
+          isMatch = Number(state.toLowerCase()) < Number(item.state.toLowerCase());
+        break;
+      case ">=":
+        if (typeof(state) != 'undefined')
+          isMatch = Number(state.toLowerCase()) >= Number(item.state.toLowerCase());
+        break;
+      case "<=":
+        if (typeof(state) != 'undefined')
+          isMatch = Number(state.toLowerCase()) <= Number(item.state.toLowerCase());
+        break;
+      default:
+        // Unknown operator. Just do nothing and return;
+        isMatch = false;
+    }
+    return isMatch;
+  }
+
+  mergeAnimationData(animation) {
+    if (!this.animationClass || !animation.reuse) this.animationClass = {};
+    if (animation.classes) {
+      this.animationClass = Merge.mergeDeep(this.animationClass, animation.classes);
+    }
+
+    if (!this.animationStyle || !animation.reuse) this.animationStyle = {};
+    if (animation.styles) {
+      this.animationStyle = Merge.mergeDeep(this.animationStyle, animation.styles);
+    }
+
+    this.animationStyleHasChanged = true;
+
+    // With more than 1 matching state (more entities), we have to preserve some
+    // extra data, such as setting the icon, name, area, etc. HOW?? Merge??
+
+    if (!this.item) this.item = {};
+    this.item = Merge.mergeDeep(this.item, animation);
+    this.activeAnimation = {...animation}; //Merge.mergeDeep(this.activeAnimation, animation);
+  }
+  
+  set values(states) {
+
+    if (!this._lastStateValues) this._lastStateValues = [];
+    if (!this._stateValues) this._stateValues = [];
+
+    let localStates = [...states];
+
+    if (this.dev.debug) console.log('BaseTool set values(state)', localStates);
+
+    // Loop through all values...
+    var state;
+    for (let index = 0; index < states.length; ++index) {
+      state = states[index];
+
+      if (typeof(localStates[index]) != 'undefined') if (this._stateValues[index]?.toLowerCase() === localStates[index].toLowerCase()) {} else {
+        // State has changed, process...
+
+        if (this.config.derived_entities) {
+          this.derivedEntities[index] = Templates.getJsTemplateOrValue(this, states[index], Merge.mergeDeep(this.config.derived_entities[index]));
+          
+          localStates[index] = this.derivedEntities[index].state?.toString();
+        }
+      }
+
+      this._lastStateValues[index] = this._stateValues[index] || localStates[index];
+      this._stateValues[index] = localStates[index];
+      this._stateValueIsDirty = true;
+
+      var isMatch = false;
+      
+      this.activeAnimation = null;
+
+      if (this.config.animations) Object.keys(this.config.animations.map((aniKey, aniValue) => {
+
+        var statesIndex = this.getIndexInEntityIndexes(this.getEntityIndexFromAnimation(aniKey));
+        isMatch = this.stateIsMatch(aniKey, states[statesIndex]);
+
+        console.log("set values, animations", aniKey, aniValue, statesIndex, isMatch, states);
+
+        if (isMatch) this.mergeAnimationData(aniKey);
+      }));
+    }
+    this._stateValue = this._stateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())];
+    this._stateValuePrev = this._lastStateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())];
+
+    return true;
+  }
+
   EnableHoverForInteraction()
 
   {
     const hover = (this.config.hasOwnProperty('entity_index') || (this.config?.user_actions?.tap_action));
-    this.classes.tool.hover = hover;
+    this.classes.tool.hover = !!hover;
   }
 
  /*******************************************************************************
@@ -1542,7 +1699,9 @@ class CircularSliderTool extends BaseTool {
   updateLabel(m) {
     if (this.dev.debug) console.log('SLIDER - updateLabel start', m, this.config.position.orientation);
 
-    const dec = (this._card.config.entities[this.config.entity_index].decimals || 0);
+    // const dec = (this._card.config.entities[this.config.entity_index].decimals || 0);
+    const dec = (this._card.config.entities[this.defaultEntityIndex()].decimals || 0);
+    
     const x = 10 ** dec;
     this.labelValue2 = (Math.round(this.pointToSliderValue(m) * x) / x).toFixed(dec);
 
@@ -1577,7 +1736,7 @@ class CircularSliderTool extends BaseTool {
                           this._card._hass,
                           this.config,
                           this.config.user_actions.tap_action,
-                          this._card.config.entities[this.config.entity_index]?.entity,
+                          this._card.config.entities[this.defaultEntityIndex()]?.entity,
                           this.labelValue2);
 
     }
@@ -1593,7 +1752,7 @@ class CircularSliderTool extends BaseTool {
                           this._card._hass,
                           this.config,
                           this.config.user_actions?.tap_action,
-                          this._card.config.entities[this.config.entity_index]?.entity,
+                          this._card.config.entities[this.defaultEntityIndex()]?.entity,
                           this.labelValue2);
   }
   
@@ -1796,7 +1955,36 @@ class CircularSliderTool extends BaseTool {
     }
     return changed;
   }
+  set values(states) {
 
+    var changed = super.values = states;
+    if (!this.dragging) this.labelValue = this._stateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())];
+
+    // Calculate the size of the arc to fill the dasharray with this
+    // value. It will fill the CircularSliderTool relative to the state and min/max
+    // values given in the configuration.
+
+    if (!this.dragging) {
+      const min = this.config.scale.min || 0;
+      const max = this.config.scale.max || 100;
+      var val = Math.min(this._card._calculateValueBetween(min, max, this._stateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())]), 1);
+      
+      // Don't display anything, that is NO track, thumb to start...
+      if (Number.isNaN(val)) val = 0;
+      const score = val * this.svg.pathLength;
+      this.dashArray = `${score} ${this.svg.circleLength}`;
+
+      var thumbPos = this.sliderValueToPoint(this._stateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())]);
+      this.svg.thumb.x1 = thumbPos.x - this.svg.thumb.width/2;
+      this.svg.thumb.y1 = thumbPos.y - this.svg.thumb.height/2;
+
+      this.svg.capture.x1 = thumbPos.x - this.svg.capture.width/2;
+      this.svg.capture.y1 = thumbPos.y - this.svg.capture.height/2;
+
+    }
+    return changed;
+  }
+  
   _renderUom() {
 
     if (this.config.show.uom === 'none') {
@@ -1820,7 +2008,7 @@ class CircularSliderTool extends BaseTool {
 
       this.styles.uom = Merge.mergeDeep(this.config.styles.uom, fsuomStr);
 
-      const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+      const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.defaultEntityIndex()], this._card.config.entities[this.defaultEntityIndex()]);
 
       // Check for location of uom. end = next to state, bottom = below state ;-), etc.
       if (this.config.show.uom === 'end') {
@@ -2112,7 +2300,7 @@ class CircularSliderTool extends BaseTool {
     }
 
   return svg`
-      <g id="circslider__group-inner" class="circslider__group-inner">
+      <g id="circslider__group-inner" class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}">
 
         <circle id="track" class="sak-circslider__track" cx="${this.svg.cx}" cy="${this.svg.cy}" r="${this.svg.radius}"
           style="${styleMap(this.styles.track)}"
@@ -2462,7 +2650,7 @@ class RangeSliderTool extends BaseTool {
   updateLabel(argThis, m) {
     if (this.dev.debug) console.log('SLIDER - updateLabel start', m, argThis.config.position.orientation);
 
-    const dec = (this._card.config.entities[this.config.entity_index].decimals || 0);
+    const dec = (this._card.config.entities[this.defaultEntityIndex()].decimals || 0);
     const x = 10 ** dec;
     argThis.labelValue2 = (Math.round(argThis.svgCoordinateToSliderValue(argThis, m) * x) / x).toFixed(dec);
 
@@ -2497,7 +2685,7 @@ class RangeSliderTool extends BaseTool {
                           this._card._hass,
                           this.config,
                           this.config.user_actions.tap_action,
-                          this._card.config.entities[this.config.entity_index]?.entity,
+                          this._card.config.entities[this.defaultEntityIndex()]?.entity,
                           this.labelValue2);
 
     }
@@ -2516,7 +2704,7 @@ class RangeSliderTool extends BaseTool {
                           this._card._hass,
                           this.config,
                           this.config.user_actions?.tap_action,
-                          this._card.config.entities[this.config.entity_index]?.entity,
+                          this._card.config.entities[this.defaultEntityIndex()]?.entity,
                           this.labelValue2);
                           
     }
@@ -2698,7 +2886,7 @@ class RangeSliderTool extends BaseTool {
 
       this.styles.uom = Merge.mergeDeep(this.config.styles.uom, fsuomStr);
 
-      const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+      const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.defaultEntityIndex()], this._card.config.entities[this.defaultEntityIndex()]);
 
       // Check for location of uom. end = next to state, bottom = below state ;-), etc.
       if (this.config.show.uom === 'end') {
@@ -3517,7 +3705,7 @@ class RegPolyTool extends BaseTool {
   * The render() function for this object.
   *
   */
-//        @click=${e => this._card.handlePopup(e, this._card.entities[this.config.entity_index])} >
+//        @click=${e => this._card.handlePopup(e, this._card.entities[this.defaultEntityIndex()])} >
 
   render() {
 
@@ -4194,8 +4382,8 @@ class EntityIconTool extends BaseTool {
     this.MergeColorFromState(this.styles.icon);
 
     const icon = this._buildIcon(
-      this._card.entities[this.config.entity_index],
-      this.config.hasOwnProperty('entity_index') ? this._card.config.entities[this.config.entity_index] : undefined,
+      this._card.entities[this.defaultEntityIndex()],
+      this.config.hasOwnProperty('entity_index') ? this._card.config.entities[this.defaultEntityIndex()] : undefined,
       this.config.icon);
 
     if (true || (this.svg.xpx == 0)) {
@@ -4545,9 +4733,9 @@ class EntityStateTool extends BaseTool {
     var inState = this._stateValue;
 
     if ((inState) && isNaN(inState)) {
-      // const stateObj = this._card.config.entities[this.config.entity_index].entity;
-      const stateObj = this._card.entities[this.config.entity_index];
-      const domain = this._card._computeDomain(this._card.config.entities[this.config.entity_index].entity);
+      // const stateObj = this._card.config.entities[this.defaultEntityIndex()].entity;
+      const stateObj = this._card.entities[this.defaultEntityIndex()];
+      const domain = this._card._computeDomain(this._card.config.entities[this.defaultEntityIndex()].entity);
       
       const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
       const localeTag1 = stateObj.attributes?.device_class ? `component.${domain}.state.${stateObj.attributes.device_class}.${inState}` : '--';
@@ -4593,7 +4781,7 @@ class EntityStateTool extends BaseTool {
 
       this.styles.uom = Merge.mergeDeep(this.config.styles.uom, fsuomStr);
 
-      const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.config.entity_index], this._card.config.entities[this.config.entity_index]);
+      const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.defaultEntityIndex()], this._card.config.entities[this.defaultEntityIndex()]);
 
       // Check for location of uom. end = next to state, bottom = below state ;-), etc.
       if (this.config.show.uom === 'end') {
@@ -4630,7 +4818,7 @@ class EntityStateTool extends BaseTool {
   
   render() {
 
-    if (true || (this._card._computeDomain(this._card.entities[this.config.entity_index].entity_id) == 'sensor')) {
+    if (true || (this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id) == 'sensor')) {
       return svg`
     <svg overflow="visible" id="state-${this.toolId}" class="${classMap(this.classes.tool)}">
         <text @click=${e => this.handleTapEvent(e, this.config)}>
@@ -4735,8 +4923,8 @@ class EntityNameTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     const name = this.textEllipsis(
-                    this._buildName(this._card.entities[this.config.entity_index],
-                                    this._card.config.entities[this.config.entity_index]),
+                    this._buildName(this._card.entities[this.defaultEntityIndex()],
+                                    this._card.config.entities[this.defaultEntityIndex()]),
                     this.config?.show?.ellipsis);
 
     return svg`
@@ -4837,8 +5025,8 @@ class EntityAreaTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     const area = this.textEllipsis(
-                    this._buildArea(this._card.entities[this.config.entity_index],
-                                    this._card.config.entities[this.config.entity_index]),
+                    this._buildArea(this._card.entities[this.defaultEntityIndex()],
+                                    this._card.config.entities[this.defaultEntityIndex()]),
                     this.config?.show?.ellipsis);
 
     return svg`
@@ -5369,7 +5557,7 @@ class SparklineBarChartTool extends BaseTool {
   }
 
   hasSeries() {
-    return this.config.entity_index;
+    return this.defaultEntityIndex();
   }
 
  /*******************************************************************************
@@ -6314,7 +6502,10 @@ class SwissArmyKnifeCard extends LitElement {
 
     this.lovelace = SwissArmyKnifeCard.lovelace;
     
-    if (!this.lovelace) console.error("card::constructor - Can't get Lovelace panel");
+    if (!this.lovelace) {
+      console.error("card::constructor - Can't get Lovelace panel");
+      throw Error("card::constructor - Can't get Lovelace panel");
+    }
 
     if (!SwissArmyKnifeCard.sakIconCache) {
       SwissArmyKnifeCard.sakIconCache = {};
@@ -7541,6 +7732,10 @@ class SwissArmyKnifeCard extends LitElement {
     if (isNaN(inState)) {
       if (inState === 'unavailable') return '-ua-';
       return inState;
+    }
+
+    if (entityConfig.format === 'brightness') {
+        return `${Math.round((inState / 255) * 100)}`;
     }
 
     const state = Math.abs(Number(inState));
