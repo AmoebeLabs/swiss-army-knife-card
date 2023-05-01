@@ -50,9 +50,8 @@ import { fireEvent, stateIcon } from 'https://unpkg.com/custom-card-helpers@1.8.
 import * as SvgInjector from '/local/community/swiss-army-knife-card/SVGInjector.min.js?module'; // lgtm[js/unused-local-variable]
 
 console.info(
-  `%c   SWISS-ARMY-KNIFE-CARD   \n%c  Public Release Candidate \n%c     Version 1.0.0-rc.4b   `,
+  `%c  SWISS-ARMY-KNIFE-CARD  \n%c      Version 2.4.1      `,
   'color: yellow; font-weight: bold; background: black',
-  'color: white; font-weight: bold; background: dimgray',
   'color: white; font-weight: bold; background: dimgray',
 );
 
@@ -6110,6 +6109,7 @@ class SegmentedArcTool extends BaseTool {
 
             if (frameSegment == -1) {
               /*if (thisTool.debug)*/ console.log('RENDERNEW animateSegments frameAngle not found', tween, thisTool._segmentAngles);
+              console.log('config', thisTool.config);
             }
 
             // Check where we actually are now. This might be in a different segment...
@@ -6185,11 +6185,12 @@ class SegmentedArcTool extends BaseTool {
                       fill = thisTool.config.segments.colorlist.colors[runningSegment];
                     }
                   }
+
                   thisTool.styles.foreground[0]['fill'] = fill;
                   thisTool.as[0].style.fill = fill;
 
                   if (runningSegment > 0) {
-                    for (var j=runningSegment+1; j>=0; j--) {
+                    for (var j=runningSegment; j>=0; j--) { //+1
                       if (thisTool.styles.foreground[j]['fill'] != fill) {
                         thisTool.styles.foreground[j]['fill'] = fill;
                         thisTool.as[j].style.fill = fill;
@@ -6945,7 +6946,7 @@ class SwissArmyKnifeCard extends LitElement {
 
       if (this.entities[index] === undefined) {
         console.error("SAK - set hass, entity undefined: ", this.config.entities[index].entity);
-        throw Error(`Set hass, entity undefined: ${this.config.entities[index].entity}`);
+        // Temp disable throw Error(`Set hass, entity undefined: ${this.config.entities[index].entity}`);
       }
 
       // Get secondary info state if specified and available
