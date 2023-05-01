@@ -1,8 +1,8 @@
 [![hacs][hacs-badge]][hacs-url]
-[![hacs][rc_badge]][hacs-url]
+[![hacs][maintain_badge]][hacs-url]
 <br>[![release][release-badge]][release-url]
 [![downloads][downloads-badge]][release-url]
-<!--- ![beta_badge](https://img.shields.io/maintenance/yes/2025?style=for-the-badge) -->
+<!--- ![beta_badge](https://img.shields.io/badge/State-Beta-orange?style=for-the-badge) -->
 <!---[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration) -->
 
 # ![](assets/images/swiss-army-knife24.png) The Swiss Army Knife Custom Card for Home Assistant
@@ -64,6 +64,7 @@ All these examples are available on Github and described in the [installation ma
 [hacs-badge]: https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge&logo=homeassistantcommunitystore
 [beta_badge]: https://img.shields.io/badge/State-Beta-orange?style=for-the-badge&logo=homeassistantcommunitystore
 [rc_badge]: https://img.shields.io/badge/State-Release%20Candidate-orange?style=for-the-badge&logo=homeassistantcommunitystore
+[maintain_badge]: https://img.shields.io/maintenance/yes/2025?style=for-the-badge&logo=homeassistantcommunitystore
 [release-badge]: https://img.shields.io/github/v/release/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&include_prereleases&logo=github
 [downloads-badge]: https://img.shields.io/github/downloads/AmoebeLabs/swiss-army-knife-card/total?style=for-the-badge&logo=github
 [lgtm-grade-badge]: https://img.shields.io/lgtm/grade/javascript/github/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&logo=lgtm
