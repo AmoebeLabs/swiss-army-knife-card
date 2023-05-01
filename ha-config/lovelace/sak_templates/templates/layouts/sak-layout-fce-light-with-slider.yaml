@@ -280,9 +280,6 @@ sak_layout_fce_light_with_slider:
                 pointer-events: all
                 touch-action: none
               active:
-                # fill: url(#sak-light-brightness-gradient--orange) #white
-                fill: var(--theme-sys-elevation-surface-neutral10)
-                fill: var(--theme-sys-color-secondary)
                 fill: var(--theme-sys-color-primary)
                 fill-opacity: 0.3
                 pointer-events: none
