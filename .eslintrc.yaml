@@ -1,4 +1,7 @@
 extends: airbnb-base
+parserOptions:
+  ecmaVersion: 2020
+  sourceType: module
 rules:
   no-else-return: 0
   no-underscore-dangle: 0
@@ -10,6 +13,48 @@ rules:
   class-methods-use-this: 0
   no-nested-ternary: 0
   camelcase: 0
+  # Added for convenience to check eslint...
+  max-len: 0
+  no-console: 0
+  no-plusplus: 0
+  eqeqeq: 0
+  no-irregular-whitespace: 0
+  no-restricted-globals: 0
+  no-undef: 0
+  no-unused-vars: 0
+  no-use-before-define: 0
+  no-multi-assign: 0
+  no-case-declarations: 0
+  no-inner-declarations: 0
+  array-callback-return: 0
+  block-scoped-var: 0
+  max-classes-per-file: 0
+  no-new-func: 0
+  no-bitwise: 0
+  no-prototype-builtins: 0
+  no-var: 0
+  vars-on-top: 0
+  no-constant-condition: 0
+  no-empty: 0
+  default-case: 0
+  default-case-last: 0
+  prefer-const: 0
+  no-redeclare: 0
+  no-setter-return: 0
+  brace-style: 0
+  no-lonely-if: 0
+  operator-assignment: 0
+  no-shadow: 0
+  func-names: 0
+  no-sequences: 0
+  prefer-destructuring: 0
+  no-restricted-syntax: 0
+  no-unused-expressions: 0
+  no-loop-func: 0
+  no-useless-escape: 0
+  import/no-unresolved: 0
+  no-template-curly-in-string: 0
+  import/extensions: 0
 globals:
   window: true
   Event: true
