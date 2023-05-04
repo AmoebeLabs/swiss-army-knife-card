@@ -31,7 +31,8 @@
 
 import {
   LitElement, html, css, svg, unsafeCSS
-} from "https://unpkg.com/lit-element@2.5.1/lit-element.js?module";
+} from 'lit-element';
+//} from "https://unpkg.com/lit-element@2.5.1/lit-element.js?module";
 
 import {
   unsafeSVG
