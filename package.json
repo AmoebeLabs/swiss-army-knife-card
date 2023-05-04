@@ -2,11 +2,11 @@
   "name": "swiss-army-knife",
   "version": "2.4.2",
   "description": "Swiss Army Knife for Lovelace",
-  "main": "rel/sak.js",
+  "main": "srcjs/swiss-army-knife-card.js",
   "scripts": {
     "build": "npm run lint && npm run rollup",
     "rollup": "rollup -c",
-    "lint": "eslint src/*.ts",
+    "lint": "eslint srcjs/*.js",
     "watch": "rollup -c --watch",
     "postversion": "npm run build",
     "audit-fix": "npx yarn-audit-fix"
