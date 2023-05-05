@@ -1,11 +1,12 @@
 import { svg } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { stateIcon } from 'custom-card-helpers';
 
 import { FONT_SIZE } from './const';
 import Merge from './merge';
-import Utils from './utils';
 import BaseTool from './basetool';
+import Utils from './utils';
 
 /** ****************************************************************************
   * EntityIconTool class
@@ -70,6 +71,10 @@ export default class EntityIconTool extends BaseTool {
     }
     this.classes.icon = {};
     this.styles.icon = {};
+
+    if (!EntityIconTool.sakIconCache) {
+      EntityIconTool.sakIconCache = {};
+    }
     if (this.dev.debug) console.log('EntityIconTool constructor coords, dimensions, config', this.coords, this.dimensions, this.config);
   }
 
@@ -151,7 +156,7 @@ export default class EntityIconTool extends BaseTool {
 
     if (!this.alternateColor) { this.alternateColor = 'rgba(0,0,0,0)'; }
 
-    if (!SwissArmyKnifeCard.sakIconCache[icon]) {
+    if (!EntityIconTool.sakIconCache[icon]) {
       const theQuery = this._card.shadowRoot.getElementById('icon-'.concat(this.toolId))?.shadowRoot?.querySelectorAll('*');
       if (theQuery) {
         this.iconSvg = theQuery[0]?.path;
@@ -161,10 +166,10 @@ export default class EntityIconTool extends BaseTool {
 
       if (!this.iconSvg) {
       } else {
-        SwissArmyKnifeCard.sakIconCache[icon] = this.iconSvg;
+        EntityIconTool.sakIconCache[icon] = this.iconSvg;
       }
     } else {
-      this.iconSvg = SwissArmyKnifeCard.sakIconCache[icon];
+      this.iconSvg = EntityIconTool.sakIconCache[icon];
     }
 
     let scale;
