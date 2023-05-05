@@ -68,6 +68,9 @@ import UserSvgTool from './usersvg';
 import EllipseTool from './ellipsetool';
 import RectangleTool from './rectangletool';
 import RectangleToolEx from './rectangletoolex';
+import BadgeTool from './badgetool';
+// import EntityIconTool from './entityicontool';
+import EntityStateTool from './entitystatetool';
 
 // Original injector is buggy. Use a patched version, and store this local...
 import * as SvgInjector from '../dist/SVGInjector.min.js'; // lgtm[js/unused-local-variable]
@@ -77,6 +80,258 @@ console.info(
   'color: yellow; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
+
+// ++ Can't split these yet, due to circular dependencies...
+
+/** ****************************************************************************
+  * EntityIconTool class
+  *
+  * Summary.
+  *
+  */
+
+class EntityIconTool extends BaseTool {
+  constructor(argToolset, argConfig, argPos) {
+    const DEFAULT_ICON_CONFIG = {
+      classes: {
+        tool: {
+          'sak-icon': true,
+          hover: true,
+        },
+        icon: {
+          'sak-icon__icon': true,
+        },
+      },
+      styles: {
+        icon: {
+        },
+      },
+    };
+    super(argToolset, Merge.mergeDeep(DEFAULT_ICON_CONFIG, argConfig), argPos);
+
+    // from original
+    // this.config.entity = this.config.entity ? this.config.entity : 0;
+
+    // get icon size, and calculate the foreignObject position and size. This must match the icon size
+    // 1em = FONT_SIZE pixels, so we can calculate the icon size, and x/y positions of the foreignObject
+    // the viewport is 200x200, so we can calulate the offset.
+    //
+    // NOTE:
+    // Safari doesn't use the svg viewport for rendering of the foreignObject, but the real clientsize.
+    // So positioning an icon doesn't work correctly...
+
+    this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 3;
+    this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
+
+    const align = this.config.position.align ? this.config.position.align : 'center';
+    const adjust = (align === 'center' ? 0.5 : (align === 'start' ? -1 : +1));
+
+    const clientWidth = 400; // testing
+    const correction = clientWidth / this._card.viewBox.width;
+
+    this.svg.xpx = this.svg.cx;
+    this.svg.ypx = this.svg.cy;
+
+    if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafari16)) {
+      this.svg.iconSize = this.svg.iconSize * correction;
+
+      this.svg.xpx = (this.svg.xpx * correction) - (this.svg.iconPixels * adjust * correction);
+      this.svg.ypx = (this.svg.ypx * correction) - (this.svg.iconPixels * 0.5 * correction) - (this.svg.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
+    } else {
+      // Get x,y in viewbox dimensions and center with half of size of icon.
+      // Adjust horizontal for aligning. Can be 1, 0.5 and -1
+      // Adjust vertical for half of height... and correct for 0.25em textfont to align.
+      this.svg.xpx = this.svg.xpx - (this.svg.iconPixels * adjust);
+      this.svg.ypx = this.svg.ypx - (this.svg.iconPixels * 0.5) - (this.svg.iconPixels * 0.25);
+    }
+    this.classes.icon = {};
+    this.styles.icon = {};
+    if (this.dev.debug) console.log('EntityIconTool constructor coords, dimensions, config', this.coords, this.dimensions, this.config);
+  }
+
+  /** *****************************************************************************
+  * EntityIconTool::_buildIcon()
+  *
+  * Summary.
+  * Builds the Icon specification name.
+  *
+  */
+  _buildIcon(entityState, entityConfig, toolIcon) {
+    return (
+      this.activeAnimation?.icon // Icon from animation
+      || toolIcon // Defined by tool
+      || entityConfig?.icon // Defined by configuration
+      || entityState?.attributes?.icon // Using entity icon
+      || stateIcon(entityState) // Use card helper logic (2021.11.21)
+    );
+  }
+
+  /** *****************************************************************************
+  * EntityIconTool::_renderIcon()
+  *
+  * Summary.
+  * Renders the icon using precalculated coordinates and dimensions.
+  * Only the runtime style is calculated before rendering the icon
+  *
+  * THIS IS THE ONE!!!!
+  */
+
+  _renderIcon() {
+    this.MergeAnimationClassIfChanged();
+    this.MergeAnimationStyleIfChanged();
+    this.MergeColorFromState(this.styles.icon);
+
+    const icon = this._buildIcon(
+      this._card.entities[this.defaultEntityIndex()],
+      this.config.hasOwnProperty('entity_index') ? this._card.config.entities[this.defaultEntityIndex()] : undefined,
+      this.config.icon,
+    );
+
+    if (true || (this.svg.xpx === 0)) {
+      this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
+      this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
+
+      // NEW NEW NEW Use % for size of icon...
+      this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
+      this.svg.iconPixels = Utils.calculateSvgDimension(this.svg.iconSize);
+
+      const align = this.config.position.align ? this.config.position.align : 'center';
+      const adjust = (align === 'center' ? 0.5 : (align === 'start' ? -1 : +1));
+
+      const clientWidth = 400;
+      const correction = clientWidth / (this._card.viewBox.width);
+
+      this.svg.xpx = this.svg.cx;// (x * this._card.viewBox.width);
+      this.svg.ypx = this.svg.cy;// (y * this._card.viewBox.height);
+
+      if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafari16)) {
+        // correction = 1; //
+        this.svg.iconSize = this.svg.iconSize * correction;
+        this.svg.iconPixels = this.svg.iconPixels * correction;
+
+        this.svg.xpx = (this.svg.xpx * correction) - (this.svg.iconPixels * adjust * correction);
+        this.svg.ypx = (this.svg.ypx * correction) - (this.svg.iconPixels * 0.9 * correction);
+        // - (this.svg.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
+        this.svg.xpx = (this.svg.cx * correction) - (this.svg.iconPixels * adjust * correction);
+        this.svg.ypx = (this.svg.cy * correction) - (this.svg.iconPixels * adjust * correction);
+      } else {
+        // Get x,y in viewbox dimensions and center with half of size of icon.
+        // Adjust horizontal for aligning. Can be 1, 0.5 and -1
+
+        this.svg.xpx = this.svg.cx - (this.svg.iconPixels * adjust);
+        this.svg.ypx = this.svg.cy - (this.svg.iconPixels * adjust);
+
+        if (this.dev.debug) console.log('EntityIconTool::_renderIcon - svg values =', this.toolId, this.svg, this.config.cx, this.config.cy, align, adjust);
+      }
+    }
+
+    if (!this.alternateColor) { this.alternateColor = 'rgba(0,0,0,0)'; }
+
+    if (!SwissArmyKnifeCard.sakIconCache[icon]) {
+      const theQuery = this._card.shadowRoot.getElementById('icon-'.concat(this.toolId))?.shadowRoot?.querySelectorAll('*');
+      if (theQuery) {
+        this.iconSvg = theQuery[0]?.path;
+      } else {
+        this.iconSvg = undefined;
+      }
+
+      if (!this.iconSvg) {
+      } else {
+        SwissArmyKnifeCard.sakIconCache[icon] = this.iconSvg;
+      }
+    } else {
+      this.iconSvg = SwissArmyKnifeCard.sakIconCache[icon];
+    }
+
+    let scale;
+
+    // NTS@20201.12.24
+    // Add (true) to force rendering the Safari like solution for icons.
+    // After the above fix, it seems to work for both Chrome and Safari browsers.
+    // That is nice. Now animations also work on Chrome...
+
+    if (this.iconSvg) {
+      // Use original size, not the corrected one!
+      this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
+      this.svg.iconPixels = Utils.calculateSvgDimension(this.svg.iconSize);
+
+      this.svg.x1 = this.svg.cx - this.svg.iconPixels / 2;
+      this.svg.y1 = this.svg.cy - this.svg.iconPixels / 2;
+      this.svg.x1 = this.svg.cx - (this.svg.iconPixels * 0.5);
+      this.svg.y1 = this.svg.cy - (this.svg.iconPixels * 0.5);
+
+      scale = this.svg.iconPixels / 24;
+      // scale = 1;
+      // Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required
+      // to position the icon on its desired location.
+      // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
+      return svg`
+        <g id="icon-${this.toolId}" class="${classMap(this.classes.icon)}" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
+          <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke-width="0px" fill="rgba(0,0,0,0)"></rect>
+          <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
+        <g>
+      `;
+    } else {
+      // Note @2022.06.26
+      // overflow="hidden" is ignored by latest and greatest Safari 15.5. Wow. Nice! Good work!
+      // So use a fill/color of rgba(0,0,0,0)...
+      return svg`
+        <foreignObject width="0px" height="0px" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="hidden">
+          <body>
+            <div class="div__icon, hover" xmlns="http://www.w3.org/1999/xhtml"
+                style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};fill:${this.alternateColor};color:${this.alternateColor};">
+                <ha-icon icon=${icon} id="icon-${this.toolId}"
+                @animationstart=${(e) => this._handleAnimationEvent(e, this)}
+                @animationiteration=${(e) => this._handleAnimationEvent(e, this)}
+                style="animation: flash 0.15s 20;"></ha-icon>
+            </div>
+          </body>
+        </foreignObject>
+        `;
+    }
+  }
+
+  _handleAnimationEvent(argEvent, argThis) {
+    argEvent.stopPropagation();
+    argEvent.preventDefault();
+
+    argThis.iconSvg = this._card.shadowRoot.getElementById('icon-'.concat(this.toolId))?.shadowRoot?.querySelectorAll('*')[0]?.path;
+    if (argThis.iconSvg) {
+      argThis._card.requestUpdate();
+    } else {
+    }
+  }
+
+  firstUpdated(changedProperties) {
+
+  }
+
+  /** *****************************************************************************
+  * EntityIconTool::render()
+  *
+  * Summary.
+  * The render() function for this object.
+  *
+  * NTS:
+  * Adding        <style> div { overflow: hidden;}</style>
+  * to the <g group, clips the icon against the ha-card, ie the div.
+  * however, on Safari, all icons are clipped, as if they don't fit the room given to be displayed.
+  * a bug in rendering the Icon?? Only first time icon is clipped, then displayed normally if a data update
+  * from hass is coming in.
+  */
+
+  render() {
+    return svg`
+      <g "" id="icongrp-${this.toolId}" class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
+        @click=${(e) => this.handleTapEvent(e, this.config)} >
+
+        ${this._renderIcon()}
+      </g>
+    `;
+  }
+} // END of class
+
+// -- End of Can't split these yet, due to circular dependencies...
 
 // ++ Class ++++++++++
 
@@ -468,552 +723,15 @@ class Toolset {
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
-/** ****************************************************************************
-  * EntityIconTool class
-  *
-  * Summary.
-  *
-  */
-
-class EntityIconTool extends BaseTool {
-  constructor(argToolset, argConfig, argPos) {
-    const DEFAULT_ICON_CONFIG = {
-      classes: {
-        tool: {
-          'sak-icon': true,
-          hover: true,
-        },
-        icon: {
-          'sak-icon__icon': true,
-        },
-      },
-      styles: {
-        icon: {
-        },
-      },
-    };
-    super(argToolset, Merge.mergeDeep(DEFAULT_ICON_CONFIG, argConfig), argPos);
-
-    // from original
-    // this.config.entity = this.config.entity ? this.config.entity : 0;
-
-    // get icon size, and calculate the foreignObject position and size. This must match the icon size
-    // 1em = FONT_SIZE pixels, so we can calculate the icon size, and x/y positions of the foreignObject
-    // the viewport is 200x200, so we can calulate the offset.
-    //
-    // NOTE:
-    // Safari doesn't use the svg viewport for rendering of the foreignObject, but the real clientsize.
-    // So positioning an icon doesn't work correctly...
-
-    this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 3;
-    this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
-
-    const align = this.config.position.align ? this.config.position.align : 'center';
-    const adjust = (align === 'center' ? 0.5 : (align === 'start' ? -1 : +1));
-
-    const clientWidth = 400; // testing
-    const correction = clientWidth / this._card.viewBox.width;
-
-    this.svg.xpx = this.svg.cx;
-    this.svg.ypx = this.svg.cy;
-
-    if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafari16)) {
-      this.svg.iconSize = this.svg.iconSize * correction;
-
-      this.svg.xpx = (this.svg.xpx * correction) - (this.svg.iconPixels * adjust * correction);
-      this.svg.ypx = (this.svg.ypx * correction) - (this.svg.iconPixels * 0.5 * correction) - (this.svg.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
-    } else {
-      // Get x,y in viewbox dimensions and center with half of size of icon.
-      // Adjust horizontal for aligning. Can be 1, 0.5 and -1
-      // Adjust vertical for half of height... and correct for 0.25em textfont to align.
-      this.svg.xpx = this.svg.xpx - (this.svg.iconPixels * adjust);
-      this.svg.ypx = this.svg.ypx - (this.svg.iconPixels * 0.5) - (this.svg.iconPixels * 0.25);
-    }
-    this.classes.icon = {};
-    this.styles.icon = {};
-    if (this.dev.debug) console.log('EntityIconTool constructor coords, dimensions, config', this.coords, this.dimensions, this.config);
-  }
-
-  /** *****************************************************************************
-  * EntityIconTool::_buildIcon()
-  *
-  * Summary.
-  * Builds the Icon specification name.
-  *
-  */
-  _buildIcon(entityState, entityConfig, toolIcon) {
-    return (
-      this.activeAnimation?.icon // Icon from animation
-      || toolIcon // Defined by tool
-      || entityConfig?.icon // Defined by configuration
-      || entityState?.attributes?.icon // Using entity icon
-      || stateIcon(entityState) // Use card helper logic (2021.11.21)
-    );
-  }
-
-  /** *****************************************************************************
-  * EntityIconTool::_renderIcon()
-  *
-  * Summary.
-  * Renders the icon using precalculated coordinates and dimensions.
-  * Only the runtime style is calculated before rendering the icon
-  *
-  * THIS IS THE ONE!!!!
-  */
-
-  _renderIcon() {
-    this.MergeAnimationClassIfChanged();
-    this.MergeAnimationStyleIfChanged();
-    this.MergeColorFromState(this.styles.icon);
-
-    const icon = this._buildIcon(
-      this._card.entities[this.defaultEntityIndex()],
-      this.config.hasOwnProperty('entity_index') ? this._card.config.entities[this.defaultEntityIndex()] : undefined,
-      this.config.icon,
-    );
-
-    if (true || (this.svg.xpx === 0)) {
-      this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
-      this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
-
-      // NEW NEW NEW Use % for size of icon...
-      this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
-      this.svg.iconPixels = Utils.calculateSvgDimension(this.svg.iconSize);
-
-      const align = this.config.position.align ? this.config.position.align : 'center';
-      const adjust = (align === 'center' ? 0.5 : (align === 'start' ? -1 : +1));
-
-      const clientWidth = 400;
-      const correction = clientWidth / (this._card.viewBox.width);
-
-      this.svg.xpx = this.svg.cx;// (x * this._card.viewBox.width);
-      this.svg.ypx = this.svg.cy;// (y * this._card.viewBox.height);
-
-      if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafari16)) {
-        // correction = 1; //
-        this.svg.iconSize = this.svg.iconSize * correction;
-        this.svg.iconPixels = this.svg.iconPixels * correction;
-
-        this.svg.xpx = (this.svg.xpx * correction) - (this.svg.iconPixels * adjust * correction);
-        this.svg.ypx = (this.svg.ypx * correction) - (this.svg.iconPixels * 0.9 * correction);
-        // - (this.svg.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
-        this.svg.xpx = (this.svg.cx * correction) - (this.svg.iconPixels * adjust * correction);
-        this.svg.ypx = (this.svg.cy * correction) - (this.svg.iconPixels * adjust * correction);
-      } else {
-        // Get x,y in viewbox dimensions and center with half of size of icon.
-        // Adjust horizontal for aligning. Can be 1, 0.5 and -1
-
-        this.svg.xpx = this.svg.cx - (this.svg.iconPixels * adjust);
-        this.svg.ypx = this.svg.cy - (this.svg.iconPixels * adjust);
-
-        if (this.dev.debug) console.log('EntityIconTool::_renderIcon - svg values =', this.toolId, this.svg, this.config.cx, this.config.cy, align, adjust);
-      }
-    }
-
-    if (!this.alternateColor) { this.alternateColor = 'rgba(0,0,0,0)'; }
-
-    if (!SwissArmyKnifeCard.sakIconCache[icon]) {
-      const theQuery = this._card.shadowRoot.getElementById('icon-'.concat(this.toolId))?.shadowRoot?.querySelectorAll('*');
-      if (theQuery) {
-        this.iconSvg = theQuery[0]?.path;
-      } else {
-        this.iconSvg = undefined;
-      }
-
-      if (!this.iconSvg) {
-      } else {
-        SwissArmyKnifeCard.sakIconCache[icon] = this.iconSvg;
-      }
-    } else {
-      this.iconSvg = SwissArmyKnifeCard.sakIconCache[icon];
-    }
-
-    let scale;
-
-    // NTS@20201.12.24
-    // Add (true) to force rendering the Safari like solution for icons.
-    // After the above fix, it seems to work for both Chrome and Safari browsers.
-    // That is nice. Now animations also work on Chrome...
-
-    if (this.iconSvg) {
-      // Use original size, not the corrected one!
-      this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
-      this.svg.iconPixels = Utils.calculateSvgDimension(this.svg.iconSize);
-
-      this.svg.x1 = this.svg.cx - this.svg.iconPixels / 2;
-      this.svg.y1 = this.svg.cy - this.svg.iconPixels / 2;
-      this.svg.x1 = this.svg.cx - (this.svg.iconPixels * 0.5);
-      this.svg.y1 = this.svg.cy - (this.svg.iconPixels * 0.5);
-
-      scale = this.svg.iconPixels / 24;
-      // scale = 1;
-      // Icon is default drawn at 0,0. As there is no separate viewbox, a transform is required
-      // to position the icon on its desired location.
-      // Icon is also drawn in a default 24x24 viewbox. So scale the icon to the required size using scale()
-      return svg`
-        <g id="icon-${this.toolId}" class="${classMap(this.classes.icon)}" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
-          <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke-width="0px" fill="rgba(0,0,0,0)"></rect>
-          <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
-        <g>
-      `;
-    } else {
-      // Note @2022.06.26
-      // overflow="hidden" is ignored by latest and greatest Safari 15.5. Wow. Nice! Good work!
-      // So use a fill/color of rgba(0,0,0,0)...
-      return svg`
-        <foreignObject width="0px" height="0px" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="hidden">
-          <body>
-            <div class="div__icon, hover" xmlns="http://www.w3.org/1999/xhtml"
-                style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};fill:${this.alternateColor};color:${this.alternateColor};">
-                <ha-icon icon=${icon} id="icon-${this.toolId}"
-                @animationstart=${(e) => this._handleAnimationEvent(e, this)}
-                @animationiteration=${(e) => this._handleAnimationEvent(e, this)}
-                style="animation: flash 0.15s 20;"></ha-icon>
-            </div>
-          </body>
-        </foreignObject>
-        `;
-    }
-  }
-
-  _handleAnimationEvent(argEvent, argThis) {
-    argEvent.stopPropagation();
-    argEvent.preventDefault();
-
-    argThis.iconSvg = this._card.shadowRoot.getElementById('icon-'.concat(this.toolId))?.shadowRoot?.querySelectorAll('*')[0]?.path;
-    if (argThis.iconSvg) {
-      argThis._card.requestUpdate();
-    } else {
-    }
-  }
-
-  firstUpdated(changedProperties) {
-
-  }
-
-  /** *****************************************************************************
-  * EntityIconTool::render()
-  *
-  * Summary.
-  * The render() function for this object.
-  *
-  * NTS:
-  * Adding        <style> div { overflow: hidden;}</style>
-  * to the <g group, clips the icon against the ha-card, ie the div.
-  * however, on Safari, all icons are clipped, as if they don't fit the room given to be displayed.
-  * a bug in rendering the Icon?? Only first time icon is clipped, then displayed normally if a data update
-  * from hass is coming in.
-  */
-
-  render() {
-    return svg`
-      <g "" id="icongrp-${this.toolId}" class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
-        @click=${(e) => this.handleTapEvent(e, this.config)} >
-
-        ${this._renderIcon()}
-      </g>
-    `;
-  }
-} // END of class
-
 /**
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
-/** ****************************************************************************
-  * BadgeTool class
-  *
-  * Summary.
-  *
-  */
-
-class BadgeTool extends BaseTool {
-  constructor(argToolset, argConfig, argPos) {
-    const DEFAULT_BADGE_CONFIG = {
-      position: {
-        cx: 50,
-        cy: 50,
-        width: 100,
-        height: 25,
-        radius: 5,
-        ratio: 30,
-        divider: 30,
-      },
-      classes: {
-        tool: {
-          'sak-badge': true,
-          hover: true,
-        },
-        left: {
-          'sak-badge__left': true,
-        },
-        right: {
-          'sak-badge__right': true,
-        },
-      },
-      styles: {
-        left: {
-        },
-        right: {
-        },
-      },
-    };
-    super(argToolset, Merge.mergeDeep(DEFAULT_BADGE_CONFIG, argConfig), argPos);
-
-    // Coordinates from left and right part.
-    this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius);
-    this.svg.leftXpos = this.svg.x;
-    this.svg.leftYpos = this.svg.y;
-    this.svg.leftWidth = (this.config.position.ratio / 100) * this.svg.width;
-    this.svg.arrowSize = (this.svg.height * this.config.position.divider / 100) / 2;
-    this.svg.divSize = (this.svg.height * (100 - this.config.position.divider) / 100) / 2;
-
-    this.svg.rightXpos = this.svg.x + this.svg.leftWidth;
-    this.svg.rightYpos = this.svg.y;
-    this.svg.rightWidth = ((100 - this.config.position.ratio) / 100) * this.svg.width;
-
-    this.classes.left = {};
-    this.classes.right = {};
-    this.styles.left = {};
-    this.styles.right = {};
-    if (this.dev.debug) console.log('BadgeTool constructor coords, dimensions', this.svg, this.config);
-  }
-
-  /** *****************************************************************************
-  * BadgeTool::_renderBadge()
-  *
-  * Summary.
-  * Renders the badge using precalculated coordinates and dimensions.
-  * Only the runtime style is calculated before rendering the badge
-  *
-  * Refs for creating the path online:
-  * - https://mavo.io/demos/svgpath/
-  *
-  */
-
-  _renderBadge() {
-    let svgItems = [];
-
-    this.MergeAnimationClassIfChanged();
-    this.MergeAnimationStyleIfChanged();
-
-    svgItems = svg`
-      <g  id="badge-${this.toolId}">
-        <path class="${classMap(this.classes.right)}" d="
-            M ${this.svg.rightXpos} ${this.svg.rightYpos}
-            h ${this.svg.rightWidth - this.svg.radius}
-            a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} ${this.svg.radius}
-            v ${this.svg.height - 2 * this.svg.radius}
-            a ${this.svg.radius} ${this.svg.radius} 0 0 1 -${this.svg.radius} ${this.svg.radius}
-            h -${this.svg.rightWidth - this.svg.radius}
-            v -${this.svg.height - 2 * this.svg.radius}
-            z
-            "
-            style="${styleMap(this.styles.right)}"/>
-
-        <path class="${classMap(this.classes.left)}" d="
-            M ${this.svg.leftXpos + this.svg.radius} ${this.svg.leftYpos}
-            h ${this.svg.leftWidth - this.svg.radius}
-            v ${this.svg.divSize}
-            l ${this.svg.arrowSize} ${this.svg.arrowSize}
-            l -${this.svg.arrowSize} ${this.svg.arrowSize}
-            l 0 ${this.svg.divSize}
-            h -${this.svg.leftWidth - this.svg.radius}
-            a -${this.svg.radius} -${this.svg.radius} 0 0 1 -${this.svg.radius} -${this.svg.radius}
-            v -${this.svg.height - 2 * this.svg.radius}
-            a ${this.svg.radius} ${this.svg.radius} 0 0 1 ${this.svg.radius} -${this.svg.radius}
-            "
-            style="${styleMap(this.styles.left)}"/>
-      </g>
-      `;
-
-    return svg`${svgItems}`;
-  }
-
-  /** *****************************************************************************
-  * BadgeTool::render()
-  *
-  * Summary.
-  * The render() function for this object.
-  *
-  */
-  render() {
-    return svg`
-      <g id="badge-${this.toolId}" class="${classMap(this.classes.tool)}"
-        @click=${(e) => this.handleTapEvent(e, this.config)}>
-        ${this._renderBadge()}
-      </g>
-    `;
-  }
-} // END of class
-
 /**
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
-
-/** ****************************************************************************
-  * EntityStateTool class
-  *
-  * Summary.
-  *
-  */
-
-class EntityStateTool extends BaseTool {
-  constructor(argToolset, argConfig, argPos) {
-    const DEFAULT_STATE_CONFIG = {
-      show: { uom: 'end' },
-      classes: {
-        tool: {
-          'sak-state': true,
-          hover: true,
-        },
-        state: {
-          'sak-state__value': true,
-        },
-        uom: {
-          'sak-state__uom': true,
-        },
-      },
-      styles: {
-        state: {
-        },
-        uom: {
-        },
-      },
-    };
-    super(argToolset, Merge.mergeDeep(DEFAULT_STATE_CONFIG, argConfig), argPos);
-
-    this.classes.state = {};
-    this.classes.uom = {};
-
-    this.styles.state = {};
-    this.styles.uom = {};
-    if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
-  }
-
-  // EntityStateTool::value
-  set value(state) {
-    const changed = super.value = state;
-
-    return changed;
-  }
-
-  _renderState() {
-    this.MergeAnimationClassIfChanged();
-    this.MergeAnimationStyleIfChanged();
-    this.MergeColorFromState(this.styles.state);
-
-    // var inState = this._stateValue?.toLowerCase();
-    let inState = this._stateValue;
-
-    if ((inState) && isNaN(inState)) {
-      // const stateObj = this._card.config.entities[this.defaultEntityIndex()].entity;
-      const stateObj = this._card.entities[this.defaultEntityIndex()];
-      const domain = this._card._computeDomain(this._card.config.entities[this.defaultEntityIndex()].entity);
-
-      const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
-      const localeTag1 = stateObj.attributes?.device_class ? `component.${domain}.state.${stateObj.attributes.device_class}.${inState}` : '--';
-      const localeTag2 = `component.${domain}.state._.${inState}`;
-
-      inState = (localeTag && this._card.toLocale(localeTag, inState))
-          || (stateObj.attributes?.device_class
-          && this._card.toLocale(localeTag1, inState))
-          || this._card.toLocale(localeTag2, inState)
-          || stateObj.state;
-
-      inState = this.textEllipsis(inState, this.config?.show?.ellipsis);
-    }
-
-    return svg`
-      <tspan class="${classMap(this.classes.state)}" x="${this.svg.x}" y="${this.svg.y}"
-        style="${styleMap(this.styles.state)}">
-        ${this.config?.text?.before ? this.config.text.before : ''}${inState}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
-    `;
-  }
-
-  _renderUom() {
-    if (this.config.show.uom === 'none') {
-      return svg``;
-    } else {
-      this.MergeAnimationStyleIfChanged();
-      this.MergeColorFromState(this.styles.uom);
-
-      let fsuomStr = this.styles.state['font-size'];
-
-      let fsuomValue = 0.5;
-      let fsuomType = 'em';
-      const fsuomSplit = fsuomStr.match(/\D+|\d*\.?\d+/g);
-      if (fsuomSplit.length === 2) {
-        fsuomValue = Number(fsuomSplit[0]) * 0.6;
-        fsuomType = fsuomSplit[1];
-      } else console.error('Cannot determine font-size for state/unit', fsuomStr);
-
-      fsuomStr = { 'font-size': fsuomValue + fsuomType };
-
-      this.styles.uom = Merge.mergeDeep(this.config.styles.uom, fsuomStr);
-
-      const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.defaultEntityIndex()], this._card.config.entities[this.defaultEntityIndex()]);
-
-      // Check for location of uom. end = next to state, bottom = below state ;-), etc.
-      if (this.config.show.uom === 'end') {
-        return svg`
-          <tspan class="${classMap(this.classes.uom)}" dx="-0.1em" dy="-0.35em"
-            style="${styleMap(this.styles.uom)}">
-            ${uom}</tspan>
-        `;
-      } else if (this.config.show.uom === 'bottom') {
-        return svg`
-          <tspan class="${classMap(this.classes.uom)}" x="${this.svg.x}" dy="1.5em"
-            style="${styleMap(this.styles.uom)}">
-            ${uom}</tspan>
-        `;
-      } else if (this.config.show.uom === 'top') {
-        return svg`
-          <tspan class="${classMap(this.classes.uom)}" x="${this.svg.x}" dy="-1.5em"
-            style="${styleMap(this.styles.uom)}">
-            ${uom}</tspan>
-        `;
-      } else {
-        return svg``;
-      }
-    }
-  }
-
-  firstUpdated(changedProperties) {
-  }
-
-  updated(changedProperties) {
-  }
-
-  render() {
-    if (true || (this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id) === 'sensor')) {
-      return svg`
-    <svg overflow="visible" id="state-${this.toolId}" class="${classMap(this.classes.tool)}">
-        <text @click=${(e) => this.handleTapEvent(e, this.config)}>
-          ${this._renderState()}
-          ${this._renderUom()}
-        </text>
-      </svg>
-      `;
-    } else {
-      // Not a sensor. Might be any other domain. Unit can only be specified using the units: in the configuration.
-      // Still check for using an attribute value for the domain...
-      return svg`
-        <text 
-        @click=${(e) => this.handleTapEvent(e, this.config)}>
-          <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}" dx="${dx}em" dy="${dy}em"
-            style="${configStyleStr}">
-            ${state}</tspan>
-          <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
-            style="${uomStyleStr}">
-            ${uom}</tspan>
-        </text>
-      `;
-    }
-  } // render()
-}
 
 /**
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
