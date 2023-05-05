@@ -17,7 +17,7 @@ const serveopts = {
 };
 
 export default {
-  input: 'srcjs/swiss-army-knife-card.js',
+  input: 'srcjs/main.js',
   output: {
     file: 'distjs/swiss-army-knife-card-bundle.js',
     format: 'es',

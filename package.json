@@ -1,6 +1,6 @@
 {
   "name": "swiss-army-knife",
-  "version": "2.4.2",
+  "version": "2.4.2-split",
   "description": "Swiss Army Knife for Lovelace",
   "main": "srcjs/swiss-army-knife-card.js",
   "type": "module",
