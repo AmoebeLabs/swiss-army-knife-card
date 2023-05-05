@@ -1,4 +1,3 @@
-import { LitElement, html, css } from 'lit-element';
 import Merge from './merge';
 import Utils from './utils';
 import Templates from './templates';
