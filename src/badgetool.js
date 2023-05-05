@@ -2,7 +2,7 @@ import { svg } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
-import Merge from './merge';
+import Merge from '../srcjs/merge';
 import Utils from './utils';
 import BaseTool from './basetool';
 
