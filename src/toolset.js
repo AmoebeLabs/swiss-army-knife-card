@@ -4,28 +4,28 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 
 import { SVG_DEFAULT_DIMENSIONS, SVG_DEFAULT_DIMENSIONS_HALF } from './const';
 import Merge from './merge';
-import BaseTool from './basetool';
+import BaseTool from './base-tool';
 import Utils from './utils';
 
-import BadgeTool from './badgetool';
-import CircleTool from './circletool';
-import CircularSliderTool from './circularslidertool';
-import EllipseTool from './ellipsetool';
-import EntityAreaTool from './entityareatool';
-import EntityIconTool from './entityicontool';
-import EntityNameTool from './entitynametool';
-import EntityStateTool from './entitystatetool';
-import HorseshoeTool from './horseshoetool';
-import LineTool from './linetool';
-import RangeSliderTool from './rangeslidertool';
-import RectangleTool from './rectangletool';
-import RectangleToolEx from './rectangletoolex';
-import RegPolyTool from './regpolytool';
-import SegmentedArcTool from './segmentedarctool';
-import SparklineBarChartTool from './sparklinebarcharttool';
-import SwitchTool from './switchtool';
-import TextTool from './texttool';
-import UserSvgTool from './usersvg';
+import BadgeTool from './badge-tool';
+import CircleTool from './circle-tool';
+import CircularSliderTool from './circular-slider-tool';
+import EllipseTool from './ellipse-tool';
+import EntityAreaTool from './entity-area-tool';
+import EntityIconTool from './entity-icon-tool';
+import EntityNameTool from './entity-name-tool';
+import EntityStateTool from './entity-state-tool';
+import HorseshoeTool from './horseshoe-tool';
+import LineTool from './line-tool';
+import RangeSliderTool from './range-slider-tool';
+import RectangleTool from './rectangle-tool';
+import RectangleToolEx from './rectangle-tool-ex';
+import RegPolyTool from './regular-polygon-tool';
+import SegmentedArcTool from './segmented-arc-tool';
+import SparklineBarChartTool from './sparkline-barchart-tool';
+import SwitchTool from './switch-tool';
+import TextTool from './text-tool';
+import UserSvgTool from './user-svg-tool';
 
 /** ***************************************************************************
   * Toolset class
