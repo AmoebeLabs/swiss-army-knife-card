@@ -6,7 +6,7 @@ import terser from '@rollup/plugin-terser';
 
 const dev = process.env.ROLLUP_WATCH;
 const serveopts = {
-  contentBase: ['distjs'],
+  contentBase: ['dist'],
   host: '0.0.0.0',
   port: 5050,
   open: true,

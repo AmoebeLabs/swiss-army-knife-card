@@ -4,6 +4,8 @@ parserOptions:
   sourceType: module
 ignorePatterns:
   - /distjs/*
+  - /dist/*
+  - /src/swiss-army-knife-card.js
 rules:
   no-else-return: 0
   no-underscore-dangle: 0
