@@ -5,7 +5,7 @@ import { stateIcon } from 'custom-card-helpers';
 
 import { FONT_SIZE } from './const';
 import Merge from './merge';
-import BaseTool from './basetool';
+import BaseTool from './base-tool';
 import Utils from './utils';
 
 /** ****************************************************************************

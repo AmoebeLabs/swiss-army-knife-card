@@ -3,7 +3,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
 import Merge from './merge';
-import BaseTool from './basetool';
+import BaseTool from './base-tool';
 
 /** ****************************************************************************
   * TextTool class

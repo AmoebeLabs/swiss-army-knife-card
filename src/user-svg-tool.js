@@ -3,7 +3,7 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 
 import Merge from './merge';
 import Utils from './utils';
-import BaseTool from './basetool';
+import BaseTool from './base-tool';
 import Templates from './templates';
 
 /** ****************************************************************************
