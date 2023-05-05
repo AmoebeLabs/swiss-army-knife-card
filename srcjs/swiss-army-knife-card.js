@@ -27,25 +27,19 @@
 // NTS @2021.10.31
 // Check compatibility when upgrading lit stuff. Many versions have conflicts!
 // Use compatible lit-* stuff, ie lit-element@2 and lit-html@1.
-// Combining other versions may lead to incompatibility, and thus lots of errors and tools not working anymore!
+// Combining other versions may lead to incompatibility, and thus lots of errors and
+// tools not working anymore!
 
 import {
   LitElement, html, css, svg, unsafeCSS,
 } from 'lit-element';
-// } from "https://unpkg.com/lit-element@2.5.1/lit-element.js?module";
 
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { ifDefined } from 'lit-html/directives/if-defined.js';
-// import {
-//  unsafeSVG, styleMap, ifDefined,
-// } from 'lit-html/directives';
-
-import { selectUnit } from '@formatjs/intl-utils';// https://unpkg.com/@formatjs/intl-utils@3.8.4/lib/index.js?module';
-
-import { fireEvent, stateIcon } from 'custom-card-helpers';// https://unpkg.com/custom-card-helpers@1.8.0/dist/index.m.js?module';
-
+import { selectUnit } from '@formatjs/intl-utils';
+import { fireEvent, stateIcon } from 'custom-card-helpers';
 import { version } from '../package.json';
 
 // Original injector is buggy. Use a patched version, and store this local...
@@ -233,7 +227,7 @@ class Templates {
   */
 
   static replaceVariables3(argVariables, argTemplate) {
-    // If no variables specified, return template contents, so not the first object, but the contents!!!
+    // If no variables specified, return template contents, not the first object, but the contents!
     // ie template.toolset or template.colorstops. The toolset and colorstops objects are removed...
     //
     // If not, one gets toolsets[1].toolset.position iso toolsets[1].position.
@@ -472,7 +466,7 @@ class Toolset {
 
       if (!toolConfig.disabled) {
         const newTool = new toolsNew[toolConfig.type](this, argConfig, argPos);
-        this._card.entityHistory.needed |= (toolConfig.type == 'bar');
+        this._card.entityHistory.needed |= (toolConfig.type === 'bar');
         this.tools.push({ type: toolConfig.type, index: toolConfig.id, tool: newTool });
       }
     });
@@ -494,8 +488,7 @@ class Toolset {
     if (this.dev.performance) console.time(`--> ${this.toolsetId} PERFORMANCE Toolset::updateValues`);
     if (this.tools) {
       this.tools.map((item, index) => {
-        if (true || item.type == 'segarc') {
-          // if (this.dev.debug) console.log('Toolset::updateValues', item, index);
+        if (true || item.type === 'segarc') {
           if ((item.tool.config.hasOwnProperty('entity_index'))) {
             if (this.dev.debug) console.log('Toolset::updateValues', item, index);
             // if (this.dev.debug) console.log('Toolset::updateValues', typeof item.tool._stateValue);
@@ -517,9 +510,7 @@ class Toolset {
                 : this._card.entitiesStr[item.tool.config.entity_index];
           }
 
-          // #TODO @2021.11.22
-          // Future extension to use multiple entity indexes (array of entity_index values) for animation/styling...
-          // NOT used yet...
+          // Check for multiple entities specified, and pass them to the tool
           if ((item.tool.config.hasOwnProperty('entity_indexes'))) {
             // Update list of entities in single record and pass that to the tool
             // The first entity is used as the state, additional entities can help with animations,
@@ -756,8 +747,7 @@ class BaseTool {
 
     // Process basic color stuff.
     if (!this.config?.show?.style) {
-      if (!this.config.show)
-        this.config.show = {};
+      if (!this.config.show) this.config.show = {};
       this.config.show.style = 'default';
     }
     // Get colorstops and make a key/value store...
@@ -768,7 +758,7 @@ class BaseTool {
       });
     }
 
-    if ((this.config.show.style == 'colorstop') && (this.config?.colorstops.colors)) {
+    if ((this.config.show.style === 'colorstop') && (this.config?.colorstops.colors)) {
       this.sortedColorStops = Object.keys(this.config.colorstops.colors).map((n) => Number(n)).sort((a, b) => a - b);
     }
 
@@ -873,14 +863,14 @@ class BaseTool {
           if (typeof (this._stateValue) === 'undefined') {
             isMatch = (typeof item.state === 'undefined') || (item.state.toLowerCase() === 'undefined');
           } else {
-            isMatch = this._stateValue.toLowerCase() == item.state.toLowerCase();
+            isMatch = this._stateValue.toLowerCase() === item.state.toLowerCase();
           }
           break;
         case '!=':
           if (typeof (this._stateValue) === 'undefined') {
-            isMatch = (item.state.toLowerCase() != 'undefined');
+            isMatch = (item.state.toLowerCase() !== 'undefined');
           } else {
-            isMatch = this._stateValue.toLowerCase() != item.state.toLowerCase();
+            isMatch = this._stateValue.toLowerCase() !== item.state.toLowerCase();
           }
           break;
         case '>':
@@ -896,8 +886,9 @@ class BaseTool {
             isMatch = Number(this._stateValue.toLowerCase()) >= Number(item.state.toLowerCase());
           break;
         case '<=':
-          if (typeof (this._stateValue) !== 'undefined')
+          if (typeof (this._stateValue) !== 'undefined') {
             isMatch = Number(this._stateValue.toLowerCase()) <= Number(item.state.toLowerCase());
+          }
           break;
         default:
           // Unknown operator. Just do nothing and return;
@@ -906,7 +897,7 @@ class BaseTool {
       if (this.dev.debug) console.log('BaseTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
       if (!isMatch) return true;
 
-      if (!this.animationClass || !item.reuse) this.animationClass = {};
+      if (!this.animationClass || !item.reuse) { this.animationClass = {}; }
       if (item.classes) {
         this.animationClass = Merge.mergeDeep(this.animationClass, item.classes);
       }
@@ -950,7 +941,7 @@ class BaseTool {
   }
 
   getIndexInEntityIndexes(entityIdx) {
-    return this.config.entity_indexes.findIndex((element) => element.entity_index == entityIdx);
+    return this.config.entity_indexes.findIndex((element) => element.entity_index === entityIdx);
   }
 
   stateIsMatch(animation, state) {
@@ -969,14 +960,14 @@ class BaseTool {
         if (typeof (state) === 'undefined') {
           isMatch = (typeof item.state === 'undefined') || (item.state.toLowerCase() === 'undefined');
         } else {
-          isMatch = state.toLowerCase() == item.state.toLowerCase();
+          isMatch = state.toLowerCase() === item.state.toLowerCase();
         }
         break;
       case '!=':
         if (typeof (state) === 'undefined') {
-          isMatch = (typeof item.state !== 'undefined') || (item.state.toLowerCase() != 'undefined');
+          isMatch = (typeof item.state !== 'undefined') || (item.state.toLowerCase() !== 'undefined');
         } else {
-          isMatch = state.toLowerCase() != item.state.toLowerCase();
+          isMatch = state.toLowerCase() !== item.state.toLowerCase();
         }
         break;
       case '>':
@@ -1091,7 +1082,7 @@ class BaseTool {
       }
 
       if (this.styles.card) {
-        if (Object.keys(this.styles.card).length != 0) {
+        if (Object.keys(this.styles.card).length !== 0) {
           this._card.styles.card = Merge.mergeDeep(this.styles.card);
         }
       }
@@ -1131,7 +1122,7 @@ class BaseTool {
   MergeColorFromState(argStyleMap) {
     if (this.config.hasOwnProperty('entity_index')) {
       const color = this.getColorFromState(this._stateValue);
-      if (color != '') {
+      if (color !== '') {
         argStyleMap.fill = this.config[this.config.show.style].fill ? color : '';
         argStyleMap.stroke = this.config[this.config.show.style].stroke ? color : '';
 
@@ -1153,10 +1144,10 @@ class BaseTool {
     if (this.config.hasOwnProperty('entity_index')) {
       const fillColor = this.config[this.config.show.style].fill ? this.getColorFromState2(this._stateValue, argPart, 'fill') : '';
       const strokeColor = this.config[this.config.show.style].stroke ? this.getColorFromState2(this._stateValue, argPart, 'stroke') : '';
-      if (fillColor != '') {
+      if (fillColor !== '') {
         argStyleMap.fill = fillColor;
       }
-      if (strokeColor != '') {
+      if (strokeColor !== '') {
         argStyleMap.stroke = strokeColor;
       }
     }
@@ -1664,7 +1655,7 @@ class CircularSliderTool extends BaseTool {
     const x = 10 ** dec;
     this.labelValue2 = (Math.round(this.pointToSliderValue(m) * x) / x).toFixed(dec);
 
-    if (this.config.position.label.placement != 'none') {
+    if (this.config.position.label.placement !== 'none') {
       this.elements.label.textContent = this.labelValue2;
     }
   }
@@ -1687,7 +1678,7 @@ class CircularSliderTool extends BaseTool {
   callDragService() {
     if (typeof this.labelValue2 === 'undefined') return;
 
-    if (this.labelValuePrev != this.labelValue2) {
+    if (this.labelValuePrev !== this.labelValue2) {
       this.labelValuePrev = this.labelValue2;
 
       this._processTapEvent(
@@ -1736,7 +1727,10 @@ class CircularSliderTool extends BaseTool {
     this.elements.thumb = this.elements.svg.querySelector('#thumb');
     this.elements.label = this.elements.svg.querySelector('#label tspan');
 
-    if (this.dev.debug) console.log('circslider - firstUpdated svg = ', this.elements.svg, 'activeTrack=', this.elements.activeTrack, 'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text);
+    if (this.dev.debug) console.log('circslider - firstUpdated svg = ',
+      this.elements.svg, 'activeTrack=', this.elements.activeTrack,
+      'thumb=', this.elements.thumb, 'label=', this.elements.label, 'text=', this.elements.text,
+    );
 
     const protectBorderPassing = () => {
       const diffMax = range(this.svg.scale.max, this.labelValue) <= this.rangeMax;
@@ -1951,7 +1945,7 @@ class CircularSliderTool extends BaseTool {
       let fsuomValue = 0.5;
       let fsuomType = 'em';
       const fsuomSplit = fsuomStr.match(/\D+|\d*\.?\d+/g);
-      if (fsuomSplit.length == 2) {
+      if (fsuomSplit.length === 2) {
         fsuomValue = Number(fsuomSplit[0]) * 0.6;
         fsuomType = fsuomSplit[1];
       } else console.error('Cannot determine font-size for state/unit', fsuomStr);
@@ -2017,7 +2011,7 @@ class CircularSliderTool extends BaseTool {
       this.renderValue = this.labelValue2;
     } else if (this.elements?.label) this.elements.label.textContent = this.renderValue;
     function renderLabel(argGroup) {
-      if ((this.config.position.label.placement == 'thumb') && argGroup) {
+      if ((this.config.position.label.placement === 'thumb') && argGroup) {
         return svg`
       <text id="label">
         <tspan class="${classMap(this.classes.label)}" x="${this.svg.label.cx}" y="${this.svg.label.cy}" style="${styleMap(this.styles.label)}">
@@ -2027,7 +2021,7 @@ class CircularSliderTool extends BaseTool {
         `;
       }
 
-      if ((this.config.position.label.placement == 'position') && !argGroup) {
+      if ((this.config.position.label.placement === 'position') && !argGroup) {
         return svg`
           <text id="label" style="transform-origin:center;transform-box: fill-box;">
             <tspan class="${classMap(this.classes.label)}" data-placement="position" x="${this.svg.label.cx}" y="${this.svg.label.cy}"
@@ -2409,7 +2403,7 @@ class RangeSliderTool extends BaseTool {
         this.svg.track.y1 = this.svg.cy - this.svg.track.height / 2;
 
         // x1, y1 = topleft corner
-        this.svg.activeTrack.x1 = (this.config.position.orientation == 'horizontal') ? this.svg.track.x1 : this.svg.cx - this.svg.activeTrack.width / 2;
+        this.svg.activeTrack.x1 = (this.config.position.orientation === 'horizontal') ? this.svg.track.x1 : this.svg.cx - this.svg.activeTrack.width / 2;
         this.svg.activeTrack.y1 = this.svg.cy - this.svg.activeTrack.height / 2;
         // this.svg.activeTrack.x1 = this.svg.track.x1;
 
@@ -2502,13 +2496,13 @@ class RangeSliderTool extends BaseTool {
   }
 
   valueToSvg(argThis, argValue) {
-    if (argThis.config.position.orientation == 'horizontal') {
+    if (argThis.config.position.orientation === 'horizontal') {
       const state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, argValue);
 
       const xposp = state * (argThis.svg.track.width - this.svg.thumb.width);
       const xpos = argThis.svg.track.x1 + this.svg.thumb.width / 2 + xposp;
       return xpos;
-    } else if (argThis.config.position.orientation == 'vertical') {
+    } else if (argThis.config.position.orientation === 'vertical') {
       const state = Utils.calculateValueBetween(argThis.config.scale.min, argThis.config.scale.max, argValue);
 
       const yposp = state * (argThis.svg.track.height - this.svg.thumb.height);
@@ -2534,11 +2528,11 @@ class RangeSliderTool extends BaseTool {
     switch (argThis.config.position.orientation) {
       default:
       case 'horizontal':
-        if (this.config.position.label.placement == 'thumb') {
+        if (this.config.position.label.placement === 'thumb') {
         }
 
         if (this.dragging) {
-          const yUp = (this.config.position.label.placement == 'thumb') ? -50 : 0;
+          const yUp = (this.config.position.label.placement === 'thumb') ? -50 : 0;
           const yUpStr = `translate(${m.x - this.svg.cx}px , ${yUp}px)`;
 
           argThis.elements.thumbGroup.style.transform = yUpStr;
@@ -2549,7 +2543,7 @@ class RangeSliderTool extends BaseTool {
 
       case 'vertical':
         if (this.dragging) {
-          const xUp = (this.config.position.label.placement == 'thumb') ? -50 : 0;
+          const xUp = (this.config.position.label.placement === 'thumb') ? -50 : 0;
           const xUpStr = `translate(${xUp}px, ${m.y - this.svg.cy}px)`;
           argThis.elements.thumbGroup.style.transform = xUpStr;
         } else {
@@ -2588,7 +2582,7 @@ class RangeSliderTool extends BaseTool {
     const x = 10 ** dec;
     argThis.labelValue2 = (Math.round(argThis.svgCoordinateToSliderValue(argThis, m) * x) / x).toFixed(dec);
 
-    if (this.config.position.label.placement != 'none') {
+    if (this.config.position.label.placement !== 'none') {
       argThis.elements.label.textContent = argThis.labelValue2;
     }
   }
@@ -2611,7 +2605,7 @@ class RangeSliderTool extends BaseTool {
   callDragService() {
     if (typeof this.labelValue2 === 'undefined') return;
 
-    if (this.labelValuePrev != this.labelValue2) {
+    if (this.labelValuePrev !== this.labelValue2) {
       this.labelValuePrev = this.labelValue2;
 
       this._processTapEvent(
@@ -2630,7 +2624,7 @@ class RangeSliderTool extends BaseTool {
   callTapService() {
     if (typeof this.labelValue2 === 'undefined') return;
 
-    if (this.labelValuePrev != this.labelValue2) {
+    if (this.labelValuePrev !== this.labelValue2) {
       this.labelValuePrev = this.labelValue2;
 
       this._processTapEvent(
@@ -2713,7 +2707,7 @@ class RangeSliderTool extends BaseTool {
       }
       this.m = this.mouseEventToPoint(e);
 
-      if (this.config.position.orientation == 'horizontal') {
+      if (this.config.position.orientation === 'horizontal') {
         this.m.x = (Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step);
       } else {
         this.m.y = (Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step);
@@ -2808,7 +2802,7 @@ class RangeSliderTool extends BaseTool {
       let fsuomValue = 0.5;
       let fsuomType = 'em';
       const fsuomSplit = fsuomStr.match(/\D+|\d*\.?\d+/g);
-      if (fsuomSplit.length == 2) {
+      if (fsuomSplit.length === 2) {
         fsuomValue = Number(fsuomSplit[0]) * 0.6;
         fsuomType = fsuomSplit[1];
       } else console.error('Cannot determine font-size for state/unit', fsuomStr);
@@ -2885,22 +2879,22 @@ class RangeSliderTool extends BaseTool {
         this.styles.uom.display = 'none';
         break;
       case 'position':
-        cx = (this.config.position.orientation == 'horizontal'
+        cx = (this.config.position.orientation === 'horizontal'
           ? this.valueToSvg(this, Number(this.renderValue)) - this.svg.cx
           : 0);
-        cy = (this.config.position.orientation == 'vertical'
+        cy = (this.config.position.orientation === 'vertical'
           ? this.valueToSvg(this, Number(this.renderValue)) - this.svg.cy
           : 0);
         break;
 
       case 'thumb':
-        cx = (this.config.position.orientation == 'horizontal'
+        cx = (this.config.position.orientation === 'horizontal'
           ? -this.svg.label.cx + this.valueToSvg(this, Number(this.renderValue))
           : 0);
-        cy = (this.config.position.orientation == 'vertical'
+        cy = (this.config.position.orientation === 'vertical'
           ? this.valueToSvg(this, Number(this.renderValue))
           : 0);
-        if (this.dragging) (this.config.position.orientation == 'horizontal') ? cy -= 50 : cx -= 50;
+        if (this.dragging) (this.config.position.orientation === 'horizontal') ? cy -= 50 : cx -= 50;
         break;
 
       default:
@@ -2942,7 +2936,7 @@ class RangeSliderTool extends BaseTool {
     }
 
     function renderLabel(argGroup) {
-      if ((this.config.position.label.placement == 'thumb') && argGroup) {
+      if ((this.config.position.label.placement === 'thumb') && argGroup) {
         return svg`
       <text id="rs-label">
         <tspan class="${classMap(this.classes.label)}" x="${this.svg.label.cx}" y="${this.svg.label.cy}" style="${styleMap(this.styles.label)}">
@@ -2952,7 +2946,7 @@ class RangeSliderTool extends BaseTool {
         `;
       }
 
-      if ((this.config.position.label.placement == 'position') && !argGroup) {
+      if ((this.config.position.label.placement === 'position') && !argGroup) {
         return svg`
           <text id="rs-label" style="transform-origin:center;transform-box: fill-box;">
             <tspan class="${classMap(this.classes.label)}" data-placement="position" x="${this.svg.label.cx}" y="${this.svg.label.cy}"
@@ -3075,24 +3069,24 @@ class LineTool extends BaseTool {
     if (['horizontal', 'vertical'].includes(this.config.position.orientation))
       this.svg.length = Utils.calculateSvgDimension(argConfig.position.length);
 
-    if (this.config.position.orientation == 'fromto') {
+    if (this.config.position.orientation === 'fromto') {
       this.svg.x1 = Utils.calculateSvgCoordinate(argConfig.position.x1, this.toolsetPos.cx);
       this.svg.y1 = Utils.calculateSvgCoordinate(argConfig.position.y1, this.toolsetPos.cy);
       this.svg.x2 = Utils.calculateSvgCoordinate(argConfig.position.x2, this.toolsetPos.cx);
       this.svg.y2 = Utils.calculateSvgCoordinate(argConfig.position.y2, this.toolsetPos.cy);
     }
 
-    if (this.config.position.orientation == 'vertical') {
+    if (this.config.position.orientation === 'vertical') {
       this.svg.x1 = this.svg.cx;
       this.svg.y1 = this.svg.cy - this.svg.length / 2;
       this.svg.x2 = this.svg.cx;
       this.svg.y2 = this.svg.cy + this.svg.length / 2;
-    } else if (this.config.position.orientation == 'horizontal') {
+    } else if (this.config.position.orientation === 'horizontal') {
       this.svg.x1 = this.svg.cx - this.svg.length / 2;
       this.svg.y1 = this.svg.cy;
       this.svg.x2 = this.svg.cx + this.svg.length / 2;
       this.svg.y2 = this.svg.cy;
-    } else if (this.config.position.orientation == 'fromto') {
+    } else if (this.config.position.orientation === 'fromto') {
     }
 
     this.classes.line = {};
@@ -3579,6 +3573,7 @@ class RegPolyTool extends BaseTool {
       for (let i = 0; i < p; i++) {
         angle += q * base_angle;
 
+        // Use ~~ as it is faster then Math.floor()
         x = cx + ~~(r * Math.cos(angle));
         y = cy + ~~(r * Math.sin(angle));
 
@@ -3690,7 +3685,7 @@ class UserSvgTool extends BaseTool {
     }.bind(this);
 
     // create injector configured by options
-    //this.injector.injector = new SVGInjector(this.injector.injectorOptions);
+    // this.injector.injector = new SVGInjector(this.injector.injectorOptions);
 
     this.clipPath = {};
 
@@ -4048,7 +4043,7 @@ class RectangleToolEx extends BaseTool {
     }
 
     if (!this.counter) { this.counter = 0; }
-    this.counter++;
+    this.counter += 1;
 
     const svgItems = svg`
       <g class="${classMap(this.classes.rectex)}" id="rectex-${this.toolId}">
@@ -4221,7 +4216,7 @@ class EntityIconTool extends BaseTool {
     this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
 
     const align = this.config.position.align ? this.config.position.align : 'center';
-    const adjust = (align == 'center' ? 0.5 : (align == 'start' ? -1 : +1));
+    const adjust = (align === 'center' ? 0.5 : (align === 'start' ? -1 : +1));
 
     const clientWidth = 400; // testing
     const correction = clientWidth / this._card.viewBox.width;
@@ -4284,7 +4279,7 @@ class EntityIconTool extends BaseTool {
       this.config.icon,
     );
 
-    if (true || (this.svg.xpx == 0)) {
+    if (true || (this.svg.xpx === 0)) {
       this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
       this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
 
@@ -4293,7 +4288,7 @@ class EntityIconTool extends BaseTool {
       this.svg.iconPixels = Utils.calculateSvgDimension(this.svg.iconSize);
 
       const align = this.config.position.align ? this.config.position.align : 'center';
-      const adjust = (align == 'center' ? 0.5 : (align == 'start' ? -1 : +1));
+      const adjust = (align === 'center' ? 0.5 : (align === 'start' ? -1 : +1));
 
       const clientWidth = 400;
       const correction = clientWidth / (this._card.viewBox.width);
@@ -4657,7 +4652,7 @@ class EntityStateTool extends BaseTool {
       let fsuomValue = 0.5;
       let fsuomType = 'em';
       const fsuomSplit = fsuomStr.match(/\D+|\d*\.?\d+/g);
-      if (fsuomSplit.length == 2) {
+      if (fsuomSplit.length === 2) {
         fsuomValue = Number(fsuomSplit[0]) * 0.6;
         fsuomType = fsuomSplit[1];
       } else console.error('Cannot determine font-size for state/unit', fsuomStr);
@@ -4700,7 +4695,7 @@ class EntityStateTool extends BaseTool {
   }
 
   render() {
-    if (true || (this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id) == 'sensor')) {
+    if (true || (this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id) === 'sensor')) {
       return svg`
     <svg overflow="visible" id="state-${this.toolId}" class="${classMap(this.classes.tool)}">
         <text @click=${(e) => this.handleTapEvent(e, this.config)}>
@@ -5135,7 +5130,7 @@ class HorseshoeTool extends BaseTool {
   */
 
   set value(state) {
-    if (this._stateValue == state) return false;
+    if (this._stateValue === state) return false;
 
     this._stateValuePrev = this._stateValue || state;
     this._stateValue = state;
@@ -5157,14 +5152,14 @@ class HorseshoeTool extends BaseTool {
 
     const strokeStyle = this.config.show.horseshoe_style;
 
-    if (strokeStyle == 'fixed') {
+    if (strokeStyle === 'fixed') {
       this.stroke_color = this.config.horseshoe_state.color;
       this.color0 = this.config.horseshoe_state.color;
       this.color1 = this.config.horseshoe_state.color;
       this.color1_offset = '0%';
       //  We could set the circle attributes, but we do it with a variable as we are using a gradient
       //  to display the horseshoe circle .. <horseshoe circle>.setAttribute('stroke', stroke);
-    } else if (strokeStyle == 'autominmax') {
+    } else if (strokeStyle === 'autominmax') {
       // Use color0 and color1 for autoranging the color of the horseshoe
       const stroke = this._card._calculateColor(state, this.colorStopsMinMax, true);
 
@@ -5173,7 +5168,7 @@ class HorseshoeTool extends BaseTool {
       this.color0 = stroke;
       this.color1 = stroke;
       this.color1_offset = '0%';
-    } else if (strokeStyle == 'colorstop' || strokeStyle == 'colorstopgradient') {
+    } else if (strokeStyle === 'colorstop' || strokeStyle === 'colorstopgradient') {
       const stroke = this._card._calculateColor(state, this.colorStops, strokeStyle === 'colorstopgradient');
 
       // We now use a gradient for the horseshoe, using two colors
@@ -5181,7 +5176,7 @@ class HorseshoeTool extends BaseTool {
       this.color0 = stroke;
       this.color1 = stroke;
       this.color1_offset = '0%';
-    } else if (strokeStyle == 'lineargradient') {
+    } else if (strokeStyle === 'lineargradient') {
       // This has taken a lot of time to get a satisfying result, and it appeared much simpler than anticipated.
       // I don't understand it, but for a circle, a gradient from left/right with adjusted stop is enough ?!?!?!
       // No calculations to adjust the angle of the gradient, or rotating the gradient itself.
@@ -5222,7 +5217,7 @@ class HorseshoeTool extends BaseTool {
     // fullScale is 260 degrees. Hard coded for now...
     const fullScale = 260;
     const remainder = config.horseshoe_scale.min % tickSize;
-    const startTickValue = config.horseshoe_scale.min + (remainder == 0 ? 0 : (tickSize - remainder));
+    const startTickValue = config.horseshoe_scale.min + (remainder === 0 ? 0 : (tickSize - remainder));
     const startAngle = ((startTickValue - config.horseshoe_scale.min)
                         / (config.horseshoe_scale.max - config.horseshoe_scale.min)) * fullScale;
     const tickSteps = ((config.horseshoe_scale.max - startTickValue) / tickSize);
@@ -5232,7 +5227,7 @@ class HorseshoeTool extends BaseTool {
     const angleStepSize = (fullScale - startAngle) / tickSteps;
 
     // If steps exactly match the max. value/range, add extra step for that max value.
-    if ((Math.floor(((steps) * tickSize) + startTickValue)) <= (config.horseshoe_scale.max)) { steps++; }
+    if ((Math.floor(((steps) * tickSize) + startTickValue)) <= (config.horseshoe_scale.max)) { steps += 1; }
 
     const radius = this.svg.horseshoe_scale.width ? this.svg.horseshoe_scale.width / 2 : 6 / 2;
     let angle;
@@ -5365,7 +5360,7 @@ class SparklineBarChartTool extends BaseTool {
     super(argToolset, Merge.mergeDeep(DEFAULT_BARCHART_CONFIG, argConfig), argPos);
 
     this.svg.margin = Utils.calculateSvgDimension(this.config.position.margin);
-    const theWidth = (this.config.position.orientation == 'vertical') ? this.svg.width : this.svg.height;
+    const theWidth = (this.config.position.orientation === 'vertical') ? this.svg.width : this.svg.height;
 
     this.svg.barWidth = (theWidth - (((this.config.hours / this.config.barhours) - 1)
                                 * this.svg.margin)) / (this.config.hours / this.config.barhours);
@@ -5454,11 +5449,11 @@ class SparklineBarChartTool extends BaseTool {
     }
 
     // VERTICAL
-    if (this.config.position.orientation == 'vertical') {
+    if (this.config.position.orientation === 'vertical') {
       if (this.dev.debug) console.log('bar is vertical');
       this._series.forEach((item, index) => {
         if (!_bars[index]) _bars[index] = {};
-        _bars[index].length = (this._scale.size == 0) ? 0 : ((item - this._scale.min) / (this._scale.size)) * this.svg.height;
+        _bars[index].length = (this._scale.size === 0) ? 0 : ((item - this._scale.min) / (this._scale.size)) * this.svg.height;
         _bars[index].x1 = this.svg.x + this.svg.barWidth / 2 + ((this.svg.barWidth + this.svg.margin) * index);
         _bars[index].x2 = _bars[index].x1;
         _bars[index].y1 = this.svg.y + this.svg.height;
@@ -5466,12 +5461,12 @@ class SparklineBarChartTool extends BaseTool {
         _bars[index].dataLength = this._bars[index].length;
       });
       // HORIZONTAL
-    } else if (this.config.position.orientation == 'horizontal') {
+    } else if (this.config.position.orientation === 'horizontal') {
       if (this.dev.debug) console.log('bar is horizontal');
       this._data.forEach((item, index) => {
         if (!_bars[index]) _bars[index] = {};
         // if (!item || isNaN(item)) item = this._scale.min;
-        _bars[index].length = (this._scale.size == 0) ? 0 : ((item - this._scale.min) / (this._scale.size)) * this.svg.width;
+        _bars[index].length = (this._scale.size === 0) ? 0 : ((item - this._scale.min) / (this._scale.size)) * this.svg.width;
         _bars[index].y1 = this.svg.y + this.svg.barWidth / 2 + ((this.svg.barWidth + this.svg.margin) * index);
         _bars[index].y2 = _bars[index].y1;
         _bars[index].x1 = this.svg.x;
@@ -5491,7 +5486,7 @@ class SparklineBarChartTool extends BaseTool {
   _renderBars({ _bars } = this) {
     const svgItems = [];
 
-    if (this._bars.length == 0) return;
+    if (this._bars.length === 0) return;
 
     if (this.dev.debug) console.log('_renderBars IN', this.toolId);
 
@@ -5654,14 +5649,14 @@ class SegmentedArcTool extends BaseTool {
     }
 
     // FIXEDCOLOR
-    if (this.config.show.style == 'fixedcolor') {
-    }
+    if (this.config.show.style === 'fixedcolor') {
+
     // COLORLIST
-    else if (this.config.show.style == 'colorlist') {
+    } else if (this.config.show.style === 'colorlist') {
       // Get number of segments, and their size in degrees.
       this._segments.count = this.config.segments.colorlist.colors.length;
       this._segments.size = this._arc.size / this._segments.count;
-      this._segments.gap = (this.config.segments.colorlist.gap != 'undefined') ? this.config.segments.colorlist.gap : 1;
+      this._segments.gap = (this.config.segments.colorlist.gap !== 'undefined') ? this.config.segments.colorlist.gap : 1;
       this._segments.sizeList = [];
       for (var i = 0; i < this._segments.count; i++) {
         this._segments.sizeList[i] = this._segments.size;
@@ -5680,9 +5675,9 @@ class SegmentedArcTool extends BaseTool {
       }
 
       if (this.dev.debug) console.log('colorstuff - COLORLIST', this._segments, this._segmentAngles);
-    }
+
     // COLORSTOPS
-    else if (this.config.show.style == 'colorstops') {
+    } else if (this.config.show.style === 'colorstops') {
       // Get colorstops, remove outliers and make a key/value store...
 
       this._segments.colorStops = {};
@@ -5701,7 +5696,7 @@ class SegmentedArcTool extends BaseTool {
       }
 
       this._segments.count = this._segments.sortedStops.length - 1;
-      this._segments.gap = this.config.segments.colorstops.gap != 'undefined' ? this.config.segments.colorstops.gap : 1;
+      this._segments.gap = this.config.segments.colorstops.gap !== 'undefined' ? this.config.segments.colorstops.gap : 1;
 
       // Now depending on the colorstops and min/max values, calculate the size of each segment relative to the total arc size.
       // First color in the list starts from Min!
@@ -5732,9 +5727,9 @@ class SegmentedArcTool extends BaseTool {
       }
 
       if (this.dev.debug) console.log('colorstuff - COLORSTOPS++', this._segments, this._segmentAngles, this._arc.direction, this._segments.count);
-    }
+
     // SIMPLEGRADIENT
-    else if (this.config.show.style == 'simplegradient') {
+    } else if (this.config.show.style === 'simplegradient') {
     }
 
     // Just dump to console for verification. Nothing is used yet of the new calculation method...
@@ -5763,7 +5758,7 @@ class SegmentedArcTool extends BaseTool {
     }
 
     // testing. use below two lines and sckip the calculation of the segmentAngles. Those are done above with different calculation...
-    this.skipOriginal = ((this.config.show.style == 'colorstops') || (this.config.show.style == 'colorlist'));
+    this.skipOriginal = ((this.config.show.style === 'colorstops') || (this.config.show.style === 'colorlist'));
 
     // Set scale to new value. Never changes of course!!
     if (this.skipOriginal) {
@@ -5818,7 +5813,7 @@ class SegmentedArcTool extends BaseTool {
 
     if (this.config.isScale) return false;
 
-    if (this._stateValue == state) return false;
+    if (this._stateValue === state) return false;
 
     const changed = super.value = state;
 
@@ -5889,7 +5884,7 @@ class SegmentedArcTool extends BaseTool {
       const val = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValue);
       const valPrev = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, this._stateValuePrev);
       if (this.dev.debug) if (!this._stateValuePrev) console.log('*****UNDEFINED', this._stateValue, this._stateValuePrev, valPrev);
-      if (val != valPrev) if (this.dev.debug) console.log('RENDERNEW _renderSegments diff value old new', this.toolId, valPrev, val);
+      if (val !== valPrev) if (this.dev.debug) console.log('RENDERNEW _renderSegments diff value old new', this.toolId, valPrev, val);
 
       arcEnd = (val * this._arc.size * this._arc.direction) + this.config.position.start_angle;
       arcEndPrev = (valPrev * this._arc.size * this._arc.direction) + this.config.position.start_angle;
@@ -5952,6 +5947,7 @@ class SegmentedArcTool extends BaseTool {
         const tween = {};
 
         function animateSegmentsNEW(timestamp, thisTool) {
+          // eslint-disable-next-line no-plusplus
           const easeOut = (progress) => --progress ** 5 + 1;
 
           let frameSegment;
@@ -5978,7 +5974,7 @@ class SegmentedArcTool extends BaseTool {
             ? ((tween.frameAngle <= currentValue.boundsEnd) && (tween.frameAngle >= currentValue.boundsStart))
             : ((tween.frameAngle <= currentValue.boundsStart) && (tween.frameAngle >= currentValue.boundsEnd))));
 
-          if (frameSegment == -1) {
+          if (frameSegment === -1) {
             /* if (thisTool.debug) */ console.log('RENDERNEW animateSegments frameAngle not found', tween, thisTool._segmentAngles);
             console.log('config', thisTool.config);
           }
@@ -6062,7 +6058,7 @@ class SegmentedArcTool extends BaseTool {
 
                 if (runningSegment > 0) {
                   for (let j = runningSegment; j >= 0; j--) { // +1
-                    if (thisTool.styles.foreground[j].fill != fill) {
+                    if (thisTool.styles.foreground[j].fill !== fill) {
                       thisTool.styles.foreground[j].fill = fill;
                       thisTool.as[j].style.fill = fill;
                     }
@@ -6076,7 +6072,7 @@ class SegmentedArcTool extends BaseTool {
             thisTool._cache[runningSegment] = d;
 
             // If at end of animation, don't do the add to force going to next segment
-            if (tween.frameAngle != runningSegmentAngle) {
+            if (tween.frameAngle !== runningSegmentAngle) {
               runningSegmentAngle += (0.000001 * thisTool._arc.direction);
             }
 
@@ -6086,7 +6082,7 @@ class SegmentedArcTool extends BaseTool {
               : ((runningSegmentAngle <= currentValue.boundsStart) && (runningSegmentAngle >= currentValue.boundsEnd))));
 
             if (!increase) {
-              if (runningSegmentPrev != runningSegment) {
+              if (runningSegmentPrev !== runningSegment) {
                 if (thisTool.debug) console.log('RENDERNEW movit - remove path', thisTool.toolId, runningSegmentPrev);
                 if (thisTool._arc.clockwise) {
                   as.removeAttribute('d');
@@ -6099,7 +6095,7 @@ class SegmentedArcTool extends BaseTool {
             }
             tween.runningAngle = runningSegmentAngle;
             if (thisTool.debug) console.log('RENDERNEW - animation loop tween', thisTool.toolId, tween, runningSegment, runningSegmentPrev);
-          } while ((tween.runningAngle != tween.frameAngle) /* && (runningSegment == runningSegmentPrev) */);
+          } while ((tween.runningAngle !== tween.frameAngle) /* && (runningSegment == runningSegmentPrev) */);
 
           // NTS @ 2020.10.14
           // In a fast paced animation - say 10msec - multiple segments should be drawn,
@@ -6109,7 +6105,7 @@ class SegmentedArcTool extends BaseTool {
           // - either remove that test (why was it there????)... Or
           // - add the line "|| (runningSegment != runningSegmentPrev)" to the if() below to make sure another animation frame is requested
           //   although tween.progress == 1.
-          if ((tween.progress != 1) /* || (runningSegment != runningSegmentPrev) */) {
+          if ((tween.progress !== 1) /* || (runningSegment != runningSegmentPrev) */) {
             thisTool.rAFid = requestAnimationFrame((timestamp) => {
               animateSegmentsNEW(timestamp, thisTool);
             });
@@ -6127,7 +6123,7 @@ class SegmentedArcTool extends BaseTool {
         // Remove test for val/valPrev...
 
         // Check if values changed and we should animate to another target then previously rendered
-        if (/* (val != valPrev) && */ (this._card.connected == true) && (this._renderTo != this._stateValue)) {
+        if (/* (val != valPrev) && */ (this._card.connected === true) && (this._renderTo !== this._stateValue)) {
         // if ( (val != valPrev) && (this._card.connected == true) && (this._renderTo != this._stateValue)) {
           this._renderTo = this._stateValue;
           // if (this.dev.debug) console.log('RENDERNEW val != valPrev', val, valPrev, 'prev/end/cur', arcEndPrev, arcEnd, arcCur);
@@ -6151,7 +6147,7 @@ class SegmentedArcTool extends BaseTool {
 
           // The check is removed temporarily. Brightness is again not shown for light. Still the same problem...
 
-          if (true || !(arcEnd == arcEndPrev)) {
+          if (true || !(arcEnd === arcEndPrev)) {
             // Render like an idiot the first time. Performs MUCH better @first load then having a zillion animations...
             // NOt so heavy on an average PC, but my iPad and iPhone need some more time for this!
 
@@ -6268,7 +6264,7 @@ class SegmentedArcTool extends BaseTool {
       'M', start.x, start.y,
       'A', argRadiusX, argRadiusY, 0, largeArcFlag, sweepFlag, end.x, end.y,
       'L', end2.x, end2.y,
-      'A', cutoutRadiusX, cutoutRadiusY, 0, largeArcFlag, sweepFlag == '0' ? '1' : '0', start2.x, start2.y,
+      'A', cutoutRadiusX, cutoutRadiusY, 0, largeArcFlag, sweepFlag === '0' ? '1' : '0', start2.x, start2.y,
       'Z',
     ].join(' ');
     return d;
@@ -6755,10 +6751,10 @@ class SwissArmyKnifeCard extends LitElement {
 
   set hass(hass) {
     if (!this.counter) this.counter = 0;
-    this.counter++;
+    this.counter += 1;
 
     // Check for theme mode and theme mode change...
-    if (hass.themes.darkMode != this.theme.darkMode) {
+    if (hass.themes.darkMode !== this.theme.darkMode) {
       this.theme.darkMode = hass.themes.darkMode;
       this.theme.modeChanged = true;
     }
@@ -6810,7 +6806,7 @@ class SwissArmyKnifeCard extends LitElement {
         newSecInfoState = this.entities[index][this.config.entities[index].secondary_info];
         newSecInfoStateStr = this._buildSecondaryInfo(newSecInfoState, this.config.entities[index]);
 
-        if (newSecInfoStateStr != this.secondaryInfoStr[index]) {
+        if (newSecInfoStateStr !== this.secondaryInfoStr[index]) {
           this.secondaryInfoStr[index] = newSecInfoStateStr;
           entityHasChanged = true;
         }
@@ -6834,7 +6830,7 @@ class SwissArmyKnifeCard extends LitElement {
         let arrayIdx = 0;
         let arrayMap = '';
 
-        if (arrayPos != -1) {
+        if (arrayPos !== -1) {
           // We have an array. Split...
           attribute = this.config.entities[index].attribute.substr(0, arrayPos);
           attrMore = this.config.entities[index].attribute.substr(arrayPos, this.config.entities[index].attribute.length - arrayPos);
@@ -6846,7 +6842,7 @@ class SwissArmyKnifeCard extends LitElement {
           // Fetch state
           attributeState = this.entities[index].attributes[attribute][arrayIdx][arrayMap];
           // console.log('set hass, attributes with array/map', this.config.entities[index].attribute, attribute, attrMore, arrayIdx, arrayMap, attributeState);
-        } else if (dotPos != -1) {
+        } else if (dotPos !== -1) {
           // We have a map. Split...
           attribute = this.config.entities[index].attribute.substr(0, dotPos);
           attrMore = this.config.entities[index].attribute.substr(arrayPos, this.config.entities[index].attribute.length - arrayPos);
@@ -6863,7 +6859,7 @@ class SwissArmyKnifeCard extends LitElement {
 
         if (true) { // (typeof attributeState != 'undefined') {
           newStateStr = this._buildState(attributeState, this.config.entities[index]);
-          if (newStateStr != this.attributesStr[index]) {
+          if (newStateStr !== this.attributesStr[index]) {
             this.attributesStr[index] = newStateStr;
             entityHasChanged = true;
           }
@@ -6876,7 +6872,7 @@ class SwissArmyKnifeCard extends LitElement {
       }
       if ((!attrSet) && (!secInfoSet)) {
         newStateStr = this._buildState(this.entities[index].state, this.config.entities[index]);
-        if (newStateStr != this.entitiesStr[index]) {
+        if (newStateStr !== this.entitiesStr[index]) {
           this.entitiesStr[index] = newStateStr;
           entityHasChanged = true;
         } else {
@@ -6884,7 +6880,7 @@ class SwissArmyKnifeCard extends LitElement {
         if (this.dev.debug) console.log('set hass - attrSet=false', this.cardId, `${new Date().getSeconds().toString()}.${new Date().getMilliseconds().toString()}`, newStateStr);
       }
 
-      index++;
+      index += 1;
       attrSet = false;
       secInfoSet = false;
     }
@@ -6909,7 +6905,7 @@ class SwissArmyKnifeCard extends LitElement {
     // An update has been requested to recalculate / redraw the tools, so reset theme mode changed
     this.theme.modeChanged = false;
 
-    this.counter--;
+    this.counter -= 1;
 
     // console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
   }
@@ -6944,7 +6940,7 @@ class SwissArmyKnifeCard extends LitElement {
     // testing
     if (config.entities) {
       const newdomain = this._computeDomain(config.entities[0].entity);
-      if (newdomain != 'sensor') {
+      if (newdomain !== 'sensor') {
         // If not a sensor, check if attribute is a number. If so, continue, otherwise Error...
         if (config.entities[0].attribute && !isNaN(config.entities[0].attribute)) {
           throw Error('card::setConfig - First entity or attribute must be a numbered sensorvalue, but is NOT');
@@ -6967,8 +6963,9 @@ class SwissArmyKnifeCard extends LitElement {
       // console.log("findTemplate, key=", key, "value=", value);
       if (value?.template) {
         const template = thisMe.lovelace.config.sak_user_templates.templates[value.template.name];
-        if (!template)
+        if (!template) {
           console.error('Template not found...', value.template, template);
+        }
 
         const replacedValue = Templates.replaceVariables3(value.template.variables, template);
         // Hmm. cannot add .template var. object is not extensible...
@@ -6978,7 +6975,7 @@ class SwissArmyKnifeCard extends LitElement {
 
         return secondValue;
       }
-      if (key == 'template') {
+      if (key === 'template') {
         // Template is gone via replace!!!! No template anymore, as there is no merge done.
         console.log('findTemplate return key=template/value', key, undefined);
 
@@ -7014,7 +7011,7 @@ class SwissArmyKnifeCard extends LitElement {
         if (toolsetCfg.tools) {
           toolsetCfg.tools.map((tool, index) => {
             cfgobj[toolidx].tools.map((toolT, indexT) => {
-              if (tool.id == toolT.id) {
+              if (tool.id === toolT.id) {
                 if (toolsetCfg.template) {
                   if (this.config.layout.toolsets[toolidx].position)
                     cfgobj[toolidx].position = Merge.mergeDeep(this.config.layout.toolsets[toolidx].position);
@@ -7245,7 +7242,7 @@ class SwissArmyKnifeCard extends LitElement {
 
         let themeDefs = '';
         for (const [index, cssName] of Object.entries(cssNames)) { // lgtm[js/unused-local-variable]
-          if (cssName.substring(0, 9) == 'theme-ref') {
+          if (cssName.substring(0, 9) === 'theme-ref') {
             themeDefs += `  ${cssName}\n`;
             themeDefs += `  ${cssNamesRgb[index]}\n`;
           }
@@ -7372,8 +7369,8 @@ class SwissArmyKnifeCard extends LitElement {
   * Renders the complete SVG based card according to the specified layout.
   *
   * render ICON TESTING pathh lzwzmegla undefined undefined
-  * render ICON TESTING pathh lzwzmegla undefined NodeList [ha-svg-icon]
-  * render ICON TESTING pathh lzwzmegla M7,2V13H10V22L17,10H13L17,2H7Z NodeList [ha-svg-icon]
+  * render ICON TESTING pathh lzwzmegla undefined NodeList [ha-svg-icon]
+  * render ICON TESTING pathh lzwzmegla M7,2V13H10V22L17,10H13L17,2H7Z NodeList [ha-svg-icon]
   */
 
   render() {
@@ -7425,11 +7422,11 @@ class SwissArmyKnifeCard extends LitElement {
   }
 
   themeIsDarkMode() {
-    return (this.theme.darkMode == true);
+    return (this.theme.darkMode === true);
   }
 
   themeIsLightMode() {
-    return (this.theme.darkMode == false);
+    return (this.theme.darkMode === false);
   }
 
   /** *****************************************************************************
@@ -7593,10 +7590,10 @@ class SwissArmyKnifeCard extends LitElement {
     if (['0', '-0'].includes(sign)) return sign;
 
     if (entityConfig.decimals === undefined || Number.isNaN(entityConfig.decimals) || Number.isNaN(state))
-      return (sign == '-1' ? `-${(Math.round(state * 100) / 100).toString()}` : (Math.round(state * 100) / 100).toString());
+      return (sign === '-1' ? `-${(Math.round(state * 100) / 100).toString()}` : (Math.round(state * 100) / 100).toString());
 
     const x = 10 ** entityConfig.decimals;
-    return (sign == '-1' ? `-${(Math.round(state * x) / x).toFixed(entityConfig.decimals).toString()}`
+    return (sign === '-1' ? `-${(Math.round(state * x) / x).toFixed(entityConfig.decimals).toString()}`
       : (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString());
   }
 
@@ -7683,13 +7680,15 @@ class SwissArmyKnifeCard extends LitElement {
   */
 
   _computeState(inState, dec) {
-    if (isNaN(inState))
+    if (isNaN(inState)) {
       return inState;
+    }
 
     const state = Number(inState);
 
-    if (dec === undefined || Number.isNaN(dec) || Number.isNaN(state))
+    if (dec === undefined || Number.isNaN(dec) || Number.isNaN(state)) {
       return Math.round(state * 100) / 100;
+    }
 
     const x = 10 ** dec;
     return (Math.round(state * x) / x).toFixed(dec);
@@ -7969,7 +7968,7 @@ class SwissArmyKnifeCard extends LitElement {
     // add to list...
     this.toolsets.map((toolset, k) => {
       toolset.tools.map((item, i) => {
-        if (item.type == 'bar') {
+        if (item.type === 'bar') {
           const end = new Date();
           const start = new Date();
           start.setHours(end.getHours() - item.tool.config.hours);
@@ -7978,7 +7977,7 @@ class SwissArmyKnifeCard extends LitElement {
           entityList[j] = ({
             tsidx: k, entityIndex: item.tool.config.entity_index, entityId: this.entities[item.tool.config.entity_index].entity_id, attrId: attr, start, end, type: 'bar', idx: i,
           });
-          j++;
+          j += 1;
         }
       });
     });
@@ -8049,7 +8048,7 @@ class SwissArmyKnifeCard extends LitElement {
     let hours = 24;
     let barhours = 2;
 
-    if (entity.type == 'bar') {
+    if (entity.type === 'bar') {
       if (this.dev.debug) console.log('entity.type == bar', entity);
 
       hours = this.toolsets[entity.tsidx].tools[entity.idx].tool.config.hours;
@@ -8068,7 +8067,7 @@ class SwissArmyKnifeCard extends LitElement {
     coords.length = Math.ceil(hours / barhours);
 
     // If no intervals found, return...
-    if (Object.keys(coords).length == 0) {
+    if (Object.keys(coords).length === 0) {
       return;
     }
 
@@ -8078,7 +8077,7 @@ class SwissArmyKnifeCard extends LitElement {
     // check if first interval contains data, if not find first in interval and use first entry as value...
 
     const firstInterval = Object.keys(coords)[0];
-    if (firstInterval != '0') {
+    if (firstInterval !== '0') {
       // first index doesn't contain data.
       coords[0] = [];
 
@@ -8097,7 +8096,7 @@ class SwissArmyKnifeCard extends LitElement {
     theData = coords.map((item) => getAvg(item, 'state'));
 
     // now push data into object...
-    if (entity.type == 'bar') {
+    if (entity.type === 'bar') {
       this.toolsets[entity.tsidx].tools[entity.idx].tool.series = [...theData];
     }
 
