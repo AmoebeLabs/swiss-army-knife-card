@@ -19,7 +19,7 @@ import HorseshoeTool from './horseshoe-tool';
 import LineTool from './line-tool';
 import RangeSliderTool from './range-slider-tool';
 import RectangleTool from './rectangle-tool';
-import RectangleToolEx from './rectangle-tool-ex';
+import RectangleToolEx from './rectangle-ex-tool';
 import RegPolyTool from './regular-polygon-tool';
 import SegmentedArcTool from './segmented-arc-tool';
 import SparklineBarChartTool from './sparkline-barchart-tool';
