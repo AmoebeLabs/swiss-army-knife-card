@@ -1,6 +1,6 @@
 {
   "name": "swiss-army-knife",
-  "version": "2.4.2-split",
+  "version": "2.4.2",
   "description": "Swiss Army Knife for Lovelace",
   "main": "src/main.js",
   "type": "module",
@@ -17,7 +17,7 @@
     "@rollup/plugin-commonjs": "^24.1.0",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.2",
-    "@rollup/plugin-terser": "0.4.1",
+    "@rollup/plugin-terser": "^^0.4.1",
     "eslint": "8.39.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "rollup": "^3.21.4",
