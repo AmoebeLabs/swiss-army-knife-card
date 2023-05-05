@@ -22,17 +22,17 @@ export default {
     file: 'distjs/swiss-army-knife-card-bundle.js',
     format: 'es',
     name: 'SwissArmyKnifeCard',
-    sourcemap: dev ? true : false,
+    sourcemap: !!dev,
   },
   watch: {
     exclude: 'node_modules/**',
   },
   plugins: [
     commonjs(),
-//    json({
-//      include: 'package.json',
-//      preferConst: true,
-//    }),
+    //   json({
+    //   include: 'package.json',
+    //   preferConst: true,
+    // }),
     json(),
     resolve(),
     dev && serve(serveopts),

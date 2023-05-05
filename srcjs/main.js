@@ -17,10 +17,6 @@
 *   - https://swiss-army-knife-card-manual.amoebelabs.com/
 *   - https://material3-themes-manual.amoebelabs.com/
 *
-* Notes:
-* - This is currently a single file, and should be split into smaller, more
-*   manageable files with 1 file per class ;-)
-*
 *******************************************************************************
 */
 

@@ -2,6 +2,8 @@ extends: airbnb-base
 parserOptions:
   ecmaVersion: 2020
   sourceType: module
+ignorePatterns:
+  - /distjs/*
 rules:
   no-else-return: 0
   no-underscore-dangle: 0
