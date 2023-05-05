@@ -1,0 +1,1 @@
+export default class Merge{static mergeDeep(...e){const s=e=>e&&"object"==typeof e;return e.reduce((a,c)=>(Object.keys(c).forEach(e=>{var r=a[e],t=c[e];Array.isArray(r)&&Array.isArray(t)?a[e]=r.concat(...t):s(r)&&s(t)?a[e]=this.mergeDeep(r,t):a[e]=t}),a),{})}}
