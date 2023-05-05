@@ -10,7 +10,8 @@
     "lint": "eslint srcjs/*.js",
     "watch": "rollup -c --watch",
     "postversion": "npm run build",
-    "audit-fix": "npx yarn-audit-fix"
+    "audit-fix": "npx yarn-audit-fix",
+    "serve": "rollup -c serve.config.js --watch"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^24.1.0",

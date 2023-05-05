@@ -6,6 +6,7 @@ rules:
   no-else-return: 0
   no-underscore-dangle: 0
   nonblock-statement-body-position: 0
+  # curly checks for all {} after if for instance
   curly: 0
   no-return-assign: 0
   consistent-return: 0
@@ -14,11 +15,27 @@ rules:
   no-nested-ternary: 0
   camelcase: 0
   # Added for convenience to check eslint...
-  max-len: 0
+  # Settings handled:
+  max-len:
+    - warn
+    - code: 220
+      ignoreComments: true
+  eqeqeq: 1
+  brace-style: 1
+  # - Prevent warnings in logging and multiple params on one line
+  function-call-argument-newline: 0
+  function-paren-newline: 0
+  # - Allow i++ / i-- in for loops
+  no-plusplus:
+    - warn
+    - allowForLoopAfterthoughts: true
+  no-irregular-whitespace: 1
+  no-bitwise:
+    - warn
+    - allow:
+        - "~"
+  # Settings disabled for now, until handled
   no-console: 0
-  no-plusplus: 0
-  eqeqeq: 0
-  no-irregular-whitespace: 0
   no-restricted-globals: 0
   no-undef: 0
   no-unused-vars: 0
@@ -30,7 +47,6 @@ rules:
   block-scoped-var: 0
   max-classes-per-file: 0
   no-new-func: 0
-  no-bitwise: 0
   no-prototype-builtins: 0
   no-var: 0
   vars-on-top: 0
@@ -41,7 +57,6 @@ rules:
   prefer-const: 0
   no-redeclare: 0
   no-setter-return: 0
-  brace-style: 0
   no-lonely-if: 0
   operator-assignment: 0
   no-shadow: 0
@@ -55,6 +70,7 @@ rules:
   import/no-unresolved: 0
   no-template-curly-in-string: 0
   import/extensions: 0
+
 globals:
   window: true
   Event: true
