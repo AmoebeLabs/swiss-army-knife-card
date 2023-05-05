@@ -8,5 +8,8 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.eol": "\n",
+		"editor.tabSize": 2,
+	}
 }

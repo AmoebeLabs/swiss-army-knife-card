@@ -16,6 +16,7 @@ rules:
   camelcase: 0
   # Added for convenience to check eslint...
   # Settings handled:
+  no-param-reassign: 0
   max-len:
     - warn
     - code: 220
@@ -29,7 +30,7 @@ rules:
   no-plusplus:
     - warn
     - allowForLoopAfterthoughts: true
-  no-irregular-whitespace: 1
+  no-irregular-whitespace: 0
   no-bitwise:
     - warn
     - allow:
