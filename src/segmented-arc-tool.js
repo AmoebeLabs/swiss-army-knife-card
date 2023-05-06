@@ -1,10 +1,10 @@
 import { svg } from 'lit-element';
-import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
 import Merge from './merge';
 import BaseTool from './base-tool';
 import Utils from './utils';
+import Templates from './templates';
 
 /** *****************************************************************************
   * SegmentedArcTool class
@@ -304,6 +304,7 @@ export default class SegmentedArcTool extends BaseTool {
 
   // SegmentedArcTool::updated
 
+  // eslint-disable-next-line no-unused-vars
   updated(changedProperties) {
     if (this.dev.debug) console.log('SegmentedArcTool - updated IN');
   }
@@ -407,6 +408,7 @@ export default class SegmentedArcTool extends BaseTool {
 
         const tween = {};
 
+        // eslint-disable-next-line no-inner-declarations
         function animateSegmentsNEW(timestamp, thisTool) {
           // eslint-disable-next-line no-plusplus
           const easeOut = (progress) => --progress ** 5 + 1;
@@ -567,6 +569,7 @@ export default class SegmentedArcTool extends BaseTool {
           // - add the line "|| (runningSegment != runningSegmentPrev)" to the if() below to make sure another animation frame is requested
           //   although tween.progress == 1.
           if ((tween.progress !== 1) /* || (runningSegment != runningSegmentPrev) */) {
+            // eslint-disable-next-line no-undef
             thisTool.rAFid = requestAnimationFrame((timestamp) => {
               animateSegmentsNEW(timestamp, thisTool);
             });
@@ -592,6 +595,7 @@ export default class SegmentedArcTool extends BaseTool {
           // If previous animation active, cancel this one before starting a new one...
           if (this.rAFid) {
             // if (this.dev.debug) console.log('RENDERNEW canceling rAFid', this._card.cardId, this.toolId, 'rAFid', this.rAFid);
+            // eslint-disable-next-line no-undef
             cancelAnimationFrame(this.rAFid);
           }
 
@@ -608,6 +612,7 @@ export default class SegmentedArcTool extends BaseTool {
 
           // The check is removed temporarily. Brightness is again not shown for light. Still the same problem...
 
+          // eslint-disable-next-line no-constant-condition
           if (true || !(arcEnd === arcEndPrev)) {
             // Render like an idiot the first time. Performs MUCH better @first load then having a zillion animations...
             // NOt so heavy on an average PC, but my iPad and iPhone need some more time for this!
@@ -616,6 +621,7 @@ export default class SegmentedArcTool extends BaseTool {
             tween.startTime = null;
             if (this.dev.debug) console.log('RENDERNEW - tween', this.toolId, tween);
             // this._initialDraw = false;
+            // eslint-disable-next-line no-undef
             this.rAFid = requestAnimationFrame((timestamp) => {
               animateSegmentsNEW(timestamp, mySelf);
             });
@@ -689,7 +695,6 @@ export default class SegmentedArcTool extends BaseTool {
       }
 
     // END OF NEW METHOD OF RENDERING
-    } else {
     }
   }
 

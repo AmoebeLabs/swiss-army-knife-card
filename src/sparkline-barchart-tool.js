@@ -176,7 +176,8 @@ export default class SparklineBarChartTool extends BaseTool {
     * Render all the bars. Number of bars depend on hours and barhours settings.
     *
     */
-  _renderBars({ _bars } = this) {
+  // _renderBars({ _bars } = this) {
+  _renderBars() {
     const svgItems = [];
 
     if (this._bars.length === 0) return;

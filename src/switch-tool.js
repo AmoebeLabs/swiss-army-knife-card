@@ -149,6 +149,7 @@ export default class SwitchTool extends BaseTool {
     this.svg.thumb.offset = Utils.calculateSvgDimension(this.config.position.thumb.offset);
 
     switch (this.config.position.orientation) {
+      // eslint-disable-next-line default-case-last
       default:
       case 'horizontal':
         this.config = Merge.mergeDeep(DEFAULT_SWITCH_CONFIG, HORIZONTAL_SWITCH_CONFIG, argConfig);
@@ -197,9 +198,7 @@ export default class SwitchTool extends BaseTool {
   *
   */
   set value(state) {
-    const changed = super.value = state;
-
-    return changed;
+    super.value = state;
   }
 
   /**

@@ -5,7 +5,8 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 import Merge from './merge';
 import Utils from './utils';
 import BaseTool from './base-tool';
-import { angle360, range } from './const';
+// eslint-disable-next-line object-curly-newline
+import { angle360, range, round, clamp } from './const';
 
 /** ****************************************************************************
   * CircularSliderTool::constructor class
@@ -180,10 +181,18 @@ export default class CircularSliderTool extends BaseTool {
     this.svg.rotate.cy = this.svg.cy;
 
     // Init classes
-    this.classes.track = {}, this.classes.active = {}, this.classes.thumb = {}, this.classes.label = {}, this.classes.uom = {};
+    this.classes.track = {};
+    this.classes.active = {};
+    this.classes.thumb = {};
+    this.classes.label = {};
+    this.classes.uom = {};
 
     // Init styles
-    this.styles.track = {}, this.styles.active = {}, this.styles.thumb = {}, this.styles.label = {}, this.styles.uom = {};
+    this.styles.track = {};
+    this.styles.active = {};
+    this.styles.thumb = {};
+    this.styles.label = {};
+    this.styles.uom = {};
 
     // Init scale
     this.svg.scale = {};
@@ -212,6 +221,8 @@ export default class CircularSliderTool extends BaseTool {
   }
 
   // From roundSlider... https://github.com/soundar24/roundSlider/blob/master/src/roundslider.js
+
+  // eslint-disable-next-line no-unused-vars
   pointToAngle360(point, center, isDrag) {
     const radian = Math.atan2(point.y - center.y, center.x - point.x);
     let angle = (-radian / (Math.PI / 180));
@@ -288,7 +299,7 @@ export default class CircularSliderTool extends BaseTool {
 
   sliderValueToPoint(argValue) {
     let state = Utils.calculateValueBetween(this.config.scale.min, this.config.scale.max, argValue);
-    if (Number.isNaN(state)) state = 0;
+    if (isNaN(state)) state = 0;
     let angle;
     if (this.arc.clockwise) {
       angle = (this.arc.size * state) + this.arc.startAngle360;
@@ -336,11 +347,12 @@ export default class CircularSliderTool extends BaseTool {
     this.updateLabel(m);
   }
 
+  // eslint-disable-next-line no-unused-vars
   updateActiveTrack(m) {
     const min = this.config.scale.min || 0;
     const max = this.config.scale.max || 100;
     let val = this._card._calculateValueBetween(min, max, this.labelValue);
-    if (Number.isNaN(val)) val = 0;
+    if (isNaN(val)) val = 0;
     const score = val * this.svg.pathLength;
     this.dashArray = `${score} ${this.svg.circleLength}`;
 
@@ -370,11 +382,11 @@ export default class CircularSliderTool extends BaseTool {
   *
   */
   mouseEventToPoint(e) {
-    var p = this.elements.svg.createSVGPoint();
+    let p = this.elements.svg.createSVGPoint();
     p.x = e.touches ? e.touches[0].clientX : e.clientX;
     p.y = e.touches ? e.touches[0].clientY : e.clientY;
     const ctm = this.elements.svg.getScreenCTM().inverse();
-    var p = p.matrixTransform(ctm);
+    p = p.matrixTransform(ctm);
     return p;
   }
 
@@ -410,6 +422,7 @@ export default class CircularSliderTool extends BaseTool {
     );
   }
 
+  // eslint-disable-next-line no-unused-vars
   firstUpdated(changedProperties) {
     this.labelValue = this._stateValue;
 
@@ -460,6 +473,19 @@ export default class CircularSliderTool extends BaseTool {
       }
     };
 
+    const pointerMove = (e) => {
+      e.preventDefault();
+
+      if (this.dragging) {
+        this.m = this.mouseEventToPoint(e);
+        this.labelValue = this.pointToSliderValue(this.m);
+
+        protectBorderPassing();
+
+        FrameArc.call(this);
+      }
+    };
+
     const pointerDown = (e) => {
       e.preventDefault();
 
@@ -469,6 +495,7 @@ export default class CircularSliderTool extends BaseTool {
       // NEW:
       // We use mouse stuff for pointerdown, but have to use pointer stuff to make sliding work on Safari. Why??
       window.addEventListener('pointermove', pointerMove, false);
+      // eslint-disable-next-line no-use-before-define
       window.addEventListener('pointerup', pointerUp, false);
 
       // const mousePos = this.mouseEventToPoint(e);
@@ -523,19 +550,6 @@ export default class CircularSliderTool extends BaseTool {
       this.callTapService();
     };
 
-    const pointerMove = (e) => {
-      e.preventDefault();
-
-      if (this.dragging) {
-        this.m = this.mouseEventToPoint(e);
-        this.labelValue = this.pointToSliderValue(this.m);
-
-        protectBorderPassing();
-
-        FrameArc.call(this);
-      }
-    };
-
     const mouseWheel = (e) => {
       e.preventDefault();
 
@@ -581,7 +595,7 @@ export default class CircularSliderTool extends BaseTool {
   */
 
   set value(state) {
-    const changed = super.value = state;
+    super.value = state;
     if (!this.dragging) this.labelValue = this._stateValue;
 
     // Calculate the size of the arc to fill the dasharray with this
@@ -594,7 +608,7 @@ export default class CircularSliderTool extends BaseTool {
       let val = Math.min(this._card._calculateValueBetween(min, max, this._stateValue), 1);
 
       // Don't display anything, that is NO track, thumb to start...
-      if (Number.isNaN(val)) val = 0;
+      if (isNaN(val)) val = 0;
       const score = val * this.svg.pathLength;
       this.dashArray = `${score} ${this.svg.circleLength}`;
 
@@ -605,11 +619,10 @@ export default class CircularSliderTool extends BaseTool {
       this.svg.capture.x1 = thumbPos.x - this.svg.capture.width / 2;
       this.svg.capture.y1 = thumbPos.y - this.svg.capture.height / 2;
     }
-    return changed;
   }
 
   set values(states) {
-    const changed = super.values = states;
+    super.values = states;
     if (!this.dragging) this.labelValue = this._stateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())];
 
     // Calculate the size of the arc to fill the dasharray with this
@@ -622,7 +635,7 @@ export default class CircularSliderTool extends BaseTool {
       let val = Math.min(this._card._calculateValueBetween(min, max, this._stateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())]), 1);
 
       // Don't display anything, that is NO track, thumb to start...
-      if (Number.isNaN(val)) val = 0;
+      if (isNaN(val)) val = 0;
       const score = val * this.svg.pathLength;
       this.dashArray = `${score} ${this.svg.circleLength}`;
 
@@ -633,7 +646,6 @@ export default class CircularSliderTool extends BaseTool {
       this.svg.capture.x1 = thumbPos.x - this.svg.capture.width / 2;
       this.svg.capture.y1 = thumbPos.y - this.svg.capture.height / 2;
     }
-    return changed;
   }
 
   _renderUom() {

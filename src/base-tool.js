@@ -1,3 +1,5 @@
+import { fireEvent } from 'custom-card-helpers';
+
 import Merge from './merge';
 import Utils from './utils';
 import Templates from './templates';
@@ -121,7 +123,7 @@ export default class BaseTool {
     let localState = state;
 
     if (this.dev.debug) console.log('BaseTool set value(state)', localState);
-    if (typeof (localState) !== 'undefined') if (this._stateValue?.toLowerCase() === localState.toLowerCase()) return false;
+    if (typeof (localState) !== 'undefined') if (this._stateValue?.toLowerCase() === localState.toLowerCase()) return;
 
     this.derivedEntity = null;
 
@@ -222,9 +224,9 @@ export default class BaseTool {
       // you can override any value from within an animation, not just the css style settings.
       this.item = item;
       this.activeAnimation = item;
-    });
 
-    return true;
+      return isMatch;
+    });
   }
 
   /** *****************************************************************************
@@ -335,9 +337,11 @@ export default class BaseTool {
     for (let index = 0; index < states.length; ++index) {
       // state = states[index];
 
+      // eslint-disable-next-line no-empty
       if (typeof (localStates[index]) !== 'undefined') if (this._stateValues[index]?.toLowerCase() === localStates[index].toLowerCase()) {} else {
         // State has changed, process...
 
+        // eslint-disable-next-line no-lonely-if
         if (this.config.derived_entities) {
           this.derivedEntities[index] = Templates.getJsTemplateOrValue(this, states[index], Merge.mergeDeep(this.config.derived_entities[index]));
 
@@ -349,23 +353,27 @@ export default class BaseTool {
       this._stateValues[index] = localStates[index];
       this._stateValueIsDirty = true;
 
-      var isMatch = false;
+      let isMatch = false;
 
       this.activeAnimation = null;
 
+      // eslint-disable-next-line no-loop-func, no-unused-vars
       if (this.config.animations) Object.keys(this.config.animations.map((aniKey, aniValue) => {
         const statesIndex = this.getIndexInEntityIndexes(this.getEntityIndexFromAnimation(aniKey));
         isMatch = this.stateIsMatch(aniKey, states[statesIndex]);
 
         //        console.log("set values, animations", aniKey, aniValue, statesIndex, isMatch, states);
 
-        if (isMatch) this.mergeAnimationData(aniKey);
+        if (isMatch) {
+          this.mergeAnimationData(aniKey);
+          return true;
+        } else {
+          return false;
+        }
       }));
     }
     this._stateValue = this._stateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())];
     this._stateValuePrev = this._lastStateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())];
-
-    return true;
   }
 
   EnableHoverForInteraction() {
@@ -484,6 +492,7 @@ export default class BaseTool {
       case 'minmaxgradient':
         color = this._card._calculateColor(argValue, this.colorStopsMinMax, true);
         break;
+      default:
     }
     return color;
   }
@@ -506,6 +515,7 @@ export default class BaseTool {
       case 'minmaxgradient':
         color = this._card._calculateColor2(argValue, this.colorStopsMinMax, argPart, argProperty, true);
         break;
+      default:
     }
     return color;
   }
@@ -558,6 +568,10 @@ export default class BaseTool {
             serviceData[actionConfig.actions[i].parameter] = parameterValue;
           }
           hass.callService(domain, service, serviceData);
+          break;
+        }
+        default: {
+          console.error('Unknown Event definition', actionConfig);
         }
       }
     }

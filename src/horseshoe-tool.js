@@ -1,8 +1,7 @@
 import { svg } from 'lit-element';
-import { classMap } from 'lit-html/directives/class-map.js';
-import { styleMap } from 'lit-html/directives/style-map.js';
-
+import { SVG_VIEW_BOX } from './const';
 import Merge from './merge';
+import Utils from './utils';
 import BaseTool from './base-tool';
 
 /** ****************************************************************************
@@ -123,7 +122,7 @@ export default class HorseshoeTool extends BaseTool {
   */
 
   set value(state) {
-    if (this._stateValue === state) return false;
+    if (this._stateValue === state) return;
 
     this._stateValuePrev = this._stateValue || state;
     this._stateValue = state;
@@ -186,7 +185,7 @@ export default class HorseshoeTool extends BaseTool {
     }
     if (this.dev.debug) console.log('HorseshoeTool set value', this.cardId, state);
 
-    return true;
+    // return true;
   }
 
   /** *****************************************************************************

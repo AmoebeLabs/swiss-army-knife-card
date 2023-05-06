@@ -37,15 +37,9 @@ import { selectUnit } from '@formatjs/intl-utils';
 import { version } from '../package.json';
 
 import {
-  SCALE_DIMENSIONS,
   SVG_DEFAULT_DIMENSIONS,
-  SVG_DEFAULT_DIMENSIONS_HALF,
   SVG_VIEW_BOX,
   FONT_SIZE,
-  clamp,
-  round,
-  angle360,
-  range,
 } from './const';
 
 import Merge from './merge';
@@ -54,7 +48,7 @@ import Templates from './templates';
 import Toolset from './toolset';
 
 // Original injector is buggy. Use a patched version, and store this local...
-import * as SvgInjector from '../dist/SVGInjector.min.js'; // lgtm[js/unused-local-variable]
+// import * as SvgInjector from '../dist/SVGInjector.min.js'; // lgtm[js/unused-local-variable]
 
 console.info(
   `%c  SWISS-ARMY-KNIFE-CARD  \n%c      Version ${version}      `,
@@ -138,22 +132,23 @@ class SwissArmyKnifeCard extends LitElement {
     // After iOS 13 you should detect iOS devices like this, since iPad will not be detected as iOS devices
     // by old ways (due to new "desktop" options, enabled by default)
 
-    this.isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
-    this.iOS = (/iPad|iPhone|iPod/.test(navigator.userAgent)
-                || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1))
+    // eslint-disable-next-line no-useless-escape
+    this.isSafari = !!window.navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
+    this.iOS = (/iPad|iPhone|iPod/.test(window.navigator.userAgent)
+                || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1))
                 && !window.MSStream;
-    this.isSafari14 = this.isSafari && /Version\/14\.[0-9]/.test(navigator.userAgent);
-    this.isSafari15 = this.isSafari && /Version\/15\.[0-9]/.test(navigator.userAgent);
-    this.isSafari16 = this.isSafari && /Version\/16\.[0-9]/.test(navigator.userAgent);
-    this.isSafari16 = this.isSafari && /Version\/16\.[0-9]/.test(navigator.userAgent);
+    this.isSafari14 = this.isSafari && /Version\/14\.[0-9]/.test(window.navigator.userAgent);
+    this.isSafari15 = this.isSafari && /Version\/15\.[0-9]/.test(window.navigator.userAgent);
+    this.isSafari16 = this.isSafari && /Version\/16\.[0-9]/.test(window.navigator.userAgent);
+    this.isSafari16 = this.isSafari && /Version\/16\.[0-9]/.test(window.navigator.userAgent);
 
     // The iOS app does not use a standard agent string...
     // See: https://github.com/home-assistant/iOS/blob/master/Sources/Shared/API/HAAPI.swift
     // It contains strings like "like Safari" and "OS 14_2", and "iOS 14.2.0"
 
-    this.isSafari14 = this.isSafari14 || /os 15.*like safari/.test(navigator.userAgent.toLowerCase());
-    this.isSafari15 = this.isSafari15 || /os 14.*like safari/.test(navigator.userAgent.toLowerCase());
-    this.isSafari16 = this.isSafari16 || /os 16.*like safari/.test(navigator.userAgent.toLowerCase());
+    this.isSafari14 = this.isSafari14 || /os 15.*like safari/.test(window.navigator.userAgent.toLowerCase());
+    this.isSafari15 = this.isSafari15 || /os 14.*like safari/.test(window.navigator.userAgent.toLowerCase());
+    this.isSafari16 = this.isSafari16 || /os 16.*like safari/.test(window.navigator.userAgent.toLowerCase());
 
     this.lovelace = SwissArmyKnifeCard.lovelace;
 
@@ -464,7 +459,7 @@ class SwissArmyKnifeCard extends LitElement {
   *   So, we need to get lovelace here...
   */
   static get styles() {
-    console.log('SAK - get styles');
+    // console.log('SAK - get styles');
     if (!SwissArmyKnifeCard.lovelace) SwissArmyKnifeCard.lovelace = Utils.getLovelace();
 
     if (!SwissArmyKnifeCard.lovelace) {
@@ -557,6 +552,7 @@ class SwissArmyKnifeCard extends LitElement {
 
     let attrSet = false;
     let newStateStr;
+    // eslint-disable-next-line no-restricted-syntax, no-unused-vars
     for (value of this.config.entities) {
       this.entities[index] = hass.states[this.config.entities[index].entity];
 
@@ -622,6 +618,7 @@ class SwissArmyKnifeCard extends LitElement {
           attributeState = this.entities[index].attributes[attribute];
         }
 
+        // eslint-disable-next-line no-constant-condition
         if (true) { // (typeof attributeState != 'undefined') {
           newStateStr = this._buildState(attributeState, this.config.entities[index]);
           if (newStateStr !== this.attributesStr[index]) {
@@ -640,7 +637,6 @@ class SwissArmyKnifeCard extends LitElement {
         if (newStateStr !== this.entitiesStr[index]) {
           this.entitiesStr[index] = newStateStr;
           entityHasChanged = true;
-        } else {
         }
         if (this.dev.debug) console.log('set hass - attrSet=false', this.cardId, `${new Date().getSeconds().toString()}.${new Date().getMilliseconds().toString()}`, newStateStr);
       }
@@ -658,8 +654,9 @@ class SwissArmyKnifeCard extends LitElement {
 
     // Either one of the entities has changed, or the theme mode. So update all toolsets with new data.
     if (this.toolsets) {
-      this.toolsets.map((item, index) => {
+      this.toolsets.map((item) => {
         item.updateValues();
+        return true;
       });
     }
 
@@ -767,6 +764,7 @@ class SwissArmyKnifeCard extends LitElement {
 
       if (!this.toolsets) this.toolsets = [];
 
+      // eslint-disable-next-line no-constant-condition
       if (true) {
         let found = false;
         let toolAdd = [];
@@ -791,8 +789,10 @@ class SwissArmyKnifeCard extends LitElement {
                 if (this.dev.debug) console.log('card::setConfig - got toolsetCfg toolid', tool, index, toolT, indexT, tool);
               }
               cfgobj[toolidx].tools[indexT] = Templates.getJsTemplateOrValueConfig(cfgobj[toolidx].tools[indexT], Merge.mergeDeep(cfgobj[toolidx].tools[indexT]));
+              return found;
             });
             if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
+            return found;
           });
         }
         toolList = toolList.concat(toolAdd);
@@ -801,6 +801,7 @@ class SwissArmyKnifeCard extends LitElement {
       toolsetCfg = cfgobj[toolidx];
       const newToolset = new Toolset(this, toolsetCfg);
       this.toolsets.push(newToolset);
+      return true;
     });
 
     // Special case. Abuse card for m3 conversion to output
@@ -811,9 +812,15 @@ class SwissArmyKnifeCard extends LitElement {
         const { m3 } = this.lovelace.config.sak_user_templates.templates;
 
         console.log('*** M3 - Found. Material 3 conversion starting...');
+        // These variables are used of course, but eslint thinks they are NOT.
+        // If I remove them, eslint complains about undefined variables...
+        // eslint-disable-next-line no-unused-vars
         let palette = '';
+        // eslint-disable-next-line no-unused-vars
         let colordefault = '';
+        // eslint-disable-next-line no-unused-vars
         let colorlight = '';
+        // eslint-disable-next-line no-unused-vars
         let colordark = '';
 
         let surfacelight = '';
@@ -828,7 +835,7 @@ class SwissArmyKnifeCard extends LitElement {
         const cssNames = {};
         const cssNamesRgb = {};
 
-        m3.entities.map((entity, index) => {
+        m3.entities.map((entity) => {
           if (['ref.palette', 'sys.color', 'sys.color.light', 'sys.color.dark'].includes(entity.category_id)) {
             if (!entity.tags.includes('alias')) {
               colorEntities[entity.id] = { value: entity.value, tags: entity.tags };
@@ -878,58 +885,63 @@ class SwissArmyKnifeCard extends LitElement {
               surfacedark = entity.value;
             }
           }
+          return true;
         });
 
-        ['primary', 'secondary', 'tertiary', 'error', 'neutral', 'neutral-variant'].forEach((palette) => {
+        ['primary', 'secondary', 'tertiary', 'error', 'neutral', 'neutral-variant'].forEach((paletteName) => {
           [5, 15, 25, 35, 45, 65, 75, 85].forEach((step) => {
-            colorEntities[`md.ref.palette.${palette}${step.toString()}`] = {
+            colorEntities[`md.ref.palette.${paletteName}${step.toString()}`] = {
               value: this._getGradientValue(
-                colorEntities[`md.ref.palette.${palette}${(step - 5).toString()}`].value,
-                colorEntities[`md.ref.palette.${palette}${(step + 5).toString()}`].value,
+                colorEntities[`md.ref.palette.${paletteName}${(step - 5).toString()}`].value,
+                colorEntities[`md.ref.palette.${paletteName}${(step + 5).toString()}`].value,
                 0.5,
               ),
-              tags: [...colorEntities[`md.ref.palette.${palette}${(step - 5).toString()}`].tags],
+              tags: [...colorEntities[`md.ref.palette.${paletteName}${(step - 5).toString()}`].tags],
             };
-            colorEntities[`md.ref.palette.${palette}${step.toString()}`].tags[3] = palette + step.toString();
+            colorEntities[`md.ref.palette.${paletteName}${step.toString()}`].tags[3] = paletteName + step.toString();
           });
-          colorEntities[`md.ref.palette.${palette}7`] = {
+          colorEntities[`md.ref.palette.${paletteName}7`] = {
             value: this._getGradientValue(
-              colorEntities[`md.ref.palette.${palette}5`].value,
-              colorEntities[`md.ref.palette.${palette}10`].value,
+              colorEntities[`md.ref.palette.${paletteName}5`].value,
+              colorEntities[`md.ref.palette.${paletteName}10`].value,
               0.5,
             ),
-            tags: [...colorEntities[`md.ref.palette.${palette}10`].tags],
+            tags: [...colorEntities[`md.ref.palette.${paletteName}10`].tags],
           };
-          colorEntities[`md.ref.palette.${palette}7`].tags[3] = `${palette}7`;
+          colorEntities[`md.ref.palette.${paletteName}7`].tags[3] = `${paletteName}7`;
 
-          colorEntities[`md.ref.palette.${palette}92`] = {
+          colorEntities[`md.ref.palette.${paletteName}92`] = {
             value: this._getGradientValue(
-              colorEntities[`md.ref.palette.${palette}90`].value,
-              colorEntities[`md.ref.palette.${palette}95`].value,
+              colorEntities[`md.ref.palette.${paletteName}90`].value,
+              colorEntities[`md.ref.palette.${paletteName}95`].value,
               0.5,
             ),
-            tags: [...colorEntities[`md.ref.palette.${palette}90`].tags],
+            tags: [...colorEntities[`md.ref.palette.${paletteName}90`].tags],
           };
-          colorEntities[`md.ref.palette.${palette}92`].tags[3] = `${palette}92`;
+          colorEntities[`md.ref.palette.${paletteName}92`].tags[3] = `${paletteName}92`;
 
-          colorEntities[`md.ref.palette.${palette}97`] = {
+          colorEntities[`md.ref.palette.${paletteName}97`] = {
             value: this._getGradientValue(
-              colorEntities[`md.ref.palette.${palette}95`].value,
-              colorEntities[`md.ref.palette.${palette}99`].value,
+              colorEntities[`md.ref.palette.${paletteName}95`].value,
+              colorEntities[`md.ref.palette.${paletteName}99`].value,
               0.5,
             ),
-            tags: [...colorEntities[`md.ref.palette.${palette}90`].tags],
+            tags: [...colorEntities[`md.ref.palette.${paletteName}90`].tags],
           };
-          colorEntities[`md.ref.palette.${palette}97`].tags[3] = `${palette}97`;
+          colorEntities[`md.ref.palette.${paletteName}97`].tags[3] = `${paletteName}97`;
         });
 
+        // eslint-disable-next-line no-restricted-syntax
         for (const [index, entity] of Object.entries(colorEntities)) {
+          // eslint-disable-next-line no-use-before-define
           cssNames[index] = `theme-${entity.tags[1]}-${entity.tags[2]}-${entity.tags[3]}: rgb(${hex2rgb(entity.value)})`;
+          // eslint-disable-next-line no-use-before-define
           cssNamesRgb[index] = `theme-${entity.tags[1]}-${entity.tags[2]}-${entity.tags[3]}-rgb: ${hex2rgb(entity.value)}`;
         }
 
         // https://filosophy.org/code/online-tool-to-lighten-color-without-alpha-channel/
 
+        // eslint-disable-next-line no-inner-declarations
         function hex2rgb(hexColor) {
           const rgbCol = {};
 
@@ -942,6 +954,7 @@ class SwissArmyKnifeCard extends LitElement {
           return cssRgbColor;
         }
 
+        // eslint-disable-next-line no-inner-declarations
         function getSurfaces(surfaceColor, paletteColor, opacities, cssName, mode) {
           const bgCol = {};
           const fgCol = {};
@@ -1006,6 +1019,7 @@ class SwissArmyKnifeCard extends LitElement {
         const surfaceeD = getSurfaces(surfacedark, errordark, opacitysurfacedark, '  theme-ref-elevation-surface-error', 'dark');
 
         let themeDefs = '';
+        // eslint-disable-next-line no-restricted-syntax
         for (const [index, cssName] of Object.entries(cssNames)) { // lgtm[js/unused-local-variable]
           if (cssName.substring(0, 9) === 'theme-ref') {
             themeDefs += `  ${cssName}\n`;
@@ -1105,8 +1119,9 @@ class SwissArmyKnifeCard extends LitElement {
     if (this.dev.debug) console.log('*****Event - card::firstUpdated', this.cardId, new Date().getTime());
 
     if (this.toolsets) {
-      this.toolsets.map(async (item, index) => {
+      this.toolsets.map(async (item) => {
         item.firstUpdated(changedProperties);
+        return true;
       });
     }
   }
@@ -1121,8 +1136,9 @@ class SwissArmyKnifeCard extends LitElement {
     if (this.dev.debug) console.log('*****Event - Updated', this.cardId, new Date().getTime());
 
     if (this.toolsets) {
-      this.toolsets.map(async (item, index) => {
+      this.toolsets.map(async (item) => {
         item.updated(changedProperties);
+        return true;
       });
     }
   }
@@ -1335,12 +1351,14 @@ class SwissArmyKnifeCard extends LitElement {
   *
   * NOTE:
   * - a number value of "-0" is translated to "0". The sign is gone...
+  *
+  * IMPORTANT NOTE:
+  * - do NOT replace isNaN() by Number.isNaN(). They are INCOMPATIBLE !!!!!!!!!
   */
 
   _buildState(inState, entityConfig) {
-    // console.log('_buildState', inState, entityConfig)
-
-    if (isNaN(inState)) {
+    if (typeof inState !== 'number') {
+    // if (isNaN(inState)) {
       if (inState === 'unavailable') return '-ua-';
       return inState;
     }
@@ -1354,7 +1372,7 @@ class SwissArmyKnifeCard extends LitElement {
 
     if (['0', '-0'].includes(sign)) return sign;
 
-    if (entityConfig.decimals === undefined || Number.isNaN(entityConfig.decimals) || Number.isNaN(state))
+    if (entityConfig.decimals === undefined || isNaN(entityConfig.decimals) || isNaN(state))
       return (sign === '-1' ? `-${(Math.round(state * 100) / 100).toString()}` : (Math.round(state * 100) / 100).toString());
 
     const x = 10 ** entityConfig.decimals;
@@ -1404,6 +1422,7 @@ class SwissArmyKnifeCard extends LitElement {
       // return date/time according to formatting...
       switch (entityConfig.format) {
         case 'relative':
+          // eslint-disable-next-line no-case-declarations
           const diff = selectUnit(timestamp, new Date());
           retValue = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(diff.value, diff.unit);
           break;
@@ -1422,6 +1441,7 @@ class SwissArmyKnifeCard extends LitElement {
             year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
           }).format(timestamp);
           break;
+        default:
       }
       return retValue;
     }
@@ -1446,12 +1466,13 @@ class SwissArmyKnifeCard extends LitElement {
 
   _computeState(inState, dec) {
     if (isNaN(inState)) {
+      console.log('computestate - NAN', inState, dec);
       return inState;
     }
 
     const state = Number(inState);
 
-    if (dec === undefined || Number.isNaN(dec) || Number.isNaN(state)) {
+    if (dec === undefined || isNaN(dec) || isNaN(state)) {
       return Math.round(state * 100) / 100;
     }
 
@@ -1650,7 +1671,8 @@ class SwissArmyKnifeCard extends LitElement {
     }
 
     // Get color from canvas. This always returns an rgba() value...
-    const canvas = document.createElement('canvas');
+    const canvas = window.document.createElement('canvas');
+    // eslint-disable-next-line no-multi-assign
     canvas.width = canvas.height = 1;
     const ctx = canvas.getContext('2d');
 
@@ -1717,7 +1739,8 @@ class SwissArmyKnifeCard extends LitElement {
     return this._hass.callApi('GET', url);
   }
 
-  async updateData({ config } = this) {
+  // async updateData({ config } = this) {
+  async updateData() {
     this.entityHistory.updating = true;
 
     if (this.dev.debug) console.log('card::updateData - ENTRY', this.cardId);
@@ -1744,7 +1767,9 @@ class SwissArmyKnifeCard extends LitElement {
           });
           j += 1;
         }
+        return true;
       });
+      return true;
     });
 
     if (this.dev.debug) console.log('card::updateData - LENGTH', this.cardId, entityList.length, entityList);
@@ -1782,7 +1807,7 @@ class SwissArmyKnifeCard extends LitElement {
         theState = this.entities[entity.entityIndex].attributes[this.config.entities[entity.entityIndex].attribute];
         entity.state = theState;
       }
-      newStateHistory = newStateHistory[0].filter((item) => (entity.attrId ? !Number.isNaN(parseFloat(item.attributes[entity.attrId])) : !Number.isNaN(parseFloat(item.state))));
+      newStateHistory = newStateHistory[0].filter((item) => (entity.attrId ? !isNaN(parseFloat(item.attributes[entity.attrId])) : !isNaN(parseFloat(item.state))));
 
       newStateHistory = newStateHistory.map((item) => ({
         last_changed: item.last_changed,

@@ -64,7 +64,7 @@ export default class Utils {
   }
 
   static getLovelace() {
-    let root = document.querySelector('home-assistant');
+    let root = window.document.querySelector('home-assistant');
     root = root && root.shadowRoot;
     root = root && root.querySelector('home-assistant-main');
     root = root && root.shadowRoot;

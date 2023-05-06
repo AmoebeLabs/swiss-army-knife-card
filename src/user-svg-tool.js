@@ -44,23 +44,23 @@ export default class UserSvgTool extends BaseTool {
     // https://github.com/flobacher/SVGInjector2
     // Note: in defs, url from gradient is changed, but NOT in the SVG fill=...
 
-    this.injector = {};
-    // Options
-    this.injector.injectorOptions = {
-      evalScripts: 'once',
-      pngFallback: 'assets/png',
-    };
+    // this.injector = {};
+    // // Options
+    // this.injector.injectorOptions = {
+    //   evalScripts: 'once',
+    //   pngFallback: 'assets/png',
+    // };
 
-    this.injector.afterAllInjectionsFinishedCallback = function (totalSVGsInjected) {
-      // Callback after all SVGs are injected
-      // console.log('We injected ' + totalSVGsInjected + ' SVG(s)!');
-    };
+    // this.injector.afterAllInjectionsFinishedCallback = function (totalSVGsInjected) {
+    //   // Callback after all SVGs are injected
+    //   // console.log('We injected ' + totalSVGsInjected + ' SVG(s)!');
+    // };
 
-    this.injector.perInjectionCallback = function (svg) {
-      // Callback after each SVG is injected
-      this.injector.svg = svg;
-      // console.log('SVG injected: ', svg, this.injector);
-    }.bind(this);
+    // this.injector.perInjectionCallback = function (svg) {
+    //   // Callback after each SVG is injected
+    //   this.injector.svg = svg;
+    //   // console.log('SVG injected: ', svg, this.injector);
+    // }.bind(this);
 
     // create injector configured by options
     // this.injector.injector = new SVGInjector(this.injector.injectorOptions);
@@ -107,24 +107,28 @@ export default class UserSvgTool extends BaseTool {
   *
   */
   set value(state) {
-    const changed = super.value = state;
+    // eslint-disable-next-line no-multi-assign
+    console.log('set value before, state=', state, this._stateValue, this._stateValuePrev);
+    super.value = state;
+    console.log('set value, after state=', state, this._stateValue, this._stateValuePrev);
 
-    return changed;
+    // return changed;
   }
 
+  // eslint-disable-next-line no-unused-vars
   updated(changedProperties) {
-    this.injector.elementsToInject = this._card.shadowRoot.querySelectorAll('svg[data-src]');
-    // console.log("updated - ", this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)), this.injector.elementsToInject);
+    // this.injector.elementsToInject = this._card.shadowRoot.querySelectorAll('svg[data-src]');
+    // // console.log("updated - ", this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)), this.injector.elementsToInject);
 
-    this.injector.elementsToInject = this._card.shadowRoot.getElementById('usersvg-'.concat(this.toolId)).querySelectorAll('svg[data-src]:not(.injected-svg)');
+    // this.injector.elementsToInject = this._card.shadowRoot.getElementById('usersvg-'.concat(this.toolId)).querySelectorAll('svg[data-src]:not(.injected-svg)');
 
-    // Trigger the injection if there is something to inject...
-    if (this.injector.elementsToInject.length > 0)
-      this.injector.injector.inject(
-        this.injector.elementsToInject,
-        this.injector.afterAllInjectionsFinishedCallback,
-        this.injector.perInjectionCallback,
-      );
+    // // Trigger the injection if there is something to inject...
+    // if (this.injector.elementsToInject.length > 0)
+    //   this.injector.injector.inject(
+    //     this.injector.elementsToInject,
+    //     this.injector.afterAllInjectionsFinishedCallback,
+    //     this.injector.perInjectionCallback,
+    //   );
   }
 
   /** *****************************************************************************

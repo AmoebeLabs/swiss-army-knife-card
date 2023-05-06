@@ -47,9 +47,7 @@ export default class EntityStateTool extends BaseTool {
 
   // EntityStateTool::value
   set value(state) {
-    const changed = super.value = state;
-
-    return changed;
+    super.value = state;
   }
 
   _renderState() {
@@ -133,13 +131,16 @@ export default class EntityStateTool extends BaseTool {
     }
   }
 
+  // eslint-disable-next-line no-unused-vars
   firstUpdated(changedProperties) {
   }
 
+  // eslint-disable-next-line no-unused-vars
   updated(changedProperties) {
   }
 
   render() {
+    // eslint-disable-next-line no-constant-condition
     if (true || (this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id) === 'sensor')) {
       return svg`
     <svg overflow="visible" id="state-${this.toolId}" class="${classMap(this.classes.tool)}">
@@ -152,17 +153,17 @@ export default class EntityStateTool extends BaseTool {
     } else {
       // Not a sensor. Might be any other domain. Unit can only be specified using the units: in the configuration.
       // Still check for using an attribute value for the domain...
-      return svg`
-        <text 
-        @click=${(e) => this.handleTapEvent(e, this.config)}>
-          <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}" dx="${dx}em" dy="${dy}em"
-            style="${configStyleStr}">
-            ${state}</tspan>
-          <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
-            style="${uomStyleStr}">
-            ${uom}</tspan>
-        </text>
-      `;
+      // return svg`
+      //   <text
+      //   @click=${(e) => this.handleTapEvent(e, this.config)}>
+      //     <tspan class="state__value" x="${this.svg.x}" y="${this.svg.y}" dx="${dx}em" dy="${dy}em"
+      //       style="${configStyleStr}">
+      //       ${state}</tspan>
+      //     <tspan class="state__uom" dx="-0.1em" dy="-0.45em"
+      //       style="${uomStyleStr}">
+      //       ${uom}</tspan>
+      //   </text>
+      // `;
     }
   } // render()
 }

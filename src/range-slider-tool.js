@@ -1,3 +1,4 @@
+import { fireEvent } from 'custom-card-helpers';
 import { svg } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
@@ -144,6 +145,7 @@ export default class RangeSliderTool extends BaseTool {
         this.svg.track.y2 = this.svg.cy + this.svg.track.height / 2;
         this.svg.activeTrack.y2 = this.svg.track.y2;
         break;
+      default:
     }
     switch (this.config.position.label.placement) {
       case 'position':
@@ -198,18 +200,22 @@ export default class RangeSliderTool extends BaseTool {
   svgCoordinateToSliderValue(argThis, m) {
     let state;
     let scalePos;
+    let xpos;
+    let ypos;
 
     switch (argThis.config.position.orientation) {
       case 'horizontal':
-        var xpos = m.x - argThis.svg.track.x1 - this.svg.thumb.width / 2;
+        xpos = m.x - argThis.svg.track.x1 - this.svg.thumb.width / 2;
         scalePos = xpos / (argThis.svg.track.width - this.svg.thumb.width);
         break;
 
       case 'vertical':
         // y is calculated from lower y value. So slider is from bottom to top...
-        var ypos = argThis.svg.track.y2 - this.svg.thumb.height / 2 - m.y;
+        ypos = argThis.svg.track.y2 - this.svg.thumb.height / 2 - m.y;
         scalePos = ypos / (argThis.svg.track.height - this.svg.thumb.height);
         break;
+
+      default:
     }
     state = ((argThis.config.scale.max - argThis.config.scale.min) * scalePos) + argThis.config.scale.min;
     state = Math.round(state / this.svg.scale.step) * this.svg.scale.step;
@@ -249,8 +255,10 @@ export default class RangeSliderTool extends BaseTool {
 
   updateThumb(argThis, m) {
     switch (argThis.config.position.orientation) {
+      // eslint-disable-next-line default-case-last
       default:
       case 'horizontal':
+        // eslint-disable-next-line no-empty
         if (this.config.position.label.placement === 'thumb') {
         }
 
@@ -282,6 +290,7 @@ export default class RangeSliderTool extends BaseTool {
     if (!argThis.config.show.active) return;
 
     switch (argThis.config.position.orientation) {
+      // eslint-disable-next-line default-case-last
       default:
       case 'horizontal':
         if (this.dragging) {
@@ -316,12 +325,20 @@ export default class RangeSliderTool extends BaseTool {
   * Translate mouse/touch client window coordinates to SVG window coordinates
   *
   */
+  // mouseEventToPoint(e) {
+  //   var p = this.elements.svg.createSVGPoint();
+  //   p.x = e.touches ? e.touches[0].clientX : e.clientX;
+  //   p.y = e.touches ? e.touches[0].clientY : e.clientY;
+  //   const ctm = this.elements.svg.getScreenCTM().inverse();
+  //   var p = p.matrixTransform(ctm);
+  //   return p;
+  // }
   mouseEventToPoint(e) {
-    var p = this.elements.svg.createSVGPoint();
+    let p = this.elements.svg.createSVGPoint();
     p.x = e.touches ? e.touches[0].clientX : e.clientX;
     p.y = e.touches ? e.touches[0].clientY : e.clientY;
     const ctm = this.elements.svg.getScreenCTM().inverse();
-    var p = p.matrixTransform(ctm);
+    p = p.matrixTransform(ctm);
     return p;
   }
 
@@ -361,22 +378,51 @@ export default class RangeSliderTool extends BaseTool {
     }
   }
 
+  // eslint-disable-next-line no-unused-vars
   firstUpdated(changedProperties) {
-    const thisValue = this;
+    // const thisValue = this;
     this.labelValue = this._stateValue;
 
-    function Frame() {
-      thisValue.rid = window.requestAnimationFrame(Frame);
-      thisValue.updateValue(thisValue, thisValue.m);
-      thisValue.updateThumb(thisValue, thisValue.m);
-      thisValue.updateActiveTrack(thisValue, thisValue.m);
-    }
+    // function Frame() {
+    //   thisValue.rid = window.requestAnimationFrame(Frame);
+    //   thisValue.updateValue(thisValue, thisValue.m);
+    //   thisValue.updateThumb(thisValue, thisValue.m);
+    //   thisValue.updateActiveTrack(thisValue, thisValue.m);
+    // }
 
     function Frame2() {
       this.rid = window.requestAnimationFrame(Frame2);
       this.updateValue(this, this.m);
       this.updateThumb(this, this.m);
       this.updateActiveTrack(this, this.m);
+    }
+
+    function pointerMove(e) {
+      let scaleValue;
+
+      e.preventDefault();
+
+      if (this.dragging) {
+        this.m = this.mouseEventToPoint(e);
+
+        switch (this.config.position.orientation) {
+          case 'horizontal':
+            scaleValue = this.svgCoordinateToSliderValue(this, this.m);
+            this.m.x = this.valueToSvg(this, scaleValue);
+            this.m.x = Math.max(this.svg.scale.min, Math.min(this.m.x, this.svg.scale.max));
+            this.m.x = (Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step);
+            break;
+
+          case 'vertical':
+            scaleValue = this.svgCoordinateToSliderValue(this, this.m);
+            this.m.y = this.valueToSvg(this, scaleValue);
+            this.m.y = (Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step);
+            break;
+
+          default:
+        }
+        Frame2.call(this);
+      }
     }
 
     if (this.dev.debug) console.log('slider - firstUpdated');
@@ -397,6 +443,7 @@ export default class RangeSliderTool extends BaseTool {
       // @NTS: Keep this comment for later!!
       // Safari: We use mouse stuff for pointerdown, but have to use pointer stuff to make sliding work on Safari. WHY??
       window.addEventListener('pointermove', pointerMove.bind(this), false);
+      // eslint-disable-next-line no-use-before-define
       window.addEventListener('pointerup', pointerUp.bind(this), false);
 
       // @NTS: Keep this comment for later!!
@@ -462,35 +509,9 @@ export default class RangeSliderTool extends BaseTool {
       this.callTapService();
     }
 
-    function pointerMove(e) {
-      let scaleValue;
-
-      e.preventDefault();
-
-      if (this.dragging) {
-        this.m = this.mouseEventToPoint(e);
-
-        switch (this.config.position.orientation) {
-          case 'horizontal':
-            scaleValue = this.svgCoordinateToSliderValue(this, this.m);
-            this.m.x = this.valueToSvg(this, scaleValue);
-            this.m.x = Math.max(this.svg.scale.min, Math.min(this.m.x, this.svg.scale.max));
-            this.m.x = (Math.round(this.m.x / this.svg.scale.step) * this.svg.scale.step);
-            break;
-
-          case 'vertical':
-            scaleValue = this.svgCoordinateToSliderValue(this, this.m);
-            this.m.y = this.valueToSvg(this, scaleValue);
-            this.m.y = (Math.round(this.m.y / this.svg.scale.step) * this.svg.scale.step);
-            break;
-        }
-        Frame2.call(this);
-      }
-    }
-
     // @NTS: Keep this comment for later!!
     // For things to work in Safari, we need separate touch and mouse down handlers...
-    // DON't as WHY! The pointerdown method prevents listening on window events later on.
+    // DON't ask WHY! The pointerdown method prevents listening on window events later on.
     // ie, we can't move our finger
 
     // this.elements.svg.addEventListener("pointerdown", pointerDown.bind(this), false);
@@ -508,9 +529,8 @@ export default class RangeSliderTool extends BaseTool {
   *
   */
   set value(state) {
-    const changed = super.value = state;
+    super.value = state;
     if (!this.dragging) this.labelValue = this._stateValue;
-    return changed;
   }
 
   _renderUom() {
@@ -617,7 +637,8 @@ export default class RangeSliderTool extends BaseTool {
         cy = (this.config.position.orientation === 'vertical'
           ? this.valueToSvg(this, Number(this.renderValue))
           : 0);
-        if (this.dragging) (this.config.position.orientation === 'horizontal') ? cy -= 50 : cx -= 50;
+        // eslint-disable-next-line no-unused-expressions
+        if (this.dragging) { (this.config.position.orientation === 'horizontal') ? cy -= 50 : cx -= 50; }
         break;
 
       default:
@@ -644,20 +665,6 @@ export default class RangeSliderTool extends BaseTool {
       }
     }
 
-    function renderThumbGroup() {
-      return svg`
-        <g id="rs-thumb-group" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}" style="transform:translate(${cx}px, ${cy}px);">
-          <g style="transform-origin:center;transform-box: fill-box;">
-            <rect id="rs-thumb" class="${classMap(this.classes.thumb)}" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
-              width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
-              style="${styleMap(this.styles.thumb)}"
-            />
-            </g>
-            ${renderLabel.call(this, true)} 
-        </g>
-      `;
-    }
-
     function renderLabel(argGroup) {
       if ((this.config.position.label.placement === 'thumb') && argGroup) {
         return svg`
@@ -678,6 +685,20 @@ export default class RangeSliderTool extends BaseTool {
           </text>
           `;
       }
+    }
+
+    function renderThumbGroup() {
+      return svg`
+        <g id="rs-thumb-group" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}" style="transform:translate(${cx}px, ${cy}px);">
+          <g style="transform-origin:center;transform-box: fill-box;">
+            <rect id="rs-thumb" class="${classMap(this.classes.thumb)}" x="${this.svg.thumb.x1}" y="${this.svg.thumb.y1}"
+              width="${this.svg.thumb.width}" height="${this.svg.thumb.height}" rx="${this.svg.thumb.radius}" 
+              style="${styleMap(this.styles.thumb)}"
+            />
+            </g>
+            ${renderLabel.call(this, true)} 
+        </g>
+      `;
     }
 
     const svgItems = [];

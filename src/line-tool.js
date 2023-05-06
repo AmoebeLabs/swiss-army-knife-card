@@ -52,9 +52,7 @@ export default class LineTool extends BaseTool {
       this.svg.y1 = Utils.calculateSvgCoordinate(argConfig.position.y1, this.toolsetPos.cy);
       this.svg.x2 = Utils.calculateSvgCoordinate(argConfig.position.x2, this.toolsetPos.cx);
       this.svg.y2 = Utils.calculateSvgCoordinate(argConfig.position.y2, this.toolsetPos.cy);
-    }
-
-    if (this.config.position.orientation === 'vertical') {
+    } else if (this.config.position.orientation === 'vertical') {
       this.svg.x1 = this.svg.cx;
       this.svg.y1 = this.svg.cy - this.svg.length / 2;
       this.svg.x2 = this.svg.cx;
@@ -64,7 +62,6 @@ export default class LineTool extends BaseTool {
       this.svg.y1 = this.svg.cy;
       this.svg.x2 = this.svg.cx + this.svg.length / 2;
       this.svg.y2 = this.svg.cy;
-    } else if (this.config.position.orientation === 'fromto') {
     }
 
     this.classes.line = {};

@@ -58,7 +58,7 @@ export default class EntityIconTool extends BaseTool {
     this.svg.ypx = this.svg.cy;
 
     if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafari16)) {
-      this.svg.iconSize = this.svg.iconSize * correction;
+      this.svg.iconSize *= correction;
 
       this.svg.xpx = (this.svg.xpx * correction) - (this.svg.iconPixels * adjust * correction);
       this.svg.ypx = (this.svg.ypx * correction) - (this.svg.iconPixels * 0.5 * correction) - (this.svg.iconPixels * 0.25 * correction);// - (iconPixels * 0.25 / 1.86);
@@ -66,7 +66,7 @@ export default class EntityIconTool extends BaseTool {
       // Get x,y in viewbox dimensions and center with half of size of icon.
       // Adjust horizontal for aligning. Can be 1, 0.5 and -1
       // Adjust vertical for half of height... and correct for 0.25em textfont to align.
-      this.svg.xpx = this.svg.xpx - (this.svg.iconPixels * adjust);
+      this.svg.xpx -= (this.svg.iconPixels * adjust);
       this.svg.ypx = this.svg.ypx - (this.svg.iconPixels * 0.5) - (this.svg.iconPixels * 0.25);
     }
     this.classes.icon = {};
@@ -116,6 +116,7 @@ export default class EntityIconTool extends BaseTool {
       this.config.icon,
     );
 
+    // eslint-disable-next-line no-constant-condition
     if (true || (this.svg.xpx === 0)) {
       this.svg.iconSize = this.config.position.icon_size ? this.config.position.icon_size : 2;
       this.svg.iconPixels = this.svg.iconSize * FONT_SIZE;
@@ -135,8 +136,8 @@ export default class EntityIconTool extends BaseTool {
 
       if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafari16)) {
         // correction = 1; //
-        this.svg.iconSize = this.svg.iconSize * correction;
-        this.svg.iconPixels = this.svg.iconPixels * correction;
+        this.svg.iconSize *= correction;
+        this.svg.iconPixels *= correction;
 
         this.svg.xpx = (this.svg.xpx * correction) - (this.svg.iconPixels * adjust * correction);
         this.svg.ypx = (this.svg.ypx * correction) - (this.svg.iconPixels * 0.9 * correction);
@@ -164,8 +165,7 @@ export default class EntityIconTool extends BaseTool {
         this.iconSvg = undefined;
       }
 
-      if (!this.iconSvg) {
-      } else {
+      if (this.iconSvg) {
         EntityIconTool.sakIconCache[icon] = this.iconSvg;
       }
     } else {
@@ -227,10 +227,10 @@ export default class EntityIconTool extends BaseTool {
     argThis.iconSvg = this._card.shadowRoot.getElementById('icon-'.concat(this.toolId))?.shadowRoot?.querySelectorAll('*')[0]?.path;
     if (argThis.iconSvg) {
       argThis._card.requestUpdate();
-    } else {
     }
   }
 
+  // eslint-disable-next-line no-unused-vars
   firstUpdated(changedProperties) {
 
   }

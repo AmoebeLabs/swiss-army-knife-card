@@ -1,10 +1,6 @@
 import { svg } from 'lit-element';
-import { classMap } from 'lit-html/directives/class-map.js';
-import { styleMap } from 'lit-html/directives/style-map.js';
 
 import { SVG_DEFAULT_DIMENSIONS, SVG_DEFAULT_DIMENSIONS_HALF } from './const';
-import Merge from './merge';
-import BaseTool from './base-tool';
 import Utils from './utils';
 
 import BadgeTool from './badge-tool';
@@ -55,16 +51,21 @@ export default class Toolset {
     // Group scaling experiment. Calc translate values for SVG using the toolset scale value
     this.transform = {};
     this.transform.scale = {};
+    // eslint-disable-next-line no-multi-assign
     this.transform.scale.x = this.transform.scale.y = 1;
     this.transform.rotate = {};
+    // eslint-disable-next-line no-multi-assign
     this.transform.rotate.x = this.transform.rotate.y = 0;
     this.transform.skew = {};
+    // eslint-disable-next-line no-multi-assign
     this.transform.skew.x = this.transform.skew.y = 0;
 
     if (this.config.position.scale) {
+      // eslint-disable-next-line no-multi-assign
       this.transform.scale.x = this.transform.scale.y = this.config.position.scale;
     }
     if (this.config.position.rotate) {
+      // eslint-disable-next-line no-multi-assign
       this.transform.rotate.x = this.transform.rotate.y = this.config.position.rotate;
     }
 
@@ -100,21 +101,23 @@ export default class Toolset {
     };
 
     this.config.tools.map((toolConfig) => {
-      const argConfig = { ...toolConfig };
+      const newConfig = { ...toolConfig };
 
-      const argPos = {
+      const newPos = {
         cx: 0 / 100 * SVG_DEFAULT_DIMENSIONS,
         cy: 0 / 100 * SVG_DEFAULT_DIMENSIONS,
         scale: this.config.position.scale ? this.config.position.scale : 1,
       };
 
-      if (this.dev.debug) console.log('Toolset::constructor toolConfig', this.toolsetId, argConfig, argPos);
+      if (this.dev.debug) console.log('Toolset::constructor toolConfig', this.toolsetId, newConfig, newPos);
 
       if (!toolConfig.disabled) {
-        const newTool = new toolsNew[toolConfig.type](this, argConfig, argPos);
+        const newTool = new toolsNew[toolConfig.type](this, newConfig, newPos);
+        // eslint-disable-next-line no-bitwise
         this._card.entityHistory.needed |= (toolConfig.type === 'bar');
         this.tools.push({ type: toolConfig.type, index: toolConfig.id, tool: newTool });
       }
+      return true;
     });
 
     if (this.dev.performance) console.timeEnd(`--> ${this.toolsetId} PERFORMANCE Toolset::constructor`);
@@ -134,6 +137,7 @@ export default class Toolset {
     if (this.dev.performance) console.time(`--> ${this.toolsetId} PERFORMANCE Toolset::updateValues`);
     if (this.tools) {
       this.tools.map((item, index) => {
+        // eslint-disable-next-line no-constant-condition
         if (true || item.type === 'segarc') {
           if ((item.tool.config.hasOwnProperty('entity_index'))) {
             if (this.dev.debug) console.log('Toolset::updateValues', item, index);
@@ -163,17 +167,18 @@ export default class Toolset {
             // (used for formatting classes/styles) or can be used in a derived entity
 
             const valueList = [];
-            for (let index = 0; index < item.tool.config.entity_indexes.length; ++index) {
-              valueList[index] = this._card.attributesStr[item.tool.config.entity_indexes[index].entity_index]
-                ? this._card.attributesStr[item.tool.config.entity_indexes[index].entity_index]
-                : this._card.secondaryInfoStr[item.tool.config.entity_indexes[index].entity_index]
-                  ? this._card.secondaryInfoStr[item.tool.config.entity_indexes[index].entity_index]
-                  : this._card.entitiesStr[item.tool.config.entity_indexes[index].entity_index];
+            for (let i = 0; i < item.tool.config.entity_indexes.length; ++i) {
+              valueList[i] = this._card.attributesStr[item.tool.config.entity_indexes[i].entity_index]
+                ? this._card.attributesStr[item.tool.config.entity_indexes[i].entity_index]
+                : this._card.secondaryInfoStr[item.tool.config.entity_indexes[i].entity_index]
+                  ? this._card.secondaryInfoStr[item.tool.config.entity_indexes[i].entity_index]
+                  : this._card.entitiesStr[item.tool.config.entity_indexes[i].entity_index];
             }
 
             item.tool.values = valueList;
           }
         }
+        return true;
       });
     }
     if (this.dev.performance) console.timeEnd(`--> ${this.toolsetId} PERFORMANCE Toolset::updateValues`);
@@ -215,10 +220,12 @@ export default class Toolset {
     if (this.dev.debug) console.log('*****Event - Toolset::firstUpdated', this.toolsetId, new Date().getTime());
 
     if (this.tools) {
-      this.tools.map((item, index) => {
+      this.tools.map((item) => {
         if (typeof item.tool.firstUpdated === 'function') {
           item.tool.firstUpdated(changedProperties);
+          return true;
         }
+        return false;
       });
     }
   }
@@ -233,10 +240,12 @@ export default class Toolset {
     if (this.dev.debug) console.log('*****Event - Updated', this.toolsetId, new Date().getTime());
 
     if (this.tools) {
-      this.tools.map((item, index) => {
+      this.tools.map((item) => {
         if (typeof item.tool.updated === 'function') {
           item.tool.updated(changedProperties);
+          return true;
         }
+        return false;
       });
     }
   }

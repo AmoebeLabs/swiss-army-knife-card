@@ -56,9 +56,7 @@ export default class CircleTool extends BaseTool {
   *
   */
   set value(state) {
-    const changed = super.value = state;
-
-    return changed;
+    super.value = state;
   }
 
   /** *****************************************************************************
