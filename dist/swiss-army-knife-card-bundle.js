@@ -8682,12 +8682,7 @@ class UserSvgTool extends BaseTool {
   *
   */
   set value(state) {
-    // eslint-disable-next-line no-multi-assign
-    console.log('set value before, state=', state, this._stateValue, this._stateValuePrev);
     super.value = state;
-    console.log('set value, after state=', state, this._stateValue, this._stateValuePrev);
-
-    // return changed;
   }
 
   // eslint-disable-next-line no-unused-vars
