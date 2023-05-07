@@ -72,10 +72,25 @@ export default class EntityIconTool extends BaseTool {
     this.classes.icon = {};
     this.styles.icon = {};
 
-    if (!EntityIconTool.sakIconCache) {
-      EntityIconTool.sakIconCache = {};
-    }
     if (this.dev.debug) console.log('EntityIconTool constructor coords, dimensions, config', this.coords, this.dimensions, this.config);
+  }
+
+  /** *****************************************************************************
+  * EntityIconTool::static properties()
+  *
+  * Summary.
+  * Declares the static class properties.
+  * Needs eslint parserOptions ecmaVersion: 2022
+  *
+  * Replaces older style declarations in the constructor, such as
+  *
+  *  if (!EntityIconTool.sakIconCache) {
+  *    EntityIconTool.sakIconCache = {};
+  *  }
+  *
+  */
+  static {
+    EntityIconTool.sakIconCache = {};
   }
 
   /** *****************************************************************************
@@ -167,9 +182,11 @@ export default class EntityIconTool extends BaseTool {
 
       if (this.iconSvg) {
         EntityIconTool.sakIconCache[icon] = this.iconSvg;
+        // console.log('EntityIconTool, cache - Store: ', icon);
       }
     } else {
       this.iconSvg = EntityIconTool.sakIconCache[icon];
+      // console.log('EntityIconTool, cache - Fetch: ', icon);
     }
 
     let scale;
