@@ -70,7 +70,7 @@ rules:
   no-shadow: 0
   no-loop-func: 0
   # Settings handled and NOT occuring anymore!
-  no-undef: 2
+  # no-undef: 2
   no-use-before-define: 1
   no-case-declarations: 1
   no-inner-declarations: 1

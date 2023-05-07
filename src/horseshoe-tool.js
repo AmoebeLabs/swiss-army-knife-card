@@ -3,6 +3,7 @@ import { SVG_VIEW_BOX } from './const';
 import Merge from './merge';
 import Utils from './utils';
 import BaseTool from './base-tool';
+import Colors from './colors';
 
 /** ****************************************************************************
   * HorseshoeTool class
@@ -134,7 +135,7 @@ export default class HorseshoeTool extends BaseTool {
 
     const min = this.config.horseshoe_scale.min || 0;
     const max = this.config.horseshoe_scale.max || 100;
-    const val = Math.min(this._card._calculateValueBetween(min, max, state), 1);
+    const val = Math.min(Utils.calculateValueBetween(min, max, state), 1);
     const score = val * this.HORSESHOE_PATH_LENGTH;
     const total = 10 * this.HORSESHOE_RADIUS_SIZE;
     this.dashArray = `${score} ${total}`;
@@ -153,7 +154,7 @@ export default class HorseshoeTool extends BaseTool {
       //  to display the horseshoe circle .. <horseshoe circle>.setAttribute('stroke', stroke);
     } else if (strokeStyle === 'autominmax') {
       // Use color0 and color1 for autoranging the color of the horseshoe
-      const stroke = this._card._calculateColor(state, this.colorStopsMinMax, true);
+      const stroke = Colors.calculateColor(state, this.colorStopsMinMax, true);
 
       // We now use a gradient for the horseshoe, using two colors
       // Set these colors to the colorstop color...
@@ -161,7 +162,7 @@ export default class HorseshoeTool extends BaseTool {
       this.color1 = stroke;
       this.color1_offset = '0%';
     } else if (strokeStyle === 'colorstop' || strokeStyle === 'colorstopgradient') {
-      const stroke = this._card._calculateColor(state, this.colorStops, strokeStyle === 'colorstopgradient');
+      const stroke = Colors.calculateColor(state, this.colorStops, strokeStyle === 'colorstopgradient');
 
       // We now use a gradient for the horseshoe, using two colors
       // Set these colors to the colorstop color...

@@ -5,6 +5,7 @@ import Merge from './merge';
 import BaseTool from './base-tool';
 import Utils from './utils';
 import Templates from './templates';
+import Colors from './colors';
 
 /** *****************************************************************************
   * SegmentedArcTool class
@@ -504,7 +505,7 @@ export default class SegmentedArcTool extends BaseTool {
                 const value = Math.min(Math.max(0, (runningSegmentAngle - boundsStart) / (boundsEnd - boundsStart)), 1);
                 // 2022.07.03 Fixing lastcolor for true stop
                 if (thisTool.config.show.style === 'colorstops') {
-                  fill = thisTool._card._getGradientValue(
+                  fill = Colors.getGradientValue(
                     thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                     thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                     value,

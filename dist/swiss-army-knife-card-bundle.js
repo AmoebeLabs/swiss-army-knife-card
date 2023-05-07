@@ -3294,6 +3294,238 @@ const classMap = directive((classInfo) => (part) => {
 var t,r;!function(e){e.language="language",e.system="system",e.comma_decimal="comma_decimal",e.decimal_comma="decimal_comma",e.space_comma="space_comma",e.none="none";}(t||(t={})),function(e){e.language="language",e.system="system",e.am_pm="12",e.twenty_four="24";}(r||(r={}));function E(e){return e.substr(0,e.indexOf("."))}new Set(["fan","input_boolean","light","switch","group","automation"]);var ne=function(e,t,r,n){n=n||{},r=null==r?{}:r;var i=new Event(t,{bubbles:void 0===n.bubbles||n.bubbles,cancelable:Boolean(n.cancelable),composed:void 0===n.composed||n.composed});return i.detail=r,e.dispatchEvent(i),i};new Set(["call-service","divider","section","weblink","cast","select"]);var ce={alert:"mdi:alert",automation:"mdi:playlist-play",calendar:"mdi:calendar",camera:"mdi:video",climate:"mdi:thermostat",configurator:"mdi:settings",conversation:"mdi:text-to-speech",device_tracker:"mdi:account",fan:"mdi:fan",group:"mdi:google-circles-communities",history_graph:"mdi:chart-line",homeassistant:"mdi:home-assistant",homekit:"mdi:home-automation",image_processing:"mdi:image-filter-frames",input_boolean:"mdi:drawing",input_datetime:"mdi:calendar-clock",input_number:"mdi:ray-vertex",input_select:"mdi:format-list-bulleted",input_text:"mdi:textbox",light:"mdi:lightbulb",mailbox:"mdi:mailbox",notify:"mdi:comment-alert",person:"mdi:account",plant:"mdi:flower",proximity:"mdi:apple-safari",remote:"mdi:remote",scene:"mdi:google-pages",script:"mdi:file-document",sensor:"mdi:eye",simple_alarm:"mdi:bell",sun:"mdi:white-balance-sunny",switch:"mdi:flash",timer:"mdi:timer",updater:"mdi:cloud-upload",vacuum:"mdi:robot-vacuum",water_heater:"mdi:thermometer",weblink:"mdi:open-in-new"};function me(e,t){if(e in ce)return ce[e];switch(e){case"alarm_control_panel":switch(t){case"armed_home":return "mdi:bell-plus";case"armed_night":return "mdi:bell-sleep";case"disarmed":return "mdi:bell-outline";case"triggered":return "mdi:bell-ring";default:return "mdi:bell"}case"binary_sensor":return t&&"off"===t?"mdi:radiobox-blank":"mdi:checkbox-marked-circle";case"cover":return "closed"===t?"mdi:window-closed":"mdi:window-open";case"lock":return t&&"unlocked"===t?"mdi:lock-open":"mdi:lock";case"media_player":return t&&"off"!==t&&"idle"!==t?"mdi:cast-connected":"mdi:cast";case"zwave":switch(t){case"dead":return "mdi:emoticon-dead";case"sleeping":return "mdi:sleep";case"initializing":return "mdi:timer-sand";default:return "mdi:z-wave"}default:return console.warn("Unable to find icon for domain "+e+" ("+t+")"),"mdi:bookmark"}}var xe={humidity:"mdi:water-percent",illuminance:"mdi:brightness-5",temperature:"mdi:thermometer",pressure:"mdi:gauge",power:"mdi:flash",signal_strength:"mdi:wifi"},De={binary_sensor:function(e,t){var r="off"===e;switch(null==t?void 0:t.attributes.device_class){case"battery":return r?"mdi:battery":"mdi:battery-outline";case"battery_charging":return r?"mdi:battery":"mdi:battery-charging";case"cold":return r?"mdi:thermometer":"mdi:snowflake";case"connectivity":return r?"mdi:server-network-off":"mdi:server-network";case"door":return r?"mdi:door-closed":"mdi:door-open";case"garage_door":return r?"mdi:garage":"mdi:garage-open";case"power":return r?"mdi:power-plug-off":"mdi:power-plug";case"gas":case"problem":case"safety":case"tamper":return r?"mdi:check-circle":"mdi:alert-circle";case"smoke":return r?"mdi:check-circle":"mdi:smoke";case"heat":return r?"mdi:thermometer":"mdi:fire";case"light":return r?"mdi:brightness-5":"mdi:brightness-7";case"lock":return r?"mdi:lock":"mdi:lock-open";case"moisture":return r?"mdi:water-off":"mdi:water";case"motion":return r?"mdi:walk":"mdi:run";case"occupancy":return r?"mdi:home-outline":"mdi:home";case"opening":return r?"mdi:square":"mdi:square-outline";case"plug":return r?"mdi:power-plug-off":"mdi:power-plug";case"presence":return r?"mdi:home-outline":"mdi:home";case"running":return r?"mdi:stop":"mdi:play";case"sound":return r?"mdi:music-note-off":"mdi:music-note";case"update":return r?"mdi:package":"mdi:package-up";case"vibration":return r?"mdi:crop-portrait":"mdi:vibrate";case"window":return r?"mdi:window-closed":"mdi:window-open";default:return r?"mdi:radiobox-blank":"mdi:checkbox-marked-circle"}},cover:function(e){var t="closed"!==e.state;switch(e.attributes.device_class){case"garage":return t?"mdi:garage-open":"mdi:garage";case"door":return t?"mdi:door-open":"mdi:door-closed";case"shutter":return t?"mdi:window-shutter-open":"mdi:window-shutter";case"blind":return t?"mdi:blinds-open":"mdi:blinds";case"window":return t?"mdi:window-open":"mdi:window-closed";default:return me("cover",e.state)}},sensor:function(e){var t=e.attributes.device_class;if(t&&t in xe)return xe[t];if("battery"===t){var r=Number(e.state);if(isNaN(r))return "mdi:battery-unknown";var n=10*Math.round(r/10);return n>=100?"mdi:battery":n<=0?"mdi:battery-alert":"hass:battery-"+n}var i=e.attributes.unit_of_measurement;return "°C"===i||"°F"===i?"mdi:thermometer":me("sensor")},input_datetime:function(e){return e.attributes.has_date?e.attributes.has_time?me("input_datetime"):"mdi:calendar":"mdi:clock"}},Se=function(e){if(!e)return "mdi:bookmark";if(e.attributes.icon)return e.attributes.icon;var t=E(e.entity_id);return t in De?De[t](e):me(t,e.state)};
 
 /** ***************************************************************************
+  * Colors class
+  *
+  * Summary.
+  *
+  */
+
+class Colors {
+  /** *****************************************************************************
+  * Colors::static properties()
+  *
+  * Summary.
+  * Declares the static class properties.
+  * Needs eslint parserOptions ecmaVersion: 2022
+  *
+  */
+  static {
+    Colors.colorCache = {};
+    Colors.element = undefined;
+  }
+
+  /** *****************************************************************************
+  * Colors::setElement()
+  *
+  * Summary.
+  * Sets the HTML element (the custom card) to work with getting colors
+  *
+  */
+
+  static setElement(argElement) {
+    Colors.element = argElement;
+  }
+
+  /** *****************************************************************************
+  * card::_calculateColor()
+  *
+  * Summary.
+  *
+  * #TODO:
+  * replace by TinyColor library? Is that possible/feasible??
+  *
+  */
+
+  static calculateColor(argState, argStops, argIsGradient) {
+    const sortedStops = Object.keys(argStops).map((n) => Number(n)).sort((a, b) => a - b);
+
+    let start; let end; let
+      val;
+    const l = sortedStops.length;
+
+    if (argState <= sortedStops[0]) {
+      return argStops[sortedStops[0]];
+    } else if (argState >= sortedStops[l - 1]) {
+      return argStops[sortedStops[l - 1]];
+    } else {
+      for (let i = 0; i < l - 1; i++) {
+        const s1 = sortedStops[i];
+        const s2 = sortedStops[i + 1];
+        if (argState >= s1 && argState < s2) {
+          [start, end] = [argStops[s1], argStops[s2]];
+          if (!argIsGradient) {
+            return start;
+          }
+          val = Colors.calculateValueBetween(s1, s2, argState);
+          break;
+        }
+      }
+    }
+    return Colors.getGradientValue(start, end, val);
+  }
+
+  /** *****************************************************************************
+  * card::_calculateColor2()
+  *
+  * Summary.
+  *
+  * #TODO:
+  * replace by TinyColor library? Is that possible/feasible??
+  *
+  */
+
+  static calculateColor2(argState, argStops, argPart, argProperty, argIsGradient) {
+    const sortedStops = Object.keys(argStops).map((n) => Number(n)).sort((a, b) => a - b);
+
+    let start; let end; let
+      val;
+    const l = sortedStops.length;
+
+    if (argState <= sortedStops[0]) {
+      return argStops[sortedStops[0]];
+    } else if (argState >= sortedStops[l - 1]) {
+      return argStops[sortedStops[l - 1]];
+    } else {
+      for (let i = 0; i < l - 1; i++) {
+        const s1 = sortedStops[i];
+        const s2 = sortedStops[i + 1];
+        if (argState >= s1 && argState < s2) {
+          // console.log('calculateColor2 ', argStops[s1], argStops[s2]);
+          [start, end] = [argStops[s1].styles[argPart][argProperty], argStops[s2].styles[argPart][argProperty]];
+          if (!argIsGradient) {
+            return start;
+          }
+          val = Colors.calculateValueBetween(s1, s2, argState);
+          break;
+        }
+      }
+    }
+    return Colors.getGradientValue(start, end, val);
+  }
+
+  /** *****************************************************************************
+  * card::_calculateValueBetween()
+  *
+  * Summary.
+  * Clips the argValue value between argStart and argEnd, and returns the between value ;-)
+  *
+  * Returns NaN if argValue is undefined
+  *
+  * NOTE: Rename to valueToPercentage ??
+  */
+
+  static calculateValueBetween(argStart, argEnd, argValue) {
+    return (Math.min(Math.max(argValue, argStart), argEnd) - argStart) / (argEnd - argStart);
+  }
+
+  /** *****************************************************************************
+  * card::_getColorVariable()
+  *
+  * Summary.
+  * Get value of CSS color variable, specified as var(--color-value)
+  * These variables are defined in the Lovelace element so it appears...
+  *
+  */
+
+  static getColorVariable(argColor) {
+    const newColor = argColor.substr(4, argColor.length - 5);
+
+    const returnColor = window.getComputedStyle(Colors.element).getPropertyValue(newColor);
+    return returnColor;
+  }
+
+  /** *****************************************************************************
+  * card::_getGradientValue()
+  *
+  * Summary.
+  * Get gradient value of color as a result of a color_stop.
+  * An RGBA value is calculated, so transparency is possible...
+  *
+  * The colors (colorA and colorB) can be specified as:
+  * - a css variable, var(--color-value)
+  * - a hex value, #fff or #ffffff
+  * - an rgb() or rgba() value
+  * - a hsl() or hsla() value
+  * - a named css color value, such as white.
+  *
+  */
+
+  static getGradientValue(argColorA, argColorB, argValue) {
+    const resultColorA = Colors.colorToRGBA(argColorA);
+    const resultColorB = Colors.colorToRGBA(argColorB);
+
+    // We have a rgba() color array from cache or canvas.
+    // Calculate color in between, and return #hex value as a result.
+    //
+
+    const v1 = 1 - argValue;
+    const v2 = argValue;
+    const rDec = Math.floor((resultColorA[0] * v1) + (resultColorB[0] * v2));
+    const gDec = Math.floor((resultColorA[1] * v1) + (resultColorB[1] * v2));
+    const bDec = Math.floor((resultColorA[2] * v1) + (resultColorB[2] * v2));
+    const aDec = Math.floor((resultColorA[3] * v1) + (resultColorB[3] * v2));
+
+    // And convert full RRGGBBAA value to #hex.
+    const rHex = Colors.padZero(rDec.toString(16));
+    const gHex = Colors.padZero(gDec.toString(16));
+    const bHex = Colors.padZero(bDec.toString(16));
+    const aHex = Colors.padZero(aDec.toString(16));
+
+    return `#${rHex}${gHex}${bHex}${aHex}`;
+  }
+
+  static padZero(argValue) {
+    if (argValue.length < 2) {
+      argValue = `0${argValue}`;
+    }
+    return argValue.substr(0, 2);
+  }
+
+  /** *****************************************************************************
+  * card::_colorToRGBA()
+  *
+  * Summary.
+  * Get RGBA color value of argColor.
+  *
+  * The argColor can be specified as:
+  * - a css variable, var(--color-value)
+  * - a hex value, #fff or #ffffff
+  * - an rgb() or rgba() value
+  * - a hsl() or hsla() value
+  * - a named css color value, such as white.
+  *
+  */
+
+  static colorToRGBA(argColor) {
+    // return color if found in colorCache...
+    const retColor = Colors.colorCache[argColor];
+    if (retColor) return retColor;
+
+    let theColor = argColor;
+    // Check for 'var' colors
+    const a0 = argColor.substr(0, 3);
+    if (a0.valueOf() === 'var') {
+      theColor = Colors.getColorVariable(argColor);
+    }
+
+    // Get color from canvas. This always returns an rgba() value...
+    const canvas = window.document.createElement('canvas');
+    // eslint-disable-next-line no-multi-assign
+    canvas.width = canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+
+    ctx.clearRect(0, 0, 1, 1);
+    ctx.fillStyle = theColor;
+    ctx.fillRect(0, 0, 1, 1);
+    const outColor = [...ctx.getImageData(0, 0, 1, 1).data];
+
+    Colors.colorCache[argColor] = outColor;
+
+    return outColor;
+  }
+} // END OF CLASS
+
+/** ***************************************************************************
   * BaseTool class
   *
   * Summary.
@@ -3776,10 +4008,10 @@ class BaseTool {
       case 'colorstop':
       case 'colorstops':
       case 'colorstopgradient':
-        color = this._card._calculateColor(argValue, this.colorStops, (this.config.show.style === 'colorstopgradient'));
+        color = Colors.calculateColor(argValue, this.colorStops, (this.config.show.style === 'colorstopgradient'));
         break;
       case 'minmaxgradient':
-        color = this._card._calculateColor(argValue, this.colorStopsMinMax, true);
+        color = Colors.calculateColor(argValue, this.colorStopsMinMax, true);
         break;
     }
     return color;
@@ -3798,10 +4030,10 @@ class BaseTool {
       case 'colorstop':
       case 'colorstops':
       case 'colorstopgradient':
-        color = this._card._calculateColor2(argValue, this.csnew, argPart, argProperty, (this.config.show.style === 'colorstopgradient'));
+        color = Colors.calculateColor2(argValue, this.csnew, argPart, argProperty, (this.config.show.style === 'colorstopgradient'));
         break;
       case 'minmaxgradient':
-        color = this._card._calculateColor2(argValue, this.colorStopsMinMax, argPart, argProperty, true);
+        color = Colors.calculateColor2(argValue, this.colorStopsMinMax, argPart, argProperty, true);
         break;
     }
     return color;
@@ -4472,7 +4704,7 @@ class CircularSliderTool extends BaseTool {
   updateActiveTrack(m) {
     const min = this.config.scale.min || 0;
     const max = this.config.scale.max || 100;
-    let val = this._card._calculateValueBetween(min, max, this.labelValue);
+    let val = Utils.calculateValueBetween(min, max, this.labelValue);
     if (isNaN(val)) val = 0;
     const score = val * this.svg.pathLength;
     this.dashArray = `${score} ${this.svg.circleLength}`;
@@ -4726,7 +4958,7 @@ class CircularSliderTool extends BaseTool {
     if (!this.dragging) {
       const min = this.config.scale.min || 0;
       const max = this.config.scale.max || 100;
-      let val = Math.min(this._card._calculateValueBetween(min, max, this._stateValue), 1);
+      let val = Math.min(Utils.calculateValueBetween(min, max, this._stateValue), 1);
 
       // Don't display anything, that is NO track, thumb to start...
       if (isNaN(val)) val = 0;
@@ -4753,7 +4985,7 @@ class CircularSliderTool extends BaseTool {
     if (!this.dragging) {
       const min = this.config.scale.min || 0;
       const max = this.config.scale.max || 100;
-      let val = Math.min(this._card._calculateValueBetween(min, max, this._stateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())]), 1);
+      let val = Math.min(Utils.calculateValueBetween(min, max, this._stateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())]), 1);
 
       // Don't display anything, that is NO track, thumb to start...
       if (isNaN(val)) val = 0;
@@ -5942,7 +6174,7 @@ class HorseshoeTool extends BaseTool {
 
     const min = this.config.horseshoe_scale.min || 0;
     const max = this.config.horseshoe_scale.max || 100;
-    const val = Math.min(this._card._calculateValueBetween(min, max, state), 1);
+    const val = Math.min(Utils.calculateValueBetween(min, max, state), 1);
     const score = val * this.HORSESHOE_PATH_LENGTH;
     const total = 10 * this.HORSESHOE_RADIUS_SIZE;
     this.dashArray = `${score} ${total}`;
@@ -5961,7 +6193,7 @@ class HorseshoeTool extends BaseTool {
       //  to display the horseshoe circle .. <horseshoe circle>.setAttribute('stroke', stroke);
     } else if (strokeStyle === 'autominmax') {
       // Use color0 and color1 for autoranging the color of the horseshoe
-      const stroke = this._card._calculateColor(state, this.colorStopsMinMax, true);
+      const stroke = Colors.calculateColor(state, this.colorStopsMinMax, true);
 
       // We now use a gradient for the horseshoe, using two colors
       // Set these colors to the colorstop color...
@@ -5969,7 +6201,7 @@ class HorseshoeTool extends BaseTool {
       this.color1 = stroke;
       this.color1_offset = '0%';
     } else if (strokeStyle === 'colorstop' || strokeStyle === 'colorstopgradient') {
-      const stroke = this._card._calculateColor(state, this.colorStops, strokeStyle === 'colorstopgradient');
+      const stroke = Colors.calculateColor(state, this.colorStops, strokeStyle === 'colorstopgradient');
 
       // We now use a gradient for the horseshoe, using two colors
       // Set these colors to the colorstop color...
@@ -7821,7 +8053,7 @@ class SegmentedArcTool extends BaseTool {
                 const value = Math.min(Math.max(0, (runningSegmentAngle - boundsStart) / (boundsEnd - boundsStart)), 1);
                 // 2022.07.03 Fixing lastcolor for true stop
                 if (thisTool.config.show.style === 'colorstops') {
-                  fill = thisTool._card._getGradientValue(
+                  fill = Colors.getGradientValue(
                     thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                     thisTool._segments.colorStops[thisTool._segments.sortedStops[runningSegment]],
                     value,
@@ -9179,6 +9411,8 @@ class SwissArmyKnifeCard extends LitElement {
 
     this.connected = false;
 
+    Colors.setElement(this);
+
     // Get cardId for unique SVG gradient Id
     this.cardId = Math.random().toString(36).substr(2, 9);
     this.entities = [];
@@ -9996,7 +10230,7 @@ class SwissArmyKnifeCard extends LitElement {
         ['primary', 'secondary', 'tertiary', 'error', 'neutral', 'neutral-variant'].forEach((paletteName) => {
           [5, 15, 25, 35, 45, 65, 75, 85].forEach((step) => {
             colorEntities[`md.ref.palette.${paletteName}${step.toString()}`] = {
-              value: this._getGradientValue(
+              value: Colors.getGradientValue(
                 colorEntities[`md.ref.palette.${paletteName}${(step - 5).toString()}`].value,
                 colorEntities[`md.ref.palette.${paletteName}${(step + 5).toString()}`].value,
                 0.5,
@@ -10006,7 +10240,7 @@ class SwissArmyKnifeCard extends LitElement {
             colorEntities[`md.ref.palette.${paletteName}${step.toString()}`].tags[3] = paletteName + step.toString();
           });
           colorEntities[`md.ref.palette.${paletteName}7`] = {
-            value: this._getGradientValue(
+            value: Colors.getGradientValue(
               colorEntities[`md.ref.palette.${paletteName}5`].value,
               colorEntities[`md.ref.palette.${paletteName}10`].value,
               0.5,
@@ -10016,7 +10250,7 @@ class SwissArmyKnifeCard extends LitElement {
           colorEntities[`md.ref.palette.${paletteName}7`].tags[3] = `${paletteName}7`;
 
           colorEntities[`md.ref.palette.${paletteName}92`] = {
-            value: this._getGradientValue(
+            value: Colors.getGradientValue(
               colorEntities[`md.ref.palette.${paletteName}90`].value,
               colorEntities[`md.ref.palette.${paletteName}95`].value,
               0.5,
@@ -10026,7 +10260,7 @@ class SwissArmyKnifeCard extends LitElement {
           colorEntities[`md.ref.palette.${paletteName}92`].tags[3] = `${paletteName}92`;
 
           colorEntities[`md.ref.palette.${paletteName}97`] = {
-            value: this._getGradientValue(
+            value: Colors.getGradientValue(
               colorEntities[`md.ref.palette.${paletteName}95`].value,
               colorEntities[`md.ref.palette.${paletteName}99`].value,
               0.5,
@@ -10584,210 +10818,12 @@ class SwissArmyKnifeCard extends LitElement {
     return (Math.round(state * x) / x).toFixed(dec);
   }
 
-  /** *****************************************************************************
-  * card::_calculateColor()
-  *
-  * Summary.
-  *
-  * #TODO:
-  * replace by TinyColor library? Is that possible/feasible??
-  *
-  */
-
-  _calculateColor(argState, argStops, argIsGradient) {
-    const sortedStops = Object.keys(argStops).map((n) => Number(n)).sort((a, b) => a - b);
-
-    let start; let end; let
-      val;
-    const l = sortedStops.length;
-
-    if (argState <= sortedStops[0]) {
-      return argStops[sortedStops[0]];
-    } else if (argState >= sortedStops[l - 1]) {
-      return argStops[sortedStops[l - 1]];
-    } else {
-      for (let i = 0; i < l - 1; i++) {
-        const s1 = sortedStops[i];
-        const s2 = sortedStops[i + 1];
-        if (argState >= s1 && argState < s2) {
-          [start, end] = [argStops[s1], argStops[s2]];
-          if (!argIsGradient) {
-            return start;
-          }
-          val = this._calculateValueBetween(s1, s2, argState);
-          break;
-        }
-      }
-    }
-    return this._getGradientValue(start, end, val);
-  }
-
-  /** *****************************************************************************
-  * card::_calculateColor2()
-  *
-  * Summary.
-  *
-  * #TODO:
-  * replace by TinyColor library? Is that possible/feasible??
-  *
-  */
-
-  _calculateColor2(argState, argStops, argPart, argProperty, argIsGradient) {
-    const sortedStops = Object.keys(argStops).map((n) => Number(n)).sort((a, b) => a - b);
-
-    let start; let end; let
-      val;
-    const l = sortedStops.length;
-
-    if (argState <= sortedStops[0]) {
-      return argStops[sortedStops[0]];
-    } else if (argState >= sortedStops[l - 1]) {
-      return argStops[sortedStops[l - 1]];
-    } else {
-      for (let i = 0; i < l - 1; i++) {
-        const s1 = sortedStops[i];
-        const s2 = sortedStops[i + 1];
-        if (argState >= s1 && argState < s2) {
-          // console.log('calculateColor2 ', argStops[s1], argStops[s2]);
-          [start, end] = [argStops[s1].styles[argPart][argProperty], argStops[s2].styles[argPart][argProperty]];
-          if (!argIsGradient) {
-            return start;
-          }
-          val = this._calculateValueBetween(s1, s2, argState);
-          break;
-        }
-      }
-    }
-    return this._getGradientValue(start, end, val);
-  }
-
-  /** *****************************************************************************
-  * card::_calculateValueBetween()
-  *
-  * Summary.
-  * Clips the argValue value between argStart and argEnd, and returns the between value ;-)
-  *
-  * Returns NaN if argValue is undefined
-  *
-  * NOTE: Rename to valueToPercentage ??
-  */
-
-  _calculateValueBetween(argStart, argEnd, argValue) {
-    return (Math.min(Math.max(argValue, argStart), argEnd) - argStart) / (argEnd - argStart);
-  }
-
-  /** *****************************************************************************
-  * card::_getColorVariable()
-  *
-  * Summary.
-  * Get value of CSS color variable, specified as var(--color-value)
-  * These variables are defined in the Lovelace element so it appears...
-  *
-  */
-
-  _getColorVariable(argColor) {
-    const newColor = argColor.substr(4, argColor.length - 5);
-
-    const returnColor = window.getComputedStyle(this).getPropertyValue(newColor);
-    return returnColor;
-  }
-
-  /** *****************************************************************************
-  * card::_getGradientValue()
-  *
-  * Summary.
-  * Get gradient value of color as a result of a color_stop.
-  * An RGBA value is calculated, so transparency is possible...
-  *
-  * The colors (colorA and colorB) can be specified as:
-  * - a css variable, var(--color-value)
-  * - a hex value, #fff or #ffffff
-  * - an rgb() or rgba() value
-  * - a hsl() or hsla() value
-  * - a named css color value, such as white.
-  *
-  */
-
-  _getGradientValue(argColorA, argColorB, argValue) {
-    const resultColorA = this._colorToRGBA(argColorA);
-    const resultColorB = this._colorToRGBA(argColorB);
-
-    // We have a rgba() color array from cache or canvas.
-    // Calculate color in between, and return #hex value as a result.
-    //
-
-    const v1 = 1 - argValue;
-    const v2 = argValue;
-    const rDec = Math.floor((resultColorA[0] * v1) + (resultColorB[0] * v2));
-    const gDec = Math.floor((resultColorA[1] * v1) + (resultColorB[1] * v2));
-    const bDec = Math.floor((resultColorA[2] * v1) + (resultColorB[2] * v2));
-    const aDec = Math.floor((resultColorA[3] * v1) + (resultColorB[3] * v2));
-
-    // And convert full RRGGBBAA value to #hex.
-    const rHex = this._padZero(rDec.toString(16));
-    const gHex = this._padZero(gDec.toString(16));
-    const bHex = this._padZero(bDec.toString(16));
-    const aHex = this._padZero(aDec.toString(16));
-
-    return `#${rHex}${gHex}${bHex}${aHex}`;
-  }
-
-  _padZero(argValue) {
-    if (argValue.length < 2) {
-      argValue = `0${argValue}`;
-    }
-    return argValue.substr(0, 2);
-  }
-
   _computeDomain(entityId) {
     return entityId.substr(0, entityId.indexOf('.'));
   }
 
   _computeEntity(entityId) {
     return entityId.substr(entityId.indexOf('.') + 1);
-  }
-
-  /** *****************************************************************************
-  * card::_colorToRGBA()
-  *
-  * Summary.
-  * Get RGBA color value of argColor.
-  *
-  * The argColor can be specified as:
-  * - a css variable, var(--color-value)
-  * - a hex value, #fff or #ffffff
-  * - an rgb() or rgba() value
-  * - a hsl() or hsla() value
-  * - a named css color value, such as white.
-  *
-  */
-
-  _colorToRGBA(argColor) {
-    // return color if found in colorCache...
-    const retColor = SwissArmyKnifeCard.colorCache[argColor];
-    if (retColor) return retColor;
-
-    let theColor = argColor;
-    // Check for 'var' colors
-    const a0 = argColor.substr(0, 3);
-    if (a0.valueOf() === 'var') {
-      theColor = this._getColorVariable(argColor);
-    }
-
-    // Get color from canvas. This always returns an rgba() value...
-    const canvas = window.document.createElement('canvas');
-    // eslint-disable-next-line no-multi-assign
-    canvas.width = canvas.height = 1;
-    const ctx = canvas.getContext('2d');
-
-    ctx.clearRect(0, 0, 1, 1);
-    ctx.fillStyle = theColor;
-    ctx.fillRect(0, 0, 1, 1);
-    const outColor = [...ctx.getImageData(0, 0, 1, 1).data];
-
-    SwissArmyKnifeCard.colorCache[argColor] = outColor;
-
-    return outColor;
   }
 
   // 2022.01.25 #TODO

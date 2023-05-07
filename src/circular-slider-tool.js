@@ -351,7 +351,7 @@ export default class CircularSliderTool extends BaseTool {
   updateActiveTrack(m) {
     const min = this.config.scale.min || 0;
     const max = this.config.scale.max || 100;
-    let val = this._card._calculateValueBetween(min, max, this.labelValue);
+    let val = Utils.calculateValueBetween(min, max, this.labelValue);
     if (isNaN(val)) val = 0;
     const score = val * this.svg.pathLength;
     this.dashArray = `${score} ${this.svg.circleLength}`;
@@ -605,7 +605,7 @@ export default class CircularSliderTool extends BaseTool {
     if (!this.dragging) {
       const min = this.config.scale.min || 0;
       const max = this.config.scale.max || 100;
-      let val = Math.min(this._card._calculateValueBetween(min, max, this._stateValue), 1);
+      let val = Math.min(Utils.calculateValueBetween(min, max, this._stateValue), 1);
 
       // Don't display anything, that is NO track, thumb to start...
       if (isNaN(val)) val = 0;
@@ -632,7 +632,7 @@ export default class CircularSliderTool extends BaseTool {
     if (!this.dragging) {
       const min = this.config.scale.min || 0;
       const max = this.config.scale.max || 100;
-      let val = Math.min(this._card._calculateValueBetween(min, max, this._stateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())]), 1);
+      let val = Math.min(Utils.calculateValueBetween(min, max, this._stateValues[this.getIndexInEntityIndexes(this.defaultEntityIndex())]), 1);
 
       // Don't display anything, that is NO track, thumb to start...
       if (isNaN(val)) val = 0;

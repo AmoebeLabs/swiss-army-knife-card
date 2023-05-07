@@ -3,6 +3,7 @@ import { fireEvent } from 'custom-card-helpers';
 import Merge from './merge';
 import Utils from './utils';
 import Templates from './templates';
+import Colors from './colors';
 
 /** ***************************************************************************
   * BaseTool class
@@ -487,10 +488,10 @@ export default class BaseTool {
       case 'colorstop':
       case 'colorstops':
       case 'colorstopgradient':
-        color = this._card._calculateColor(argValue, this.colorStops, (this.config.show.style === 'colorstopgradient'));
+        color = Colors.calculateColor(argValue, this.colorStops, (this.config.show.style === 'colorstopgradient'));
         break;
       case 'minmaxgradient':
-        color = this._card._calculateColor(argValue, this.colorStopsMinMax, true);
+        color = Colors.calculateColor(argValue, this.colorStopsMinMax, true);
         break;
       default:
     }
@@ -510,10 +511,10 @@ export default class BaseTool {
       case 'colorstop':
       case 'colorstops':
       case 'colorstopgradient':
-        color = this._card._calculateColor2(argValue, this.csnew, argPart, argProperty, (this.config.show.style === 'colorstopgradient'));
+        color = Colors.calculateColor2(argValue, this.csnew, argPart, argProperty, (this.config.show.style === 'colorstopgradient'));
         break;
       case 'minmaxgradient':
-        color = this._card._calculateColor2(argValue, this.colorStopsMinMax, argPart, argProperty, true);
+        color = Colors.calculateColor2(argValue, this.colorStopsMinMax, argPart, argProperty, true);
         break;
       default:
     }

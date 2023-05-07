@@ -46,6 +46,7 @@ import Merge from './merge';
 import Utils from './utils';
 import Templates from './templates';
 import Toolset from './toolset';
+import Colors from './colors';
 
 // Original injector is buggy. Use a patched version, and store this local...
 // import * as SvgInjector from '../dist/SVGInjector.min.js'; // lgtm[js/unused-local-variable]
@@ -70,6 +71,8 @@ class SwissArmyKnifeCard extends LitElement {
     super();
 
     this.connected = false;
+
+    Colors.setElement(this);
 
     // Get cardId for unique SVG gradient Id
     this.cardId = Math.random().toString(36).substr(2, 9);
@@ -891,7 +894,7 @@ class SwissArmyKnifeCard extends LitElement {
         ['primary', 'secondary', 'tertiary', 'error', 'neutral', 'neutral-variant'].forEach((paletteName) => {
           [5, 15, 25, 35, 45, 65, 75, 85].forEach((step) => {
             colorEntities[`md.ref.palette.${paletteName}${step.toString()}`] = {
-              value: this._getGradientValue(
+              value: Colors.getGradientValue(
                 colorEntities[`md.ref.palette.${paletteName}${(step - 5).toString()}`].value,
                 colorEntities[`md.ref.palette.${paletteName}${(step + 5).toString()}`].value,
                 0.5,
@@ -901,7 +904,7 @@ class SwissArmyKnifeCard extends LitElement {
             colorEntities[`md.ref.palette.${paletteName}${step.toString()}`].tags[3] = paletteName + step.toString();
           });
           colorEntities[`md.ref.palette.${paletteName}7`] = {
-            value: this._getGradientValue(
+            value: Colors.getGradientValue(
               colorEntities[`md.ref.palette.${paletteName}5`].value,
               colorEntities[`md.ref.palette.${paletteName}10`].value,
               0.5,
@@ -911,7 +914,7 @@ class SwissArmyKnifeCard extends LitElement {
           colorEntities[`md.ref.palette.${paletteName}7`].tags[3] = `${paletteName}7`;
 
           colorEntities[`md.ref.palette.${paletteName}92`] = {
-            value: this._getGradientValue(
+            value: Colors.getGradientValue(
               colorEntities[`md.ref.palette.${paletteName}90`].value,
               colorEntities[`md.ref.palette.${paletteName}95`].value,
               0.5,
@@ -921,7 +924,7 @@ class SwissArmyKnifeCard extends LitElement {
           colorEntities[`md.ref.palette.${paletteName}92`].tags[3] = `${paletteName}92`;
 
           colorEntities[`md.ref.palette.${paletteName}97`] = {
-            value: this._getGradientValue(
+            value: Colors.getGradientValue(
               colorEntities[`md.ref.palette.${paletteName}95`].value,
               colorEntities[`md.ref.palette.${paletteName}99`].value,
               0.5,
@@ -1480,210 +1483,12 @@ class SwissArmyKnifeCard extends LitElement {
     return (Math.round(state * x) / x).toFixed(dec);
   }
 
-  /** *****************************************************************************
-  * card::_calculateColor()
-  *
-  * Summary.
-  *
-  * #TODO:
-  * replace by TinyColor library? Is that possible/feasible??
-  *
-  */
-
-  _calculateColor(argState, argStops, argIsGradient) {
-    const sortedStops = Object.keys(argStops).map((n) => Number(n)).sort((a, b) => a - b);
-
-    let start; let end; let
-      val;
-    const l = sortedStops.length;
-
-    if (argState <= sortedStops[0]) {
-      return argStops[sortedStops[0]];
-    } else if (argState >= sortedStops[l - 1]) {
-      return argStops[sortedStops[l - 1]];
-    } else {
-      for (let i = 0; i < l - 1; i++) {
-        const s1 = sortedStops[i];
-        const s2 = sortedStops[i + 1];
-        if (argState >= s1 && argState < s2) {
-          [start, end] = [argStops[s1], argStops[s2]];
-          if (!argIsGradient) {
-            return start;
-          }
-          val = this._calculateValueBetween(s1, s2, argState);
-          break;
-        }
-      }
-    }
-    return this._getGradientValue(start, end, val);
-  }
-
-  /** *****************************************************************************
-  * card::_calculateColor2()
-  *
-  * Summary.
-  *
-  * #TODO:
-  * replace by TinyColor library? Is that possible/feasible??
-  *
-  */
-
-  _calculateColor2(argState, argStops, argPart, argProperty, argIsGradient) {
-    const sortedStops = Object.keys(argStops).map((n) => Number(n)).sort((a, b) => a - b);
-
-    let start; let end; let
-      val;
-    const l = sortedStops.length;
-
-    if (argState <= sortedStops[0]) {
-      return argStops[sortedStops[0]];
-    } else if (argState >= sortedStops[l - 1]) {
-      return argStops[sortedStops[l - 1]];
-    } else {
-      for (let i = 0; i < l - 1; i++) {
-        const s1 = sortedStops[i];
-        const s2 = sortedStops[i + 1];
-        if (argState >= s1 && argState < s2) {
-          // console.log('calculateColor2 ', argStops[s1], argStops[s2]);
-          [start, end] = [argStops[s1].styles[argPart][argProperty], argStops[s2].styles[argPart][argProperty]];
-          if (!argIsGradient) {
-            return start;
-          }
-          val = this._calculateValueBetween(s1, s2, argState);
-          break;
-        }
-      }
-    }
-    return this._getGradientValue(start, end, val);
-  }
-
-  /** *****************************************************************************
-  * card::_calculateValueBetween()
-  *
-  * Summary.
-  * Clips the argValue value between argStart and argEnd, and returns the between value ;-)
-  *
-  * Returns NaN if argValue is undefined
-  *
-  * NOTE: Rename to valueToPercentage ??
-  */
-
-  _calculateValueBetween(argStart, argEnd, argValue) {
-    return (Math.min(Math.max(argValue, argStart), argEnd) - argStart) / (argEnd - argStart);
-  }
-
-  /** *****************************************************************************
-  * card::_getColorVariable()
-  *
-  * Summary.
-  * Get value of CSS color variable, specified as var(--color-value)
-  * These variables are defined in the Lovelace element so it appears...
-  *
-  */
-
-  _getColorVariable(argColor) {
-    const newColor = argColor.substr(4, argColor.length - 5);
-
-    const returnColor = window.getComputedStyle(this).getPropertyValue(newColor);
-    return returnColor;
-  }
-
-  /** *****************************************************************************
-  * card::_getGradientValue()
-  *
-  * Summary.
-  * Get gradient value of color as a result of a color_stop.
-  * An RGBA value is calculated, so transparency is possible...
-  *
-  * The colors (colorA and colorB) can be specified as:
-  * - a css variable, var(--color-value)
-  * - a hex value, #fff or #ffffff
-  * - an rgb() or rgba() value
-  * - a hsl() or hsla() value
-  * - a named css color value, such as white.
-  *
-  */
-
-  _getGradientValue(argColorA, argColorB, argValue) {
-    const resultColorA = this._colorToRGBA(argColorA);
-    const resultColorB = this._colorToRGBA(argColorB);
-
-    // We have a rgba() color array from cache or canvas.
-    // Calculate color in between, and return #hex value as a result.
-    //
-
-    const v1 = 1 - argValue;
-    const v2 = argValue;
-    const rDec = Math.floor((resultColorA[0] * v1) + (resultColorB[0] * v2));
-    const gDec = Math.floor((resultColorA[1] * v1) + (resultColorB[1] * v2));
-    const bDec = Math.floor((resultColorA[2] * v1) + (resultColorB[2] * v2));
-    const aDec = Math.floor((resultColorA[3] * v1) + (resultColorB[3] * v2));
-
-    // And convert full RRGGBBAA value to #hex.
-    const rHex = this._padZero(rDec.toString(16));
-    const gHex = this._padZero(gDec.toString(16));
-    const bHex = this._padZero(bDec.toString(16));
-    const aHex = this._padZero(aDec.toString(16));
-
-    return `#${rHex}${gHex}${bHex}${aHex}`;
-  }
-
-  _padZero(argValue) {
-    if (argValue.length < 2) {
-      argValue = `0${argValue}`;
-    }
-    return argValue.substr(0, 2);
-  }
-
   _computeDomain(entityId) {
     return entityId.substr(0, entityId.indexOf('.'));
   }
 
   _computeEntity(entityId) {
     return entityId.substr(entityId.indexOf('.') + 1);
-  }
-
-  /** *****************************************************************************
-  * card::_colorToRGBA()
-  *
-  * Summary.
-  * Get RGBA color value of argColor.
-  *
-  * The argColor can be specified as:
-  * - a css variable, var(--color-value)
-  * - a hex value, #fff or #ffffff
-  * - an rgb() or rgba() value
-  * - a hsl() or hsla() value
-  * - a named css color value, such as white.
-  *
-  */
-
-  _colorToRGBA(argColor) {
-    // return color if found in colorCache...
-    const retColor = SwissArmyKnifeCard.colorCache[argColor];
-    if (retColor) return retColor;
-
-    let theColor = argColor;
-    // Check for 'var' colors
-    const a0 = argColor.substr(0, 3);
-    if (a0.valueOf() === 'var') {
-      theColor = this._getColorVariable(argColor);
-    }
-
-    // Get color from canvas. This always returns an rgba() value...
-    const canvas = window.document.createElement('canvas');
-    // eslint-disable-next-line no-multi-assign
-    canvas.width = canvas.height = 1;
-    const ctx = canvas.getContext('2d');
-
-    ctx.clearRect(0, 0, 1, 1);
-    ctx.fillStyle = theColor;
-    ctx.fillRect(0, 0, 1, 1);
-    const outColor = [...ctx.getImageData(0, 0, 1, 1).data];
-
-    SwissArmyKnifeCard.colorCache[argColor] = outColor;
-
-    return outColor;
   }
 
   // 2022.01.25 #TODO
