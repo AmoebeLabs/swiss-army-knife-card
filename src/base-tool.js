@@ -161,6 +161,10 @@ export default class BaseTool {
 
       if (isMatch) return true;
 
+      // The state builder renames 'unavailable' to '-ua-'
+      // Change this temporary in here to match this...
+      if (item.state === 'unavailable') { item.state = '-ua-'; }
+
       // #TODO:
       // Default is item.state. But can also be item.custom_field[x], so you can compare with custom value
       // Should index then not with item.state but item[custom_field[x]].toLowerCase() or similar...
@@ -205,6 +209,9 @@ export default class BaseTool {
           // Unknown operator. Just do nothing and return;
           isMatch = false;
       }
+      // Revert state
+      if (item.state === '-ua-') { item.state = 'unavailable'; }
+
       if (this.dev.debug) console.log('BaseTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
       if (!isMatch) return true;
 
