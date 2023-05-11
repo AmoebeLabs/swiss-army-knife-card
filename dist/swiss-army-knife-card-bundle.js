@@ -8837,6 +8837,491 @@ class TextTool extends BaseTool {
   }
 } // END of class
 
+/******************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+
+function __spreadArray(to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+}
+
+/*!
+ * content-type
+ * Copyright(c) 2015 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+
+/**
+ * RegExp to match *( ";" parameter ) in RFC 7231 sec 3.1.1.1
+ *
+ * parameter     = token "=" ( token / quoted-string )
+ * token         = 1*tchar
+ * tchar         = "!" / "#" / "$" / "%" / "&" / "'" / "*"
+ *               / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
+ *               / DIGIT / ALPHA
+ *               ; any VCHAR, except delimiters
+ * quoted-string = DQUOTE *( qdtext / quoted-pair ) DQUOTE
+ * qdtext        = HTAB / SP / %x21 / %x23-5B / %x5D-7E / obs-text
+ * obs-text      = %x80-FF
+ * quoted-pair   = "\" ( HTAB / SP / VCHAR / obs-text )
+ */
+var PARAM_REGEXP = /; *([!#$%&'*+.^_`|~0-9A-Za-z-]+) *= *("(?:[\u000b\u0020\u0021\u0023-\u005b\u005d-\u007e\u0080-\u00ff]|\\[\u000b\u0020-\u00ff])*"|[!#$%&'*+.^_`|~0-9A-Za-z-]+) */g; // eslint-disable-line no-control-regex
+
+/**
+ * RegExp to match quoted-pair in RFC 7230 sec 3.2.6
+ *
+ * quoted-pair = "\" ( HTAB / SP / VCHAR / obs-text )
+ * obs-text    = %x80-FF
+ */
+var QESC_REGEXP = /\\([\u000b\u0020-\u00ff])/g; // eslint-disable-line no-control-regex
+
+/**
+ * RegExp to match type in RFC 7231 sec 3.1.1.1
+ *
+ * media-type = type "/" subtype
+ * type       = token
+ * subtype    = token
+ */
+var TYPE_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+\/[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+var parse_1 = parse;
+
+/**
+ * Parse media type to object.
+ *
+ * @param {string|object} string
+ * @return {Object}
+ * @public
+ */
+
+function parse (string) {
+  if (!string) {
+    throw new TypeError('argument string is required')
+  }
+
+  // support req/res-like objects as argument
+  var header = typeof string === 'object'
+    ? getcontenttype(string)
+    : string;
+
+  if (typeof header !== 'string') {
+    throw new TypeError('argument string is required to be a string')
+  }
+
+  var index = header.indexOf(';');
+  var type = index !== -1
+    ? header.slice(0, index).trim()
+    : header.trim();
+
+  if (!TYPE_REGEXP.test(type)) {
+    throw new TypeError('invalid media type')
+  }
+
+  var obj = new ContentType(type.toLowerCase());
+
+  // parse parameters
+  if (index !== -1) {
+    var key;
+    var match;
+    var value;
+
+    PARAM_REGEXP.lastIndex = index;
+
+    while ((match = PARAM_REGEXP.exec(header))) {
+      if (match.index !== index) {
+        throw new TypeError('invalid parameter format')
+      }
+
+      index += match[0].length;
+      key = match[1].toLowerCase();
+      value = match[2];
+
+      if (value.charCodeAt(0) === 0x22 /* " */) {
+        // remove quotes
+        value = value.slice(1, -1);
+
+        // remove escapes
+        if (value.indexOf('\\') !== -1) {
+          value = value.replace(QESC_REGEXP, '$1');
+        }
+      }
+
+      obj.parameters[key] = value;
+    }
+
+    if (index !== header.length) {
+      throw new TypeError('invalid parameter format')
+    }
+  }
+
+  return obj
+}
+
+/**
+ * Get content-type from req/res objects.
+ *
+ * @param {object}
+ * @return {Object}
+ * @private
+ */
+
+function getcontenttype (obj) {
+  var header;
+
+  if (typeof obj.getHeader === 'function') {
+    // res-like
+    header = obj.getHeader('content-type');
+  } else if (typeof obj.headers === 'object') {
+    // req-like
+    header = obj.headers && obj.headers['content-type'];
+  }
+
+  if (typeof header !== 'string') {
+    throw new TypeError('content-type header is missing from object')
+  }
+
+  return header
+}
+
+/**
+ * Class to represent a content type.
+ * @private
+ */
+function ContentType (type) {
+  this.parameters = Object.create(null);
+  this.type = type;
+}
+
+var cache = new Map();
+
+var cloneSvg = function cloneSvg(sourceSvg) {
+  return sourceSvg.cloneNode(true);
+};
+
+var isLocal = function isLocal() {
+  return window.location.protocol === 'file:';
+};
+
+var makeAjaxRequest = function makeAjaxRequest(url, httpRequestWithCredentials, callback) {
+  var httpRequest = new XMLHttpRequest();
+  httpRequest.onreadystatechange = function () {
+    try {
+      if (!/\.svg/i.test(url) && httpRequest.readyState === 2) {
+        var contentType = httpRequest.getResponseHeader('Content-Type');
+        if (!contentType) {
+          throw new Error('Content type not found');
+        }
+        var type = parse_1(contentType).type;
+        if (!(type === 'image/svg+xml' || type === 'text/plain')) {
+          throw new Error("Invalid content type: ".concat(type));
+        }
+      }
+      if (httpRequest.readyState === 4) {
+        if (httpRequest.status === 404 || httpRequest.responseXML === null) {
+          throw new Error(isLocal() ? 'Note: SVG injection ajax calls do not work locally without ' + 'adjusting security settings in your browser. Or consider ' + 'using a local webserver.' : 'Unable to load SVG file: ' + url);
+        }
+        if (httpRequest.status === 200 || isLocal() && httpRequest.status === 0) {
+          callback(null, httpRequest);
+        } else {
+          throw new Error('There was a problem injecting the SVG: ' + httpRequest.status + ' ' + httpRequest.statusText);
+        }
+      }
+    } catch (error) {
+      httpRequest.abort();
+      if (error instanceof Error) {
+        callback(error, httpRequest);
+      } else {
+        throw error;
+      }
+    }
+  };
+  httpRequest.open('GET', url);
+  httpRequest.withCredentials = httpRequestWithCredentials;
+  if (httpRequest.overrideMimeType) {
+    httpRequest.overrideMimeType('text/xml');
+  }
+  httpRequest.send();
+};
+
+var requestQueue = {};
+var queueRequest = function queueRequest(url, callback) {
+  requestQueue[url] = requestQueue[url] || [];
+  requestQueue[url].push(callback);
+};
+var processRequestQueue = function processRequestQueue(url) {
+  var _loop_1 = function _loop_1(i, len) {
+    setTimeout(function () {
+      if (Array.isArray(requestQueue[url])) {
+        var cacheValue = cache.get(url);
+        var callback = requestQueue[url][i];
+        if (cacheValue instanceof SVGSVGElement) {
+          callback(null, cloneSvg(cacheValue));
+        }
+        if (cacheValue instanceof Error) {
+          callback(cacheValue);
+        }
+        if (i === requestQueue[url].length - 1) {
+          delete requestQueue[url];
+        }
+      }
+    }, 0);
+  };
+  for (var i = 0, len = requestQueue[url].length; i < len; i++) {
+    _loop_1(i);
+  }
+};
+
+var loadSvgCached = function loadSvgCached(url, httpRequestWithCredentials, callback) {
+  if (cache.has(url)) {
+    var cacheValue = cache.get(url);
+    if (cacheValue === undefined) {
+      queueRequest(url, callback);
+      return;
+    }
+    if (cacheValue instanceof SVGSVGElement) {
+      callback(null, cloneSvg(cacheValue));
+      return;
+    }
+  }
+  cache.set(url, undefined);
+  queueRequest(url, callback);
+  makeAjaxRequest(url, httpRequestWithCredentials, function (error, httpRequest) {
+    var _a;
+    if (error) {
+      cache.set(url, error);
+    } else if (((_a = httpRequest.responseXML) === null || _a === void 0 ? void 0 : _a.documentElement) instanceof SVGSVGElement) {
+      cache.set(url, httpRequest.responseXML.documentElement);
+    }
+    processRequestQueue(url);
+  });
+};
+
+var loadSvgUncached = function loadSvgUncached(url, httpRequestWithCredentials, callback) {
+  makeAjaxRequest(url, httpRequestWithCredentials, function (error, httpRequest) {
+    var _a;
+    if (error) {
+      callback(error);
+    } else if (((_a = httpRequest.responseXML) === null || _a === void 0 ? void 0 : _a.documentElement) instanceof SVGSVGElement) {
+      callback(null, httpRequest.responseXML.documentElement);
+    }
+  });
+};
+
+var idCounter = 0;
+var uniqueId = function uniqueId() {
+  return ++idCounter;
+};
+
+var injectedElements = [];
+var ranScripts = {};
+var svgNamespace = 'http://www.w3.org/2000/svg';
+var xlinkNamespace = 'http://www.w3.org/1999/xlink';
+var injectElement = function injectElement(el, evalScripts, renumerateIRIElements, cacheRequests, httpRequestWithCredentials, beforeEach, callback) {
+  var elUrl = el.getAttribute('data-src') || el.getAttribute('src');
+  if (!elUrl) {
+    callback(new Error('Invalid data-src or src attribute'));
+    return;
+  }
+  if (injectedElements.indexOf(el) !== -1) {
+    injectedElements.splice(injectedElements.indexOf(el), 1);
+    el = null;
+    return;
+  }
+  injectedElements.push(el);
+  el.setAttribute('src', '');
+  var loadSvg = cacheRequests ? loadSvgCached : loadSvgUncached;
+  loadSvg(elUrl, httpRequestWithCredentials, function (error, svg) {
+    if (!svg) {
+      injectedElements.splice(injectedElements.indexOf(el), 1);
+      el = null;
+      callback(error);
+      return;
+    }
+    var elId = el.getAttribute('id');
+    if (elId) {
+      svg.setAttribute('id', elId);
+    }
+    var elTitle = el.getAttribute('title');
+    if (elTitle) {
+      svg.setAttribute('title', elTitle);
+    }
+    var elWidth = el.getAttribute('width');
+    if (elWidth) {
+      svg.setAttribute('width', elWidth);
+    }
+    var elHeight = el.getAttribute('height');
+    if (elHeight) {
+      svg.setAttribute('height', elHeight);
+    }
+    var mergedClasses = Array.from(new Set(__spreadArray(__spreadArray(__spreadArray([], (svg.getAttribute('class') || '').split(' '), true), ['injected-svg'], false), (el.getAttribute('class') || '').split(' '), true))).join(' ').trim();
+    svg.setAttribute('class', mergedClasses);
+    var elStyle = el.getAttribute('style');
+    if (elStyle) {
+      svg.setAttribute('style', elStyle);
+    }
+    svg.setAttribute('data-src', elUrl);
+    var elData = [].filter.call(el.attributes, function (at) {
+      return /^data-\w[\w-]*$/.test(at.name);
+    });
+    Array.prototype.forEach.call(elData, function (dataAttr) {
+      if (dataAttr.name && dataAttr.value) {
+        svg.setAttribute(dataAttr.name, dataAttr.value);
+      }
+    });
+    if (renumerateIRIElements) {
+      var iriElementsAndProperties_1 = {
+        clipPath: ['clip-path'],
+        'color-profile': ['color-profile'],
+        cursor: ['cursor'],
+        filter: ['filter'],
+        linearGradient: ['fill', 'stroke'],
+        marker: ['marker', 'marker-start', 'marker-mid', 'marker-end'],
+        mask: ['mask'],
+        path: [],
+        pattern: ['fill', 'stroke'],
+        radialGradient: ['fill', 'stroke']
+      };
+      var element_1;
+      var elements_1;
+      var properties_1;
+      var currentId_1;
+      var newId_1;
+      Object.keys(iriElementsAndProperties_1).forEach(function (key) {
+        element_1 = key;
+        properties_1 = iriElementsAndProperties_1[key];
+        elements_1 = svg.querySelectorAll(element_1 + '[id]');
+        var _loop_1 = function _loop_1(a, elementsLen) {
+          currentId_1 = elements_1[a].id;
+          newId_1 = currentId_1 + '-' + uniqueId();
+          var referencingElements;
+          Array.prototype.forEach.call(properties_1, function (property) {
+            referencingElements = svg.querySelectorAll('[' + property + '*="' + currentId_1 + '"]');
+            for (var b = 0, referencingElementLen = referencingElements.length; b < referencingElementLen; b++) {
+              var attrValue = referencingElements[b].getAttribute(property);
+              if (attrValue && !attrValue.match(new RegExp('url\\("?#' + currentId_1 + '"?\\)'))) {
+                continue;
+              }
+              referencingElements[b].setAttribute(property, 'url(#' + newId_1 + ')');
+            }
+          });
+          var allLinks = svg.querySelectorAll('[*|href]');
+          var links = [];
+          for (var c = 0, allLinksLen = allLinks.length; c < allLinksLen; c++) {
+            var href = allLinks[c].getAttributeNS(xlinkNamespace, 'href');
+            if (href && href.toString() === '#' + elements_1[a].id) {
+              links.push(allLinks[c]);
+            }
+          }
+          for (var d = 0, linksLen = links.length; d < linksLen; d++) {
+            links[d].setAttributeNS(xlinkNamespace, 'href', '#' + newId_1);
+          }
+          elements_1[a].id = newId_1;
+        };
+        for (var a = 0, elementsLen = elements_1.length; a < elementsLen; a++) {
+          _loop_1(a);
+        }
+      });
+    }
+    svg.removeAttribute('xmlns:a');
+    var scripts = svg.querySelectorAll('script');
+    var scriptsToEval = [];
+    var script;
+    var scriptType;
+    for (var i = 0, scriptsLen = scripts.length; i < scriptsLen; i++) {
+      scriptType = scripts[i].getAttribute('type');
+      if (!scriptType || scriptType === 'application/ecmascript' || scriptType === 'application/javascript' || scriptType === 'text/javascript') {
+        script = scripts[i].innerText || scripts[i].textContent;
+        if (script) {
+          scriptsToEval.push(script);
+        }
+        svg.removeChild(scripts[i]);
+      }
+    }
+    if (scriptsToEval.length > 0 && (evalScripts === 'always' || evalScripts === 'once' && !ranScripts[elUrl])) {
+      for (var l = 0, scriptsToEvalLen = scriptsToEval.length; l < scriptsToEvalLen; l++) {
+        new Function(scriptsToEval[l])(window);
+      }
+      ranScripts[elUrl] = true;
+    }
+    var styleTags = svg.querySelectorAll('style');
+    Array.prototype.forEach.call(styleTags, function (styleTag) {
+      styleTag.textContent += '';
+    });
+    svg.setAttribute('xmlns', svgNamespace);
+    svg.setAttribute('xmlns:xlink', xlinkNamespace);
+    beforeEach(svg);
+    if (!el.parentNode) {
+      injectedElements.splice(injectedElements.indexOf(el), 1);
+      el = null;
+      callback(new Error('Parent node is null'));
+      return;
+    }
+    el.parentNode.replaceChild(svg, el);
+    injectedElements.splice(injectedElements.indexOf(el), 1);
+    el = null;
+    callback(null, svg);
+  });
+};
+
+var SVGInjector = function SVGInjector(elements, _a) {
+  var _b = _a === void 0 ? {} : _a,
+    _c = _b.afterAll,
+    afterAll = _c === void 0 ? function () {
+      return undefined;
+    } : _c,
+    _d = _b.afterEach,
+    afterEach = _d === void 0 ? function () {
+      return undefined;
+    } : _d,
+    _e = _b.beforeEach,
+    beforeEach = _e === void 0 ? function () {
+      return undefined;
+    } : _e,
+    _f = _b.cacheRequests,
+    cacheRequests = _f === void 0 ? true : _f,
+    _g = _b.evalScripts,
+    evalScripts = _g === void 0 ? 'never' : _g,
+    _h = _b.httpRequestWithCredentials,
+    httpRequestWithCredentials = _h === void 0 ? false : _h,
+    _j = _b.renumerateIRIElements,
+    renumerateIRIElements = _j === void 0 ? true : _j;
+  if (elements && 'length' in elements) {
+    var elementsLoaded_1 = 0;
+    for (var i = 0, j = elements.length; i < j; i++) {
+      injectElement(elements[i], evalScripts, renumerateIRIElements, cacheRequests, httpRequestWithCredentials, beforeEach, function (error, svg) {
+        afterEach(error, svg);
+        if (elements && 'length' in elements && elements.length === ++elementsLoaded_1) {
+          afterAll(elementsLoaded_1);
+        }
+      });
+    }
+  } else if (elements) {
+    injectElement(elements, evalScripts, renumerateIRIElements, cacheRequests, httpRequestWithCredentials, beforeEach, function (error, svg) {
+      afterEach(error, svg);
+      afterAll(1);
+      elements = null;
+    });
+  } else {
+    afterAll(0);
+  }
+};
+
 /** ****************************************************************************
   * UserSvgTool class, UserSvgTool::constructor
   *
@@ -8853,6 +9338,9 @@ class UserSvgTool extends BaseTool {
         height: 50,
         width: 50,
       },
+      options: {
+        svginject: true,
+      },
       styles: {
         usersvg: {
         },
@@ -8867,34 +9355,15 @@ class UserSvgTool extends BaseTool {
     this.images = {};
     this.images = Object.assign({}, ...this.config.images);
 
-    // #TODO:
-    // Select first key in k/v store. HOw??
     this.item = {};
     this.item.image = 'default';
+    // Remember the SVG image to load, as we cache those SVG files
+    this.imageCur = 'none';
+    this.imagePrev = 'none';
 
-    // https://github.com/flobacher/SVGInjector2
-    // Note: in defs, url from gradient is changed, but NOT in the SVG fill=...
-
-    // this.injector = {};
-    // // Options
-    // this.injector.injectorOptions = {
-    //   evalScripts: 'once',
-    //   pngFallback: 'assets/png',
-    // };
-
-    // this.injector.afterAllInjectionsFinishedCallback = function (totalSVGsInjected) {
-    //   // Callback after all SVGs are injected
-    //   // console.log('We injected ' + totalSVGsInjected + ' SVG(s)!');
-    // };
-
-    // this.injector.perInjectionCallback = function (svg) {
-    //   // Callback after each SVG is injected
-    //   this.injector.svg = svg;
-    //   // console.log('SVG injected: ', svg, this.injector);
-    // }.bind(this);
-
-    // create injector configured by options
-    // this.injector.injector = new SVGInjector(this.injector.injectorOptions);
+    this.injector = {};
+    this.injector.svg = null;
+    this.injector.cache = [];
 
     this.clipPath = {};
 
@@ -8941,20 +9410,49 @@ class UserSvgTool extends BaseTool {
     super.value = state;
   }
 
+  /**
+   * Summary.
+   * Use firstUpdated(). updated() gives a loop of updates of the SVG if more than one SVG
+   * is defined in the card: things start to blink, as each SVG is removed/rendered in a loop
+   * so it seems. Either a bug in the Injector, or the UserSvg tool...
+   *
+   * @param {()} changedProperties
+   * @returns
+   */
   // eslint-disable-next-line no-unused-vars
   updated(changedProperties) {
-    // this.injector.elementsToInject = this._card.shadowRoot.querySelectorAll('svg[data-src]');
-    // // console.log("updated - ", this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)), this.injector.elementsToInject);
+    var myThis = this;
 
-    // this.injector.elementsToInject = this._card.shadowRoot.getElementById('usersvg-'.concat(this.toolId)).querySelectorAll('svg[data-src]:not(.injected-svg)');
+    // No need to check SVG injection, if same image, and in cache
+    if ((!this.config.options.svginject) || this.injector.cache[this.imageCur]) {
+      return;
+    }
 
-    // // Trigger the injection if there is something to inject...
-    // if (this.injector.elementsToInject.length > 0)
-    //   this.injector.injector.inject(
-    //     this.injector.elementsToInject,
-    //     this.injector.afterAllInjectionsFinishedCallback,
-    //     this.injector.perInjectionCallback,
-    //   );
+    this.injector.elementsToInject = this._card.shadowRoot.getElementById(
+      'usersvg-'.concat(this.toolId)).querySelectorAll('svg[data-src]:not(.injected-svg)');
+    if (this.injector.elementsToInject.length !== 0) {
+      SVGInjector(this.injector.elementsToInject, {
+      afterAll(elementsLoaded) {
+        // Request async update of card if all SVG files are loaded using async http request
+        setTimeout(() => { myThis._card.requestUpdate(); }, 0);
+      },
+      afterEach(err, svg) {
+        if (err) {
+          throw err;
+        }
+        myThis.injector.cache[myThis.imageCur] = svg;
+      },
+      beforeEach(svg) {
+        // Remove height and width attributes before injecting
+        svg.removeAttribute('height');
+        svg.removeAttribute('width');
+      },
+      cacheRequests: false,
+      evalScripts: 'once',
+      httpRequestWithCredentials: false,
+      renumerateIRIElements: false,
+      });
+    }
   }
 
   /** *****************************************************************************
@@ -8970,14 +9468,16 @@ class UserSvgTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     const images = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.images));
+    this.imagePrev = this.imageCur;
+    this.imageCur = images[this.item.image];
 
-    // if ((this.injector.svg) && (this.injector.image2.trim() === images[this.item.image].trim())) {
-    // return svg`${this.injector.svg}`;
-    // if (false) {
-    // } else {
+    // Render nothing if no image found
     if (images[this.item.image] === 'none')
       return svg``;
 
+    let cachedSvg = this.injector.cache[this.imageCur];
+
+    // construct clip path if specified
     let clipPath = '';
     if (this.config.clip_path) {
       clipPath = svg`
@@ -9005,32 +9505,44 @@ class UserSvgTool extends BaseTool {
         `;
     }
 
-    // If svg, use injector for rendering. If jpg or png, use default image renderer...
+    // If jpg or png, use default image renderer...
     if (['png', 'jpg'].includes((images[this.item.image].substring(images[this.item.image].lastIndexOf('.') + 1)))) {
       // Render jpg or png
       return svg`
-        <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
+        <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}"
+          style="${styleMap(this.styles.usersvg)}">
           "${clipPath}"
-          <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})" href="${images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
+          <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})"
+            href="${images[this.item.image]}"
+            height="${this.svg.height}" width="${this.svg.width}"
+          />
         </svg>
         `;
+    // Must be svg. Render for the first time, if not in cache...
+    } else if ((!cachedSvg) || (!this.config.options.svginject)) {
+      return svg`
+        <svg class="sak-usersvg__image"
+          data-id="usersvg-${this.toolId}" data-src="${images[this.item.image]}"
+          x="${this.svg.x}" y="${this.svg.y}"
+          style="${styleMap(this.styles.usersvg)}">
+          "${clipPath}"
+          <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})"
+            href="${images[this.item.image]}"
+            height="${this.svg.height}" width="${this.svg.width}"
+          />
+        </svg>
+      `;
+    // Render from cache and pass clip path and mask as reference...
     } else {
       return svg`
-        <svg class="sak-usersvg__image" data-some="${images[this.item.image]}" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
+        <svg x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles.usersvg)}"
+          height="${this.svg.height}" width="${this.svg.width}"
+          clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})">
           "${clipPath}"
-          <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})" href="${images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
-        </svg>
-        `;
-
-      // It seems new stuff is NOT injected for some reason. Donno why. Cant find it. Simply NOT injected, although injector is called in updated...
-      // 2022.07.24 For now, disable injector stuff...
-      // return svg`
-      // <svg id="image-one" data-src="${images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}"
-      // style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
-      // </svg>
-      // `;
+          ${cachedSvg};
+       </svg>
+       `;
     }
-    // }
   }
 
   /** *****************************************************************************

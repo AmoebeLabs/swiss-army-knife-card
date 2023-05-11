@@ -54,6 +54,9 @@ rules:
   # - For now, keep using things like isNaN() as Number.isNan() is incompatible.
   #   Ignore the eslint advice to replace them. As a result everything crashes...
   no-restricted-globals: 0
+  # Ignore identiation for now
+  indent: 0
+  no-unreachable: 0
   # THINGS THAT MUST BE HANDLED LATER...
   # - This is a thing from the segmented-arc, the only file with errors/warnings!
   # - Status as of 2023.05.06 13:00
