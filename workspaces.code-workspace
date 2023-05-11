@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "swiss-army-knife-card",
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.eol": "\n",
+		"editor.tabSize": 2,
+	}
+}
