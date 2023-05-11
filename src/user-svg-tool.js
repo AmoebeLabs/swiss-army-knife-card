@@ -11,6 +11,7 @@ import Templates from './templates';
   * UserSvgTool class, UserSvgTool::constructor
   *
   * Summary.
+  * The UserSvg tool can load and display .png, .jpg and .svg images
   *
   */
 
