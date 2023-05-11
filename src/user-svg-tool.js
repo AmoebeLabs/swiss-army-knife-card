@@ -1,5 +1,6 @@
 import { svg } from 'lit-element';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { SVGInjector } from '@tanem/svg-injector';
 
 import Merge from './merge';
 import Utils from './utils';
@@ -22,6 +23,9 @@ export default class UserSvgTool extends BaseTool {
         height: 50,
         width: 50,
       },
+      options: {
+        svginject: true,
+      },
       styles: {
         usersvg: {
         },
@@ -36,34 +40,15 @@ export default class UserSvgTool extends BaseTool {
     this.images = {};
     this.images = Object.assign({}, ...this.config.images);
 
-    // #TODO:
-    // Select first key in k/v store. HOw??
     this.item = {};
     this.item.image = 'default';
+    // Remember the SVG image to load, as we cache those SVG files
+    this.imageCur = 'none';
+    this.imagePrev = 'none';
 
-    // https://github.com/flobacher/SVGInjector2
-    // Note: in defs, url from gradient is changed, but NOT in the SVG fill=...
-
-    // this.injector = {};
-    // // Options
-    // this.injector.injectorOptions = {
-    //   evalScripts: 'once',
-    //   pngFallback: 'assets/png',
-    // };
-
-    // this.injector.afterAllInjectionsFinishedCallback = function (totalSVGsInjected) {
-    //   // Callback after all SVGs are injected
-    //   // console.log('We injected ' + totalSVGsInjected + ' SVG(s)!');
-    // };
-
-    // this.injector.perInjectionCallback = function (svg) {
-    //   // Callback after each SVG is injected
-    //   this.injector.svg = svg;
-    //   // console.log('SVG injected: ', svg, this.injector);
-    // }.bind(this);
-
-    // create injector configured by options
-    // this.injector.injector = new SVGInjector(this.injector.injectorOptions);
+    this.injector = {};
+    this.injector.svg = null;
+    this.injector.cache = [];
 
     this.clipPath = {};
 
@@ -110,20 +95,49 @@ export default class UserSvgTool extends BaseTool {
     super.value = state;
   }
 
+  /**
+   * Summary.
+   * Use firstUpdated(). updated() gives a loop of updates of the SVG if more than one SVG
+   * is defined in the card: things start to blink, as each SVG is removed/rendered in a loop
+   * so it seems. Either a bug in the Injector, or the UserSvg tool...
+   *
+   * @param {()} changedProperties
+   * @returns
+   */
   // eslint-disable-next-line no-unused-vars
   updated(changedProperties) {
-    // this.injector.elementsToInject = this._card.shadowRoot.querySelectorAll('svg[data-src]');
-    // // console.log("updated - ", this._card.shadowRoot.getElementById("usersvg-".concat(this.toolId)), this.injector.elementsToInject);
+    var myThis = this;
 
-    // this.injector.elementsToInject = this._card.shadowRoot.getElementById('usersvg-'.concat(this.toolId)).querySelectorAll('svg[data-src]:not(.injected-svg)');
+    // No need to check SVG injection, if same image, and in cache
+    if ((!this.config.options.svginject) || this.injector.cache[this.imageCur]) {
+      return;
+    }
 
-    // // Trigger the injection if there is something to inject...
-    // if (this.injector.elementsToInject.length > 0)
-    //   this.injector.injector.inject(
-    //     this.injector.elementsToInject,
-    //     this.injector.afterAllInjectionsFinishedCallback,
-    //     this.injector.perInjectionCallback,
-    //   );
+    this.injector.elementsToInject = this._card.shadowRoot.getElementById(
+      'usersvg-'.concat(this.toolId)).querySelectorAll('svg[data-src]:not(.injected-svg)');
+    if (this.injector.elementsToInject.length !== 0) {
+      SVGInjector(this.injector.elementsToInject, {
+      afterAll(elementsLoaded) {
+        // Request async update of card if all SVG files are loaded using async http request
+        setTimeout(() => { myThis._card.requestUpdate(); }, 0);
+      },
+      afterEach(err, svg) {
+        if (err) {
+          throw err;
+        }
+        myThis.injector.cache[myThis.imageCur] = svg;
+      },
+      beforeEach(svg) {
+        // Remove height and width attributes before injecting
+        svg.removeAttribute('height');
+        svg.removeAttribute('width');
+      },
+      cacheRequests: false,
+      evalScripts: 'once',
+      httpRequestWithCredentials: false,
+      renumerateIRIElements: false,
+      });
+    }
   }
 
   /** *****************************************************************************
@@ -139,14 +153,16 @@ export default class UserSvgTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     const images = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.images));
+    this.imagePrev = this.imageCur;
+    this.imageCur = images[this.item.image];
 
-    // if ((this.injector.svg) && (this.injector.image2.trim() === images[this.item.image].trim())) {
-    // return svg`${this.injector.svg}`;
-    // if (false) {
-    // } else {
+    // Render nothing if no image found
     if (images[this.item.image] === 'none')
       return svg``;
 
+    let cachedSvg = this.injector.cache[this.imageCur];
+
+    // construct clip path if specified
     let clipPath = '';
     if (this.config.clip_path) {
       clipPath = svg`
@@ -174,32 +190,44 @@ export default class UserSvgTool extends BaseTool {
         `;
     }
 
-    // If svg, use injector for rendering. If jpg or png, use default image renderer...
+    // If jpg or png, use default image renderer...
     if (['png', 'jpg'].includes((images[this.item.image].substring(images[this.item.image].lastIndexOf('.') + 1)))) {
       // Render jpg or png
       return svg`
-        <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
+        <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}"
+          style="${styleMap(this.styles.usersvg)}">
           "${clipPath}"
-          <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})" href="${images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
+          <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})"
+            href="${images[this.item.image]}"
+            height="${this.svg.height}" width="${this.svg.width}"
+          />
         </svg>
         `;
+    // Must be svg. Render for the first time, if not in cache...
+    } else if ((!cachedSvg) || (!this.config.options.svginject)) {
+      return svg`
+        <svg class="sak-usersvg__image"
+          data-id="usersvg-${this.toolId}" data-src="${images[this.item.image]}"
+          x="${this.svg.x}" y="${this.svg.y}"
+          style="${styleMap(this.styles.usersvg)}">
+          "${clipPath}"
+          <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})"
+            href="${images[this.item.image]}"
+            height="${this.svg.height}" width="${this.svg.width}"
+          />
+        </svg>
+      `;
+    // Render from cache and pass clip path and mask as reference...
     } else {
       return svg`
-        <svg class="sak-usersvg__image" data-some="${images[this.item.image]}" x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles)}">
+        <svg x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles.usersvg)}"
+          height="${this.svg.height}" width="${this.svg.width}"
+          clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})">
           "${clipPath}"
-          <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})" href="${images[this.item.image]}" height="${this.svg.height}" width="${this.svg.width}"/>
-        </svg>
-        `;
-
-      // It seems new stuff is NOT injected for some reason. Donno why. Cant find it. Simply NOT injected, although injector is called in updated...
-      // 2022.07.24 For now, disable injector stuff...
-      // return svg`
-      // <svg id="image-one" data-src="${images[this.item.image]}" class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}"
-      // style="${styleMap(this.styles.usersvg)}" height="${this.svg.height}" width="${this.svg.width}">
-      // </svg>
-      // `;
+          ${cachedSvg};
+       </svg>
+       `;
     }
-    // }
   }
 
   /** *****************************************************************************
