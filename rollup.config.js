@@ -20,7 +20,7 @@ const serveopts = {
 export default {
   input: 'src/main.js',
   output: {
-    file: 'dist/swiss-army-knife-card-bundle.js',
+    file: 'dist/swiss-army-knife-card.js',
     format: 'es',
     name: 'SwissArmyKnifeCard',
     sourcemap: !!dev,
