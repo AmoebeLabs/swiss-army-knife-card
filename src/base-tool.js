@@ -578,6 +578,12 @@ export default class BaseTool {
           hass.callService(domain, service, serviceData);
           break;
         }
+        case 'fire-dom-event': {
+          e = new Event('ll-custom', { composed: true, bubbles: true });
+          e.detail = actionConfig.actions[i];
+          node.dispatchEvent(e);
+          break;
+        }
         default: {
           console.error('Unknown Event definition', actionConfig);
         }
