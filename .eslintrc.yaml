@@ -85,7 +85,7 @@ rules:
   default-case-last: 1
   operator-assignment: 1
   no-sequences: 1
-  no-restricted-syntax: 1
+  no-restricted-syntax: 0
   no-unused-expressions: 1
   no-useless-escape: 1
   import/no-unresolved: 1

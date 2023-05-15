@@ -35,6 +35,7 @@ import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { ifDefined } from 'lit-html/directives/if-defined.js';
 import { selectUnit } from '@formatjs/intl-utils';
 import { version } from '../package.json';
+import { applyThemesOnElement } from './apply-theme-on-element';
 
 import {
   SVG_DEFAULT_DIMENSIONS,
@@ -516,10 +517,15 @@ class SwissArmyKnifeCard extends LitElement {
     if (!this.counter) this.counter = 0;
     this.counter += 1;
 
+    if (!this.theme.initDone) {
+      this.theme.initDone = true;
+      applyThemesOnElement(this, hass.themes, this.config.theme, this.theme.darkMode, undefined);
+    }
     // Check for theme mode and theme mode change...
     if (hass.themes.darkMode !== this.theme.darkMode) {
       this.theme.darkMode = hass.themes.darkMode;
       this.theme.modeChanged = true;
+      if (this.config.theme) applyThemesOnElement(this, hass.themes, this.config.theme, this.theme.darkMode, undefined);
     }
 
     // Set ref to hass, use "_"for the name ;-)
