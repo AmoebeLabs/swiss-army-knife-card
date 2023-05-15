@@ -470,11 +470,11 @@ class SwissArmyKnifeCard extends LitElement {
       throw Error("card::get styles - Can't get Lovelace panel");
     }
     if (!SwissArmyKnifeCard.lovelace.config.sak_sys_templates) {
-      console.error('SAK - System Templates reference NOT defined.');
-      throw Error('card::get styles - System Templates reference NOT defined!');
+      console.error(version, ' - SAK - System Templates reference NOT defined.');
+      throw Error(version, ' - card::get styles - System Templates reference NOT defined!');
     }
     if (!SwissArmyKnifeCard.lovelace.config.sak_user_templates) {
-      console.warning('SAK - User Templates reference NOT defined. Did you NOT include them?');
+      console.warning(version, ' - SAK - User Templates reference NOT defined. Did you NOT include them?');
     }
 
     // #TESTING
