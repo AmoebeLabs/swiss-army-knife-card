@@ -607,10 +607,12 @@ export default class BaseTool {
     argEvent.preventDefault();
 
     let tapConfig;
+    let entityIdx = this.defaultEntityIndex();
+
     // If no user_actions defined, AND there is an entity_index,
     // define a default 'more-info' tap action
-    if (argToolConfig.hasOwnProperty('entity_index') && (!argToolConfig.user_actions)) {
-      tapConfig = {
+    if ((entityIdx !== undefined) && (!argToolConfig.user_actions)) {
+        tapConfig = {
         haptic: 'light',
         actions: [{
           action: 'more-info',
@@ -628,7 +630,7 @@ export default class BaseTool {
       this.config,
       tapConfig,
       this._card.config.hasOwnProperty('entities')
-        ? this._card.config.entities[argToolConfig.entity_index]?.entity
+    ? this._card.config.entities[entityIdx]?.entity
         : undefined,
       undefined,
     );
