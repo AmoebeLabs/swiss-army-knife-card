@@ -13,6 +13,9 @@ assignees: ''
 So make sure your problem is not related to that!
 - [ ] Yes, I'm sure that it is not a configuration mistake
 
+## Swiss Army Knife version
+The version you are using. See HACS or the Browser console
+
 ## Bug description
 A clear and concise description of what the bug is.
 
