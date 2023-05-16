@@ -127,7 +127,7 @@ export default class EntityIconTool extends BaseTool {
 
     const icon = this._buildIcon(
       this._card.entities[this.defaultEntityIndex()],
-      this.defaultEntityIndex() ? this._card.config.entities[this.defaultEntityIndex()] : undefined,
+      (this.defaultEntityIndex() !== undefined) ? this._card.config.entities[this.defaultEntityIndex()] : undefined,
       this.config.icon,
     );
 
