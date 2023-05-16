@@ -579,8 +579,10 @@ export default class BaseTool {
           break;
         }
         case 'fire-dom-event': {
+          // Clone action configuration before firing the event
+          const domData = { ...actionConfig.actions[i] };
           e = new Event('ll-custom', { composed: true, bubbles: true });
-          e.detail = actionConfig.actions[i];
+          e.detail = domData;
           node.dispatchEvent(e);
           break;
         }
