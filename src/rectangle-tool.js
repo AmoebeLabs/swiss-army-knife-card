@@ -89,6 +89,7 @@ export default class RectangleTool extends BaseTool {
   render() {
     return svg`
       <g id="rectangle-${this.toolId}" class="${classMap(this.classes.tool)}" transform-origin="${this.svg.cx}px ${this.svg.cy}px"
+        style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderRectangle()}
       </g>

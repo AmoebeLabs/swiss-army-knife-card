@@ -1,5 +1,6 @@
 import { svg } from 'lit-element';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 import Merge from './merge';
 import BaseTool from './base-tool';
@@ -27,6 +28,7 @@ export default class SegmentedArcTool extends BaseTool {
       color: 'var(--primary-color)',
       classes: {
         tool: {
+          'sak-segarc': true,
         },
         foreground: {
         },
@@ -34,6 +36,8 @@ export default class SegmentedArcTool extends BaseTool {
         },
       },
       styles: {
+        tool: {
+        },
         foreground: {
         },
         background: {
@@ -315,7 +319,9 @@ export default class SegmentedArcTool extends BaseTool {
   render() {
     if (this.dev.debug) console.log('SegmentedArcTool RENDERNEW - Render IN');
     return svg`
-      <g "" id="arc-${this.toolId}" class="arc">
+      <g "" id="arc-${this.toolId}"
+        class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
+      >
         <g >
           ${this._renderSegments()}
           </g>

@@ -58,6 +58,7 @@ export default class SwitchTool extends BaseTool {
       },
       styles: {
         tool: {
+          overflow: 'visible',
         },
         track: {
         },
@@ -242,7 +243,8 @@ export default class SwitchTool extends BaseTool {
 
   render() {
     return svg`
-      <g id="switch-${this.toolId}" class="${classMap(this.classes.tool)}" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g id="switch-${this.toolId}" transform-origin="${this.svg.cx} ${this.svg.cy}"
+        class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderSwitch()}
       </g>

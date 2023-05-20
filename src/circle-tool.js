@@ -43,7 +43,10 @@ export default class CircleTool extends BaseTool {
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius);
 
+    this.classes.tool = {};
     this.classes.circle = {};
+
+    this.styles.tool = {};
     this.styles.circle = {};
     if (this.dev.debug) console.log('CircleTool constructor config, svg', this.toolId, this.config, this.svg);
   }
@@ -91,8 +94,12 @@ export default class CircleTool extends BaseTool {
   */
 
   render() {
+    this.styles.tool.overflow = 'visible';
+    this.styles['transform-origin'] = `${this.svg.cx} ${this.svg.cy}`;
+
     return svg`
-      <g "" id="circle-${this.toolId}" class="${classMap(this.classes.tool)}" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g "" id="circle-${this.toolId}"
+        class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderCircle()}
       </g>

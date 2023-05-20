@@ -40,6 +40,7 @@ export default class EntityNameTool extends BaseTool {
     this.classes.name = {};
 
     // Init styles
+    this.styles.tool = {};
     this.styles.name = {};
     if (this.dev.debug) console.log('EntityName constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -98,7 +99,8 @@ export default class EntityNameTool extends BaseTool {
   */
   render() {
     return svg`
-      <g id="name-${this.toolId}" class="${classMap(this.classes.tool)}"
+      <g id="name-${this.toolId}"
+        class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderEntityName()}
       </g>

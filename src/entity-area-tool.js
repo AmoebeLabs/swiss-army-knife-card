@@ -34,7 +34,10 @@ export default class EntityAreaTool extends BaseTool {
     super(argToolset, Merge.mergeDeep(DEFAULT_AREA_CONFIG, argConfig), argPos);
 
     // Text is rendered in its own context. No need for SVG coordinates.
+    this.classes.tool = {};
     this.classes.area = {};
+
+    this.styles.tool = {};
     this.styles.area = {};
     if (this.dev.debug) console.log('EntityAreaTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -93,7 +96,8 @@ export default class EntityAreaTool extends BaseTool {
   */
   render() {
     return svg`
-      <g id="area-${this.toolId}" class="${classMap(this.classes.tool)}"
+      <g id="area-${this.toolId}"
+        class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderEntityArea()}
       </g>

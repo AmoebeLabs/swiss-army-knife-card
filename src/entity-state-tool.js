@@ -29,6 +29,8 @@ export default class EntityStateTool extends BaseTool {
         },
       },
       styles: {
+        tool: {
+        },
         state: {
         },
         uom: {
@@ -37,9 +39,11 @@ export default class EntityStateTool extends BaseTool {
     };
     super(argToolset, Merge.mergeDeep(DEFAULT_STATE_CONFIG, argConfig), argPos);
 
+    this.classes.tool = {};
     this.classes.state = {};
     this.classes.uom = {};
 
+    this.styles.tool = {};
     this.styles.state = {};
     this.styles.uom = {};
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
@@ -87,6 +91,7 @@ export default class EntityStateTool extends BaseTool {
     if (this.config.show.uom === 'none') {
       return svg``;
     } else {
+      this.MergeAnimationClassIfChanged();
       this.MergeAnimationStyleIfChanged();
       this.MergeColorFromState(this.styles.uom);
 
@@ -102,7 +107,7 @@ export default class EntityStateTool extends BaseTool {
 
       fsuomStr = { 'font-size': fsuomValue + fsuomType };
 
-      this.styles.uom = Merge.mergeDeep(this.config.styles.uom, fsuomStr);
+      this.styles.uom = Merge.mergeDeep(this.config.styles.uom, this.styles.uom, fsuomStr);
 
       const uom = this._card._buildUom(this.derivedEntity, this._card.entities[this.defaultEntityIndex()], this._card.config.entities[this.defaultEntityIndex()]);
 
@@ -143,7 +148,8 @@ export default class EntityStateTool extends BaseTool {
     // eslint-disable-next-line no-constant-condition
     if (true || (this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id) === 'sensor')) {
       return svg`
-    <svg overflow="visible" id="state-${this.toolId}" class="${classMap(this.classes.tool)}">
+    <svg overflow="visible" id="state-${this.toolId}"
+      class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}">
         <text @click=${(e) => this.handleTapEvent(e, this.config)}>
           ${this._renderState()}
           ${this._renderUom()}

@@ -1,5 +1,6 @@
 import { svg } from 'lit-element';
-import { styleMap } from 'lit-html/directives/style-map.js';
+import { classMap } from 'lit-html/directives/class-map';
+import { styleMap } from 'lit-html/directives/style-map';
 import { SVGInjector } from '@tanem/svg-injector';
 
 import Merge from './merge';
@@ -46,6 +47,16 @@ export default class UserSvgTool extends BaseTool {
     // Remember the SVG image to load, as we cache those SVG files
     this.imageCur = 'none';
     this.imagePrev = 'none';
+
+    this.classes = {};
+    this.classes.tool = {};
+    this.classes.usersvg = {};
+    this.classes.mask = {};
+
+    this.styles = {};
+    this.styles.tool = {};
+    this.styles.usersvg = {};
+    this.styles.mask = {};
 
     this.injector = {};
     this.injector.svg = null;
@@ -241,7 +252,7 @@ export default class UserSvgTool extends BaseTool {
   render() {
     return svg`
       <g id="usersvg-${this.toolId}" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
-        style="${styleMap(this.styles.tool)}"
+        class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderUserSvg()}
       </g>
