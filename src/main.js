@@ -93,6 +93,9 @@ class SwissArmyKnifeCard extends LitElement {
     // Add card styles functionality
     this.styles = {};
     this.styles.card = {};
+    this.styles.card.default = {};
+    this.styles.card.light = {};
+    this.styles.card.dark = {};
 
     // For history query interval updates.
     this.entityHistory = {};
@@ -112,8 +115,13 @@ class SwissArmyKnifeCard extends LitElement {
 
     // Theme mode support
     this.theme = {};
+    // Did not check for theme loading yet!
+    this.theme.checked = false;
+    this.theme.isLoaded = false;
     this.theme.modeChanged = false;
     this.theme.darkMode = false;
+    this.theme.light = {};
+    this.theme.dark = {};
 
     // Safari is the new IE.
     // Check for iOS / iPadOS / Safari to be able to work around some 'features'
@@ -163,6 +171,10 @@ class SwissArmyKnifeCard extends LitElement {
     if (!SwissArmyKnifeCard.colorCache) {
       SwissArmyKnifeCard.colorCache = [];
     }
+
+    this.palette = {};
+    this.palette.light = {};
+    this.palette.dark = {};
 
     if (this.dev.debug) console.log('*****Event - card - constructor', this.cardId, new Date().getTime());
   }
@@ -517,9 +529,30 @@ class SwissArmyKnifeCard extends LitElement {
     this.counter += 1;
 
     // Check for theme mode and theme mode change...
-    if (hass.themes.darkMode !== this.theme.darkMode) {
+    this.theme.modeChanged = (hass.themes.darkMode !== this.theme.darkMode);
+    if (this.theme.modeChanged) {
       this.theme.darkMode = hass.themes.darkMode;
-      this.theme.modeChanged = true;
+    }
+
+    // Process theme if specified and does exist, otherwise ignore
+    // Theme is loaded only once at first call of set hass()
+    if (!this.theme.checked) {
+      this.theme.checked = true;
+      if (this.config.theme && hass.themes.themes[this.config.theme]) {
+        const { themeLight, themeDark } = Colors.processTheme(hass.themes.themes[this.config.theme]);
+        this.theme.light = themeLight;
+        this.theme.dark = themeDark;
+        this.theme.isLoaded = true;
+      }
+
+      // Independent of theme loaded, adjust full card styles for light and dark mode
+      // Load (if present) theme and palette stylings for optimum performance during rendering
+      this.styles.card.light = {
+         ...this.styles.card.default, ...this.theme.light, ...this.palette.light,
+      };
+      this.styles.card.dark = {
+        ...this.styles.card.default, ...this.theme.dark, ...this.palette.dark,
+      };
     }
 
     // Set ref to hass, use "_"for the name ;-)
@@ -753,6 +786,12 @@ class SwissArmyKnifeCard extends LitElement {
     // Find & Replace template definitions. This also supports layout templates
     const cfg = JSON.stringify(this.config, findTemplate);
 
+    if (this.config.palette) {
+      this.config.palette = JSON.parse(cfg).palette;
+      const { paletteLight, paletteDark } = Colors.processPalette(this.config.palette);
+      this.palette.light = paletteLight;
+      this.palette.dark = paletteDark;
+    }
     // To further process toolset templates, get reference to toolsets
     const cfgobj = JSON.parse(cfg).layout.toolsets;
 
@@ -1048,7 +1087,7 @@ class SwissArmyKnifeCard extends LitElement {
     this.viewBox.height = ar[1] * SVG_DEFAULT_DIMENSIONS;
 
     if (this.config.layout.styles?.card) {
-      this.styles.card = this.config.layout.styles.card;
+      this.styles.card.default = this.config.layout.styles.card;
     }
 
     if (this.dev.debug) console.log('Step 5: toolconfig, list of toolsets', this.toolsets);
@@ -1177,7 +1216,7 @@ class SwissArmyKnifeCard extends LitElement {
                   `;
       } else {
         myHtml = html`
-                  <ha-card style="${styleMap(this.styles.card)}">
+                  <ha-card style="${styleMap(this.styles.card.default)}">
                     <div class="container" id="container" 
                     >
                       ${this._renderSvg()}
@@ -1300,7 +1339,9 @@ class SwissArmyKnifeCard extends LitElement {
     svgItems.push(svg`
       <svg id="rootsvg" xmlns="http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
        class="${cardFilter}"
-       style="${styleMap(this.styles.card)}"
+       style="${styleMap(this.themeIsDarkMode()
+          ? this.styles.card.dark
+          : this.styles.card.light)}"
        data-entity-0="${this._attributes[0]}"
        data-entity-1="${ifDefined(this._attributes[1])}"
        data-entity-2="${ifDefined(this._attributes[2])}"
@@ -1316,7 +1357,7 @@ class SwissArmyKnifeCard extends LitElement {
         <g style="${styleMap(this.config.layout?.styles?.toolsets)}">
           ${toolsetsSvg}
         </g>
-    </svg>`);
+      </svg>`);
 
     return svg`${svgItems}`;
   }

@@ -1,4 +1,5 @@
 import { svg } from 'lit-element';
+import { styleMap } from 'lit-html/directives/style-map.js';
 
 import { SVG_DEFAULT_DIMENSIONS, SVG_DEFAULT_DIMENSIONS_HALF } from './const';
 import Utils from './utils';
@@ -22,6 +23,7 @@ import SparklineBarChartTool from './sparkline-barchart-tool';
 import SwitchTool from './switch-tool';
 import TextTool from './text-tool';
 import UserSvgTool from './user-svg-tool';
+import Colors from './colors';
 
 /** ***************************************************************************
   * Toolset class
@@ -40,6 +42,15 @@ export default class Toolset {
     this.config = argConfig;
     this.tools = [];
 
+    this.palette = {};
+    this.palette.light = {};
+    this.palette.dark = {};
+
+    if (this.config.palette) {
+      const { paletteLight, paletteDark } = Colors.processPalette(this.config.palette);
+      this.palette.light = paletteLight;
+      this.palette.dark = paletteDark;
+    }
     // Get SVG coordinates.
     this.svg = {};
     this.svg.cx = Utils.calculateSvgCoordinate(argConfig.position.cx, SVG_DEFAULT_DIMENSIONS_HALF);
@@ -313,7 +324,11 @@ export default class Toolset {
                       "
            style="transform-origin:center; transform-box:fill-box;">
           <svg style="overflow:visible;">
-            <g class="toolset__group" transform="translate(${this.svg.cx / this.transform.scale.x}, ${this.svg.cy / this.transform.scale.y})">
+            <g class="toolset__group" transform="translate(${this.svg.cx / this.transform.scale.x}, ${this.svg.cy / this.transform.scale.y})"
+            style="${styleMap(this._card.themeIsDarkMode()
+              ? this.palette.dark
+              : this.palette.light)}"
+            >
               ${this.renderToolset()}
             </g>
             </svg>
@@ -334,7 +349,11 @@ export default class Toolset {
            transform="rotate(${this.transform.rotate.x}) scale(${this.transform.scale.x}, ${this.transform.scale.y})"
            style="transform-origin:center; transform-box:fill-box;">
           <svg style="overflow:visible;">
-            <g class="toolset__group" transform="translate(${this.svg.cx}, ${this.svg.cy})">
+            <g class="toolset__group" transform="translate(${this.svg.cx}, ${this.svg.cy})"
+            style="${styleMap(this._card.themeIsDarkMode()
+              ? this.palette.dark
+              : this.palette.light)}"
+            >
               ${this.renderToolset()}
             </g>
             </svg>
