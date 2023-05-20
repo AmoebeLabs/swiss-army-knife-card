@@ -9,7 +9,7 @@ export default class Colors {
   /** *****************************************************************************
   * Colors::static properties()
   *
-  * Summary.
+  * @description
   * Declares the static class properties.
   * Needs eslint parserOptions ecmaVersion: 2022
   *
@@ -17,6 +17,103 @@ export default class Colors {
   static {
     Colors.colorCache = {};
     Colors.element = undefined;
+  }
+
+  /** *****************************************************************************
+  * Colors::static _prefixKeys()
+  *
+  * @argument argColors - the colors to prefix with '--'
+  *
+  * @description
+  * Prefixes all keys with '--' to make them CSS Variables.
+  *
+  */
+  static _prefixKeys(argColors) {
+    let prefixedColors = {};
+
+    Object.keys(argColors).forEach((key) => {
+      const prefixedKey = `--${key}`;
+      const value = String(argColors[key]);
+      prefixedColors[prefixedKey] = `${value}`;
+    });
+    return prefixedColors;
+  }
+
+  /** *****************************************************************************
+  * Colors::static processTheme()
+  *
+  * @argument argTheme - the theme configuration to load
+  *
+  * @description
+  * Loads and processes the theme to be used with dark and light modes.
+  *
+  * Theme mode is selected based on theme's darkMode boolean.
+  */
+  static processTheme(argTheme) {
+    let combinedLight = {};
+    let combinedDark = {};
+
+    let themeLight = {};
+    let themeDark = {};
+
+    const { modes, ...themeBase } = argTheme;
+
+    // Apply theme vars for the specific mode if available
+    if (modes) {
+      combinedDark = { ...themeBase, ...modes.dark };
+      combinedLight = { ...themeBase, ...modes.light };
+    }
+
+    // Now we have the dark and light mode configuration, iterate over every definition
+    // and add the CSS variable prefix '--' to the key (CSS Variable color name)
+    themeLight = Colors._prefixKeys(combinedLight);
+    themeDark = Colors._prefixKeys(combinedDark);
+
+    // Return the light and dark mode theme parts
+    return { themeLight, themeDark };
+  }
+
+  /** *****************************************************************************
+  * Colors::static processPalette()
+  *
+  * @argument argPalette - the palette configuration to load
+  *
+  * @description
+  * Loads the swatches defined for the palette and combines them into a single
+  * palette with light (default) and dark modes.
+  *
+  * Palette mode is selected based on theme's darkMode boolean.
+  */
+  static processPalette(argPalette) {
+    let combinedBase = {};
+    let combinedLight = {};
+    let combinedDark = {};
+
+    let paletteLight = {};
+    let paletteDark = {};
+
+    // We are not interested in the individual swatches, so iterate directly over the values
+    Object.values(argPalette).forEach((swatch) => {
+      // Apply theme vars that are relevant for all modes (but extract the 'modes' section first)
+      // See: https://www.freecodecamp.org/news/javascript-object-destructuring-spread-operator-rest-parameter/
+      const { modes, ...swatchBase } = swatch;
+
+      // Apply swatch vars for the specific mode if available
+      combinedBase = { ...combinedBase, ...swatchBase };
+      if (modes) {
+        combinedDark = { ...combinedDark, ...swatchBase, ...modes.dark };
+        combinedLight = { ...combinedLight, ...swatchBase, ...modes.light };
+      }
+    });
+
+    // Now we have the dark and light mode configuration, iterate over every definition
+    // and add the CSS variable prefix '--' to the key (CSS Variable color name)
+
+    paletteLight = Colors._prefixKeys(combinedLight);
+    paletteDark = Colors._prefixKeys(combinedDark);
+
+    // Return the light and dark mode palettes
+    return { paletteLight, paletteDark };
   }
 
   /** *****************************************************************************
