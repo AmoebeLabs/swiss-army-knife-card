@@ -123,6 +123,7 @@ export default class RegPolyTool extends BaseTool {
   render() {
     return svg`
       <g "" id="regpoly-${this.toolId}" class="${classMap(this.classes.tool)}" transform-origin="${this.svg.cx} ${this.svg.cy}"
+        style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderRegPoly()}
       </g>

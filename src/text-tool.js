@@ -36,6 +36,11 @@ export default class TextTool extends BaseTool {
 
     this.EnableHoverForInteraction();
     this.text = this.config.text;
+
+    this.classes.tool = {};
+    this.classes.text = {};
+
+    this.styles.tool = {};
     this.styles.text = {};
     if (this.dev.debug) console.log('TextTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
@@ -70,7 +75,8 @@ export default class TextTool extends BaseTool {
   */
   render() {
     return svg`
-        <g id="text-${this.toolId}" class="${classMap(this.classes.tool)}"
+        <g id="text-${this.toolId}"
+          class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
           @click=${(e) => this.handleTapEvent(e, this.config)}>
           ${this._renderText()}
         </g>

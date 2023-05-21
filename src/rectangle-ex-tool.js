@@ -35,13 +35,18 @@ export default class RectangleToolEx extends BaseTool {
         },
       },
       styles: {
+        tool: {
+        },
         rectex: {
         },
       },
     };
     super(argToolset, Merge.mergeDeep(DEFAULT_RECTANGLEEX_CONFIG, argConfig), argPos);
 
+    this.classes.tool = {};
     this.classes.rectex = {};
+
+    this.styles.tool = {};
     this.styles.rectex = {};
 
     // #TODO:
@@ -133,7 +138,8 @@ export default class RectangleToolEx extends BaseTool {
   */
   render() {
     return svg`
-      <g id="rectex-${this.toolId}" class="${classMap(this.classes.tool)}"
+      <g id="rectex-${this.toolId}"
+        class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderRectangleEx()}
       </g>

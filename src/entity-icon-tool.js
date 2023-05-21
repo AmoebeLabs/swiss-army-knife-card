@@ -28,6 +28,8 @@ export default class EntityIconTool extends BaseTool {
         },
       },
       styles: {
+        tool: {
+        },
         icon: {
         },
       },
@@ -69,7 +71,10 @@ export default class EntityIconTool extends BaseTool {
       this.svg.xpx -= (this.svg.iconPixels * adjust);
       this.svg.ypx = this.svg.ypx - (this.svg.iconPixels * 0.5) - (this.svg.iconPixels * 0.25);
     }
+    this.classes.tool = {};
     this.classes.icon = {};
+
+    this.styles.tool = {};
     this.styles.icon = {};
 
     if (this.dev.debug) console.log('EntityIconTool constructor coords, dimensions, config', this.coords, this.dimensions, this.config);

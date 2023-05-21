@@ -62,6 +62,7 @@ export default class SparklineBarChartTool extends BaseTool {
     this._scale = {};
     this._needsRendering = false;
 
+    this.classes.tool = {};
     this.classes.bar = {};
 
     this.styles.tool = {};
@@ -226,7 +227,8 @@ export default class SparklineBarChartTool extends BaseTool {
     */
   render() {
     return svg`
-        <g id="barchart-${this.toolId}" class="${classMap(this.classes.tool)}"
+        <g id="barchart-${this.toolId}"
+          class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
           @click=${(e) => this.handleTapEvent(e, this.config)}>
           ${this._renderBars()}
         </g>

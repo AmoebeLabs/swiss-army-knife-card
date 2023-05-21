@@ -108,7 +108,8 @@ export default class LineTool extends BaseTool {
   */
   render() {
     return svg`
-      <g id="line-${this.toolId}" class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
+      <g id="line-${this.toolId}"
+        class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderLine()}
       </g>

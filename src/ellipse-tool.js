@@ -32,6 +32,8 @@ export default class EllipseTool extends BaseTool {
         },
       },
       styles: {
+        tool: {
+        },
         ellipse: {
         },
       },
@@ -42,7 +44,10 @@ export default class EllipseTool extends BaseTool {
     this.svg.radiusx = Utils.calculateSvgDimension(argConfig.position.radiusx);
     this.svg.radiusy = Utils.calculateSvgDimension(argConfig.position.radiusy);
 
+    this.classes.tool = {};
     this.classes.ellipse = {};
+
+    this.styles.tool = {};
     this.styles.ellipse = {};
 
     if (this.dev.debug) console.log('EllipseTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
@@ -81,7 +86,8 @@ export default class EllipseTool extends BaseTool {
   */
   render() {
     return svg`
-      <g id="ellipse-${this.toolId}" class="${classMap(this.classes.tool)}"
+      <g id="ellipse-${this.toolId}"
+        class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderEllipse()}
       </g>

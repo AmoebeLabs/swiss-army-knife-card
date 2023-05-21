@@ -38,6 +38,8 @@ export default class BadgeTool extends BaseTool {
         },
       },
       styles: {
+        tool: {
+        },
         left: {
         },
         right: {
@@ -58,8 +60,11 @@ export default class BadgeTool extends BaseTool {
     this.svg.rightYpos = this.svg.y;
     this.svg.rightWidth = ((100 - this.config.position.ratio) / 100) * this.svg.width;
 
+    this.classes.tool = {};
     this.classes.left = {};
     this.classes.right = {};
+
+    this.styles.tool = {};
     this.styles.left = {};
     this.styles.right = {};
     if (this.dev.debug) console.log('BadgeTool constructor coords, dimensions', this.svg, this.config);
@@ -125,7 +130,8 @@ export default class BadgeTool extends BaseTool {
   */
   render() {
     return svg`
-      <g id="badge-${this.toolId}" class="${classMap(this.classes.tool)}"
+      <g id="badge-${this.toolId}"
+        class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderBadge()}
       </g>

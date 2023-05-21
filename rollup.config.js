@@ -4,7 +4,7 @@ import serve from 'rollup-plugin-serve';
 import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
 
-const dev = process.env.ROLLUP_WATCH;
+const dev = process.env.ROLLUP_WATCH || process.env.DEV;
 
 const serveopts = {
   contentBase: ['dist'],
