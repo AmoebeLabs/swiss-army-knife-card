@@ -175,8 +175,15 @@ export default class UserSvgTool extends BaseTool {
     let cachedSvg = this.injector.cache[this.imageCur];
 
     // construct clip path if specified
-    let clipPath = '';
+    let clipPath = svg``;
+    // Construct both urls. Firefox can't handle undefined clip paths and masks: it starts to
+    // clip images by itself ;-). Of course, that is not what we want!
+    let clipPathUrl = '';
+    let maskUrl = '';
+
     if (this.config.clip_path) {
+      clipPathUrl = `url(#clip-path-${this.toolId})`;
+      maskUrl = `url(#mask-${this.toolId})`;
       clipPath = svg`
         <defs>
           <path  id="path-${this.toolId}"
@@ -209,32 +216,41 @@ export default class UserSvgTool extends BaseTool {
         <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}"
           style="${styleMap(this.styles.usersvg)}">
           "${clipPath}"
-          <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})"
+          <image 
+            clip-path="${clipPathUrl}" mask="${maskUrl}"
             href="${images[this.item.image]}"
             height="${this.svg.height}" width="${this.svg.width}"
           />
         </svg>
         `;
     // Must be svg. Render for the first time, if not in cache...
+    // Render injected SVG's as invisible (add hidden class while injecting) and
+    // remove that class when rendering from cache...
     } else if ((!cachedSvg) || (!this.config.options.svginject)) {
       return svg`
-        <svg class="sak-usersvg__image"
+        <svg class="sak-usersvg__image ${this.config.options.svginject ? 'hidden' : ''}"
           data-id="usersvg-${this.toolId}" data-src="${images[this.item.image]}"
           x="${this.svg.x}" y="${this.svg.y}"
-          style="${styleMap(this.styles.usersvg)}">
+          style="${this.config.options.svginject ? '' : styleMap(this.styles.usersvg)}">
           "${clipPath}"
-          <image clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})"
+          <image
+            clip-path="${clipPathUrl}"
+            mask="${maskUrl}"
             href="${images[this.item.image]}"
             height="${this.svg.height}" width="${this.svg.width}"
           />
         </svg>
       `;
     // Render from cache and pass clip path and mask as reference...
+    // Remove hidden class that prevented weird initial renderings
     } else {
+      cachedSvg.classList.remove('hidden');
       return svg`
         <svg x="${this.svg.x}" y="${this.svg.y}" style="${styleMap(this.styles.usersvg)}"
           height="${this.svg.height}" width="${this.svg.width}"
-          clip-path="url(#clip-path-${this.toolId})" mask="url(#mask-${this.toolId})">
+          clip-path="${clipPathUrl}"
+          mask="${maskUrl}"
+        >
           "${clipPath}"
           ${cachedSvg};
        </svg>
@@ -251,7 +267,7 @@ export default class UserSvgTool extends BaseTool {
   */
   render() {
     return svg`
-      <g id="usersvg-${this.toolId}" overflow="visible" transform-origin="${this.svg.cx} ${this.svg.cy}"
+      <g id="usersvg-${this.toolId}" overflow="visible"
         class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderUserSvg()}
