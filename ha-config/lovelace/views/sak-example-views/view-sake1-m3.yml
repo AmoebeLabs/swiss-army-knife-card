@@ -757,8 +757,8 @@ cards:
                       cy: 50
                     entity_index: 0
                     styles:
-                      card:
-                        background-color: var(--primary-background-color)
+                      # card:
+                      #   background-color: var(--primary-background-color)
                       area:
                         font-size: 12em
                         font-weight: 400
