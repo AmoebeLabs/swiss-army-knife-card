@@ -130,14 +130,22 @@ export default class UserSvgTool extends BaseTool {
     if (this.injector.elementsToInject.length !== 0) {
       SVGInjector(this.injector.elementsToInject, {
       afterAll(elementsLoaded) {
-        // Request async update of card if all SVG files are loaded using async http request
+        // After all elements are loaded, request another render to allow the SVG to be
+        // rendered at the right location and size from cache.
+        //
+        // If loading failed, the options.svginject is set to false, so image will be
+        // rendered as external image, if possible!
         setTimeout(() => { myThis._card.requestUpdate(); }, 0);
       },
       afterEach(err, svg) {
         if (err) {
+          myThis.injector.error = err;
+          myThis.config.options.svginject = false;
           throw err;
+        } else {
+          myThis.injector.error = '';
+          myThis.injector.cache[myThis.imageCur] = svg;
         }
-        myThis.injector.cache[myThis.imageCur] = svg;
       },
       beforeEach(svg) {
         // Remove height and width attributes before injecting
@@ -209,9 +217,13 @@ export default class UserSvgTool extends BaseTool {
         `;
     }
 
-    // If jpg or png, use default image renderer...
-    if (['png', 'jpg'].includes((images[this.item.image].substring(images[this.item.image].lastIndexOf('.') + 1)))) {
-      // Render jpg or png
+    const dotPosition = images[this.item.image].lastIndexOf('.');
+    const imageExtension = images[this.item.image]
+                            .substring(dotPosition === -1 ? Infinity : dotPosition + 1);
+
+    // Use default external image renderer if not an SVG extension
+    // Image can be any jpg, png or other image like via the HA /api/ (person image)
+    if (imageExtension !== 'svg') {
       return svg`
         <svg class="sak-usersvg__image" x="${this.svg.x}" y="${this.svg.y}"
           style="${styleMap(this.styles.usersvg)}">
