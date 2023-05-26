@@ -6053,24 +6053,7 @@ var NumberFormat;
     NumberFormat.none = 'none';
 }(NumberFormat = NumberFormat || (NumberFormat = {})));
 
-// export const NumberFormat = () => {
-//   NumberFormat.language = 'language';
-//   NumberFormat.system = 'system';
-//   NumberFormat.comma_decimal = 'comma_decimal';
-//   NumberFormat.decimal_comma = 'decimal_comma';
-//   NumberFormat.space_comma = 'space_comma';
-//   NumberFormat.none = 'none';
-// };
-
-/**
- * Returns true if the entity is considered numeric based on the attributes it has
- * @param stateObj The entity state object
- */
-const isNumericState = (stateObj) => isNumericFromAttributes(stateObj.attributes);
-
 const round = (value, precision = 2) => Math.round(value * 10 ** precision) / 10 ** precision;
-
-const isNumericFromAttributes = (attributes) => !!attributes.unit_of_measurement || !!attributes.state_class;
 
 const numberFormatToLocale = (localeOptions) => {
   switch (localeOptions.number_format) {
@@ -6231,18 +6214,18 @@ class EntityStateTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
     this.MergeColorFromState(this.styles.state);
 
+    // NTS:
+    // Het renderen van de windrichting gaat nog niet goed. Ik zie NE ipv NO staan
+    // Mogelijk iets met lowercase / uppercase? Hoe wordt 'met' gedaan in de resources.nl?
+    // staan daar strings in uppercase of lowercase voor de windrichting??
+    // ui.card.weather.cardinal_direction.ne: "NO". Dus JA, kleine letters!!!!!!
+
     // console.log('in renderstatenew');
     // var inState = this._stateValue?.toLowerCase();
     let inState = this._stateValue;
 
     const stateObj = this._card.entities[this.defaultEntityIndex()];
     if (stateObj === undefined) return svg``;
-
-    // For testing, not anyting else
-    if (isNumericState(stateObj)) {
-      let renderNumber = formatNumber(inState, this._card._hass.locale, {});
-      console.log('renderNumber = ', inState, renderNumber);
-    }
 
     // Need entities, not states to get platform, translation_key, etc.!!!!!
     const entity = this._card._hass.entities[stateObj.entity_id];
@@ -6271,14 +6254,23 @@ class EntityStateTool extends BaseTool {
     // Bij AQI staat platform "airvisual" en translation_key "pollutant_level". Die zag ik ook
     // bij de resources staan als veld ertussen ergens.
     // dit staat dus op sensor.u_s_air_pollution_level.platform / .translation_key
+
+    const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
+    // if (localeTag) console.log('localetag = ', localeTag);
+
+    // entity with attribute as state must pass to translate things like 'nne', etc. (weather)
+    // If secondary info is also a state (and not yet translated), then this one should also pass
+    // and get translated just as secondary_info builder does now...
+    // !!
     if ((inState) && isNaN(inState)
      && !this._card.config.entities[this.defaultEntityIndex()].secondary_info
-      && !this._card.config.entities[this.defaultEntityIndex()].attribute) {
-        // const stateObj = this._card.config.entities[this.defaultEntityIndex()].entity;
+      // && !this._card.config.entities[this.defaultEntityIndex()].attribute) {
+      || this._card.config.entities[this.defaultEntityIndex()].attribute) {
+      // const stateObj = this._card.config.entities[this.defaultEntityIndex()].entity;
       // const stateObj = this._card.entities[this.defaultEntityIndex()];
       // const domain = this._card._computeDomain(this._card.config.entities[this.defaultEntityIndex()].entity);
 
-      this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
+      // const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
       // const localeTag1 = stateObj.attributes?.device_class
       //   ? `component.${domain}.state.${stateObj.attributes.device_class}.${inState}` : '--';
 
@@ -6316,12 +6308,13 @@ class EntityStateTool extends BaseTool {
       //     // || stateObj.state;
       //     || inState;
 
-      inState = (entity?.translation_key
+      inState = (localeTag && this._card._hass.localize(localeTag))
+        || (entity?.translation_key
             && this._card._hass.localize(
             `component.${entity.platform}.entity.${domain}.${entity.translation_key}.state.${inState}`,
           ))
         // Return device class translation
-        || (entity.attributes?.device_class
+        || (entity?.attributes?.device_class
             && this._card._hass.localize(
             `component.${domain}.entity_component.${entity.attributes.device_class}.state.${inState}`,
           ))
@@ -6343,6 +6336,16 @@ class EntityStateTool extends BaseTool {
     if (['undefined', 'unknown', 'unavailable', '-ua-'].includes(inState)) {
       if (inState === '-ua-') inState = 'unavailable';
       inState = this._card._hass.localize(`state.default.${inState}`);
+    }
+
+    // For testing, not anyting else
+    // Seems to work. All . are , at least, and a . is inserted for 1000.
+    // if (isNumericState(stateObj)
+    // || !isNaN(inState)) {
+    if (!isNaN(inState)) {
+      let renderNumber = formatNumber(inState, this._card._hass.locale, {});
+      // console.log('renderNumber = ', inState, renderNumber);
+      inState = renderNumber;
     }
 
     return svg`
