@@ -33,7 +33,7 @@ import {
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { ifDefined } from 'lit-html/directives/if-defined.js';
-import { selectUnit } from '@formatjs/intl-utils';
+// import { selectUnit } from '@formatjs/intl-utils';
 import { version } from '../package.json';
 
 import {
@@ -47,9 +47,6 @@ import Utils from './utils';
 import Templates from './templates';
 import Toolset from './toolset';
 import Colors from './colors';
-
-// Original injector is buggy. Use a patched version, and store this local...
-// import * as SvgInjector from '../dist/SVGInjector.min.js'; // lgtm[js/unused-local-variable]
 
 console.info(
   `%c  SWISS-ARMY-KNIFE-CARD  \n%c      Version ${version}      `,
@@ -588,11 +585,13 @@ class SwissArmyKnifeCard extends LitElement {
 
     let attrSet = false;
     let newStateStr;
+    let entityIsUndefined = false;
     // eslint-disable-next-line no-restricted-syntax, no-unused-vars
     for (value of this.config.entities) {
       this.entities[index] = hass.states[this.config.entities[index].entity];
 
-      if (this.entities[index] === undefined) {
+      entityIsUndefined = this.entities[index] === undefined;
+      if (entityIsUndefined) {
         console.error('SAK - set hass, entity undefined: ', this.config.entities[index].entity);
         // Temp disable throw Error(`Set hass, entity undefined: ${this.config.entities[index].entity}`);
       }
@@ -600,8 +599,9 @@ class SwissArmyKnifeCard extends LitElement {
       // Get secondary info state if specified and available
       if (this.config.entities[index].secondary_info) {
         secInfoSet = true;
-        newSecInfoState = this.entities[index][this.config.entities[index].secondary_info];
-        newSecInfoStateStr = this._buildSecondaryInfo(newSecInfoState, this.config.entities[index]);
+        newSecInfoState = entityIsUndefined ? undefined : this.entities[index][this.config.entities[index].secondary_info];
+        // newSecInfoStateStr = this._buildSecondaryInfo(newSecInfoState, this.config.entities[index]);
+        newSecInfoStateStr = this._buildStateString(newSecInfoState, this.config.entities[index]);
 
         if (newSecInfoStateStr !== this.secondaryInfoStr[index]) {
           this.secondaryInfoStr[index] = newSecInfoStateStr;
@@ -656,7 +656,7 @@ class SwissArmyKnifeCard extends LitElement {
 
         // eslint-disable-next-line no-constant-condition
         if (true) { // (typeof attributeState != 'undefined') {
-          newStateStr = this._buildState(attributeState, this.config.entities[index]);
+          newStateStr = this._buildStateString(attributeState, this.config.entities[index]);
           if (newStateStr !== this.attributesStr[index]) {
             this.attributesStr[index] = newStateStr;
             entityHasChanged = true;
@@ -669,7 +669,7 @@ class SwissArmyKnifeCard extends LitElement {
         // Any tool should still react to a percentage going from a valid value to undefined!
       }
       if ((!attrSet) && (!secInfoSet)) {
-        newStateStr = this._buildState(this.entities[index].state, this.config.entities[index]);
+        newStateStr = entityIsUndefined ? undefined : this._buildStateString(this.entities[index].state, this.config.entities[index]);
         if (newStateStr !== this.entitiesStr[index]) {
           this.entitiesStr[index] = newStateStr;
           entityHasChanged = true;
@@ -1385,6 +1385,31 @@ class SwissArmyKnifeCard extends LitElement {
     return (resources && resources[string] ? resources[string] : fallback);
   }
 
+/** *****************************************************************************
+  * card::_buildStateString()
+  *
+  * Summary.
+  * Builds the State string.
+  * If state is not a number, the state is returned AS IS, otherwise the state
+  * is build according to the specified number of decimals.
+  *
+  * IMPORTANT NOTE:
+  * - do NOT replace isNaN() by Number.isNaN(). They are INCOMPATIBLE !!!!!!!!!
+  */
+
+_buildStateString(inState, entityConfig) {
+  if (isNaN(inState)) return inState;
+
+  // Check for built-in state converters
+  if (entityConfig.convert) {
+    if (entityConfig.convert === 'brightness_pct') {
+      inState = `${Math.round((inState / 255) * 100)}`;
+   }
+  }
+  return inState.toString();
+  // return Number(inState).toString();
+}
+
   /** *****************************************************************************
   * card::_buildState()
   *
@@ -1400,26 +1425,30 @@ class SwissArmyKnifeCard extends LitElement {
   * - do NOT replace isNaN() by Number.isNaN(). They are INCOMPATIBLE !!!!!!!!!
   */
 
-  _buildState(inState, entityConfig) {
-    if (isNaN(inState)) {
-      if (inState === 'unavailable') return '-ua-';
-      return inState;
-    }
+  // _buildState(inState, entityConfig) {
+  //   // HACK
+  //   if (isNaN(inState)) return inState;
+  //   return Number(inState).toString();
 
-    if (entityConfig.format === 'brightness') {
-      return `${Math.round((inState / 255) * 100)}`;
-    }
+  //   if (isNaN(inState)) {
+  //     if (inState === 'unavailable') return '-ua-';
+  //     return inState;
+  //   }
 
-    // Get absolute value and sign value (-1, 0, or 1)
-    const state = Math.abs(Number(inState));
-    const sign = Math.sign(inState);
+  //   if (entityConfig.format === 'brightness') {
+  //     return `${Math.round((inState / 255) * 100)}`;
+  //   }
 
-    if (entityConfig.decimals === undefined || Number.isNaN(entityConfig.decimals) || Number.isNaN(state))
-      return (sign === -1 ? '-' : '') + (Math.round(state * 100) / 100).toString();
+  //   // Get absolute value and sign value (-1, 0, or 1)
+  //   const state = Math.abs(Number(inState));
+  //   const sign = Math.sign(inState);
 
-    const x = 10 ** entityConfig.decimals;
-    return (sign === -1 ? '-' : '') + (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString();
-  }
+  //   if (entityConfig.decimals === undefined || Number.isNaN(entityConfig.decimals) || Number.isNaN(state))
+  //     return (sign === -1 ? '-' : '') + (Math.round(state * 100) / 100).toString();
+
+  //   const x = 10 ** entityConfig.decimals;
+  //   return (sign === -1 ? '-' : '') + (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString();
+  // }
 
   /** *****************************************************************************
   * card::_buildSecondaryInfo()
@@ -1429,74 +1458,77 @@ class SwissArmyKnifeCard extends LitElement {
   *
   */
 
-  _buildSecondaryInfo(inSecInfoState, entityConfig) {
-    const leftPad = (num) => (num < 10 ? `0${num}` : num);
+  // _buildSecondaryInfo(inSecInfoState, entityConfig) {
+  //   const leftPad = (num) => (num < 10 ? `0${num}` : num);
 
-    function secondsToDuration(d) {
-      const h = Math.floor(d / 3600);
-      const m = Math.floor((d % 3600) / 60);
-      const s = Math.floor((d % 3600) % 60);
+  //   function secondsToDuration(d) {
+  //     const h = Math.floor(d / 3600);
+  //     const m = Math.floor((d % 3600) / 60);
+  //     const s = Math.floor((d % 3600) % 60);
 
-      if (h > 0) {
-        return `${h}:${leftPad(m)}:${leftPad(s)}`;
-      }
-      if (m > 0) {
-        return `${m}:${leftPad(s)}`;
-      }
-      if (s > 0) {
-        return `${s}`;
-      }
-      return null;
-    }
+  //     if (h > 0) {
+  //       return `${h}:${leftPad(m)}:${leftPad(s)}`;
+  //     }
+  //     if (m > 0) {
+  //       return `${m}:${leftPad(s)}`;
+  //     }
+  //     if (s > 0) {
+  //       return `${s}`;
+  //     }
+  //     return null;
+  //   }
 
-    const lang = this._hass.selectedLanguage || this._hass.language;
+  //   // HACK
+  //   return inSecInfoState;
 
-    // this.polyfill(lang);
+  //   const lang = this._hass.selectedLanguage || this._hass.language;
 
-    if (['relative', 'total', 'date', 'time', 'datetime'].includes(entityConfig.format)) {
-      const timestamp = new Date(inSecInfoState);
-      if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
-        return inSecInfoState;
-      }
+  //   // this.polyfill(lang);
 
-      let retValue;
-      // return date/time according to formatting...
-      switch (entityConfig.format) {
-        case 'relative':
-          // eslint-disable-next-line no-case-declarations
-          const diff = selectUnit(timestamp, new Date());
-          retValue = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(diff.value, diff.unit);
-          break;
-        case 'total':
-        case 'precision':
-          retValue = 'Not Yet Supported';
-          break;
-        case 'date':
-          retValue = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'numeric', day: 'numeric' }).format(timestamp);
-          break;
-        case 'time':
-          retValue = new Intl.DateTimeFormat(lang, { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(timestamp);
-          break;
-        case 'datetime':
-          retValue = new Intl.DateTimeFormat(lang, {
-            year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
-          }).format(timestamp);
-          break;
-        default:
-      }
-      return retValue;
-    }
+  //   if (['relative', 'total', 'date', 'time', 'datetime'].includes(entityConfig.format)) {
+  //     const timestamp = new Date(inSecInfoState);
+  //     if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
+  //       return inSecInfoState;
+  //     }
 
-    if (isNaN(parseFloat(inSecInfoState)) || !isFinite(inSecInfoState)) {
-      return inSecInfoState;
-    }
-    if (entityConfig.format === 'brightness') {
-      return `${Math.round((inSecInfoState / 255) * 100)} %`;
-    }
-    if (entityConfig.format === 'duration') {
-      return secondsToDuration(inSecInfoState);
-    }
-  }
+  //     let retValue;
+  //     // return date/time according to formatting...
+  //     switch (entityConfig.format) {
+  //       case 'relative':
+  //         // eslint-disable-next-line no-case-declarations
+  //         const diff = selectUnit(timestamp, new Date());
+  //         retValue = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(diff.value, diff.unit);
+  //         break;
+  //       case 'total':
+  //       case 'precision':
+  //         retValue = 'Not Yet Supported';
+  //         break;
+  //       case 'date':
+  //         retValue = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'numeric', day: 'numeric' }).format(timestamp);
+  //         break;
+  //       case 'time':
+  //         retValue = new Intl.DateTimeFormat(lang, { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(timestamp);
+  //         break;
+  //       case 'datetime':
+  //         retValue = new Intl.DateTimeFormat(lang, {
+  //           year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
+  //         }).format(timestamp);
+  //         break;
+  //       default:
+  //     }
+  //     return retValue;
+  //   }
+
+  //   if (isNaN(parseFloat(inSecInfoState)) || !isFinite(inSecInfoState)) {
+  //     return inSecInfoState;
+  //   }
+  //   if (entityConfig.format === 'brightness') {
+  //     return `${Math.round((inSecInfoState / 255) * 100)} %`;
+  //   }
+  //   if (entityConfig.format === 'duration') {
+  //     return secondsToDuration(inSecInfoState);
+  //   }
+  // }
 
   /** *****************************************************************************
   * card::_computeState()
@@ -1505,21 +1537,21 @@ class SwissArmyKnifeCard extends LitElement {
   *
   */
 
-  _computeState(inState, dec) {
-    if (isNaN(inState)) {
-      console.log('computestate - NAN', inState, dec);
-      return inState;
-    }
+  // _computeState(inState, dec) {
+  //   if (isNaN(inState)) {
+  //     console.log('computestate - NAN', inState, dec);
+  //     return inState;
+  //   }
 
-    const state = Number(inState);
+  //   const state = Number(inState);
 
-    if (dec === undefined || isNaN(dec) || isNaN(state)) {
-      return Math.round(state * 100) / 100;
-    }
+  //   if (dec === undefined || isNaN(dec) || isNaN(state)) {
+  //     return Math.round(state * 100) / 100;
+  //   }
 
-    const x = 10 ** dec;
-    return (Math.round(state * x) / x).toFixed(dec);
-  }
+  //   const x = 10 ** dec;
+  //   return (Math.round(state * x) / x).toFixed(dec);
+  // }
 
   _computeDomain(entityId) {
     return entityId.substr(0, entityId.indexOf('.'));

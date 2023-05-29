@@ -2,10 +2,28 @@ import { svg } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
+import { selectUnit } from '@formatjs/intl-utils';
 import Merge from './merge';
 import BaseTool from './base-tool';
 
-import { formatNumber, isNumericState } from './frontend_mods/format_number';
+import { formatNumber, getDefaultFormatOptions, isNumericState } from './frontend_mods/format_number';
+import {
+  formatDate,
+  formatDateMonth,
+  formatDateMonthYear,
+  formatDateShort,
+  formatDateNumeric,
+  formatDateWeekday,
+  formatDateWeekdayDay,
+  formatDateWeekdayShort,
+ } from './frontend_mods/datetime/format_date';
+ import {
+  formatTime,
+  formatTime24h,
+  formatTimeWeekday,
+  formatTimeWithSeconds,
+} from './frontend_mods/datetime/format_time';
+import { formatDuration } from './frontend_mods/datetime/duration';
 
 /** ****************************************************************************
   * EntityStateTool class
@@ -51,9 +69,114 @@ export default class EntityStateTool extends BaseTool {
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
+  // static testTimeDate = false;
+
   // EntityStateTool::value
   set value(state) {
     super.value = state;
+  }
+
+  buildSecondaryInfo(inSecInfoState, entityConfig) {
+    const leftPad = (num) => (num < 10 ? `0${num}` : num);
+
+    const lang = this._card._hass.selectedLanguage || this._card._hass.language;
+
+    // this.polyfill(lang);
+    if (['relative', 'total',
+         'date', 'date_month', 'date_month_year', 'date-short', 'date-numeric', 'date_weekday', 'date_weekday_day', 'date_weekday-short',
+         'time', 'time-24h', 'time_weekday', 'time_with-seconds', 'datetime'].includes(entityConfig.format)) {
+      const timestamp = new Date(inSecInfoState);
+      if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
+        return inSecInfoState;
+      }
+
+      // Testing
+      // if (!EntityStateTool.testTimeDate) {
+      //   EntityStateTool.testTimeDate = true;
+      //   console.log('date', formatDate(timestamp, lang));
+      //   console.log('date_month', formatDateMonth(timestamp, lang));
+      //   console.log('date_month_year', formatDateMonthYear(timestamp, lang));
+      //   console.log('date-short', formatDateShort(timestamp, lang));
+      //   console.log('date-numeric', formatDateNumeric(timestamp, lang));
+      //   console.log('date_weekday', formatDateWeekday(timestamp, lang));
+      //   console.log('date_weekday-short', formatDateWeekdayShort(timestamp, lang));
+      //   console.log('date_weekday_day', formatDateWeekdayDay(timestamp, lang));
+      //   console.log('time', formatTime(timestamp, lang));
+      //   console.log('time-24h', formatTime24h(timestamp, lang));
+      //   console.log('time_weekday', formatTimeWeekday(timestamp, lang));
+      //   console.log('time_with-seconds', formatTimeWithSeconds(timestamp, lang));
+      // }
+
+      let retValue;
+      // return date/time according to formatting...
+      switch (entityConfig.format) {
+        case 'relative':
+          // eslint-disable-next-line no-case-declarations
+          const diff = selectUnit(timestamp, new Date());
+          retValue = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(diff.value, diff.unit);
+          break;
+        case 'total':
+        case 'precision':
+          retValue = 'Not Yet Supported';
+          break;
+        case 'date':
+          retValue = formatDate(timestamp, lang);
+          // retValue = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'numeric', day: 'numeric' }).format(timestamp);
+          break;
+        case 'date_month':
+          retValue = formatDateMonth(timestamp, lang);
+          break;
+        case 'date_month_year':
+          retValue = formatDateMonthYear(timestamp, lang);
+          break;
+        case 'date-short':
+          retValue = formatDateShort(timestamp, lang);
+          break;
+        case 'date-numeric':
+          retValue = formatDateNumeric(timestamp, lang);
+          break;
+        case 'date_weekday':
+          retValue = formatDateWeekday(timestamp, lang);
+          break;
+        case 'date_weekday-short':
+          retValue = formatDateWeekdayShort(timestamp, lang);
+          break;
+        case 'date_weekday_day':
+          retValue = formatDateWeekdayDay(timestamp, lang);
+          break;
+        case 'time':
+          retValue = formatTime(timestamp, lang);
+          // retValue = new Intl.DateTimeFormat(lang, { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(timestamp);
+          break;
+        case 'time-24h':
+          retValue = formatTime24h(timestamp, lang);
+          break;
+        case 'time_weekday':
+          retValue = formatTimeWeekday(timestamp, lang);
+          break;
+        case 'time_with-seconds':
+          retValue = formatTimeWithSeconds(timestamp, lang);
+          break;
+
+        case 'datetime':
+          retValue = new Intl.DateTimeFormat(lang, {
+            year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
+          }).format(timestamp);
+          break;
+        default:
+      }
+      return retValue;
+    }
+
+    if (isNaN(parseFloat(inSecInfoState)) || !isFinite(inSecInfoState)) {
+      return inSecInfoState;
+    }
+    if (entityConfig.format === 'brightness' || entityConfig.format === 'brightness_pct') {
+      return `${Math.round((inSecInfoState / 255) * 100)} %`;
+    }
+    if (entityConfig.format === 'duration') {
+      return formatDuration(inSecInfoState, 's');
+    }
   }
 
   _renderStateNew() {
@@ -61,14 +184,6 @@ export default class EntityStateTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
     this.MergeColorFromState(this.styles.state);
 
-    // NTS:
-    // Het renderen van de windrichting gaat nog niet goed. Ik zie NE ipv NO staan
-    // Mogelijk iets met lowercase / uppercase? Hoe wordt 'met' gedaan in de resources.nl?
-    // staan daar strings in uppercase of lowercase voor de windrichting??
-    // ui.card.weather.cardinal_direction.ne: "NO". Dus JA, kleine letters!!!!!!
-
-    // console.log('in renderstatenew');
-    // var inState = this._stateValue?.toLowerCase();
     let inState = this._stateValue;
 
     const stateObj = this._card.entities[this.defaultEntityIndex()];
@@ -77,84 +192,24 @@ export default class EntityStateTool extends BaseTool {
     // Need entities, not states to get platform, translation_key, etc.!!!!!
     const entity = this._card._hass.entities[stateObj.entity_id];
 
-    // console.log('renderstatenew, stateobj', stateObj, inState);
-    // const domain = this._card.entities[this.defaultEntityIndex()]?.entity
-    // ? this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity) : undefined;
+    const entityConfig = this._card.config.entities[this.defaultEntityIndex()];
     const domain = this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id);
-    // const platform = this._card._hass.entities[stateObj.entity_id]?.platform;
-    // const xlationKey = this._card._hass.entities[stateObj.entity_id]?.translation_key;
 
-    if (!this._card.config.entities[this.defaultEntityIndex()].secondary_info) {
-      // true || domain !== 'sensor')
-      // console.log('sensor, language', this._card._hass.language);
-      // const renderState = (stateObj.attributes.device_class
-      //     && this._card._hass.localize(`component.${domain}.state.${stateObj.attributes.device_class}.${inState}`))
-      //     || this._card._hass.localize(`component.${platform}.entity.${domain}.${xlationKey}.state.${inState}`)
-      //     || this._card._hass.localize(`component.${domain}.entity_component._.state.${inState}`)
-      //     || inState;
-
-      const myLocale = this._card.toLocale(`component.${domain}.entity_component._.state.${inState}`, inState);
-      // console.log('_renderStateNew, inState, renderState', domain,
-      // stateObj.attributes.device_class, inState, renderState, myLocale, stateObj,
-      // `component.${platform}.entity.${domain}.${xlationKey}.state.${inState}`);
-    }
-    // Bij AQI staat platform "airvisual" en translation_key "pollutant_level". Die zag ik ook
-    // bij de resources staan als veld ertussen ergens.
-    // dit staat dus op sensor.u_s_air_pollution_level.platform / .translation_key
+    // if (!entityConfig.secondary_info) {
+    //   const myLocale = this._card.toLocale(`component.${domain}.entity_component._.state.${inState}`, inState);
+    // }
 
     const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
-    // if (localeTag) console.log('localetag = ', localeTag);
 
-    // entity with attribute as state must pass to translate things like 'nne', etc. (weather)
-    // If secondary info is also a state (and not yet translated), then this one should also pass
-    // and get translated just as secondary_info builder does now...
-    // !!
+    // HACK
+    if (entityConfig.format !== undefined) {
+      inState = this.buildSecondaryInfo(inState, entityConfig);
+    }
+
     if ((inState) && isNaN(inState)
-     && !this._card.config.entities[this.defaultEntityIndex()].secondary_info
+     && !entityConfig.secondary_info
       // && !this._card.config.entities[this.defaultEntityIndex()].attribute) {
-      || this._card.config.entities[this.defaultEntityIndex()].attribute) {
-      // const stateObj = this._card.config.entities[this.defaultEntityIndex()].entity;
-      // const stateObj = this._card.entities[this.defaultEntityIndex()];
-      // const domain = this._card._computeDomain(this._card.config.entities[this.defaultEntityIndex()].entity);
-
-      // const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
-      // const localeTag1 = stateObj.attributes?.device_class
-      //   ? `component.${domain}.state.${stateObj.attributes.device_class}.${inState}` : '--';
-
-      // const localeTag2 = `component.${domain}.entity_component._.state.${inState}`;
-      // const localeTag3 = `component.${platform}.entity.${domain}.${xlationKey}.state.${inState}`;
-      // const localeTag4 = stateObj.attributes?.device_class
-      //   ? `component.${domain}.entity_component.${stateObj.attributes.device_class}.state.${inState}` : '--';
-      // const attribute = this._card.config.entities[this.defaultEntityIndex()]?.attribute;
-      // const localeTag5 = attribute
-      //   ? `component.${domain}.entity_component._.state_attributes.${attribute}.state.${inState}` : undefined;
-
-      // console.log('localeTag', inState, this._card.toLocale(localeTag, inState));
-      // // console.log('localeTag1', inState, this._card.toLocale(localeTag1, inState));
-      // console.log('localeTag2', inState, this._card.toLocale(localeTag2, inState));
-      // console.log('localeTag3', inState, this._card.toLocale(localeTag3, inState));
-
-      // console.log('-localeTag', inState, this._card._hass.localize(localeTag), localeTag);
-      // // console.log('-localeTag1', inState, this._card._hass.localize(localeTag1));
-      // console.log('-localeTag2', inState, this._card._hass.localize(localeTag2), localeTag2);
-      // console.log('-localeTag3', inState, this._card._hass.localize(localeTag3), localeTag3);
-      // console.log('-localeTag4', inState, this._card._hass.localize(localeTag4), localeTag4);
-      // console.log('-localeTag5', inState, this._card._hass.localize(localeTag5), localeTag5);
-
-      // er zijn er nog meer. Attributen, en dingen als battery als binary sensor...
-      //
-      // component.binary_sensor.entity_component.battery.state.off : "Normaal"
-      // component.climate.entity_component._.state_attributes.fan_mode.state.auto :  "Automatisch"
-
-      // inState = (localeTag && this._card._hass.localize(localeTag))
-      //     || this._card._hass.localize(localeTag3)
-      //     || (stateObj.attributes?.device_class && this._card._hass.localize(localeTag4))
-      //     || this._card._hass.localize(localeTag2)
-      //     || attribute && this._card._hass.localize(localeTag5)
-      //     || this._card._hass.localize(localeTag4)
-      //     // || stateObj.state;
-      //     || inState;
-
+      || entityConfig.attribute) {
       inState = (localeTag && this._card._hass.localize(localeTag))
         || (entity?.translation_key
             && this._card._hass.localize(
@@ -169,15 +224,6 @@ export default class EntityStateTool extends BaseTool {
         || this._card._hass.localize(`component.${domain}.entity_component._.state.${inState}`)
         // We don't know! Return the raw state.
         || inState;
-      // inState = (localeTag && this._card.toLocale(localeTag, inState))
-      // || this._card.toLocale(localeTag3, inState)
-      // || (stateObj.attributes?.device_class
-      //     && this._card.toLocale(localeTag1, inState))
-      //     || this._card.toLocale(localeTag2, inState)
-      //     || stateObj.state;
-
-      // console.log('last inState = ', inState);
-
       inState = this.textEllipsis(inState, this.config?.show?.ellipsis);
     }
     if (['undefined', 'unknown', 'unavailable', '-ua-'].includes(inState)) {
@@ -185,13 +231,14 @@ export default class EntityStateTool extends BaseTool {
       inState = this._card._hass.localize(`state.default.${inState}`);
     }
 
-    // For testing, not anyting else
-    // Seems to work. All . are , at least, and a . is inserted for 1000.
-    // if (isNumericState(stateObj)
-    // || !isNaN(inState)) {
     if (!isNaN(inState)) {
-      let renderNumber = formatNumber(inState, this._card._hass.locale, {});
-      // console.log('renderNumber = ', inState, renderNumber);
+      let options = {};
+      options = getDefaultFormatOptions(inState, options);
+      if (this._card.config.entities[this.defaultEntityIndex()].decimals !== undefined) {
+        options.maximumFractionDigits = this._card.config.entities[this.defaultEntityIndex()].decimals;
+        options.minimumFractionDigits = options.maximumFractionDigits;
+      }
+      let renderNumber = formatNumber(inState, this._card._hass.locale, options);
       inState = renderNumber;
     }
 

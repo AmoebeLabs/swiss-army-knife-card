@@ -8,7 +8,7 @@ var TimeFormat;
     TimeFormat.system = 'system';
     TimeFormat.am_pm = '12';
     TimeFormat.twenty_four = '24';
-}(TimeFormat = exports.TimeFormat || (exports.TimeFormat = {})));
+}(TimeFormat = TimeFormat || (TimeFormat = {})));
 
 // eslint-disable-next-line import/prefer-default-export
 export const useAmPm = memoizeOne((locale) => {

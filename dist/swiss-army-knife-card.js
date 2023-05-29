@@ -2803,83 +2803,6 @@ const ifDefined = directive((value) => (part) => {
     previousValues.set(part, value);
 });
 
-var __assign = (undefined && undefined.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-var MS_PER_SECOND = 1e3;
-var SECS_PER_MIN = 60;
-var SECS_PER_HOUR = SECS_PER_MIN * 60;
-var SECS_PER_DAY = SECS_PER_HOUR * 24;
-var SECS_PER_WEEK = SECS_PER_DAY * 7;
-function selectUnit(from, to, thresholds) {
-    if (to === void 0) { to = Date.now(); }
-    if (thresholds === void 0) { thresholds = {}; }
-    var resolvedThresholds = __assign(__assign({}, DEFAULT_THRESHOLDS), (thresholds || {}));
-    var secs = (+from - +to) / MS_PER_SECOND;
-    if (Math.abs(secs) < resolvedThresholds.second) {
-        return {
-            value: Math.round(secs),
-            unit: 'second',
-        };
-    }
-    var mins = secs / SECS_PER_MIN;
-    if (Math.abs(mins) < resolvedThresholds.minute) {
-        return {
-            value: Math.round(mins),
-            unit: 'minute',
-        };
-    }
-    var hours = secs / SECS_PER_HOUR;
-    if (Math.abs(hours) < resolvedThresholds.hour) {
-        return {
-            value: Math.round(hours),
-            unit: 'hour',
-        };
-    }
-    var days = secs / SECS_PER_DAY;
-    if (Math.abs(days) < resolvedThresholds.day) {
-        return {
-            value: Math.round(days),
-            unit: 'day',
-        };
-    }
-    var fromDate = new Date(from);
-    var toDate = new Date(to);
-    var years = fromDate.getFullYear() - toDate.getFullYear();
-    if (Math.round(Math.abs(years)) > 0) {
-        return {
-            value: Math.round(years),
-            unit: 'year',
-        };
-    }
-    var months = years * 12 + fromDate.getMonth() - toDate.getMonth();
-    if (Math.round(Math.abs(months)) > 0) {
-        return {
-            value: Math.round(months),
-            unit: 'month',
-        };
-    }
-    var weeks = secs / SECS_PER_WEEK;
-    return {
-        value: Math.round(weeks),
-        unit: 'week',
-    };
-}
-var DEFAULT_THRESHOLDS = {
-    second: 45,
-    minute: 45,
-    hour: 22,
-    day: 5,
-};
-
 var version = "2.4.6";
 
 // Set sizes:
@@ -3290,6 +3213,83 @@ const classMap = directive((classInfo) => (part) => {
         classList.commit();
     }
 });
+
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var MS_PER_SECOND = 1e3;
+var SECS_PER_MIN = 60;
+var SECS_PER_HOUR = SECS_PER_MIN * 60;
+var SECS_PER_DAY = SECS_PER_HOUR * 24;
+var SECS_PER_WEEK = SECS_PER_DAY * 7;
+function selectUnit(from, to, thresholds) {
+    if (to === void 0) { to = Date.now(); }
+    if (thresholds === void 0) { thresholds = {}; }
+    var resolvedThresholds = __assign(__assign({}, DEFAULT_THRESHOLDS), (thresholds || {}));
+    var secs = (+from - +to) / MS_PER_SECOND;
+    if (Math.abs(secs) < resolvedThresholds.second) {
+        return {
+            value: Math.round(secs),
+            unit: 'second',
+        };
+    }
+    var mins = secs / SECS_PER_MIN;
+    if (Math.abs(mins) < resolvedThresholds.minute) {
+        return {
+            value: Math.round(mins),
+            unit: 'minute',
+        };
+    }
+    var hours = secs / SECS_PER_HOUR;
+    if (Math.abs(hours) < resolvedThresholds.hour) {
+        return {
+            value: Math.round(hours),
+            unit: 'hour',
+        };
+    }
+    var days = secs / SECS_PER_DAY;
+    if (Math.abs(days) < resolvedThresholds.day) {
+        return {
+            value: Math.round(days),
+            unit: 'day',
+        };
+    }
+    var fromDate = new Date(from);
+    var toDate = new Date(to);
+    var years = fromDate.getFullYear() - toDate.getFullYear();
+    if (Math.round(Math.abs(years)) > 0) {
+        return {
+            value: Math.round(years),
+            unit: 'year',
+        };
+    }
+    var months = years * 12 + fromDate.getMonth() - toDate.getMonth();
+    if (Math.round(Math.abs(months)) > 0) {
+        return {
+            value: Math.round(months),
+            unit: 'month',
+        };
+    }
+    var weeks = secs / SECS_PER_WEEK;
+    return {
+        value: Math.round(weeks),
+        unit: 'week',
+    };
+}
+var DEFAULT_THRESHOLDS = {
+    second: 45,
+    minute: 45,
+    hour: 22,
+    day: 5,
+};
 
 var t,r;!function(e){e.language="language",e.system="system",e.comma_decimal="comma_decimal",e.decimal_comma="decimal_comma",e.space_comma="space_comma",e.none="none";}(t||(t={})),function(e){e.language="language",e.system="system",e.am_pm="12",e.twenty_four="24";}(r||(r={}));function E(e){return e.substr(0,e.indexOf("."))}new Set(["fan","input_boolean","light","switch","group","automation"]);var ne=function(e,t,r,n){n=n||{},r=null==r?{}:r;var i=new Event(t,{bubbles:void 0===n.bubbles||n.bubbles,cancelable:Boolean(n.cancelable),composed:void 0===n.composed||n.composed});return i.detail=r,e.dispatchEvent(i),i};new Set(["call-service","divider","section","weblink","cast","select"]);var ce={alert:"mdi:alert",automation:"mdi:playlist-play",calendar:"mdi:calendar",camera:"mdi:video",climate:"mdi:thermostat",configurator:"mdi:settings",conversation:"mdi:text-to-speech",device_tracker:"mdi:account",fan:"mdi:fan",group:"mdi:google-circles-communities",history_graph:"mdi:chart-line",homeassistant:"mdi:home-assistant",homekit:"mdi:home-automation",image_processing:"mdi:image-filter-frames",input_boolean:"mdi:drawing",input_datetime:"mdi:calendar-clock",input_number:"mdi:ray-vertex",input_select:"mdi:format-list-bulleted",input_text:"mdi:textbox",light:"mdi:lightbulb",mailbox:"mdi:mailbox",notify:"mdi:comment-alert",person:"mdi:account",plant:"mdi:flower",proximity:"mdi:apple-safari",remote:"mdi:remote",scene:"mdi:google-pages",script:"mdi:file-document",sensor:"mdi:eye",simple_alarm:"mdi:bell",sun:"mdi:white-balance-sunny",switch:"mdi:flash",timer:"mdi:timer",updater:"mdi:cloud-upload",vacuum:"mdi:robot-vacuum",water_heater:"mdi:thermometer",weblink:"mdi:open-in-new"};function me(e,t){if(e in ce)return ce[e];switch(e){case"alarm_control_panel":switch(t){case"armed_home":return "mdi:bell-plus";case"armed_night":return "mdi:bell-sleep";case"disarmed":return "mdi:bell-outline";case"triggered":return "mdi:bell-ring";default:return "mdi:bell"}case"binary_sensor":return t&&"off"===t?"mdi:radiobox-blank":"mdi:checkbox-marked-circle";case"cover":return "closed"===t?"mdi:window-closed":"mdi:window-open";case"lock":return t&&"unlocked"===t?"mdi:lock-open":"mdi:lock";case"media_player":return t&&"off"!==t&&"idle"!==t?"mdi:cast-connected":"mdi:cast";case"zwave":switch(t){case"dead":return "mdi:emoticon-dead";case"sleeping":return "mdi:sleep";case"initializing":return "mdi:timer-sand";default:return "mdi:z-wave"}default:return console.warn("Unable to find icon for domain "+e+" ("+t+")"),"mdi:bookmark"}}var xe={humidity:"mdi:water-percent",illuminance:"mdi:brightness-5",temperature:"mdi:thermometer",pressure:"mdi:gauge",power:"mdi:flash",signal_strength:"mdi:wifi"},De={binary_sensor:function(e,t){var r="off"===e;switch(null==t?void 0:t.attributes.device_class){case"battery":return r?"mdi:battery":"mdi:battery-outline";case"battery_charging":return r?"mdi:battery":"mdi:battery-charging";case"cold":return r?"mdi:thermometer":"mdi:snowflake";case"connectivity":return r?"mdi:server-network-off":"mdi:server-network";case"door":return r?"mdi:door-closed":"mdi:door-open";case"garage_door":return r?"mdi:garage":"mdi:garage-open";case"power":return r?"mdi:power-plug-off":"mdi:power-plug";case"gas":case"problem":case"safety":case"tamper":return r?"mdi:check-circle":"mdi:alert-circle";case"smoke":return r?"mdi:check-circle":"mdi:smoke";case"heat":return r?"mdi:thermometer":"mdi:fire";case"light":return r?"mdi:brightness-5":"mdi:brightness-7";case"lock":return r?"mdi:lock":"mdi:lock-open";case"moisture":return r?"mdi:water-off":"mdi:water";case"motion":return r?"mdi:walk":"mdi:run";case"occupancy":return r?"mdi:home-outline":"mdi:home";case"opening":return r?"mdi:square":"mdi:square-outline";case"plug":return r?"mdi:power-plug-off":"mdi:power-plug";case"presence":return r?"mdi:home-outline":"mdi:home";case"running":return r?"mdi:stop":"mdi:play";case"sound":return r?"mdi:music-note-off":"mdi:music-note";case"update":return r?"mdi:package":"mdi:package-up";case"vibration":return r?"mdi:crop-portrait":"mdi:vibrate";case"window":return r?"mdi:window-closed":"mdi:window-open";default:return r?"mdi:radiobox-blank":"mdi:checkbox-marked-circle"}},cover:function(e){var t="closed"!==e.state;switch(e.attributes.device_class){case"garage":return t?"mdi:garage-open":"mdi:garage";case"door":return t?"mdi:door-open":"mdi:door-closed";case"shutter":return t?"mdi:window-shutter-open":"mdi:window-shutter";case"blind":return t?"mdi:blinds-open":"mdi:blinds";case"window":return t?"mdi:window-open":"mdi:window-closed";default:return me("cover",e.state)}},sensor:function(e){var t=e.attributes.device_class;if(t&&t in xe)return xe[t];if("battery"===t){var r=Number(e.state);if(isNaN(r))return "mdi:battery-unknown";var n=10*Math.round(r/10);return n>=100?"mdi:battery":n<=0?"mdi:battery-alert":"hass:battery-"+n}var i=e.attributes.unit_of_measurement;return "°C"===i||"°F"===i?"mdi:thermometer":me("sensor")},input_datetime:function(e){return e.attributes.has_date?e.attributes.has_time?me("input_datetime"):"mdi:calendar":"mdi:clock"}},Se=function(e){if(!e)return "mdi:bookmark";if(e.attributes.icon)return e.attributes.icon;var t=E(e.entity_id);return t in De?De[t](e):me(t,e.state)};
 
@@ -6160,6 +6160,281 @@ const getDefaultFormatOptions = (num, options) => {
   return defaultOptions;
 };
 
+var safeIsNaN = Number.isNaN ||
+    function ponyfill(value) {
+        return typeof value === 'number' && value !== value;
+    };
+function isEqual(first, second) {
+    if (first === second) {
+        return true;
+    }
+    if (safeIsNaN(first) && safeIsNaN(second)) {
+        return true;
+    }
+    return false;
+}
+function areInputsEqual(newInputs, lastInputs) {
+    if (newInputs.length !== lastInputs.length) {
+        return false;
+    }
+    for (var i = 0; i < newInputs.length; i++) {
+        if (!isEqual(newInputs[i], lastInputs[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function memoizeOne(resultFn, isEqual) {
+    if (isEqual === void 0) { isEqual = areInputsEqual; }
+    var cache = null;
+    function memoized() {
+        var newArgs = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            newArgs[_i] = arguments[_i];
+        }
+        if (cache && cache.lastThis === this && isEqual(newArgs, cache.lastArgs)) {
+            return cache.lastResult;
+        }
+        var lastResult = resultFn.apply(this, newArgs);
+        cache = {
+            lastResult: lastResult,
+            lastArgs: newArgs,
+            lastThis: this,
+        };
+        return lastResult;
+    }
+    memoized.clear = function clear() {
+        cache = null;
+    };
+    return memoized;
+}
+
+/* eslint-disable no-use-before-define */
+
+// import '../../resources/intl-polyfill';
+
+// Tuesday, August 10
+const formatDateWeekdayDay = (dateObj, locale) => formatDateWeekdayDayMem(locale).format(dateObj);
+
+const formatDateWeekdayDayMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(locale.language, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    }),
+);
+
+// August 10, 2021
+const formatDate = (dateObj, locale) => formatDateMem(locale).format(dateObj);
+
+const formatDateMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(locale.language, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }),
+);
+
+// 10/08/2021
+const formatDateNumeric = (dateObj, locale) => formatDateNumericMem(locale).format(dateObj);
+
+const formatDateNumericMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(locale.language, {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    }),
+);
+
+// Aug 10
+const formatDateShort = (dateObj, locale) => formatDateShortMem(locale).format(dateObj);
+
+const formatDateShortMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(locale.language, {
+      day: 'numeric',
+      month: 'short',
+    }),
+);
+
+// August 2021
+const formatDateMonthYear = (dateObj, locale) => formatDateMonthYearMem(locale).format(dateObj);
+
+const formatDateMonthYearMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(locale.language, {
+      month: 'long',
+      year: 'numeric',
+    }),
+);
+
+// August
+const formatDateMonth = (dateObj, locale) => formatDateMonthMem(locale).format(dateObj);
+
+const formatDateMonthMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(locale.language, {
+      month: 'long',
+    }),
+);
+
+memoizeOne(
+  (locale) => new Intl.DateTimeFormat(locale.language, {
+      year: 'numeric',
+    }),
+);
+
+// Monday
+const formatDateWeekday = (dateObj, locale) => formatDateWeekdayMem(locale).format(dateObj);
+
+const formatDateWeekdayMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(locale.language, {
+      weekday: 'long',
+    }),
+);
+
+// Mo
+const formatDateWeekdayShort = (dateObj, locale) => formatDateWeekdayShortMem(locale).format(dateObj);
+
+const formatDateWeekdayShortMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(locale.language, {
+      weekday: 'short',
+    }),
+);
+
+// import { TimeFormat } from '../../data/translation';
+
+var TimeFormat;
+// eslint-disable-next-line func-names
+(function (TimeFormat) {
+    TimeFormat.language = 'language';
+    TimeFormat.system = 'system';
+    TimeFormat.am_pm = '12';
+    TimeFormat.twenty_four = '24';
+}(TimeFormat = TimeFormat || (TimeFormat = {})));
+
+// eslint-disable-next-line import/prefer-default-export
+const useAmPm = memoizeOne((locale) => {
+  if (
+    locale.time_format === TimeFormat.language
+    || locale.time_format === TimeFormat.system
+  ) {
+    const testLanguage = locale.time_format === TimeFormat.language ? locale.language : undefined;
+    const test = new Date().toLocaleString(testLanguage);
+    return test.includes('AM') || test.includes('PM');
+  }
+
+  return locale.time_format === TimeFormat.am_pm;
+});
+
+/* eslint-disable no-use-before-define */
+
+// 9:15 PM || 21:15
+const formatTime = (dateObj, locale) => formatTimeMem(locale).format(dateObj);
+
+const formatTimeMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(
+      locale.language === 'en' && !useAmPm(locale)
+        ? 'en-u-hc-h23'
+        : locale.language,
+      {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: useAmPm(locale),
+      },
+    ),
+);
+
+// 9:15:24 PM || 21:15:24
+const formatTimeWithSeconds = (dateObj, locale) => formatTimeWithSecondsMem(locale).format(dateObj);
+
+const formatTimeWithSecondsMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(
+      locale.language === 'en' && !useAmPm(locale)
+        ? 'en-u-hc-h23'
+        : locale.language,
+      {
+        hour: useAmPm(locale) ? 'numeric' : '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: useAmPm(locale),
+      },
+    ),
+);
+
+// Tuesday 7:00 PM || Tuesday 19:00
+const formatTimeWeekday = (dateObj, locale) => formatTimeWeekdayMem(locale).format(dateObj);
+
+const formatTimeWeekdayMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(
+      locale.language === 'en' && !useAmPm(locale)
+        ? 'en-u-hc-h23'
+        : locale.language,
+      {
+        weekday: 'long',
+        hour: useAmPm(locale) ? 'numeric' : '2-digit',
+        minute: '2-digit',
+        hour12: useAmPm(locale),
+      },
+    ),
+);
+
+// 21:15
+const formatTime24h = (dateObj) => formatTime24hMem().format(dateObj);
+
+const formatTime24hMem = memoizeOne(
+  () =>
+    // en-GB to fix Chrome 24:59 to 0:59 https://stackoverflow.com/a/60898146
+    // eslint-disable-next-line implicit-arrow-linebreak
+    new Intl.DateTimeFormat('en-GB', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: false,
+    }),
+);
+
+const leftPad = (num, digits = 2) => {
+  let paddedNum = `${num}`;
+  for (let i = 1; i < digits; i++) {
+    // eslint-disable-next-line radix
+    paddedNum = parseInt(paddedNum) < 10 ** i ? `0${paddedNum}` : paddedNum;
+  }
+  return paddedNum;
+};
+
+function millisecondsToDuration(d) {
+  const h = Math.floor(d / 1000 / 3600);
+  const m = Math.floor(((d / 1000) % 3600) / 60);
+  const s = Math.floor(((d / 1000) % 3600) % 60);
+  const ms = Math.floor(d % 1000);
+
+  if (h > 0) {
+    return `${h}:${leftPad(m)}:${leftPad(s)}`;
+  }
+  if (m > 0) {
+    return `${m}:${leftPad(s)}`;
+  }
+  if (s > 0 || ms > 0) {
+    return `${s}${ms > 0 ? `.${leftPad(ms, 3)}` : ''}`;
+  }
+  return null;
+}
+
+const DAY_IN_MILLISECONDS = 86400000;
+const HOUR_IN_MILLISECONDS = 3600000;
+const MINUTE_IN_MILLISECONDS = 60000;
+const SECOND_IN_MILLISECONDS = 1000;
+
+const UNIT_TO_MILLISECOND_CONVERT = {
+  ms: 1,
+  s: SECOND_IN_MILLISECONDS,
+  min: MINUTE_IN_MILLISECONDS,
+  h: HOUR_IN_MILLISECONDS,
+  d: DAY_IN_MILLISECONDS,
+};
+
+const formatDuration = (duration, units) => millisecondsToDuration(
+    parseFloat(duration) * UNIT_TO_MILLISECOND_CONVERT[units],
+  ) || '0';
+
 /** ****************************************************************************
   * EntityStateTool class
   *
@@ -6204,9 +6479,112 @@ class EntityStateTool extends BaseTool {
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
+  // static testTimeDate = false;
+
   // EntityStateTool::value
   set value(state) {
     super.value = state;
+  }
+
+  buildSecondaryInfo(inSecInfoState, entityConfig) {
+
+    const lang = this._card._hass.selectedLanguage || this._card._hass.language;
+
+    // this.polyfill(lang);
+    if (['relative', 'total',
+         'date', 'date_month', 'date_month_year', 'date-short', 'date-numeric', 'date_weekday', 'date_weekday_day', 'date_weekday-short',
+         'time', 'time-24h', 'time_weekday', 'time_with-seconds', 'datetime'].includes(entityConfig.format)) {
+      const timestamp = new Date(inSecInfoState);
+      if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
+        return inSecInfoState;
+      }
+
+      // Testing
+      // if (!EntityStateTool.testTimeDate) {
+      //   EntityStateTool.testTimeDate = true;
+      //   console.log('date', formatDate(timestamp, lang));
+      //   console.log('date_month', formatDateMonth(timestamp, lang));
+      //   console.log('date_month_year', formatDateMonthYear(timestamp, lang));
+      //   console.log('date-short', formatDateShort(timestamp, lang));
+      //   console.log('date-numeric', formatDateNumeric(timestamp, lang));
+      //   console.log('date_weekday', formatDateWeekday(timestamp, lang));
+      //   console.log('date_weekday-short', formatDateWeekdayShort(timestamp, lang));
+      //   console.log('date_weekday_day', formatDateWeekdayDay(timestamp, lang));
+      //   console.log('time', formatTime(timestamp, lang));
+      //   console.log('time-24h', formatTime24h(timestamp, lang));
+      //   console.log('time_weekday', formatTimeWeekday(timestamp, lang));
+      //   console.log('time_with-seconds', formatTimeWithSeconds(timestamp, lang));
+      // }
+
+      let retValue;
+      // return date/time according to formatting...
+      switch (entityConfig.format) {
+        case 'relative':
+          // eslint-disable-next-line no-case-declarations
+          const diff = selectUnit(timestamp, new Date());
+          retValue = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(diff.value, diff.unit);
+          break;
+        case 'total':
+        case 'precision':
+          retValue = 'Not Yet Supported';
+          break;
+        case 'date':
+          retValue = formatDate(timestamp, lang);
+          // retValue = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'numeric', day: 'numeric' }).format(timestamp);
+          break;
+        case 'date_month':
+          retValue = formatDateMonth(timestamp, lang);
+          break;
+        case 'date_month_year':
+          retValue = formatDateMonthYear(timestamp, lang);
+          break;
+        case 'date-short':
+          retValue = formatDateShort(timestamp, lang);
+          break;
+        case 'date-numeric':
+          retValue = formatDateNumeric(timestamp, lang);
+          break;
+        case 'date_weekday':
+          retValue = formatDateWeekday(timestamp, lang);
+          break;
+        case 'date_weekday-short':
+          retValue = formatDateWeekdayShort(timestamp, lang);
+          break;
+        case 'date_weekday_day':
+          retValue = formatDateWeekdayDay(timestamp, lang);
+          break;
+        case 'time':
+          retValue = formatTime(timestamp, lang);
+          // retValue = new Intl.DateTimeFormat(lang, { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(timestamp);
+          break;
+        case 'time-24h':
+          retValue = formatTime24h(timestamp);
+          break;
+        case 'time_weekday':
+          retValue = formatTimeWeekday(timestamp, lang);
+          break;
+        case 'time_with-seconds':
+          retValue = formatTimeWithSeconds(timestamp, lang);
+          break;
+
+        case 'datetime':
+          retValue = new Intl.DateTimeFormat(lang, {
+            year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
+          }).format(timestamp);
+          break;
+      }
+      return retValue;
+    }
+
+    if (isNaN(parseFloat(inSecInfoState)) || !isFinite(inSecInfoState)) {
+      return inSecInfoState;
+    }
+    if (entityConfig.format === 'brightness' || entityConfig.format === 'brightness_pct') {
+      return `${Math.round((inSecInfoState / 255) * 100)} %`;
+    }
+    if (entityConfig.format === 'duration') {
+      return formatDuration(inSecInfoState, 's');
+    }
   }
 
   _renderStateNew() {
@@ -6214,14 +6592,6 @@ class EntityStateTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
     this.MergeColorFromState(this.styles.state);
 
-    // NTS:
-    // Het renderen van de windrichting gaat nog niet goed. Ik zie NE ipv NO staan
-    // Mogelijk iets met lowercase / uppercase? Hoe wordt 'met' gedaan in de resources.nl?
-    // staan daar strings in uppercase of lowercase voor de windrichting??
-    // ui.card.weather.cardinal_direction.ne: "NO". Dus JA, kleine letters!!!!!!
-
-    // console.log('in renderstatenew');
-    // var inState = this._stateValue?.toLowerCase();
     let inState = this._stateValue;
 
     const stateObj = this._card.entities[this.defaultEntityIndex()];
@@ -6230,84 +6600,24 @@ class EntityStateTool extends BaseTool {
     // Need entities, not states to get platform, translation_key, etc.!!!!!
     const entity = this._card._hass.entities[stateObj.entity_id];
 
-    // console.log('renderstatenew, stateobj', stateObj, inState);
-    // const domain = this._card.entities[this.defaultEntityIndex()]?.entity
-    // ? this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity) : undefined;
+    const entityConfig = this._card.config.entities[this.defaultEntityIndex()];
     const domain = this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id);
-    // const platform = this._card._hass.entities[stateObj.entity_id]?.platform;
-    // const xlationKey = this._card._hass.entities[stateObj.entity_id]?.translation_key;
 
-    if (!this._card.config.entities[this.defaultEntityIndex()].secondary_info) {
-      // true || domain !== 'sensor')
-      // console.log('sensor, language', this._card._hass.language);
-      // const renderState = (stateObj.attributes.device_class
-      //     && this._card._hass.localize(`component.${domain}.state.${stateObj.attributes.device_class}.${inState}`))
-      //     || this._card._hass.localize(`component.${platform}.entity.${domain}.${xlationKey}.state.${inState}`)
-      //     || this._card._hass.localize(`component.${domain}.entity_component._.state.${inState}`)
-      //     || inState;
-
-      this._card.toLocale(`component.${domain}.entity_component._.state.${inState}`, inState);
-      // console.log('_renderStateNew, inState, renderState', domain,
-      // stateObj.attributes.device_class, inState, renderState, myLocale, stateObj,
-      // `component.${platform}.entity.${domain}.${xlationKey}.state.${inState}`);
-    }
-    // Bij AQI staat platform "airvisual" en translation_key "pollutant_level". Die zag ik ook
-    // bij de resources staan als veld ertussen ergens.
-    // dit staat dus op sensor.u_s_air_pollution_level.platform / .translation_key
+    // if (!entityConfig.secondary_info) {
+    //   const myLocale = this._card.toLocale(`component.${domain}.entity_component._.state.${inState}`, inState);
+    // }
 
     const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
-    // if (localeTag) console.log('localetag = ', localeTag);
 
-    // entity with attribute as state must pass to translate things like 'nne', etc. (weather)
-    // If secondary info is also a state (and not yet translated), then this one should also pass
-    // and get translated just as secondary_info builder does now...
-    // !!
+    // HACK
+    if (entityConfig.format !== undefined) {
+      inState = this.buildSecondaryInfo(inState, entityConfig);
+    }
+
     if ((inState) && isNaN(inState)
-     && !this._card.config.entities[this.defaultEntityIndex()].secondary_info
+     && !entityConfig.secondary_info
       // && !this._card.config.entities[this.defaultEntityIndex()].attribute) {
-      || this._card.config.entities[this.defaultEntityIndex()].attribute) {
-      // const stateObj = this._card.config.entities[this.defaultEntityIndex()].entity;
-      // const stateObj = this._card.entities[this.defaultEntityIndex()];
-      // const domain = this._card._computeDomain(this._card.config.entities[this.defaultEntityIndex()].entity);
-
-      // const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
-      // const localeTag1 = stateObj.attributes?.device_class
-      //   ? `component.${domain}.state.${stateObj.attributes.device_class}.${inState}` : '--';
-
-      // const localeTag2 = `component.${domain}.entity_component._.state.${inState}`;
-      // const localeTag3 = `component.${platform}.entity.${domain}.${xlationKey}.state.${inState}`;
-      // const localeTag4 = stateObj.attributes?.device_class
-      //   ? `component.${domain}.entity_component.${stateObj.attributes.device_class}.state.${inState}` : '--';
-      // const attribute = this._card.config.entities[this.defaultEntityIndex()]?.attribute;
-      // const localeTag5 = attribute
-      //   ? `component.${domain}.entity_component._.state_attributes.${attribute}.state.${inState}` : undefined;
-
-      // console.log('localeTag', inState, this._card.toLocale(localeTag, inState));
-      // // console.log('localeTag1', inState, this._card.toLocale(localeTag1, inState));
-      // console.log('localeTag2', inState, this._card.toLocale(localeTag2, inState));
-      // console.log('localeTag3', inState, this._card.toLocale(localeTag3, inState));
-
-      // console.log('-localeTag', inState, this._card._hass.localize(localeTag), localeTag);
-      // // console.log('-localeTag1', inState, this._card._hass.localize(localeTag1));
-      // console.log('-localeTag2', inState, this._card._hass.localize(localeTag2), localeTag2);
-      // console.log('-localeTag3', inState, this._card._hass.localize(localeTag3), localeTag3);
-      // console.log('-localeTag4', inState, this._card._hass.localize(localeTag4), localeTag4);
-      // console.log('-localeTag5', inState, this._card._hass.localize(localeTag5), localeTag5);
-
-      // er zijn er nog meer. Attributen, en dingen als battery als binary sensor...
-      //
-      // component.binary_sensor.entity_component.battery.state.off : "Normaal"
-      // component.climate.entity_component._.state_attributes.fan_mode.state.auto :  "Automatisch"
-
-      // inState = (localeTag && this._card._hass.localize(localeTag))
-      //     || this._card._hass.localize(localeTag3)
-      //     || (stateObj.attributes?.device_class && this._card._hass.localize(localeTag4))
-      //     || this._card._hass.localize(localeTag2)
-      //     || attribute && this._card._hass.localize(localeTag5)
-      //     || this._card._hass.localize(localeTag4)
-      //     // || stateObj.state;
-      //     || inState;
-
+      || entityConfig.attribute) {
       inState = (localeTag && this._card._hass.localize(localeTag))
         || (entity?.translation_key
             && this._card._hass.localize(
@@ -6322,15 +6632,6 @@ class EntityStateTool extends BaseTool {
         || this._card._hass.localize(`component.${domain}.entity_component._.state.${inState}`)
         // We don't know! Return the raw state.
         || inState;
-      // inState = (localeTag && this._card.toLocale(localeTag, inState))
-      // || this._card.toLocale(localeTag3, inState)
-      // || (stateObj.attributes?.device_class
-      //     && this._card.toLocale(localeTag1, inState))
-      //     || this._card.toLocale(localeTag2, inState)
-      //     || stateObj.state;
-
-      // console.log('last inState = ', inState);
-
       inState = this.textEllipsis(inState, this.config?.show?.ellipsis);
     }
     if (['undefined', 'unknown', 'unavailable', '-ua-'].includes(inState)) {
@@ -6338,13 +6639,14 @@ class EntityStateTool extends BaseTool {
       inState = this._card._hass.localize(`state.default.${inState}`);
     }
 
-    // For testing, not anyting else
-    // Seems to work. All . are , at least, and a . is inserted for 1000.
-    // if (isNumericState(stateObj)
-    // || !isNaN(inState)) {
     if (!isNaN(inState)) {
-      let renderNumber = formatNumber(inState, this._card._hass.locale, {});
-      // console.log('renderNumber = ', inState, renderNumber);
+      let options = {};
+      options = getDefaultFormatOptions(inState, options);
+      if (this._card.config.entities[this.defaultEntityIndex()].decimals !== undefined) {
+        options.maximumFractionDigits = this._card.config.entities[this.defaultEntityIndex()].decimals;
+        options.minimumFractionDigits = options.maximumFractionDigits;
+      }
+      let renderNumber = formatNumber(inState, this._card._hass.locale, options);
       inState = renderNumber;
     }
 
@@ -10396,9 +10698,6 @@ class Toolset {
 *******************************************************************************
 */
 
-// Original injector is buggy. Use a patched version, and store this local...
-// import * as SvgInjector from '../dist/SVGInjector.min.js'; // lgtm[js/unused-local-variable]
-
 console.info(
   `%c  SWISS-ARMY-KNIFE-CARD  \n%c      Version ${version}      `,
   'color: yellow; font-weight: bold; background: black',
@@ -10933,11 +11232,13 @@ class SwissArmyKnifeCard extends LitElement {
 
     let attrSet = false;
     let newStateStr;
+    let entityIsUndefined = false;
     // eslint-disable-next-line no-restricted-syntax, no-unused-vars
     for (value of this.config.entities) {
       this.entities[index] = hass.states[this.config.entities[index].entity];
 
-      if (this.entities[index] === undefined) {
+      entityIsUndefined = this.entities[index] === undefined;
+      if (entityIsUndefined) {
         console.error('SAK - set hass, entity undefined: ', this.config.entities[index].entity);
         // Temp disable throw Error(`Set hass, entity undefined: ${this.config.entities[index].entity}`);
       }
@@ -10945,8 +11246,9 @@ class SwissArmyKnifeCard extends LitElement {
       // Get secondary info state if specified and available
       if (this.config.entities[index].secondary_info) {
         secInfoSet = true;
-        newSecInfoState = this.entities[index][this.config.entities[index].secondary_info];
-        newSecInfoStateStr = this._buildSecondaryInfo(newSecInfoState, this.config.entities[index]);
+        newSecInfoState = entityIsUndefined ? undefined : this.entities[index][this.config.entities[index].secondary_info];
+        // newSecInfoStateStr = this._buildSecondaryInfo(newSecInfoState, this.config.entities[index]);
+        newSecInfoStateStr = this._buildStateString(newSecInfoState, this.config.entities[index]);
 
         if (newSecInfoStateStr !== this.secondaryInfoStr[index]) {
           this.secondaryInfoStr[index] = newSecInfoStateStr;
@@ -11001,7 +11303,7 @@ class SwissArmyKnifeCard extends LitElement {
 
         // eslint-disable-next-line no-constant-condition
         { // (typeof attributeState != 'undefined') {
-          newStateStr = this._buildState(attributeState, this.config.entities[index]);
+          newStateStr = this._buildStateString(attributeState, this.config.entities[index]);
           if (newStateStr !== this.attributesStr[index]) {
             this.attributesStr[index] = newStateStr;
             entityHasChanged = true;
@@ -11014,7 +11316,7 @@ class SwissArmyKnifeCard extends LitElement {
         // Any tool should still react to a percentage going from a valid value to undefined!
       }
       if ((!attrSet) && (!secInfoSet)) {
-        newStateStr = this._buildState(this.entities[index].state, this.config.entities[index]);
+        newStateStr = entityIsUndefined ? undefined : this._buildStateString(this.entities[index].state, this.config.entities[index]);
         if (newStateStr !== this.entitiesStr[index]) {
           this.entitiesStr[index] = newStateStr;
           entityHasChanged = true;
@@ -11730,6 +12032,31 @@ class SwissArmyKnifeCard extends LitElement {
     return (resources && resources[string] ? resources[string] : fallback);
   }
 
+/** *****************************************************************************
+  * card::_buildStateString()
+  *
+  * Summary.
+  * Builds the State string.
+  * If state is not a number, the state is returned AS IS, otherwise the state
+  * is build according to the specified number of decimals.
+  *
+  * IMPORTANT NOTE:
+  * - do NOT replace isNaN() by Number.isNaN(). They are INCOMPATIBLE !!!!!!!!!
+  */
+
+_buildStateString(inState, entityConfig) {
+  if (isNaN(inState)) return inState;
+
+  // Check for built-in state converters
+  if (entityConfig.convert) {
+    if (entityConfig.convert === 'brightness_pct') {
+      inState = `${Math.round((inState / 255) * 100)}`;
+   }
+  }
+  return inState.toString();
+  // return Number(inState).toString();
+}
+
   /** *****************************************************************************
   * card::_buildState()
   *
@@ -11745,26 +12072,30 @@ class SwissArmyKnifeCard extends LitElement {
   * - do NOT replace isNaN() by Number.isNaN(). They are INCOMPATIBLE !!!!!!!!!
   */
 
-  _buildState(inState, entityConfig) {
-    if (isNaN(inState)) {
-      if (inState === 'unavailable') return '-ua-';
-      return inState;
-    }
+  // _buildState(inState, entityConfig) {
+  //   // HACK
+  //   if (isNaN(inState)) return inState;
+  //   return Number(inState).toString();
 
-    if (entityConfig.format === 'brightness') {
-      return `${Math.round((inState / 255) * 100)}`;
-    }
+  //   if (isNaN(inState)) {
+  //     if (inState === 'unavailable') return '-ua-';
+  //     return inState;
+  //   }
 
-    // Get absolute value and sign value (-1, 0, or 1)
-    const state = Math.abs(Number(inState));
-    const sign = Math.sign(inState);
+  //   if (entityConfig.format === 'brightness') {
+  //     return `${Math.round((inState / 255) * 100)}`;
+  //   }
 
-    if (entityConfig.decimals === undefined || Number.isNaN(entityConfig.decimals) || Number.isNaN(state))
-      return (sign === -1 ? '-' : '') + (Math.round(state * 100) / 100).toString();
+  //   // Get absolute value and sign value (-1, 0, or 1)
+  //   const state = Math.abs(Number(inState));
+  //   const sign = Math.sign(inState);
 
-    const x = 10 ** entityConfig.decimals;
-    return (sign === -1 ? '-' : '') + (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString();
-  }
+  //   if (entityConfig.decimals === undefined || Number.isNaN(entityConfig.decimals) || Number.isNaN(state))
+  //     return (sign === -1 ? '-' : '') + (Math.round(state * 100) / 100).toString();
+
+  //   const x = 10 ** entityConfig.decimals;
+  //   return (sign === -1 ? '-' : '') + (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString();
+  // }
 
   /** *****************************************************************************
   * card::_buildSecondaryInfo()
@@ -11774,73 +12105,77 @@ class SwissArmyKnifeCard extends LitElement {
   *
   */
 
-  _buildSecondaryInfo(inSecInfoState, entityConfig) {
-    const leftPad = (num) => (num < 10 ? `0${num}` : num);
+  // _buildSecondaryInfo(inSecInfoState, entityConfig) {
+  //   const leftPad = (num) => (num < 10 ? `0${num}` : num);
 
-    function secondsToDuration(d) {
-      const h = Math.floor(d / 3600);
-      const m = Math.floor((d % 3600) / 60);
-      const s = Math.floor((d % 3600) % 60);
+  //   function secondsToDuration(d) {
+  //     const h = Math.floor(d / 3600);
+  //     const m = Math.floor((d % 3600) / 60);
+  //     const s = Math.floor((d % 3600) % 60);
 
-      if (h > 0) {
-        return `${h}:${leftPad(m)}:${leftPad(s)}`;
-      }
-      if (m > 0) {
-        return `${m}:${leftPad(s)}`;
-      }
-      if (s > 0) {
-        return `${s}`;
-      }
-      return null;
-    }
+  //     if (h > 0) {
+  //       return `${h}:${leftPad(m)}:${leftPad(s)}`;
+  //     }
+  //     if (m > 0) {
+  //       return `${m}:${leftPad(s)}`;
+  //     }
+  //     if (s > 0) {
+  //       return `${s}`;
+  //     }
+  //     return null;
+  //   }
 
-    const lang = this._hass.selectedLanguage || this._hass.language;
+  //   // HACK
+  //   return inSecInfoState;
 
-    // this.polyfill(lang);
+  //   const lang = this._hass.selectedLanguage || this._hass.language;
 
-    if (['relative', 'total', 'date', 'time', 'datetime'].includes(entityConfig.format)) {
-      const timestamp = new Date(inSecInfoState);
-      if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
-        return inSecInfoState;
-      }
+  //   // this.polyfill(lang);
 
-      let retValue;
-      // return date/time according to formatting...
-      switch (entityConfig.format) {
-        case 'relative':
-          // eslint-disable-next-line no-case-declarations
-          const diff = selectUnit(timestamp, new Date());
-          retValue = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(diff.value, diff.unit);
-          break;
-        case 'total':
-        case 'precision':
-          retValue = 'Not Yet Supported';
-          break;
-        case 'date':
-          retValue = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'numeric', day: 'numeric' }).format(timestamp);
-          break;
-        case 'time':
-          retValue = new Intl.DateTimeFormat(lang, { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(timestamp);
-          break;
-        case 'datetime':
-          retValue = new Intl.DateTimeFormat(lang, {
-            year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
-          }).format(timestamp);
-          break;
-      }
-      return retValue;
-    }
+  //   if (['relative', 'total', 'date', 'time', 'datetime'].includes(entityConfig.format)) {
+  //     const timestamp = new Date(inSecInfoState);
+  //     if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
+  //       return inSecInfoState;
+  //     }
 
-    if (isNaN(parseFloat(inSecInfoState)) || !isFinite(inSecInfoState)) {
-      return inSecInfoState;
-    }
-    if (entityConfig.format === 'brightness') {
-      return `${Math.round((inSecInfoState / 255) * 100)} %`;
-    }
-    if (entityConfig.format === 'duration') {
-      return secondsToDuration(inSecInfoState);
-    }
-  }
+  //     let retValue;
+  //     // return date/time according to formatting...
+  //     switch (entityConfig.format) {
+  //       case 'relative':
+  //         // eslint-disable-next-line no-case-declarations
+  //         const diff = selectUnit(timestamp, new Date());
+  //         retValue = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(diff.value, diff.unit);
+  //         break;
+  //       case 'total':
+  //       case 'precision':
+  //         retValue = 'Not Yet Supported';
+  //         break;
+  //       case 'date':
+  //         retValue = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'numeric', day: 'numeric' }).format(timestamp);
+  //         break;
+  //       case 'time':
+  //         retValue = new Intl.DateTimeFormat(lang, { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(timestamp);
+  //         break;
+  //       case 'datetime':
+  //         retValue = new Intl.DateTimeFormat(lang, {
+  //           year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
+  //         }).format(timestamp);
+  //         break;
+  //       default:
+  //     }
+  //     return retValue;
+  //   }
+
+  //   if (isNaN(parseFloat(inSecInfoState)) || !isFinite(inSecInfoState)) {
+  //     return inSecInfoState;
+  //   }
+  //   if (entityConfig.format === 'brightness') {
+  //     return `${Math.round((inSecInfoState / 255) * 100)} %`;
+  //   }
+  //   if (entityConfig.format === 'duration') {
+  //     return secondsToDuration(inSecInfoState);
+  //   }
+  // }
 
   /** *****************************************************************************
   * card::_computeState()
@@ -11849,21 +12184,21 @@ class SwissArmyKnifeCard extends LitElement {
   *
   */
 
-  _computeState(inState, dec) {
-    if (isNaN(inState)) {
-      console.log('computestate - NAN', inState, dec);
-      return inState;
-    }
+  // _computeState(inState, dec) {
+  //   if (isNaN(inState)) {
+  //     console.log('computestate - NAN', inState, dec);
+  //     return inState;
+  //   }
 
-    const state = Number(inState);
+  //   const state = Number(inState);
 
-    if (dec === undefined || isNaN(dec) || isNaN(state)) {
-      return Math.round(state * 100) / 100;
-    }
+  //   if (dec === undefined || isNaN(dec) || isNaN(state)) {
+  //     return Math.round(state * 100) / 100;
+  //   }
 
-    const x = 10 ** dec;
-    return (Math.round(state * x) / x).toFixed(dec);
-  }
+  //   const x = 10 ** dec;
+  //   return (Math.round(state * x) / x).toFixed(dec);
+  // }
 
   _computeDomain(entityId) {
     return entityId.substr(0, entityId.indexOf('.'));
