@@ -1391,7 +1391,7 @@ class SwissArmyKnifeCard extends LitElement {
   * Summary.
   * Builds the State string.
   * If state is not a number, the state is returned AS IS, otherwise the state
-  * is build according to the specified number of decimals.
+  * is converted if specified before it is returned as a string
   *
   * IMPORTANT NOTE:
   * - do NOT replace isNaN() by Number.isNaN(). They are INCOMPATIBLE !!!!!!!!!
@@ -1402,16 +1402,17 @@ _buildStateString(inState, entityConfig) {
 
   // Check for built-in state converters
   if (entityConfig.convert) {
-    let splitted = entityConfig.convert.split('()');
+    // Match converter with paramter between ()
+    let splitted = entityConfig.convert.match(/(^\w+)\((\d+)\)/);
     let converter;
     let parameter;
 
-    if (splitted.length === 1) {
+    // If no parameters found, just the converter
+    if (splitted === null) {
       converter = entityConfig.convert;
-    }
-    if (splitted.length === 2) {
-      converter = splitted[0];
-      parameter = Number(splitted[1]);
+    } else if (splitted.length === 3) { // If parameter found, process...
+      converter = splitted[1];
+      parameter = Number(splitted[2]);
     }
     switch (converter) {
       case 'brightness_pct':
@@ -1424,11 +1425,11 @@ _buildStateString(inState, entityConfig) {
         inState = `${Math.round((inState / parameter))}`;
         break;
       default:
+        console.error(`Unknown converter [${converter}] specified for entity [${entityConfig.entity}]!`);
         break;
     }
   }
   return inState.toString();
-  // return Number(inState).toString();
 }
 
   /** *****************************************************************************

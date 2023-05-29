@@ -77,7 +77,7 @@ export default class EntityStateTool extends BaseTool {
   }
 
   buildSecondaryInfo(inSecInfoState, entityConfig) {
-    const leftPad = (num) => (num < 10 ? `0${num}` : num);
+    // const leftPad = (num) => (num < 10 ? `0${num}` : num);
 
     const lang = this._card._hass.selectedLanguage || this._card._hass.language;
 
