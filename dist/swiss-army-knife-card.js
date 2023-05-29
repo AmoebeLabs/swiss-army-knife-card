@@ -6291,7 +6291,7 @@ const formatDateWeekdayMem = memoizeOne(
     }),
 );
 
-// Mo
+// mo
 const formatDateWeekdayShort = (dateObj, locale) => formatDateWeekdayShortMem(locale).format(dateObj);
 
 const formatDateWeekdayShortMem = memoizeOne(
@@ -12049,9 +12049,28 @@ _buildStateString(inState, entityConfig) {
 
   // Check for built-in state converters
   if (entityConfig.convert) {
-    if (entityConfig.convert === 'brightness_pct') {
-      inState = `${Math.round((inState / 255) * 100)}`;
-   }
+    let splitted = entityConfig.convert.split('()');
+    let converter;
+    let parameter;
+
+    if (splitted.length === 1) {
+      converter = entityConfig.convert;
+    }
+    if (splitted.length === 2) {
+      converter = splitted[0];
+      parameter = Number(splitted[1]);
+    }
+    switch (converter) {
+      case 'brightness_pct':
+        inState = `${Math.round((inState / 255) * 100)}`;
+        break;
+      case 'multiply':
+        inState = `${Math.round((inState * parameter))}`;
+        break;
+      case 'divide':
+        inState = `${Math.round((inState / parameter))}`;
+        break;
+    }
   }
   return inState.toString();
   // return Number(inState).toString();
