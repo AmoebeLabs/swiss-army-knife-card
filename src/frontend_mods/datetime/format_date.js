@@ -82,3 +82,12 @@ const formatDateWeekdayMem = memoizeOne(
       weekday: 'long',
     }),
 );
+
+// mo
+export const formatDateWeekdayShort = (dateObj, locale) => formatDateWeekdayShortMem(locale).format(dateObj);
+
+const formatDateWeekdayShortMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(locale.language, {
+      weekday: 'short',
+    }),
+);
