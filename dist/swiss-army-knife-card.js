@@ -2815,7 +2815,7 @@ const SVG_VIEW_BOX = SVG_DEFAULT_DIMENSIONS;
 const FONT_SIZE = SVG_DEFAULT_DIMENSIONS / 100;
 
 // Clamp number between two values
-const clamp = (min, num, max) => Math.min(Math.max(num, min), max);
+const clamp$1 = (min, num, max) => Math.min(Math.max(num, min), max);
 
 // Round to nearest value
 const round$1 = (min, num, max) => ((Math.abs(num - min) > Math.abs(max - num)) ? max : min);
@@ -3620,6 +3620,43 @@ class Colors {
 
     return outColor;
   }
+
+  static hslToRgb(hsl) {
+    const h = hsl.h / 360;
+    const s = hsl.s / 100;
+    const l = hsl.l / 100;
+
+    let r;
+    let g;
+    let b;
+
+    if (s === 0) {
+      r = g = b = l; // achromatic
+    } else {
+      // eslint-disable-next-line no-inner-declarations
+      function hue2rgb(p, q, t) {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+      }
+
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
+    }
+
+    r *= 255;
+    g *= 255;
+    b *= 255;
+
+    return { r, g, b };
+  }
 } // END OF CLASS
 
 /** ***************************************************************************
@@ -3739,9 +3776,14 @@ class BaseTool {
   */
   set value(state) {
     let localState = state;
-
     if (this.dev.debug) console.log('BaseTool set value(state)', localState);
-    if (typeof (localState) !== 'undefined') if (this._stateValue?.toLowerCase() === localState.toLowerCase()) return;
+
+    try {
+      if (localState !== 'undefined'
+        && typeof localState !== 'undefined') if (this._stateValue?.toString().toLowerCase() === localState.toString().toLowerCase()) return;
+    } catch (e) {
+      console.log('catching something', e, state, this.config);
+    }
 
     this.derivedEntity = null;
 
@@ -3754,6 +3796,7 @@ class BaseTool {
     this._stateValuePrev = this._stateValue || localState;
     this._stateValue = localState;
     this._stateValueIsDirty = true;
+    // console.log('set value, base-tool, state = ', state, this._stateValue, this._stateValuePrev, localState);
 
     // If animations defined, calculate style for current state.
 
@@ -3780,7 +3823,7 @@ class BaseTool {
 
       // The state builder renames 'unavailable' to '-ua-'
       // Change this temporary in here to match this...
-      if (item.state === 'unavailable') { item.state = '-ua-'; }
+      // if (item.state === 'unavailable') { item.state = '-ua-'; }
 
       // #TODO:
       // Default is item.state. But can also be item.custom_field[x], so you can compare with custom value
@@ -3789,7 +3832,6 @@ class BaseTool {
 
       // Assume equals operator if not defined...
       const operator = item.operator ? item.operator : '==';
-
       switch (operator) {
         case '==':
           if (typeof (this._stateValue) === 'undefined') {
@@ -3827,7 +3869,7 @@ class BaseTool {
           isMatch = false;
       }
       // Revert state
-      if (item.state === '-ua-') { item.state = 'unavailable'; }
+      // if (item.state === '-ua-') { item.state = 'unavailable'; }
 
       if (this.dev.debug) console.log('BaseTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
       if (!isMatch) return true;
@@ -4849,7 +4891,7 @@ class CircularSliderTool extends BaseTool {
 
     const x = 10 ** dec;
     this.labelValue2 = (Math.round(this.pointToSliderValue(m) * x) / x).toFixed(dec);
-
+    console.log('updateLabel, labelvalue ', this.labelValue2);
     if (this.config.position.label.placement !== 'none') {
       this.elements.label.textContent = this.labelValue2;
     }
@@ -5052,7 +5094,7 @@ class CircularSliderTool extends BaseTool {
       }
       const newValue = +this.labelValue + +((e.altKey ? 10 * this.svg.scale.step : this.svg.scale.step) * Math.sign(e.deltaY));
 
-      this.labelValue = clamp(this.svg.scale.min, newValue, this.svg.scale.max);
+      this.labelValue = clamp$1(this.svg.scale.min, newValue, this.svg.scale.max);
       this.m = this.sliderValueToPoint(this.labelValue);
       this.pointToSliderValue(this.m);
 
@@ -5200,18 +5242,19 @@ class CircularSliderTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     // this.MergeColorFromState();
-
     this.renderValue = this._stateValue;
+    // if (this.renderValue === undefined) this.renderValue = 'undefined';
     if (this.dragging) {
       this.renderValue = this.labelValue2;
-    } else if (this.elements?.label) this.elements.label.textContent = this.renderValue;
+    } else if (this.elements?.label) this.elements.label.textContent = (this.renderValue === 'undefined') ? '' : this.renderValue;
+
     function renderLabel(argGroup) {
       if ((this.config.position.label.placement === 'thumb') && argGroup) {
         return svg`
       <text id="label">
         <tspan class="${classMap(this.classes.label)}" x="${this.svg.label.cx}" y="${this.svg.label.cy}" style="${styleMap(this.styles.label)}">
-        ${this.renderValue}</tspan>
-        ${this._renderUom()}
+        ${typeof this.renderValue === 'undefined' ? '' : this.renderValue}</tspan>
+        ${typeof this.renderValue === 'undefined' ? '' : this._renderUom()}
         </text>
         `;
       }
@@ -5220,12 +5263,14 @@ class CircularSliderTool extends BaseTool {
         return svg`
           <text id="label" style="transform-origin:center;transform-box: fill-box;">
             <tspan class="${classMap(this.classes.label)}" data-placement="position" x="${this.svg.label.cx}" y="${this.svg.label.cy}"
-            style="${styleMap(this.styles.label)}">${this.renderValue ? this.renderValue : ''}</tspan>
-            ${this.renderValue ? this._renderUom() : ''}
+            style="${styleMap(this.styles.label)}">
+            ${typeof this.renderValue === 'undefined' ? '' : this.renderValue}</tspan>
+            ${typeof this.renderValue === 'undefined' ? '' : this._renderUom()}
           </text>
           `;
       }
     }
+    // ${this.renderValue === 'undefined' ? 'pp' : 'nu' this.renderValue}</tspan>
 
     function renderThumbGroup() {
       // Original version but with SVG.
@@ -6391,6 +6436,103 @@ const formatTime24hMem = memoizeOne(
     }),
 );
 
+/* eslint-disable no-use-before-define */
+
+// August 9, 2021, 8:23 AM
+const formatDateTime = (dateObj, locale) => formatDateTimeMem(locale).format(dateObj);
+
+const formatDateTimeMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(
+      locale.language === 'en' && !useAmPm(locale)
+        ? 'en-u-hc-h23'
+        : locale.language,
+      {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: useAmPm(locale) ? 'numeric' : '2-digit',
+        minute: '2-digit',
+        hour12: useAmPm(locale),
+      },
+    ),
+);
+
+// Aug 9, 2021, 8:23 AM
+const formatShortDateTimeWithYear = (dateObj, locale) => formatShortDateTimeWithYearMem(locale).format(dateObj);
+
+const formatShortDateTimeWithYearMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(
+      locale.language === 'en' && !useAmPm(locale)
+        ? 'en-u-hc-h23'
+        : locale.language,
+      {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: useAmPm(locale) ? 'numeric' : '2-digit',
+        minute: '2-digit',
+        hour12: useAmPm(locale),
+      },
+    ),
+);
+
+// Aug 9, 8:23 AM
+const formatShortDateTime = (dateObj, locale) => formatShortDateTimeMem(locale).format(dateObj);
+
+const formatShortDateTimeMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(
+      locale.language === 'en' && !useAmPm(locale)
+        ? 'en-u-hc-h23'
+        : locale.language,
+      {
+        month: 'short',
+        day: 'numeric',
+        hour: useAmPm(locale) ? 'numeric' : '2-digit',
+        minute: '2-digit',
+        hour12: useAmPm(locale),
+      },
+    ),
+);
+
+// August 9, 2021, 8:23:15 AM
+const formatDateTimeWithSeconds = (dateObj, locale) => formatDateTimeWithSecondsMem(locale).format(dateObj);
+
+const formatDateTimeWithSecondsMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(
+      locale.language === 'en' && !useAmPm(locale)
+        ? 'en-u-hc-h23'
+        : locale.language,
+      {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: useAmPm(locale) ? 'numeric' : '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: useAmPm(locale),
+      },
+    ),
+);
+
+// 9/8/2021, 8:23 AM
+const formatDateTimeNumeric = (dateObj, locale) => formatDateTimeNumericMem(locale).format(dateObj);
+
+const formatDateTimeNumericMem = memoizeOne(
+  (locale) => new Intl.DateTimeFormat(
+      locale.language === 'en' && !useAmPm(locale)
+        ? 'en-u-hc-h23'
+        : locale.language,
+      {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: useAmPm(locale),
+      },
+    ),
+);
+
 const leftPad = (num, digits = 2) => {
   let paddedNum = `${num}`;
   for (let i = 1; i < digits; i++) {
@@ -6434,6 +6576,8 @@ const UNIT_TO_MILLISECOND_CONVERT = {
 const formatDuration = (duration, units) => millisecondsToDuration(
     parseFloat(duration) * UNIT_TO_MILLISECOND_CONVERT[units],
   ) || '0';
+
+// import { formatDateTime } from 'custom-card-helpers';
 
 /** ****************************************************************************
   * EntityStateTool class
@@ -6479,7 +6623,7 @@ class EntityStateTool extends BaseTool {
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
-  // static testTimeDate = false;
+  static testTimeDate = false;
 
   // EntityStateTool::value
   set value(state) {
@@ -6490,32 +6634,37 @@ class EntityStateTool extends BaseTool {
     // const leftPad = (num) => (num < 10 ? `0${num}` : num);
 
     const lang = this._card._hass.selectedLanguage || this._card._hass.language;
+    let locale = {};
+    locale.language = lang;
 
     // this.polyfill(lang);
     if (['relative', 'total',
+         'datetime', 'datetime-short', 'datetime-short_with-year', 'datetime_with-seconds', 'datetime-numeric',
          'date', 'date_month', 'date_month_year', 'date-short', 'date-numeric', 'date_weekday', 'date_weekday_day', 'date_weekday-short',
-         'time', 'time-24h', 'time_weekday', 'time_with-seconds', 'datetime'].includes(entityConfig.format)) {
+         'time', 'time-24h', 'time_weekday', 'time_with-seconds'].includes(entityConfig.format)) {
       const timestamp = new Date(inSecInfoState);
       if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
         return inSecInfoState;
       }
 
       // Testing
-      // if (!EntityStateTool.testTimeDate) {
-      //   EntityStateTool.testTimeDate = true;
-      //   console.log('date', formatDate(timestamp, lang));
-      //   console.log('date_month', formatDateMonth(timestamp, lang));
-      //   console.log('date_month_year', formatDateMonthYear(timestamp, lang));
-      //   console.log('date-short', formatDateShort(timestamp, lang));
-      //   console.log('date-numeric', formatDateNumeric(timestamp, lang));
-      //   console.log('date_weekday', formatDateWeekday(timestamp, lang));
-      //   console.log('date_weekday-short', formatDateWeekdayShort(timestamp, lang));
-      //   console.log('date_weekday_day', formatDateWeekdayDay(timestamp, lang));
-      //   console.log('time', formatTime(timestamp, lang));
-      //   console.log('time-24h', formatTime24h(timestamp, lang));
-      //   console.log('time_weekday', formatTimeWeekday(timestamp, lang));
-      //   console.log('time_with-seconds', formatTimeWithSeconds(timestamp, lang));
-      // }
+      if (!EntityStateTool.testTimeDate) {
+        EntityStateTool.testTimeDate = true;
+        console.log('datetime', formatDateTime(timestamp, locale));
+        console.log('datetime-numeric', formatDateTimeNumeric(timestamp, locale));
+        console.log('date', formatDate(timestamp, locale));
+        console.log('date_month', formatDateMonth(timestamp, locale));
+        console.log('date_month_year', formatDateMonthYear(timestamp, locale));
+        console.log('date-short', formatDateShort(timestamp, locale));
+        console.log('date-numeric', formatDateNumeric(timestamp, locale));
+        console.log('date_weekday', formatDateWeekday(timestamp, locale));
+        console.log('date_weekday-short', formatDateWeekdayShort(timestamp, locale));
+        console.log('date_weekday_day', formatDateWeekdayDay(timestamp, locale));
+        console.log('time', formatTime(timestamp, locale));
+        console.log('time-24h', formatTime24h(timestamp));
+        console.log('time_weekday', formatTimeWeekday(timestamp, locale));
+        console.log('time_with-seconds', formatTimeWithSeconds(timestamp, locale));
+      }
 
       let retValue;
       // return date/time according to formatting...
@@ -6529,49 +6678,58 @@ class EntityStateTool extends BaseTool {
         case 'precision':
           retValue = 'Not Yet Supported';
           break;
+        case 'datetime':
+          retValue = formatDateTime(timestamp, locale);
+          break;
+        case 'datetime-short':
+          retValue = formatShortDateTime(timestamp, locale);
+          break;
+        case 'datetime-short_with-year':
+          retValue = formatShortDateTimeWithYear(timestamp, locale);
+          break;
+        case 'datetime_with-seconds':
+          retValue = formatDateTimeWithSeconds(timestamp, locale);
+          break;
+        case 'datetime-numeric':
+          retValue = formatDateTimeNumeric(timestamp, locale);
+          break;
         case 'date':
-          retValue = formatDate(timestamp, lang);
+          retValue = formatDate(timestamp, locale);
           // retValue = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'numeric', day: 'numeric' }).format(timestamp);
           break;
         case 'date_month':
-          retValue = formatDateMonth(timestamp, lang);
+          retValue = formatDateMonth(timestamp, locale);
           break;
         case 'date_month_year':
-          retValue = formatDateMonthYear(timestamp, lang);
+          retValue = formatDateMonthYear(timestamp, locale);
           break;
         case 'date-short':
-          retValue = formatDateShort(timestamp, lang);
+          retValue = formatDateShort(timestamp, locale);
           break;
         case 'date-numeric':
-          retValue = formatDateNumeric(timestamp, lang);
+          retValue = formatDateNumeric(timestamp, locale);
           break;
         case 'date_weekday':
-          retValue = formatDateWeekday(timestamp, lang);
+          retValue = formatDateWeekday(timestamp, locale);
           break;
         case 'date_weekday-short':
-          retValue = formatDateWeekdayShort(timestamp, lang);
+          retValue = formatDateWeekdayShort(timestamp, locale);
           break;
         case 'date_weekday_day':
-          retValue = formatDateWeekdayDay(timestamp, lang);
+          retValue = formatDateWeekdayDay(timestamp, locale);
           break;
         case 'time':
-          retValue = formatTime(timestamp, lang);
+          retValue = formatTime(timestamp, locale);
           // retValue = new Intl.DateTimeFormat(lang, { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(timestamp);
           break;
         case 'time-24h':
           retValue = formatTime24h(timestamp);
           break;
         case 'time_weekday':
-          retValue = formatTimeWeekday(timestamp, lang);
+          retValue = formatTimeWeekday(timestamp, locale);
           break;
         case 'time_with-seconds':
-          retValue = formatTimeWithSeconds(timestamp, lang);
-          break;
-
-        case 'datetime':
-          retValue = new Intl.DateTimeFormat(lang, {
-            year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
-          }).format(timestamp);
+          retValue = formatTimeWithSeconds(timestamp, locale);
           break;
       }
       return retValue;
@@ -6596,7 +6754,10 @@ class EntityStateTool extends BaseTool {
     let inState = this._stateValue;
 
     const stateObj = this._card.entities[this.defaultEntityIndex()];
+    // console.log('_renderStateNew, inState, stateValue = ', inState, stateObj);
     if (stateObj === undefined) return svg``;
+    if ([undefined, 'undefined'].includes(inState)) { return svg``; }
+    if (inState === undefined) return svg``;
 
     // Need entities, not states to get platform, translation_key, etc.!!!!!
     const entity = this._card._hass.entities[stateObj.entity_id];
@@ -6611,8 +6772,9 @@ class EntityStateTool extends BaseTool {
     const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
 
     // HACK
-    if (entityConfig.format !== undefined) {
-      inState = this.buildSecondaryInfo(inState, entityConfig);
+    // if ((entityConfig.format !== undefined) && (inState !== 'undefined')) {
+    if ((entityConfig.format !== undefined) && (typeof inState !== 'undefined')) {
+        inState = this.buildSecondaryInfo(inState, entityConfig);
     }
 
     if ((inState) && isNaN(inState)
@@ -6636,7 +6798,7 @@ class EntityStateTool extends BaseTool {
       inState = this.textEllipsis(inState, this.config?.show?.ellipsis);
     }
     if (['undefined', 'unknown', 'unavailable', '-ua-'].includes(inState)) {
-      if (inState === '-ua-') inState = 'unavailable';
+      // if (inState === '-ua-') inState = 'unavailable';
       inState = this._card._hass.localize(`state.default.${inState}`);
     }
 
@@ -6651,6 +6813,7 @@ class EntityStateTool extends BaseTool {
       inState = renderNumber;
     }
 
+    // console.log('rendering inState = ', inState);
     return svg`
       <tspan class="${classMap(this.classes.state)}" x="${this.svg.x}" y="${this.svg.y}"
         style="${styleMap(this.styles.state)}">
@@ -6692,7 +6855,7 @@ class EntityStateTool extends BaseTool {
   }
 
   _renderUom() {
-    if (this.config.show.uom === 'none') {
+    if ((this.config.show.uom === 'none') || (typeof this._stateValue === 'undefined')) {
       return svg``;
     } else {
       this.MergeAnimationClassIfChanged();
@@ -10677,6 +10840,122 @@ class Toolset {
   }
 } // END of class
 
+const rgb_hex = (component) => {
+  const hex = Math.round(Math.min(Math.max(component, 0), 255)).toString(16);
+  return hex.length === 1 ? `0${hex}` : hex;
+};
+
+const rgb2hex = (rgb) => `#${rgb_hex(rgb[0])}${rgb_hex(rgb[1])}${rgb_hex(rgb[2])}`;
+
+const rgb2hsv = (rgb) => {
+  const [r, g, b] = rgb;
+  const v = Math.max(r, g, b);
+  const c = v - Math.min(r, g, b);
+  const h = c && (v === r ? (g - b) / c : v === g ? 2 + (b - r) / c : 4 + (r - g) / c);
+  return [60 * (h < 0 ? h + 6 : h), v && c / v, v];
+};
+
+const hsv2rgb = (hsv) => {
+  const [h, s, v] = hsv;
+  const f = (n) => {
+    const k = (n + h / 60) % 6;
+    return v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
+  };
+  return [f(5), f(3), f(1)];
+};
+
+const hs2rgb = (hs) => hsv2rgb([hs[0], hs[1], 255]);
+
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const DEFAULT_MIN_KELVIN = 2700;
+const DEFAULT_MAX_KELVIN = 6500;
+
+const temperatureRed = (temperature) => {
+  if (temperature <= 66) {
+    return 255;
+  }
+  const red = 329.698727446 * (temperature - 60) ** -0.1332047592;
+  return clamp(red, 0, 255);
+};
+
+const temperatureGreen = (temperature) => {
+  let green;
+  if (temperature <= 66) {
+    green = 99.4708025861 * Math.log(temperature) - 161.1195681661;
+  } else {
+    green = 288.1221695283 * (temperature - 60) ** -0.0755148492;
+  }
+  return clamp(green, 0, 255);
+};
+
+const temperatureBlue = (temperature) => {
+  if (temperature >= 66) {
+    return 255;
+  }
+  if (temperature <= 19) {
+    return 0;
+  }
+  const blue = 138.5177312231 * Math.log(temperature - 10) - 305.0447927307;
+  return clamp(blue, 0, 255);
+};
+
+const temperature2rgb = (temperature) => {
+  const value = temperature / 100;
+  return [
+    temperatureRed(value),
+    temperatureGreen(value),
+    temperatureBlue(value),
+  ];
+};
+
+const matchMaxScale = (inputColors, outputColors) => {
+  const maxIn = Math.max(...inputColors);
+  const maxOut = Math.max(...outputColors);
+  let factor;
+  if (maxOut === 0) {
+    factor = 0.0;
+  } else {
+    factor = maxIn / maxOut;
+  }
+  return outputColors.map((value) => Math.round(value * factor));
+};
+
+const mired2kelvin = (miredTemperature) => Math.floor(1000000 / miredTemperature);
+
+const kelvin2mired = (kelvintTemperature) => Math.floor(1000000 / kelvintTemperature);
+
+const rgbww2rgb = (rgbww, minKelvin, maxKelvin) => {
+  const [r, g, b, cw, ww] = rgbww;
+  // Calculate color temperature of the white channels
+  const maxMireds = kelvin2mired(minKelvin ?? DEFAULT_MIN_KELVIN);
+  const minMireds = kelvin2mired(maxKelvin ?? DEFAULT_MAX_KELVIN);
+  const miredRange = maxMireds - minMireds;
+  let ctRatio;
+  try {
+    ctRatio = ww / (cw + ww);
+  } catch (_error) {
+    ctRatio = 0.5;
+  }
+  const colorTempMired = minMireds + ctRatio * miredRange;
+  const colorTempKelvin = colorTempMired ? mired2kelvin(colorTempMired) : 0;
+  const [wR, wG, wB] = temperature2rgb(colorTempKelvin);
+  const whiteLevel = Math.max(cw, ww) / 255;
+
+  // Add the white channels to the rgb channels.
+  const rgb = [r + wR * whiteLevel, g + wG * whiteLevel, b + wB * whiteLevel];
+
+  // Match the output maximum value to the input. This ensures the
+  // output doesn't overflow.
+  return matchMaxScale([r, g, b, cw, ww], rgb);
+};
+
+const rgbw2rgb = (rgbw) => {
+  const [r, g, b, w] = rgbw;
+  const rgb = [r + w, g + w, b + w];
+  return matchMaxScale([r, g, b, w], rgb);
+};
+
 /*
 *
 * Card      : swiss-army-knife-card.js
@@ -12046,7 +12325,13 @@ class SwissArmyKnifeCard extends LitElement {
   */
 
 _buildStateString(inState, entityConfig) {
-  if (isNaN(inState)) return inState;
+
+  // if (inState === undefined) inState = 'undefined';
+  if (typeof inState === 'undefined') return inState;
+
+  // if ([undefined, 'undefined', 'unavailable'].includes(inState)) return inState;
+  // if (isNaN(inState)) return inState;
+  // console.log('buildstringetje, begin, ', inState, inState?.toString());
 
   // Check for built-in state converters
   if (entityConfig.convert) {
@@ -12054,7 +12339,6 @@ _buildStateString(inState, entityConfig) {
     let splitted = entityConfig.convert.match(/(^\w+)\((\d+)\)/);
     let converter;
     let parameter;
-
     // If no parameters found, just the converter
     if (splitted === null) {
       converter = entityConfig.convert;
@@ -12064,7 +12348,7 @@ _buildStateString(inState, entityConfig) {
     }
     switch (converter) {
       case 'brightness_pct':
-        inState = `${Math.round((inState / 255) * 100)}`;
+        inState = inState === 'undefined' ? 'undefined' : `${Math.round((inState / 255) * 100)}`;
         break;
       case 'multiply':
         inState = `${Math.round((inState * parameter))}`;
@@ -12072,10 +12356,201 @@ _buildStateString(inState, entityConfig) {
       case 'divide':
         inState = `${Math.round((inState / parameter))}`;
         break;
+      case 'rgb_csv':
+      case 'rgb_hex':
+        // https://github.com/home-assistant/frontend/blob/1bf03f020e2b2523081d4f03580886b51e970c72/src/dialogs/more-info/components/lights/ha-favorite-color-button.ts#L39
+        // https://github.com/home-assistant/frontend/blob/1bf03f020e2b2523081d4f03580886b51e970c72/src/common/color/convert-light-color.ts
+        // private get _rgbColor(): [number, number, number] {
+        //   if (this.color) {
+        //     if ("hs_color" in this.color) {
+        //       return hs2rgb([this.color.hs_color[0], this.color.hs_color[1] / 100]);
+        //     }
+        //     if ("color_temp_kelvin" in this.color) {
+        //       return temperature2rgb(this.color.color_temp_kelvin);
+        //     }
+        //     if ("rgb_color" in this.color) {
+        //       return this.color.rgb_color;
+        //     }
+        //     if ("rgbw_color" in this.color) {
+        //       return rgbw2rgb(this.color.rgbw_color);
+        //     }
+        //     if ("rgbww_color" in this.color) {
+        //       return rgbww2rgb(
+        //         this.color.rgbww_color,
+        //         this.stateObj?.attributes.min_color_temp_kelvin,
+        //         this.stateObj?.attributes.max_color_temp_kelvin
+        //       );
+        //     }
+        //   }
+        //   return [255, 255, 255];
+        // }
+        if (entityConfig.attribute) {
+          let entity = this._hass.states[entityConfig.entity];
+          switch (entity.attributes.color_mode) {
+            case 'unknown':
+              break;
+            case 'onoff':
+              break;
+            case 'brightness':
+                break;
+            case 'color_temp':
+              if (entity.attributes.color_temp_kelvin) {
+                let rgb = temperature2rgb(entity.attributes.color_temp_kelvin);
+
+                const hsvColor = rgb2hsv(rgb);
+                // Modify the real rgb color for better contrast
+                if (hsvColor[1] < 0.4) {
+                  // Special case for very light color (e.g: white)
+                  if (hsvColor[1] < 0.1) {
+                    hsvColor[2] = 225;
+                  } else {
+                    hsvColor[1] = 0.4;
+                  }
+                }
+                rgb = hsv2rgb(hsvColor);
+
+                rgb[0] = Math.round(rgb[0]);
+                rgb[1] = Math.round(rgb[1]);
+                rgb[2] = Math.round(rgb[2]);
+                if (converter === 'rgb_csv') {
+                  inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+                } else {
+                  inState = rgb2hex(rgb);
+                }
+              } else {
+                if (converter === 'rgb_csv') {
+                  inState = `${255},${255},${255}`;
+                } else {
+                  inState = '#ffffff00';
+                }
+              }
+              break;
+            case 'hs': {
+                let rgb = hs2rgb([entity.attributes.hs_color[0], entity.attributes.hs_color[1] / 100]);
+                rgb[0] = Math.round(rgb[0]);
+                rgb[1] = Math.round(rgb[1]);
+                rgb[2] = Math.round(rgb[2]);
+
+                if (converter === 'rgb_csv') {
+                  inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+                } else {
+                  inState = rgb2hex(rgb);
+                }
+              }
+              break;
+            case 'rgb': {
+                const hsvColor = rgb2hsv(this.stateObj.attributes.rgb_color);
+                // Modify the real rgb color for better contrast
+                if (hsvColor[1] < 0.4) {
+                  // Special case for very light color (e.g: white)
+                  if (hsvColor[1] < 0.1) {
+                    hsvColor[2] = 225;
+                  } else {
+                    hsvColor[1] = 0.4;
+                  }
+                }
+                const rgbColor = hsv2rgb(hsvColor);
+                if (converter === 'rgb_csv') {
+                  inState = rgbColor.toString();
+                } else {
+                  inState = rgb2hex(rgbColor);
+                }
+
+                // if (converter === 'rgb_csv') {
+                //   inState = entity.attributes.rgb_color.toString();
+                // } else {
+                //   inState = rgb2hex(entity.attributes.rgb_color);
+                // }
+              }
+              break;
+            case 'rgbw': {
+                let rgb = rgbw2rgb(entity.attributes.rgbw_color);
+                rgb[0] = Math.round(rgb[0]);
+                rgb[1] = Math.round(rgb[1]);
+                rgb[2] = Math.round(rgb[2]);
+
+                if (converter === 'rgb_csv') {
+                  inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+                } else {
+                  inState = rgb2hex(rgb);
+                }
+              }
+              break;
+            case 'rgbww': {
+              let rgb = rgbww2rgb(entity.attributes.rgbww_color,
+                                  entity.attributes?.min_color_temp_kelvin,
+                                  entity.attributes?.max_color_temp_kelvin);
+              rgb[0] = Math.round(rgb[0]);
+              rgb[1] = Math.round(rgb[1]);
+              rgb[2] = Math.round(rgb[2]);
+
+              if (converter === 'rgb_csv') {
+                inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+              } else {
+                inState = rgb2hex(rgb);
+              }
+            }
+            break;
+            case 'white':
+              break;
+            case 'xy':
+              if (entity.attributes.hs_color) {
+                let rgb = hs2rgb([entity.attributes.hs_color[0], entity.attributes.hs_color[1] / 100]);
+// https://github.com/home-assistant/frontend/blob/8580d3f9bf59ffbcbe4187a0d7a58cc23d9822df/src/dialogs/more-info/components/lights/ha-more-info-light-brightness.ts#L76
+                // background slider has opacity of 0.2. Looks nice also, yes??
+                const hsvColor = rgb2hsv(rgb);
+                // Modify the real rgb color for better contrast
+                if (hsvColor[1] < 0.4) {
+                  // Special case for very light color (e.g: white)
+                  if (hsvColor[1] < 0.1) {
+                    hsvColor[2] = 225;
+                  } else {
+                    hsvColor[1] = 0.4;
+                  }
+                }
+                rgb = hsv2rgb(hsvColor);
+                rgb[0] = Math.round(rgb[0]);
+                rgb[1] = Math.round(rgb[1]);
+                rgb[2] = Math.round(rgb[2]);
+
+                if (converter === 'rgb_csv') {
+                  inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+                } else {
+                  inState = rgb2hex(rgb);
+                }
+              } else if (entity.attributes.color) {
+                // We should have h and s, including brightness...
+                let hsl = {};
+                hsl.l = entity.attributes.brightness;
+                hsl.h = entity.attributes.color.h || entity.attributes.color.hue;
+                hsl.s = entity.attributes.color.s || entity.attributes.color.saturation;
+                // Convert HSL value to RGB
+                // HERE
+                let { r, g, b } = Colors.hslToRgb(hsl);
+                if (converter === 'rgb_csv') {
+                  inState = `${r},${g},${b}`;
+                } else {
+                  const rHex = Colors.padZero(r.toString(16));
+                  const gHex = Colors.padZero(g.toString(16));
+                  const bHex = Colors.padZero(b.toString(16));
+                  inState = `#${rHex}${gHex}${bHex}`;
+                }
+              } else if (entity.attributes.xy_color) ;
+              break;
+          }
+        }
+        break;
       default:
         console.error(`Unknown converter [${converter}] specified for entity [${entityConfig.entity}]!`);
         break;
     }
+  }
+  // console.log('buildstringetje, einde, ', inState, inState?.toString(), realInState);
+  if (typeof inState === 'undefined') { return undefined; }
+  // if ([undefined, 'undefined', 'unavailable'].includes(inState)) return inState;
+  if (Number.isNaN(inState)) {
+    console.log('buildstringetje, returning instate as NAN', inState);
+    return inState;
   }
   return inState.toString();
 }
