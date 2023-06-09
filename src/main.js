@@ -48,6 +48,18 @@ import Templates from './templates';
 import Toolset from './toolset';
 import Colors from './colors';
 
+import {
+  hs2rgb,
+  rgb2hex,
+  rgb2hsv,
+  hsv2rgb,
+} from './frontend_mods/color/convert-color';
+import {
+  rgbw2rgb,
+  rgbww2rgb,
+  temperature2rgb,
+} from './frontend_mods/color/convert-light-color';
+
 console.info(
   `%c  SWISS-ARMY-KNIFE-CARD  \n%c      Version ${version}      `,
   'color: yellow; font-weight: bold; background: black',
@@ -1398,7 +1410,21 @@ class SwissArmyKnifeCard extends LitElement {
   */
 
 _buildStateString(inState, entityConfig) {
-  if (isNaN(inState)) return inState;
+  // if (inState === undefined) inState = 'undefined';
+
+  // lastig. Die undefined of 'undefined' zorgt voor ellende bij de brightness.
+  // die kan bij weergave hier niet mee omgaan. wordt of nan of undefined als status
+  // die undefined kwam voorheen niet door, dus werd niet afgehandeld als geldige waarde
+  // om dan niks te tonen. kijken hoe state bij undefined oid wordt gerenderd.
+  // rest gaat met huidige oplossing namelijk goed qua licht weergave.
+  let realInState = inState;
+
+  // if (inState === undefined) inState = 'undefined';
+  if (typeof inState === 'undefined') return inState;
+
+  // if ([undefined, 'undefined', 'unavailable'].includes(inState)) return inState;
+  // if (isNaN(inState)) return inState;
+  // console.log('buildstringetje, begin, ', inState, inState?.toString());
 
   // Check for built-in state converters
   if (entityConfig.convert) {
@@ -1406,7 +1432,6 @@ _buildStateString(inState, entityConfig) {
     let splitted = entityConfig.convert.match(/(^\w+)\((\d+)\)/);
     let converter;
     let parameter;
-
     // If no parameters found, just the converter
     if (splitted === null) {
       converter = entityConfig.convert;
@@ -1416,7 +1441,7 @@ _buildStateString(inState, entityConfig) {
     }
     switch (converter) {
       case 'brightness_pct':
-        inState = `${Math.round((inState / 255) * 100)}`;
+        inState = inState === 'undefined' ? 'undefined' : `${Math.round((inState / 255) * 100)}`;
         break;
       case 'multiply':
         inState = `${Math.round((inState * parameter))}`;
@@ -1424,10 +1449,211 @@ _buildStateString(inState, entityConfig) {
       case 'divide':
         inState = `${Math.round((inState / parameter))}`;
         break;
+      case 'rgb_csv':
+      case 'rgb_hex':
+        // https://github.com/home-assistant/frontend/blob/1bf03f020e2b2523081d4f03580886b51e970c72/src/dialogs/more-info/components/lights/ha-favorite-color-button.ts#L39
+        // https://github.com/home-assistant/frontend/blob/1bf03f020e2b2523081d4f03580886b51e970c72/src/common/color/convert-light-color.ts
+        // private get _rgbColor(): [number, number, number] {
+        //   if (this.color) {
+        //     if ("hs_color" in this.color) {
+        //       return hs2rgb([this.color.hs_color[0], this.color.hs_color[1] / 100]);
+        //     }
+        //     if ("color_temp_kelvin" in this.color) {
+        //       return temperature2rgb(this.color.color_temp_kelvin);
+        //     }
+        //     if ("rgb_color" in this.color) {
+        //       return this.color.rgb_color;
+        //     }
+        //     if ("rgbw_color" in this.color) {
+        //       return rgbw2rgb(this.color.rgbw_color);
+        //     }
+        //     if ("rgbww_color" in this.color) {
+        //       return rgbww2rgb(
+        //         this.color.rgbww_color,
+        //         this.stateObj?.attributes.min_color_temp_kelvin,
+        //         this.stateObj?.attributes.max_color_temp_kelvin
+        //       );
+        //     }
+        //   }
+        //   return [255, 255, 255];
+        // }
+        if (entityConfig.attribute) {
+          let entity = this._hass.states[entityConfig.entity];
+          switch (entity.attributes.color_mode) {
+            case 'unknown':
+              break;
+            case 'onoff':
+              break;
+            case 'brightness':
+                break;
+            case 'color_temp':
+              if (entity.attributes.color_temp_kelvin) {
+                let rgb = temperature2rgb(entity.attributes.color_temp_kelvin);
+
+                const hsvColor = rgb2hsv(rgb);
+                // Modify the real rgb color for better contrast
+                if (hsvColor[1] < 0.4) {
+                  // Special case for very light color (e.g: white)
+                  if (hsvColor[1] < 0.1) {
+                    hsvColor[2] = 225;
+                  } else {
+                    hsvColor[1] = 0.4;
+                  }
+                }
+                rgb = hsv2rgb(hsvColor);
+
+                rgb[0] = Math.round(rgb[0]);
+                rgb[1] = Math.round(rgb[1]);
+                rgb[2] = Math.round(rgb[2]);
+                if (converter === 'rgb_csv') {
+                  inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+                } else {
+                  inState = rgb2hex(rgb);
+                }
+              } else {
+                if (converter === 'rgb_csv') {
+                  inState = `${255},${255},${255}`;
+                } else {
+                  inState = '#ffffff00';
+                }
+              }
+              break;
+            case 'hs': {
+                let rgb = hs2rgb([entity.attributes.hs_color[0], entity.attributes.hs_color[1] / 100]);
+                rgb[0] = Math.round(rgb[0]);
+                rgb[1] = Math.round(rgb[1]);
+                rgb[2] = Math.round(rgb[2]);
+
+                if (converter === 'rgb_csv') {
+                  inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+                } else {
+                  inState = rgb2hex(rgb);
+                }
+              }
+              break;
+            case 'rgb': {
+                const hsvColor = rgb2hsv(this.stateObj.attributes.rgb_color);
+                // Modify the real rgb color for better contrast
+                if (hsvColor[1] < 0.4) {
+                  // Special case for very light color (e.g: white)
+                  if (hsvColor[1] < 0.1) {
+                    hsvColor[2] = 225;
+                  } else {
+                    hsvColor[1] = 0.4;
+                  }
+                }
+                const rgbColor = hsv2rgb(hsvColor);
+                if (converter === 'rgb_csv') {
+                  inState = rgbColor.toString();
+                } else {
+                  inState = rgb2hex(rgbColor);
+                }
+
+                // if (converter === 'rgb_csv') {
+                //   inState = entity.attributes.rgb_color.toString();
+                // } else {
+                //   inState = rgb2hex(entity.attributes.rgb_color);
+                // }
+              }
+              break;
+            case 'rgbw': {
+                let rgb = rgbw2rgb(entity.attributes.rgbw_color);
+                rgb[0] = Math.round(rgb[0]);
+                rgb[1] = Math.round(rgb[1]);
+                rgb[2] = Math.round(rgb[2]);
+
+                if (converter === 'rgb_csv') {
+                  inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+                } else {
+                  inState = rgb2hex(rgb);
+                }
+              }
+              break;
+            case 'rgbww': {
+              let rgb = rgbww2rgb(entity.attributes.rgbww_color,
+                                  entity.attributes?.min_color_temp_kelvin,
+                                  entity.attributes?.max_color_temp_kelvin);
+              rgb[0] = Math.round(rgb[0]);
+              rgb[1] = Math.round(rgb[1]);
+              rgb[2] = Math.round(rgb[2]);
+
+              if (converter === 'rgb_csv') {
+                inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+              } else {
+                inState = rgb2hex(rgb);
+              }
+            }
+            break;
+            case 'white':
+              break;
+            case 'xy':
+              if (entity.attributes.hs_color) {
+                let rgb = hs2rgb([entity.attributes.hs_color[0], entity.attributes.hs_color[1] / 100]);
+// https://github.com/home-assistant/frontend/blob/8580d3f9bf59ffbcbe4187a0d7a58cc23d9822df/src/dialogs/more-info/components/lights/ha-more-info-light-brightness.ts#L76
+                // background slider has opacity of 0.2. Looks nice also, yes??
+                const hsvColor = rgb2hsv(rgb);
+                // Modify the real rgb color for better contrast
+                if (hsvColor[1] < 0.4) {
+                  // Special case for very light color (e.g: white)
+                  if (hsvColor[1] < 0.1) {
+                    hsvColor[2] = 225;
+                  } else {
+                    hsvColor[1] = 0.4;
+                  }
+                }
+                rgb = hsv2rgb(hsvColor);
+                rgb[0] = Math.round(rgb[0]);
+                rgb[1] = Math.round(rgb[1]);
+                rgb[2] = Math.round(rgb[2]);
+
+                if (converter === 'rgb_csv') {
+                  inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+                } else {
+                  inState = rgb2hex(rgb);
+                }
+              } else if (entity.attributes.color) {
+                // We should have h and s, including brightness...
+                let hsl = {};
+                hsl.l = entity.attributes.brightness;
+                hsl.h = entity.attributes.color.h || entity.attributes.color.hue;
+                hsl.s = entity.attributes.color.s || entity.attributes.color.saturation;
+                // Convert HSL value to RGB
+                // HERE
+                let { r, g, b } = Colors.hslToRgb(hsl);
+                if (converter === 'rgb_csv') {
+                  inState = `${r},${g},${b}`;
+                } else {
+                  const rHex = Colors.padZero(r.toString(16));
+                  const gHex = Colors.padZero(g.toString(16));
+                  const bHex = Colors.padZero(b.toString(16));
+                  inState = `#${rHex}${gHex}${bHex}`;
+                }
+              } else if (entity.attributes.xy_color) {
+              }
+              break;
+            default:
+              // If light is switched off, there is no color_mode, just as there is no
+              // brightness in that case (undefined)
+              // if (converter === 'rgb_csv') {
+              //   inState = `${255},${255},${255}`;
+              // } else {
+              //   inState = '#ffffff00';
+              // }
+              break;
+          }
+        }
+        break;
       default:
         console.error(`Unknown converter [${converter}] specified for entity [${entityConfig.entity}]!`);
         break;
     }
+  }
+  // console.log('buildstringetje, einde, ', inState, inState?.toString(), realInState);
+  if (typeof inState === 'undefined') { return undefined; }
+  // if ([undefined, 'undefined', 'unavailable'].includes(inState)) return inState;
+  if (Number.isNaN(inState)) {
+    console.log('buildstringetje, returning instate as NAN', inState);
+    return inState;
   }
   return inState.toString();
 }

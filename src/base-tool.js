@@ -122,9 +122,14 @@ export default class BaseTool {
   */
   set value(state) {
     let localState = state;
-
     if (this.dev.debug) console.log('BaseTool set value(state)', localState);
-    if (typeof (localState) !== 'undefined') if (this._stateValue?.toLowerCase() === localState.toLowerCase()) return;
+
+    try {
+      if (localState !== 'undefined'
+        && typeof localState !== 'undefined') if (this._stateValue?.toString().toLowerCase() === localState.toString().toLowerCase()) return;
+    } catch (e) {
+      console.log('catching something', e, state, this.config);
+    }
 
     this.derivedEntity = null;
 
@@ -137,6 +142,7 @@ export default class BaseTool {
     this._stateValuePrev = this._stateValue || localState;
     this._stateValue = localState;
     this._stateValueIsDirty = true;
+    // console.log('set value, base-tool, state = ', state, this._stateValue, this._stateValuePrev, localState);
 
     // If animations defined, calculate style for current state.
 
@@ -163,7 +169,7 @@ export default class BaseTool {
 
       // The state builder renames 'unavailable' to '-ua-'
       // Change this temporary in here to match this...
-      if (item.state === 'unavailable') { item.state = '-ua-'; }
+      // if (item.state === 'unavailable') { item.state = '-ua-'; }
 
       // #TODO:
       // Default is item.state. But can also be item.custom_field[x], so you can compare with custom value
@@ -172,7 +178,6 @@ export default class BaseTool {
 
       // Assume equals operator if not defined...
       const operator = item.operator ? item.operator : '==';
-
       switch (operator) {
         case '==':
           if (typeof (this._stateValue) === 'undefined') {
@@ -210,7 +215,7 @@ export default class BaseTool {
           isMatch = false;
       }
       // Revert state
-      if (item.state === '-ua-') { item.state = 'unavailable'; }
+      // if (item.state === '-ua-') { item.state = 'unavailable'; }
 
       if (this.dev.debug) console.log('BaseTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
       if (!isMatch) return true;
