@@ -748,7 +748,6 @@ export default class CircularSliderTool extends BaseTool {
           `;
       }
     }
-    // ${this.renderValue === 'undefined' ? 'pp' : 'nu' this.renderValue}</tspan>
 
     function renderThumbGroup() {
       // Original version but with SVG.

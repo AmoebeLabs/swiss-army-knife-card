@@ -1,7 +1,8 @@
-import { fireEvent } from 'custom-card-helpers';
 import { svg } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
+
+import { fireEvent } from './frontend_mods/common/dom/fire_event';
 
 import Merge from './merge';
 import Utils from './utils';

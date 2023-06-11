@@ -1,4 +1,4 @@
-import { fireEvent } from 'custom-card-helpers';
+import { fireEvent } from './frontend_mods/common/dom/fire_event';
 
 import Merge from './merge';
 import Utils from './utils';
@@ -142,8 +142,6 @@ export default class BaseTool {
     this._stateValuePrev = this._stateValue || localState;
     this._stateValue = localState;
     this._stateValueIsDirty = true;
-    // console.log('set value, base-tool, state = ', state, this._stateValue, this._stateValuePrev, localState);
-
     // If animations defined, calculate style for current state.
 
     // 2022.07.04 Temp disable this return, as animations should be able to process the 'undefined' state too!!!!
@@ -166,10 +164,6 @@ export default class BaseTool {
       // var item = Templates.getJsTemplateOrValue(this, this._stateValue, Merge.mergeDeep(this.config.animations[animation]));
 
       if (isMatch) return true;
-
-      // The state builder renames 'unavailable' to '-ua-'
-      // Change this temporary in here to match this...
-      // if (item.state === 'unavailable') { item.state = '-ua-'; }
 
       // #TODO:
       // Default is item.state. But can also be item.custom_field[x], so you can compare with custom value
@@ -214,8 +208,6 @@ export default class BaseTool {
           // Unknown operator. Just do nothing and return;
           isMatch = false;
       }
-      // Revert state
-      // if (item.state === '-ua-') { item.state = 'unavailable'; }
 
       if (this.dev.debug) console.log('BaseTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
       if (!isMatch) return true;
@@ -454,9 +446,6 @@ export default class BaseTool {
       if (color !== '') {
         argStyleMap.fill = this.config[this.config.show.style].fill ? color : '';
         argStyleMap.stroke = this.config[this.config.show.style].stroke ? color : '';
-
-        // this.config[this.config.show.style].fill ? argStyleMap['fill'] = color : '';
-        // this.config[this.config.show.style].stroke ? argStyleMap['stroke'] = color : '';
       }
     }
   }

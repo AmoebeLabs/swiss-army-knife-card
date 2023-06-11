@@ -31,8 +31,7 @@ import {
   formatShortDateTimeWithYear,
 } from './frontend_mods/datetime/format_date_time';
 import { formatDuration } from './frontend_mods/datetime/duration';
-// import { formatDateTime } from 'custom-card-helpers';
-
+import { computeDomain } from './frontend_mods/common/entity/compute_domain';
 /** ****************************************************************************
   * EntityStateTool class
   *
@@ -84,41 +83,37 @@ export default class EntityStateTool extends BaseTool {
     super.value = state;
   }
 
-  buildSecondaryInfo(inSecInfoState, entityConfig) {
-    // const leftPad = (num) => (num < 10 ? `0${num}` : num);
-
+  formatStateString(inState, entityConfig) {
     const lang = this._card._hass.selectedLanguage || this._card._hass.language;
     let locale = {};
     locale.language = lang;
 
-    // this.polyfill(lang);
     if (['relative', 'total',
          'datetime', 'datetime-short', 'datetime-short_with-year', 'datetime_with-seconds', 'datetime-numeric',
          'date', 'date_month', 'date_month_year', 'date-short', 'date-numeric', 'date_weekday', 'date_weekday_day', 'date_weekday-short',
          'time', 'time-24h', 'time_weekday', 'time_with-seconds'].includes(entityConfig.format)) {
-      const timestamp = new Date(inSecInfoState);
+      const timestamp = new Date(inState);
       if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
-        return inSecInfoState;
+        return inState;
       }
 
-      // Testing
-      if (!EntityStateTool.testTimeDate) {
-        EntityStateTool.testTimeDate = true;
-        console.log('datetime', formatDateTime(timestamp, locale));
-        console.log('datetime-numeric', formatDateTimeNumeric(timestamp, locale));
-        console.log('date', formatDate(timestamp, locale));
-        console.log('date_month', formatDateMonth(timestamp, locale));
-        console.log('date_month_year', formatDateMonthYear(timestamp, locale));
-        console.log('date-short', formatDateShort(timestamp, locale));
-        console.log('date-numeric', formatDateNumeric(timestamp, locale));
-        console.log('date_weekday', formatDateWeekday(timestamp, locale));
-        console.log('date_weekday-short', formatDateWeekdayShort(timestamp, locale));
-        console.log('date_weekday_day', formatDateWeekdayDay(timestamp, locale));
-        console.log('time', formatTime(timestamp, locale));
-        console.log('time-24h', formatTime24h(timestamp, locale));
-        console.log('time_weekday', formatTimeWeekday(timestamp, locale));
-        console.log('time_with-seconds', formatTimeWithSeconds(timestamp, locale));
-      }
+      // if (!EntityStateTool.testTimeDate) {
+      //   EntityStateTool.testTimeDate = true;
+      //   console.log('datetime', formatDateTime(timestamp, locale));
+      //   console.log('datetime-numeric', formatDateTimeNumeric(timestamp, locale));
+      //   console.log('date', formatDate(timestamp, locale));
+      //   console.log('date_month', formatDateMonth(timestamp, locale));
+      //   console.log('date_month_year', formatDateMonthYear(timestamp, locale));
+      //   console.log('date-short', formatDateShort(timestamp, locale));
+      //   console.log('date-numeric', formatDateNumeric(timestamp, locale));
+      //   console.log('date_weekday', formatDateWeekday(timestamp, locale));
+      //   console.log('date_weekday-short', formatDateWeekdayShort(timestamp, locale));
+      //   console.log('date_weekday_day', formatDateWeekdayDay(timestamp, locale));
+      //   console.log('time', formatTime(timestamp, locale));
+      //   console.log('time-24h', formatTime24h(timestamp, locale));
+      //   console.log('time_weekday', formatTimeWeekday(timestamp, locale));
+      //   console.log('time_with-seconds', formatTimeWithSeconds(timestamp, locale));
+      // }
 
       let retValue;
       // return date/time according to formatting...
@@ -185,25 +180,19 @@ export default class EntityStateTool extends BaseTool {
         case 'time_with-seconds':
           retValue = formatTimeWithSeconds(timestamp, locale);
           break;
-
-        // case 'datetime':
-        //   retValue = new Intl.DateTimeFormat(lang, {
-        //     year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
-        //   }).format(timestamp);
-        //   break;
         default:
       }
       return retValue;
     }
 
-    if (isNaN(parseFloat(inSecInfoState)) || !isFinite(inSecInfoState)) {
-      return inSecInfoState;
+    if (isNaN(parseFloat(inState)) || !isFinite(inState)) {
+      return inState;
     }
     if (entityConfig.format === 'brightness' || entityConfig.format === 'brightness_pct') {
-      return `${Math.round((inSecInfoState / 255) * 100)} %`;
+      return `${Math.round((inState / 255) * 100)} %`;
     }
     if (entityConfig.format === 'duration') {
-      return formatDuration(inSecInfoState, 's');
+      return formatDuration(inState, 's');
     }
   }
 
@@ -215,7 +204,6 @@ export default class EntityStateTool extends BaseTool {
     let inState = this._stateValue;
 
     const stateObj = this._card.entities[this.defaultEntityIndex()];
-    // console.log('_renderStateNew, inState, stateValue = ', inState, stateObj);
     if (stateObj === undefined) return svg``;
     if ([undefined, 'undefined'].includes(inState)) { return svg``; }
     if (inState === undefined) return svg``;
@@ -224,18 +212,13 @@ export default class EntityStateTool extends BaseTool {
     const entity = this._card._hass.entities[stateObj.entity_id];
 
     const entityConfig = this._card.config.entities[this.defaultEntityIndex()];
-    const domain = this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id);
-
-    // if (!entityConfig.secondary_info) {
-    //   const myLocale = this._card.toLocale(`component.${domain}.entity_component._.state.${inState}`, inState);
-    // }
+    const domain = computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id);
 
     const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
 
     // HACK
-    // if ((entityConfig.format !== undefined) && (inState !== 'undefined')) {
     if ((entityConfig.format !== undefined) && (typeof inState !== 'undefined')) {
-        inState = this.buildSecondaryInfo(inState, entityConfig);
+        inState = this.formatStateString(inState, entityConfig);
     }
 
     if ((inState) && isNaN(inState)
@@ -259,7 +242,6 @@ export default class EntityStateTool extends BaseTool {
       inState = this.textEllipsis(inState, this.config?.show?.ellipsis);
     }
     if (['undefined', 'unknown', 'unavailable', '-ua-'].includes(inState)) {
-      // if (inState === '-ua-') inState = 'unavailable';
       inState = this._card._hass.localize(`state.default.${inState}`);
     }
 
@@ -274,7 +256,6 @@ export default class EntityStateTool extends BaseTool {
       inState = renderNumber;
     }
 
-    // console.log('rendering inState = ', inState);
     return svg`
       <tspan class="${classMap(this.classes.state)}" x="${this.svg.x}" y="${this.svg.y}"
         style="${styleMap(this.styles.state)}">
@@ -282,38 +263,38 @@ export default class EntityStateTool extends BaseTool {
     `;
   }
 
-  _renderState() {
-    this.MergeAnimationClassIfChanged();
-    this.MergeAnimationStyleIfChanged();
-    this.MergeColorFromState(this.styles.state);
+  // _renderState() {
+  //   this.MergeAnimationClassIfChanged();
+  //   this.MergeAnimationStyleIfChanged();
+  //   this.MergeColorFromState(this.styles.state);
 
-    // var inState = this._stateValue?.toLowerCase();
-    let inState = this._stateValue;
+  //   // var inState = this._stateValue?.toLowerCase();
+  //   let inState = this._stateValue;
 
-    if ((inState) && isNaN(inState)) {
-      // const stateObj = this._card.config.entities[this.defaultEntityIndex()].entity;
-      const stateObj = this._card.entities[this.defaultEntityIndex()];
-      const domain = this._card._computeDomain(this._card.config.entities[this.defaultEntityIndex()].entity);
+  //   if ((inState) && isNaN(inState)) {
+  //     // const stateObj = this._card.config.entities[this.defaultEntityIndex()].entity;
+  //     const stateObj = this._card.entities[this.defaultEntityIndex()];
+  //     const domain = this._card._computeDomain(this._card.config.entities[this.defaultEntityIndex()].entity);
 
-      const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
-      const localeTag1 = stateObj.attributes?.device_class ? `component.${domain}.state.${stateObj.attributes.device_class}.${inState}` : '--';
-      const localeTag2 = `component.${domain}.state._.${inState}`;
+  //     const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
+  //     const localeTag1 = stateObj.attributes?.device_class ? `component.${domain}.state.${stateObj.attributes.device_class}.${inState}` : '--';
+  //     const localeTag2 = `component.${domain}.state._.${inState}`;
 
-      inState = (localeTag && this._card.toLocale(localeTag, inState))
-          || (stateObj.attributes?.device_class
-          && this._card.toLocale(localeTag1, inState))
-          || this._card.toLocale(localeTag2, inState)
-          || stateObj.state;
+  //     inState = (localeTag && this._card.toLocale(localeTag, inState))
+  //         || (stateObj.attributes?.device_class
+  //         && this._card.toLocale(localeTag1, inState))
+  //         || this._card.toLocale(localeTag2, inState)
+  //         || stateObj.state;
 
-      inState = this.textEllipsis(inState, this.config?.show?.ellipsis);
-    }
+  //     inState = this.textEllipsis(inState, this.config?.show?.ellipsis);
+  //   }
 
-    return svg`
-      <tspan class="${classMap(this.classes.state)}" x="${this.svg.x}" y="${this.svg.y}"
-        style="${styleMap(this.styles.state)}">
-        ${this.config?.text?.before ? this.config.text.before : ''}${inState}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
-    `;
-  }
+  //   return svg`
+  //     <tspan class="${classMap(this.classes.state)}" x="${this.svg.x}" y="${this.svg.y}"
+  //       style="${styleMap(this.styles.state)}">
+  //       ${this.config?.text?.before ? this.config.text.before : ''}${inState}${this.config?.text?.after ? this.config.text.after : ''}</tspan>
+  //   `;
+  // }
 
   _renderUom() {
     if ((this.config.show.uom === 'none') || (typeof this._stateValue === 'undefined')) {
@@ -374,7 +355,7 @@ export default class EntityStateTool extends BaseTool {
 
   render() {
     // eslint-disable-next-line no-constant-condition
-    if (true || (this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id) === 'sensor')) {
+    if (true || (computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id) === 'sensor')) {
       return svg`
     <svg overflow="visible" id="state-${this.toolId}"
       class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}">

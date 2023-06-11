@@ -33,7 +33,6 @@ import {
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { ifDefined } from 'lit-html/directives/if-defined.js';
-// import { selectUnit } from '@formatjs/intl-utils';
 import { version } from '../package.json';
 
 import {
@@ -59,6 +58,8 @@ import {
   rgbww2rgb,
   temperature2rgb,
 } from './frontend_mods/color/convert-light-color';
+
+import { computeDomain } from './frontend_mods/common/entity/compute_domain';
 
 console.info(
   `%c  SWISS-ARMY-KNIFE-CARD  \n%c      Version ${version}      `,
@@ -570,14 +571,6 @@ class SwissArmyKnifeCard extends LitElement {
 
     if (!this.connected) {
       if (this.dev.debug) console.log('set hass but NOT connected', this.cardId);
-
-    // 2020.02.10 Troubles with connectcallback late, so windows are not yet calculated. ie
-    // things around icons go wrong...
-    // what if return is here..
-      // return;
-    } else {
-      // #WIP
-      // this.requestUpdate();
     }
 
     if (!this.config.entities) {
@@ -749,7 +742,7 @@ class SwissArmyKnifeCard extends LitElement {
 
     // testing
     if (config.entities) {
-      const newdomain = this._computeDomain(config.entities[0].entity);
+      const newdomain = computeDomain(config.entities[0].entity);
       if (newdomain !== 'sensor') {
         // If not a sensor, check if attribute is a number. If so, continue, otherwise Error...
         if (config.entities[0].attribute && !isNaN(config.entities[0].attribute)) {
@@ -1410,25 +1403,12 @@ class SwissArmyKnifeCard extends LitElement {
   */
 
 _buildStateString(inState, entityConfig) {
-  // if (inState === undefined) inState = 'undefined';
-
-  // lastig. Die undefined of 'undefined' zorgt voor ellende bij de brightness.
-  // die kan bij weergave hier niet mee omgaan. wordt of nan of undefined als status
-  // die undefined kwam voorheen niet door, dus werd niet afgehandeld als geldige waarde
-  // om dan niks te tonen. kijken hoe state bij undefined oid wordt gerenderd.
-  // rest gaat met huidige oplossing namelijk goed qua licht weergave.
-  let realInState = inState;
-
-  // if (inState === undefined) inState = 'undefined';
+  // Keep undefined as state. Do NOT change this one!!
   if (typeof inState === 'undefined') return inState;
 
-  // if ([undefined, 'undefined', 'unavailable'].includes(inState)) return inState;
-  // if (isNaN(inState)) return inState;
-  // console.log('buildstringetje, begin, ', inState, inState?.toString());
-
-  // Check for built-in state converters
+  // New in v2.5.1: Check for built-in state converters
   if (entityConfig.convert) {
-    // Match converter with paramter between ()
+    // Match converter with parameter between ()
     let splitted = entityConfig.convert.match(/(^\w+)\((\d+)\)/);
     let converter;
     let parameter;
@@ -1548,12 +1528,6 @@ _buildStateString(inState, entityConfig) {
                 } else {
                   inState = rgb2hex(rgbColor);
                 }
-
-                // if (converter === 'rgb_csv') {
-                //   inState = entity.attributes.rgb_color.toString();
-                // } else {
-                //   inState = rgb2hex(entity.attributes.rgb_color);
-                // }
               }
               break;
             case 'rgbw': {
@@ -1632,13 +1606,6 @@ _buildStateString(inState, entityConfig) {
               }
               break;
             default:
-              // If light is switched off, there is no color_mode, just as there is no
-              // brightness in that case (undefined)
-              // if (converter === 'rgb_csv') {
-              //   inState = `${255},${255},${255}`;
-              // } else {
-              //   inState = '#ffffff00';
-              // }
               break;
           }
         }
@@ -1648,162 +1615,12 @@ _buildStateString(inState, entityConfig) {
         break;
     }
   }
-  // console.log('buildstringetje, einde, ', inState, inState?.toString(), realInState);
   if (typeof inState === 'undefined') { return undefined; }
-  // if ([undefined, 'undefined', 'unavailable'].includes(inState)) return inState;
   if (Number.isNaN(inState)) {
-    console.log('buildstringetje, returning instate as NAN', inState);
     return inState;
   }
   return inState.toString();
 }
-
-  /** *****************************************************************************
-  * card::_buildState()
-  *
-  * Summary.
-  * Builds the State string.
-  * If state is not a number, the state is returned AS IS, otherwise the state
-  * is build according to the specified number of decimals.
-  *
-  * NOTE:
-  * - a number value of "-0" is translated to "0". The sign is gone...
-  *
-  * IMPORTANT NOTE:
-  * - do NOT replace isNaN() by Number.isNaN(). They are INCOMPATIBLE !!!!!!!!!
-  */
-
-  // _buildState(inState, entityConfig) {
-  //   // HACK
-  //   if (isNaN(inState)) return inState;
-  //   return Number(inState).toString();
-
-  //   if (isNaN(inState)) {
-  //     if (inState === 'unavailable') return '-ua-';
-  //     return inState;
-  //   }
-
-  //   if (entityConfig.format === 'brightness') {
-  //     return `${Math.round((inState / 255) * 100)}`;
-  //   }
-
-  //   // Get absolute value and sign value (-1, 0, or 1)
-  //   const state = Math.abs(Number(inState));
-  //   const sign = Math.sign(inState);
-
-  //   if (entityConfig.decimals === undefined || Number.isNaN(entityConfig.decimals) || Number.isNaN(state))
-  //     return (sign === -1 ? '-' : '') + (Math.round(state * 100) / 100).toString();
-
-  //   const x = 10 ** entityConfig.decimals;
-  //   return (sign === -1 ? '-' : '') + (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString();
-  // }
-
-  /** *****************************************************************************
-  * card::_buildSecondaryInfo()
-  *
-  * Summary.
-  * Builds the SecondaryInfo string.
-  *
-  */
-
-  // _buildSecondaryInfo(inSecInfoState, entityConfig) {
-  //   const leftPad = (num) => (num < 10 ? `0${num}` : num);
-
-  //   function secondsToDuration(d) {
-  //     const h = Math.floor(d / 3600);
-  //     const m = Math.floor((d % 3600) / 60);
-  //     const s = Math.floor((d % 3600) % 60);
-
-  //     if (h > 0) {
-  //       return `${h}:${leftPad(m)}:${leftPad(s)}`;
-  //     }
-  //     if (m > 0) {
-  //       return `${m}:${leftPad(s)}`;
-  //     }
-  //     if (s > 0) {
-  //       return `${s}`;
-  //     }
-  //     return null;
-  //   }
-
-  //   // HACK
-  //   return inSecInfoState;
-
-  //   const lang = this._hass.selectedLanguage || this._hass.language;
-
-  //   // this.polyfill(lang);
-
-  //   if (['relative', 'total', 'date', 'time', 'datetime'].includes(entityConfig.format)) {
-  //     const timestamp = new Date(inSecInfoState);
-  //     if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
-  //       return inSecInfoState;
-  //     }
-
-  //     let retValue;
-  //     // return date/time according to formatting...
-  //     switch (entityConfig.format) {
-  //       case 'relative':
-  //         // eslint-disable-next-line no-case-declarations
-  //         const diff = selectUnit(timestamp, new Date());
-  //         retValue = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(diff.value, diff.unit);
-  //         break;
-  //       case 'total':
-  //       case 'precision':
-  //         retValue = 'Not Yet Supported';
-  //         break;
-  //       case 'date':
-  //         retValue = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'numeric', day: 'numeric' }).format(timestamp);
-  //         break;
-  //       case 'time':
-  //         retValue = new Intl.DateTimeFormat(lang, { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(timestamp);
-  //         break;
-  //       case 'datetime':
-  //         retValue = new Intl.DateTimeFormat(lang, {
-  //           year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
-  //         }).format(timestamp);
-  //         break;
-  //       default:
-  //     }
-  //     return retValue;
-  //   }
-
-  //   if (isNaN(parseFloat(inSecInfoState)) || !isFinite(inSecInfoState)) {
-  //     return inSecInfoState;
-  //   }
-  //   if (entityConfig.format === 'brightness') {
-  //     return `${Math.round((inSecInfoState / 255) * 100)} %`;
-  //   }
-  //   if (entityConfig.format === 'duration') {
-  //     return secondsToDuration(inSecInfoState);
-  //   }
-  // }
-
-  /** *****************************************************************************
-  * card::_computeState()
-  *
-  * Summary.
-  *
-  */
-
-  // _computeState(inState, dec) {
-  //   if (isNaN(inState)) {
-  //     console.log('computestate - NAN', inState, dec);
-  //     return inState;
-  //   }
-
-  //   const state = Number(inState);
-
-  //   if (dec === undefined || isNaN(dec) || isNaN(state)) {
-  //     return Math.round(state * 100) / 100;
-  //   }
-
-  //   const x = 10 ** dec;
-  //   return (Math.round(state * x) / x).toFixed(dec);
-  // }
-
-  _computeDomain(entityId) {
-    return entityId.substr(0, entityId.indexOf('.'));
-  }
 
   _computeEntity(entityId) {
     return entityId.substr(entityId.indexOf('.') + 1);
