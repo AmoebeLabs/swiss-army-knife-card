@@ -172,7 +172,7 @@ export default class EntityStateTool extends BaseTool {
           // retValue = new Intl.DateTimeFormat(lang, { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(timestamp);
           break;
         case 'time-24h':
-          retValue = formatTime24h(timestamp, locale);
+          retValue = formatTime24h(timestamp);
           break;
         case 'time_weekday':
           retValue = formatTimeWeekday(timestamp, locale);
