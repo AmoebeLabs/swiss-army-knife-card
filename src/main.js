@@ -589,7 +589,6 @@ class SwissArmyKnifeCard extends LitElement {
     let newSecInfoState;
     let newSecInfoStateStr;
 
-    let iconSet = false;
     let newIconStr;
 
     let attrSet = false;
@@ -621,7 +620,6 @@ class SwissArmyKnifeCard extends LitElement {
       // Check for icon changes. Some icons can change independent of the state (battery) for instance
       // Only monitor this if no fixed icon specified in the configuration
       if (!this.config.entities[index].icon) {
-        iconSet = true;
         newIconStr = entityIsUndefined ? undefined : hass.states[this.config.entities[index].entity].attributes.icon;
 
         if (newIconStr !== this.iconStr[index]) {
