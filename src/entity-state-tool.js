@@ -6,7 +6,7 @@ import { selectUnit } from '@formatjs/intl-utils';
 import Merge from './merge';
 import BaseTool from './base-tool';
 
-import { formatNumber, getDefaultFormatOptions, isNumericState } from './frontend_mods/format_number';
+import { formatNumber, getDefaultFormatOptions } from './frontend_mods/format_number';
 import {
   formatDate,
   formatDateMonth,
