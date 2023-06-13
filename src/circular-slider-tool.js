@@ -369,7 +369,7 @@ export default class CircularSliderTool extends BaseTool {
 
     const x = 10 ** dec;
     this.labelValue2 = (Math.round(this.pointToSliderValue(m) * x) / x).toFixed(dec);
-
+    console.log('updateLabel, labelvalue ', this.labelValue2);
     if (this.config.position.label.placement !== 'none') {
       this.elements.label.textContent = this.labelValue2;
     }
@@ -720,18 +720,19 @@ export default class CircularSliderTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
 
     // this.MergeColorFromState();
-
     this.renderValue = this._stateValue;
+    // if (this.renderValue === undefined) this.renderValue = 'undefined';
     if (this.dragging) {
       this.renderValue = this.labelValue2;
-    } else if (this.elements?.label) this.elements.label.textContent = this.renderValue;
+    } else if (this.elements?.label) this.elements.label.textContent = (this.renderValue === 'undefined') ? '' : this.renderValue;
+
     function renderLabel(argGroup) {
       if ((this.config.position.label.placement === 'thumb') && argGroup) {
         return svg`
       <text id="label">
         <tspan class="${classMap(this.classes.label)}" x="${this.svg.label.cx}" y="${this.svg.label.cy}" style="${styleMap(this.styles.label)}">
-        ${this.renderValue}</tspan>
-        ${this._renderUom()}
+        ${typeof this.renderValue === 'undefined' ? '' : this.renderValue}</tspan>
+        ${typeof this.renderValue === 'undefined' ? '' : this._renderUom()}
         </text>
         `;
       }
@@ -740,8 +741,9 @@ export default class CircularSliderTool extends BaseTool {
         return svg`
           <text id="label" style="transform-origin:center;transform-box: fill-box;">
             <tspan class="${classMap(this.classes.label)}" data-placement="position" x="${this.svg.label.cx}" y="${this.svg.label.cy}"
-            style="${styleMap(this.styles.label)}">${this.renderValue ? this.renderValue : ''}</tspan>
-            ${this.renderValue ? this._renderUom() : ''}
+            style="${styleMap(this.styles.label)}">
+            ${typeof this.renderValue === 'undefined' ? '' : this.renderValue}</tspan>
+            ${typeof this.renderValue === 'undefined' ? '' : this._renderUom()}
           </text>
           `;
       }

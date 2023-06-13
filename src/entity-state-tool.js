@@ -2,9 +2,36 @@ import { svg } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
+import { selectUnit } from '@formatjs/intl-utils';
 import Merge from './merge';
 import BaseTool from './base-tool';
 
+import { formatNumber, getDefaultFormatOptions } from './frontend_mods/format_number';
+import {
+  formatDate,
+  formatDateMonth,
+  formatDateMonthYear,
+  formatDateShort,
+  formatDateNumeric,
+  formatDateWeekday,
+  formatDateWeekdayDay,
+  formatDateWeekdayShort,
+ } from './frontend_mods/datetime/format_date';
+ import {
+  formatTime,
+  formatTime24h,
+  formatTimeWeekday,
+  formatTimeWithSeconds,
+} from './frontend_mods/datetime/format_time';
+import {
+  formatDateTime,
+  formatDateTimeNumeric,
+  formatDateTimeWithSeconds,
+  formatShortDateTime,
+  formatShortDateTimeWithYear,
+} from './frontend_mods/datetime/format_date_time';
+import { formatDuration } from './frontend_mods/datetime/duration';
+import { computeDomain } from './frontend_mods/common/entity/compute_domain';
 /** ****************************************************************************
   * EntityStateTool class
   *
@@ -49,9 +76,124 @@ export default class EntityStateTool extends BaseTool {
     if (this.dev.debug) console.log('EntityStateTool constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
+  static testTimeDate = false;
+
   // EntityStateTool::value
   set value(state) {
     super.value = state;
+  }
+
+  formatStateString(inState, entityConfig) {
+    const lang = this._card._hass.selectedLanguage || this._card._hass.language;
+    let locale = {};
+    locale.language = lang;
+
+    if (['relative', 'total',
+         'datetime', 'datetime-short', 'datetime-short_with-year', 'datetime_seconds', 'datetime-numeric',
+         'date', 'date_month', 'date_month_year', 'date-short', 'date-numeric', 'date_weekday', 'date_weekday_day', 'date_weekday-short',
+         'time', 'time-24h', 'time_weekday', 'time_seconds'].includes(entityConfig.format)) {
+      const timestamp = new Date(inState);
+      if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
+        return inState;
+      }
+
+      // if (!EntityStateTool.testTimeDate) {
+      //   EntityStateTool.testTimeDate = true;
+      //   console.log('datetime', formatDateTime(timestamp, locale));
+      //   console.log('datetime-numeric', formatDateTimeNumeric(timestamp, locale));
+      //   console.log('date', formatDate(timestamp, locale));
+      //   console.log('date_month', formatDateMonth(timestamp, locale));
+      //   console.log('date_month_year', formatDateMonthYear(timestamp, locale));
+      //   console.log('date-short', formatDateShort(timestamp, locale));
+      //   console.log('date-numeric', formatDateNumeric(timestamp, locale));
+      //   console.log('date_weekday', formatDateWeekday(timestamp, locale));
+      //   console.log('date_weekday-short', formatDateWeekdayShort(timestamp, locale));
+      //   console.log('date_weekday_day', formatDateWeekdayDay(timestamp, locale));
+      //   console.log('time', formatTime(timestamp, locale));
+      //   console.log('time-24h', formatTime24h(timestamp, locale));
+      //   console.log('time_weekday', formatTimeWeekday(timestamp, locale));
+      //   console.log('time_seconds', formatTimeWithSeconds(timestamp, locale));
+      // }
+
+      let retValue;
+      // return date/time according to formatting...
+      switch (entityConfig.format) {
+        case 'relative':
+          // eslint-disable-next-line no-case-declarations
+          const diff = selectUnit(timestamp, new Date());
+          retValue = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(diff.value, diff.unit);
+          break;
+        case 'total':
+        case 'precision':
+          retValue = 'Not Yet Supported';
+          break;
+        case 'datetime':
+          retValue = formatDateTime(timestamp, locale);
+          break;
+        case 'datetime-short':
+          retValue = formatShortDateTime(timestamp, locale);
+          break;
+        case 'datetime-short_with-year':
+          retValue = formatShortDateTimeWithYear(timestamp, locale);
+          break;
+        case 'datetime_seconds':
+          retValue = formatDateTimeWithSeconds(timestamp, locale);
+          break;
+        case 'datetime-numeric':
+          retValue = formatDateTimeNumeric(timestamp, locale);
+          break;
+        case 'date':
+          retValue = formatDate(timestamp, locale);
+          // retValue = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'numeric', day: 'numeric' }).format(timestamp);
+          break;
+        case 'date_month':
+          retValue = formatDateMonth(timestamp, locale);
+          break;
+        case 'date_month_year':
+          retValue = formatDateMonthYear(timestamp, locale);
+          break;
+        case 'date-short':
+          retValue = formatDateShort(timestamp, locale);
+          break;
+        case 'date-numeric':
+          retValue = formatDateNumeric(timestamp, locale);
+          break;
+        case 'date_weekday':
+          retValue = formatDateWeekday(timestamp, locale);
+          break;
+        case 'date_weekday-short':
+          retValue = formatDateWeekdayShort(timestamp, locale);
+          break;
+        case 'date_weekday_day':
+          retValue = formatDateWeekdayDay(timestamp, locale);
+          break;
+        case 'time':
+          retValue = formatTime(timestamp, locale);
+          // retValue = new Intl.DateTimeFormat(lang, { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(timestamp);
+          break;
+        case 'time-24h':
+          retValue = formatTime24h(timestamp);
+          break;
+        case 'time_weekday':
+          retValue = formatTimeWeekday(timestamp, locale);
+          break;
+        case 'time_seconds':
+          retValue = formatTimeWithSeconds(timestamp, locale);
+          break;
+        default:
+      }
+      return retValue;
+    }
+
+    if (isNaN(parseFloat(inState)) || !isFinite(inState)) {
+      return inState;
+    }
+    if (entityConfig.format === 'brightness' || entityConfig.format === 'brightness_pct') {
+      return `${Math.round((inState / 255) * 100)} %`;
+    }
+    if (entityConfig.format === 'duration') {
+      return formatDuration(inState, 's');
+    }
   }
 
   _renderState() {
@@ -59,27 +201,60 @@ export default class EntityStateTool extends BaseTool {
     this.MergeAnimationStyleIfChanged();
     this.MergeColorFromState(this.styles.state);
 
-    // var inState = this._stateValue?.toLowerCase();
     let inState = this._stateValue;
 
-    if ((inState) && isNaN(inState)) {
-      // const stateObj = this._card.config.entities[this.defaultEntityIndex()].entity;
-      const stateObj = this._card.entities[this.defaultEntityIndex()];
-      const domain = this._card._computeDomain(this._card.config.entities[this.defaultEntityIndex()].entity);
+    const stateObj = this._card.entities[this.defaultEntityIndex()];
+    if (stateObj === undefined) return svg``;
+    if ([undefined, 'undefined'].includes(inState)) { return svg``; }
+    if (inState === undefined) return svg``;
 
-      const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
-      const localeTag1 = stateObj.attributes?.device_class ? `component.${domain}.state.${stateObj.attributes.device_class}.${inState}` : '--';
-      const localeTag2 = `component.${domain}.state._.${inState}`;
+    // Need entities, not states to get platform, translation_key, etc.!!!!!
+    const entity = this._card._hass.entities[stateObj.entity_id];
 
-      inState = (localeTag && this._card.toLocale(localeTag, inState))
-          || (stateObj.attributes?.device_class
-          && this._card.toLocale(localeTag1, inState))
-          || this._card.toLocale(localeTag2, inState)
-          || stateObj.state;
+    const entityConfig = this._card.config.entities[this.defaultEntityIndex()];
+    const domain = computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id);
 
-      inState = this.textEllipsis(inState, this.config?.show?.ellipsis);
+    const localeTag = this.config.locale_tag ? this.config.locale_tag + inState.toLowerCase() : undefined;
+
+    // HACK
+    if ((entityConfig.format !== undefined) && (typeof inState !== 'undefined')) {
+        inState = this.formatStateString(inState, entityConfig);
     }
 
+    if ((inState) && isNaN(inState)
+     && !entityConfig.secondary_info
+      // && !this._card.config.entities[this.defaultEntityIndex()].attribute) {
+      || entityConfig.attribute) {
+      inState = (localeTag && this._card._hass.localize(localeTag))
+        || (entity?.translation_key
+            && this._card._hass.localize(
+            `component.${entity.platform}.entity.${domain}.${entity.translation_key}.state.${inState}`,
+          ))
+        // Return device class translation
+        || (entity?.attributes?.device_class
+            && this._card._hass.localize(
+            `component.${domain}.entity_component.${entity.attributes.device_class}.state.${inState}`,
+          ))
+        // Return default translation
+        || this._card._hass.localize(`component.${domain}.entity_component._.state.${inState}`)
+        // We don't know! Return the raw state.
+        || inState;
+      inState = this.textEllipsis(inState, this.config?.show?.ellipsis);
+    }
+    if (['undefined', 'unknown', 'unavailable', '-ua-'].includes(inState)) {
+      inState = this._card._hass.localize(`state.default.${inState}`);
+    }
+
+    if (!isNaN(inState)) {
+      let options = {};
+      options = getDefaultFormatOptions(inState, options);
+      if (this._card.config.entities[this.defaultEntityIndex()].decimals !== undefined) {
+        options.maximumFractionDigits = this._card.config.entities[this.defaultEntityIndex()].decimals;
+        options.minimumFractionDigits = options.maximumFractionDigits;
+      }
+      let renderNumber = formatNumber(inState, this._card._hass.locale, options);
+      inState = renderNumber;
+    }
     return svg`
       <tspan class="${classMap(this.classes.state)}" x="${this.svg.x}" y="${this.svg.y}"
         style="${styleMap(this.styles.state)}">
@@ -88,7 +263,7 @@ export default class EntityStateTool extends BaseTool {
   }
 
   _renderUom() {
-    if (this.config.show.uom === 'none') {
+    if ((this.config.show.uom === 'none') || (typeof this._stateValue === 'undefined')) {
       return svg``;
     } else {
       this.MergeAnimationClassIfChanged();
@@ -146,7 +321,7 @@ export default class EntityStateTool extends BaseTool {
 
   render() {
     // eslint-disable-next-line no-constant-condition
-    if (true || (this._card._computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id) === 'sensor')) {
+    if (true || (computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id) === 'sensor')) {
       return svg`
     <svg overflow="visible" id="state-${this.toolId}"
       class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}">

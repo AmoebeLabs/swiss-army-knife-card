@@ -33,7 +33,6 @@ import {
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { ifDefined } from 'lit-html/directives/if-defined.js';
-import { selectUnit } from '@formatjs/intl-utils';
 import { version } from '../package.json';
 
 import {
@@ -48,8 +47,19 @@ import Templates from './templates';
 import Toolset from './toolset';
 import Colors from './colors';
 
-// Original injector is buggy. Use a patched version, and store this local...
-// import * as SvgInjector from '../dist/SVGInjector.min.js'; // lgtm[js/unused-local-variable]
+import {
+  hs2rgb,
+  rgb2hex,
+  rgb2hsv,
+  hsv2rgb,
+} from './frontend_mods/color/convert-color';
+import {
+  rgbw2rgb,
+  rgbww2rgb,
+  temperature2rgb,
+} from './frontend_mods/color/convert-light-color';
+
+import { computeDomain } from './frontend_mods/common/entity/compute_domain';
 
 console.info(
   `%c  SWISS-ARMY-KNIFE-CARD  \n%c      Version ${version}      `,
@@ -80,6 +90,7 @@ class SwissArmyKnifeCard extends LitElement {
     this.entitiesStr = [];
     this.attributesStr = [];
     this.secondaryInfoStr = [];
+    this.iconStr = [];
     this.viewBoxSize = SVG_VIEW_BOX;
     this.viewBox = { width: SVG_VIEW_BOX, height: SVG_VIEW_BOX };
 
@@ -561,14 +572,6 @@ class SwissArmyKnifeCard extends LitElement {
 
     if (!this.connected) {
       if (this.dev.debug) console.log('set hass but NOT connected', this.cardId);
-
-    // 2020.02.10 Troubles with connectcallback late, so windows are not yet calculated. ie
-    // things around icons go wrong...
-    // what if return is here..
-      // return;
-    } else {
-      // #WIP
-      // this.requestUpdate();
     }
 
     if (!this.config.entities) {
@@ -586,13 +589,17 @@ class SwissArmyKnifeCard extends LitElement {
     let newSecInfoState;
     let newSecInfoStateStr;
 
+    let newIconStr;
+
     let attrSet = false;
     let newStateStr;
+    let entityIsUndefined = false;
     // eslint-disable-next-line no-restricted-syntax, no-unused-vars
     for (value of this.config.entities) {
       this.entities[index] = hass.states[this.config.entities[index].entity];
 
-      if (this.entities[index] === undefined) {
+      entityIsUndefined = this.entities[index] === undefined;
+      if (entityIsUndefined) {
         console.error('SAK - set hass, entity undefined: ', this.config.entities[index].entity);
         // Temp disable throw Error(`Set hass, entity undefined: ${this.config.entities[index].entity}`);
       }
@@ -600,11 +607,23 @@ class SwissArmyKnifeCard extends LitElement {
       // Get secondary info state if specified and available
       if (this.config.entities[index].secondary_info) {
         secInfoSet = true;
-        newSecInfoState = this.entities[index][this.config.entities[index].secondary_info];
-        newSecInfoStateStr = this._buildSecondaryInfo(newSecInfoState, this.config.entities[index]);
+        newSecInfoState = entityIsUndefined ? undefined : this.entities[index][this.config.entities[index].secondary_info];
+        // newSecInfoStateStr = this._buildSecondaryInfo(newSecInfoState, this.config.entities[index]);
+        newSecInfoStateStr = this._buildStateString(newSecInfoState, this.config.entities[index]);
 
         if (newSecInfoStateStr !== this.secondaryInfoStr[index]) {
           this.secondaryInfoStr[index] = newSecInfoStateStr;
+          entityHasChanged = true;
+        }
+      }
+
+      // Check for icon changes. Some icons can change independent of the state (battery) for instance
+      // Only monitor this if no fixed icon specified in the configuration
+      if (!this.config.entities[index].icon) {
+        newIconStr = entityIsUndefined ? undefined : hass.states[this.config.entities[index].entity].attributes.icon;
+
+        if (newIconStr !== this.iconStr[index]) {
+          this.iconStr[index] = newIconStr;
           entityHasChanged = true;
         }
       }
@@ -656,7 +675,7 @@ class SwissArmyKnifeCard extends LitElement {
 
         // eslint-disable-next-line no-constant-condition
         if (true) { // (typeof attributeState != 'undefined') {
-          newStateStr = this._buildState(attributeState, this.config.entities[index]);
+          newStateStr = this._buildStateString(attributeState, this.config.entities[index]);
           if (newStateStr !== this.attributesStr[index]) {
             this.attributesStr[index] = newStateStr;
             entityHasChanged = true;
@@ -669,13 +688,16 @@ class SwissArmyKnifeCard extends LitElement {
         // Any tool should still react to a percentage going from a valid value to undefined!
       }
       if ((!attrSet) && (!secInfoSet)) {
-        newStateStr = this._buildState(this.entities[index].state, this.config.entities[index]);
+        newStateStr = entityIsUndefined ? undefined : this._buildStateString(this.entities[index].state, this.config.entities[index]);
         if (newStateStr !== this.entitiesStr[index]) {
           this.entitiesStr[index] = newStateStr;
           entityHasChanged = true;
         }
         if (this.dev.debug) console.log('set hass - attrSet=false', this.cardId, `${new Date().getSeconds().toString()}.${new Date().getMilliseconds().toString()}`, newStateStr);
       }
+
+      // Extend a bit for entity changed. Might just help enough...
+      entityHasChanged ||= attrSet || secInfoSet;
 
       index += 1;
       attrSet = false;
@@ -684,7 +706,12 @@ class SwissArmyKnifeCard extends LitElement {
 
     if ((!entityHasChanged) && (!this.theme.modeChanged)) {
       // console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
-
+      // I can see 50-60 times this message, without visible updates. So should batch update somehow
+      // if no changed detected. Say timer of 200msec?
+      // - if change -> cancel timer, and update
+      // - if NO change -> start timer, if not yet running, otherwise leave running
+      // console.log('set hass, no change detected..., but still updating!');
+      // console.log('set hass, no change detected..., returning!');
       return;
     }
 
@@ -698,6 +725,10 @@ class SwissArmyKnifeCard extends LitElement {
 
     // Always request update to render the card if any of the states, attributes or theme mode have changed...
 
+    // batch update?
+    // set timer to every 1s
+    // if change -> update
+    // if update but no change --> timer
     this.requestUpdate();
 
     // An update has been requested to recalculate / redraw the tools, so reset theme mode changed
@@ -737,7 +768,7 @@ class SwissArmyKnifeCard extends LitElement {
 
     // testing
     if (config.entities) {
-      const newdomain = this._computeDomain(config.entities[0].entity);
+      const newdomain = computeDomain(config.entities[0].entity);
       if (newdomain !== 'sensor') {
         // If not a sensor, check if attribute is a number. If so, continue, otherwise Error...
         if (config.entities[0].attribute && !isNaN(config.entities[0].attribute)) {
@@ -1385,145 +1416,237 @@ class SwissArmyKnifeCard extends LitElement {
     return (resources && resources[string] ? resources[string] : fallback);
   }
 
-  /** *****************************************************************************
-  * card::_buildState()
+/** *****************************************************************************
+  * card::_buildStateString()
   *
   * Summary.
   * Builds the State string.
   * If state is not a number, the state is returned AS IS, otherwise the state
-  * is build according to the specified number of decimals.
-  *
-  * NOTE:
-  * - a number value of "-0" is translated to "0". The sign is gone...
+  * is converted if specified before it is returned as a string
   *
   * IMPORTANT NOTE:
   * - do NOT replace isNaN() by Number.isNaN(). They are INCOMPATIBLE !!!!!!!!!
   */
 
-  _buildState(inState, entityConfig) {
-    if (isNaN(inState)) {
-      if (inState === 'unavailable') return '-ua-';
-      return inState;
+_buildStateString(inState, entityConfig) {
+  // Keep undefined as state. Do NOT change this one!!
+  if (typeof inState === 'undefined') return inState;
+
+  // New in v2.5.1: Check for built-in state converters
+  if (entityConfig.convert) {
+    // Match converter with parameter between ()
+    let splitted = entityConfig.convert.match(/(^\w+)\((\d+)\)/);
+    let converter;
+    let parameter;
+    // If no parameters found, just the converter
+    if (splitted === null) {
+      converter = entityConfig.convert;
+    } else if (splitted.length === 3) { // If parameter found, process...
+      converter = splitted[1];
+      parameter = Number(splitted[2]);
     }
+    switch (converter) {
+      case 'brightness_pct':
+        inState = inState === 'undefined' ? 'undefined' : `${Math.round((inState / 255) * 100)}`;
+        break;
+      case 'multiply':
+        inState = `${Math.round((inState * parameter))}`;
+        break;
+      case 'divide':
+        inState = `${Math.round((inState / parameter))}`;
+        break;
+      case 'rgb_csv':
+      case 'rgb_hex':
+        // https://github.com/home-assistant/frontend/blob/1bf03f020e2b2523081d4f03580886b51e970c72/src/dialogs/more-info/components/lights/ha-favorite-color-button.ts#L39
+        // https://github.com/home-assistant/frontend/blob/1bf03f020e2b2523081d4f03580886b51e970c72/src/common/color/convert-light-color.ts
+        // private get _rgbColor(): [number, number, number] {
+        //   if (this.color) {
+        //     if ("hs_color" in this.color) {
+        //       return hs2rgb([this.color.hs_color[0], this.color.hs_color[1] / 100]);
+        //     }
+        //     if ("color_temp_kelvin" in this.color) {
+        //       return temperature2rgb(this.color.color_temp_kelvin);
+        //     }
+        //     if ("rgb_color" in this.color) {
+        //       return this.color.rgb_color;
+        //     }
+        //     if ("rgbw_color" in this.color) {
+        //       return rgbw2rgb(this.color.rgbw_color);
+        //     }
+        //     if ("rgbww_color" in this.color) {
+        //       return rgbww2rgb(
+        //         this.color.rgbww_color,
+        //         this.stateObj?.attributes.min_color_temp_kelvin,
+        //         this.stateObj?.attributes.max_color_temp_kelvin
+        //       );
+        //     }
+        //   }
+        //   return [255, 255, 255];
+        // }
+        if (entityConfig.attribute) {
+          let entity = this._hass.states[entityConfig.entity];
+          switch (entity.attributes.color_mode) {
+            case 'unknown':
+              break;
+            case 'onoff':
+              break;
+            case 'brightness':
+                break;
+            case 'color_temp':
+              if (entity.attributes.color_temp_kelvin) {
+                let rgb = temperature2rgb(entity.attributes.color_temp_kelvin);
 
-    if (entityConfig.format === 'brightness') {
-      return `${Math.round((inState / 255) * 100)}`;
+                const hsvColor = rgb2hsv(rgb);
+                // Modify the real rgb color for better contrast
+                if (hsvColor[1] < 0.4) {
+                  // Special case for very light color (e.g: white)
+                  if (hsvColor[1] < 0.1) {
+                    hsvColor[2] = 225;
+                  } else {
+                    hsvColor[1] = 0.4;
+                  }
+                }
+                rgb = hsv2rgb(hsvColor);
+
+                rgb[0] = Math.round(rgb[0]);
+                rgb[1] = Math.round(rgb[1]);
+                rgb[2] = Math.round(rgb[2]);
+                if (converter === 'rgb_csv') {
+                  inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+                } else {
+                  inState = rgb2hex(rgb);
+                }
+              } else {
+                if (converter === 'rgb_csv') {
+                  inState = `${255},${255},${255}`;
+                } else {
+                  inState = '#ffffff00';
+                }
+              }
+              break;
+            case 'hs': {
+                let rgb = hs2rgb([entity.attributes.hs_color[0], entity.attributes.hs_color[1] / 100]);
+                rgb[0] = Math.round(rgb[0]);
+                rgb[1] = Math.round(rgb[1]);
+                rgb[2] = Math.round(rgb[2]);
+
+                if (converter === 'rgb_csv') {
+                  inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+                } else {
+                  inState = rgb2hex(rgb);
+                }
+              }
+              break;
+            case 'rgb': {
+                const hsvColor = rgb2hsv(this.stateObj.attributes.rgb_color);
+                // Modify the real rgb color for better contrast
+                if (hsvColor[1] < 0.4) {
+                  // Special case for very light color (e.g: white)
+                  if (hsvColor[1] < 0.1) {
+                    hsvColor[2] = 225;
+                  } else {
+                    hsvColor[1] = 0.4;
+                  }
+                }
+                const rgbColor = hsv2rgb(hsvColor);
+                if (converter === 'rgb_csv') {
+                  inState = rgbColor.toString();
+                } else {
+                  inState = rgb2hex(rgbColor);
+                }
+              }
+              break;
+            case 'rgbw': {
+                let rgb = rgbw2rgb(entity.attributes.rgbw_color);
+                rgb[0] = Math.round(rgb[0]);
+                rgb[1] = Math.round(rgb[1]);
+                rgb[2] = Math.round(rgb[2]);
+
+                if (converter === 'rgb_csv') {
+                  inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+                } else {
+                  inState = rgb2hex(rgb);
+                }
+              }
+              break;
+            case 'rgbww': {
+              let rgb = rgbww2rgb(entity.attributes.rgbww_color,
+                                  entity.attributes?.min_color_temp_kelvin,
+                                  entity.attributes?.max_color_temp_kelvin);
+              rgb[0] = Math.round(rgb[0]);
+              rgb[1] = Math.round(rgb[1]);
+              rgb[2] = Math.round(rgb[2]);
+
+              if (converter === 'rgb_csv') {
+                inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+              } else {
+                inState = rgb2hex(rgb);
+              }
+            }
+            break;
+            case 'white':
+              break;
+            case 'xy':
+              if (entity.attributes.hs_color) {
+                let rgb = hs2rgb([entity.attributes.hs_color[0], entity.attributes.hs_color[1] / 100]);
+// https://github.com/home-assistant/frontend/blob/8580d3f9bf59ffbcbe4187a0d7a58cc23d9822df/src/dialogs/more-info/components/lights/ha-more-info-light-brightness.ts#L76
+                // background slider has opacity of 0.2. Looks nice also, yes??
+                const hsvColor = rgb2hsv(rgb);
+                // Modify the real rgb color for better contrast
+                if (hsvColor[1] < 0.4) {
+                  // Special case for very light color (e.g: white)
+                  if (hsvColor[1] < 0.1) {
+                    hsvColor[2] = 225;
+                  } else {
+                    hsvColor[1] = 0.4;
+                  }
+                }
+                rgb = hsv2rgb(hsvColor);
+                rgb[0] = Math.round(rgb[0]);
+                rgb[1] = Math.round(rgb[1]);
+                rgb[2] = Math.round(rgb[2]);
+
+                if (converter === 'rgb_csv') {
+                  inState = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+                } else {
+                  inState = rgb2hex(rgb);
+                }
+              } else if (entity.attributes.color) {
+                // We should have h and s, including brightness...
+                let hsl = {};
+                hsl.l = entity.attributes.brightness;
+                hsl.h = entity.attributes.color.h || entity.attributes.color.hue;
+                hsl.s = entity.attributes.color.s || entity.attributes.color.saturation;
+                // Convert HSL value to RGB
+                // HERE
+                let { r, g, b } = Colors.hslToRgb(hsl);
+                if (converter === 'rgb_csv') {
+                  inState = `${r},${g},${b}`;
+                } else {
+                  const rHex = Colors.padZero(r.toString(16));
+                  const gHex = Colors.padZero(g.toString(16));
+                  const bHex = Colors.padZero(b.toString(16));
+                  inState = `#${rHex}${gHex}${bHex}`;
+                }
+              } else if (entity.attributes.xy_color) {
+              }
+              break;
+            default:
+              break;
+          }
+        }
+        break;
+      default:
+        console.error(`Unknown converter [${converter}] specified for entity [${entityConfig.entity}]!`);
+        break;
     }
-
-    // Get absolute value and sign value (-1, 0, or 1)
-    const state = Math.abs(Number(inState));
-    const sign = Math.sign(inState);
-
-    if (entityConfig.decimals === undefined || Number.isNaN(entityConfig.decimals) || Number.isNaN(state))
-      return (sign === -1 ? '-' : '') + (Math.round(state * 100) / 100).toString();
-
-    const x = 10 ** entityConfig.decimals;
-    return (sign === -1 ? '-' : '') + (Math.round(state * x) / x).toFixed(entityConfig.decimals).toString();
   }
-
-  /** *****************************************************************************
-  * card::_buildSecondaryInfo()
-  *
-  * Summary.
-  * Builds the SecondaryInfo string.
-  *
-  */
-
-  _buildSecondaryInfo(inSecInfoState, entityConfig) {
-    const leftPad = (num) => (num < 10 ? `0${num}` : num);
-
-    function secondsToDuration(d) {
-      const h = Math.floor(d / 3600);
-      const m = Math.floor((d % 3600) / 60);
-      const s = Math.floor((d % 3600) % 60);
-
-      if (h > 0) {
-        return `${h}:${leftPad(m)}:${leftPad(s)}`;
-      }
-      if (m > 0) {
-        return `${m}:${leftPad(s)}`;
-      }
-      if (s > 0) {
-        return `${s}`;
-      }
-      return null;
-    }
-
-    const lang = this._hass.selectedLanguage || this._hass.language;
-
-    // this.polyfill(lang);
-
-    if (['relative', 'total', 'date', 'time', 'datetime'].includes(entityConfig.format)) {
-      const timestamp = new Date(inSecInfoState);
-      if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
-        return inSecInfoState;
-      }
-
-      let retValue;
-      // return date/time according to formatting...
-      switch (entityConfig.format) {
-        case 'relative':
-          // eslint-disable-next-line no-case-declarations
-          const diff = selectUnit(timestamp, new Date());
-          retValue = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(diff.value, diff.unit);
-          break;
-        case 'total':
-        case 'precision':
-          retValue = 'Not Yet Supported';
-          break;
-        case 'date':
-          retValue = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'numeric', day: 'numeric' }).format(timestamp);
-          break;
-        case 'time':
-          retValue = new Intl.DateTimeFormat(lang, { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(timestamp);
-          break;
-        case 'datetime':
-          retValue = new Intl.DateTimeFormat(lang, {
-            year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
-          }).format(timestamp);
-          break;
-        default:
-      }
-      return retValue;
-    }
-
-    if (isNaN(parseFloat(inSecInfoState)) || !isFinite(inSecInfoState)) {
-      return inSecInfoState;
-    }
-    if (entityConfig.format === 'brightness') {
-      return `${Math.round((inSecInfoState / 255) * 100)} %`;
-    }
-    if (entityConfig.format === 'duration') {
-      return secondsToDuration(inSecInfoState);
-    }
+  if (typeof inState === 'undefined') { return undefined; }
+  if (Number.isNaN(inState)) {
+    return inState;
   }
-
-  /** *****************************************************************************
-  * card::_computeState()
-  *
-  * Summary.
-  *
-  */
-
-  _computeState(inState, dec) {
-    if (isNaN(inState)) {
-      console.log('computestate - NAN', inState, dec);
-      return inState;
-    }
-
-    const state = Number(inState);
-
-    if (dec === undefined || isNaN(dec) || isNaN(state)) {
-      return Math.round(state * 100) / 100;
-    }
-
-    const x = 10 ** dec;
-    return (Math.round(state * x) / x).toFixed(dec);
-  }
-
-  _computeDomain(entityId) {
-    return entityId.substr(0, entityId.indexOf('.'));
-  }
+  return inState.toString();
+}
 
   _computeEntity(entityId) {
     return entityId.substr(entityId.indexOf('.') + 1);

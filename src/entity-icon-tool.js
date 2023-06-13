@@ -1,12 +1,11 @@
 import { svg } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import { stateIcon } from 'custom-card-helpers';
-
 import { FONT_SIZE } from './const';
 import Merge from './merge';
 import BaseTool from './base-tool';
 import Utils from './utils';
+import { stateIconName } from './frontend_mods/common/entity/state_icon_name';
 
 /** ****************************************************************************
   * EntityIconTool class
@@ -111,7 +110,7 @@ export default class EntityIconTool extends BaseTool {
       || toolIcon // Defined by tool
       || entityConfig?.icon // Defined by configuration
       || entityState?.attributes?.icon // Using entity icon
-      || stateIcon(entityState) // Use card helper logic (2021.11.21)
+      || stateIconName(entityState) // From modified HA files
     );
   }
 
