@@ -90,6 +90,7 @@ class SwissArmyKnifeCard extends LitElement {
     this.entitiesStr = [];
     this.attributesStr = [];
     this.secondaryInfoStr = [];
+    this.iconStr = [];
     this.viewBoxSize = SVG_VIEW_BOX;
     this.viewBox = { width: SVG_VIEW_BOX, height: SVG_VIEW_BOX };
 
@@ -588,6 +589,9 @@ class SwissArmyKnifeCard extends LitElement {
     let newSecInfoState;
     let newSecInfoStateStr;
 
+    let iconSet = false;
+    let newIconStr;
+
     let attrSet = false;
     let newStateStr;
     let entityIsUndefined = false;
@@ -610,6 +614,18 @@ class SwissArmyKnifeCard extends LitElement {
 
         if (newSecInfoStateStr !== this.secondaryInfoStr[index]) {
           this.secondaryInfoStr[index] = newSecInfoStateStr;
+          entityHasChanged = true;
+        }
+      }
+
+      // Check for icon changes. Some icons can change independent of the state (battery) for instance
+      // Only monitor this if no fixed icon specified in the configuration
+      if (!this.config.entities[index].icon) {
+        iconSet = true;
+        newIconStr = entityIsUndefined ? undefined : hass.states[this.config.entities[index].entity].attributes.icon;
+
+        if (newIconStr !== this.iconStr[index]) {
+          this.iconStr[index] = newIconStr;
           entityHasChanged = true;
         }
       }
@@ -682,6 +698,9 @@ class SwissArmyKnifeCard extends LitElement {
         if (this.dev.debug) console.log('set hass - attrSet=false', this.cardId, `${new Date().getSeconds().toString()}.${new Date().getMilliseconds().toString()}`, newStateStr);
       }
 
+      // Extend a bit for entity changed. Might just help enough...
+      entityHasChanged ||= attrSet || secInfoSet;
+
       index += 1;
       attrSet = false;
       secInfoSet = false;
@@ -689,7 +708,12 @@ class SwissArmyKnifeCard extends LitElement {
 
     if ((!entityHasChanged) && (!this.theme.modeChanged)) {
       // console.timeEnd("--> " + this.cardId + " PERFORMANCE card::hass");
-
+      // I can see 50-60 times this message, without visible updates. So should batch update somehow
+      // if no changed detected. Say timer of 200msec?
+      // - if change -> cancel timer, and update
+      // - if NO change -> start timer, if not yet running, otherwise leave running
+      // console.log('set hass, no change detected..., but still updating!');
+      // console.log('set hass, no change detected..., returning!');
       return;
     }
 
@@ -703,6 +727,10 @@ class SwissArmyKnifeCard extends LitElement {
 
     // Always request update to render the card if any of the states, attributes or theme mode have changed...
 
+    // batch update?
+    // set timer to every 1s
+    // if change -> update
+    // if update but no change --> timer
     this.requestUpdate();
 
     // An update has been requested to recalculate / redraw the tools, so reset theme mode changed
