@@ -12,6 +12,7 @@ import EntityAreaTool from './entity-area-tool';
 import EntityIconTool from './entity-icon-tool';
 import EntityNameTool from './entity-name-tool';
 import EntityStateTool from './entity-state-tool';
+import SparklineGraphTool from './sparkline-graph-tool';
 import HorseshoeTool from './horseshoe-tool';
 import LineTool from './line-tool';
 import RangeSliderTool from './range-slider-tool';
@@ -96,6 +97,7 @@ export default class Toolset {
       bar: SparklineBarChartTool,
       circle: CircleTool,
       ellipse: EllipseTool,
+      graph: SparklineGraphTool,
       horseshoe: HorseshoeTool,
       icon: EntityIconTool,
       line: LineTool,
@@ -126,6 +128,8 @@ export default class Toolset {
         const newTool = new toolsNew[toolConfig.type](this, newConfig, newPos);
         // eslint-disable-next-line no-bitwise
         this._card.entityHistory.needed |= (toolConfig.type === 'bar');
+        // eslint-disable-next-line no-bitwise
+        this._card.entityHistory.needed |= (toolConfig.type === 'graph');
         this.tools.push({ type: toolConfig.type, index: toolConfig.id, tool: newTool });
       }
       return true;

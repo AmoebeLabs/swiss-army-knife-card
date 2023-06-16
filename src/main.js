@@ -1668,10 +1668,13 @@ _buildStateString(inState, entityConfig) {
       if (this.dev.debug) console.log('UpdateOnInterval - NO hass, returning');
       return;
     }
-    if (this.stateChanged && !this.entityHistory.updating) {
+    // console.log('updateOnInterval', new Date(Date.now()).toString());
+    // eslint-disable-next-line no-constant-condition
+    if (true) { // (this.stateChanged && !this.entityHistory.updating) {
       // 2020.10.24
       // Leave true, as multiple entities can be fetched. fetch every 5 minutes...
       // this.stateChanged = false;
+      // console.log('updateOnInterval - updateData', new Date(Date.now()).toString());
       this.updateData();
       // console.log("*RC* updateOnInterval -> updateData", this.entityHistory);
     }
@@ -1686,7 +1689,7 @@ _buildStateString(inState, entityConfig) {
       window.clearInterval(this.interval);
       this.interval = setInterval(
         () => this.updateOnInterval(),
-        // 5 * 1000);
+        // 30 * 1000,
         this.entityHistory.update_interval * 1000,
       );
       // console.log("*RC* updateOnInterval -> start timer", this.entityHistory, this.interval);
@@ -1722,14 +1725,16 @@ _buildStateString(inState, entityConfig) {
     // add to list...
     this.toolsets.map((toolset, k) => {
       toolset.tools.map((item, i) => {
-        if (item.type === 'bar') {
+        if ((item.type === 'bar')
+        || (item.type === 'graph')) {
           const end = new Date();
           const start = new Date();
           start.setHours(end.getHours() - item.tool.config.hours);
           const attr = this.config.entities[item.tool.config.entity_index].attribute ? this.config.entities[item.tool.config.entity_index].attribute : null;
 
           entityList[j] = ({
-            tsidx: k, entityIndex: item.tool.config.entity_index, entityId: this.entities[item.tool.config.entity_index].entity_id, attrId: attr, start, end, type: 'bar', idx: i,
+            tsidx: k, entityIndex: item.tool.config.entity_index, entityId: this.entities[item.tool.config.entity_index].entity_id, attrId: attr, start, end, type: item.type, idx: i,
+            // tsidx: k, entityIndex: item.tool.config.entity_index, entityId: this.entities[item.tool.config.entity_index].entity_id, attrId: attr, start, end, type: 'bar', idx: i,
           });
           j += 1;
         }
@@ -1753,6 +1758,7 @@ _buildStateString(inState, entityConfig) {
     } finally {
       this.entityHistory.updating = false;
     }
+    this.entityHistory.updating = false;
   }
 
   async updateEntity(entity, index, initStart, end) {
@@ -1783,6 +1789,11 @@ _buildStateString(inState, entityConfig) {
 
     stateHistory = [...stateHistory, ...newStateHistory];
 
+    // console.log('Got new stateHistory', entity);
+    if (entity.type === 'graph') {
+      // console.log('pushing stateHistory into Graph!!!!', stateHistory);
+      this.toolsets[entity.tsidx].tools[entity.idx].tool.series = [...stateHistory];
+    }
     this.uppdate(entity, stateHistory);
   }
 
@@ -1804,7 +1815,8 @@ _buildStateString(inState, entityConfig) {
     let hours = 24;
     let barhours = 2;
 
-    if (entity.type === 'bar') {
+    if ((entity.type === 'bar')
+    || (entity.type === 'graph')) {
       if (this.dev.debug) console.log('entity.type == bar', entity);
 
       hours = this.toolsets[entity.tsidx].tools[entity.idx].tool.config.hours;
@@ -1852,7 +1864,8 @@ _buildStateString(inState, entityConfig) {
     theData = coords.map((item) => getAvg(item, 'state'));
 
     // now push data into object...
-    if (entity.type === 'bar') {
+    if (['bar'].includes(entity.type)) {
+    // if (entity.type === 'bar') {
       this.toolsets[entity.tsidx].tools[entity.idx].tool.series = [...theData];
     }
 
