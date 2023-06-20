@@ -240,7 +240,7 @@ export default class SparklineGraphTool extends BaseTool {
         this.svg.graph.width,
         this.svg.graph.height,
         // [0, 0, 0],
-        [this.config.show.fill ? 0 : this.config.line_width, this.config.line_width],
+        [this.config.show.fill ? 0 : this.svg.line_width, this.svg.line_width],
         this.config.hours_to_show,
         this.config.points_per_hour,
         entity.aggregate_func || this.config.aggregate_func,
@@ -283,6 +283,17 @@ export default class SparklineGraphTool extends BaseTool {
     // this.computeBars();
     // this._needsRendering = true;
     // console.log('SparklineGraphTool::set series(states)', states);
+    if ((this.dev) && (this.dev.fakeData)) {
+      console.log('SparklineGraphTool::set series(states)', states);
+      // How to fake the data...
+      let y = 40;
+      let z = 40;
+      for (let i = 0; i < states.length; i++) {
+        if (i < states.length / 2) z -= 4 * i;
+        if (i > states.length / 2) z += 3 * i;
+        states[i].state = z;
+      }
+    }
     this.Graph[0].update(states);
 
     this.updateBounds();
@@ -642,7 +653,7 @@ renderSvgAreaBackground(fill, i) {
     />`;
 }
 
-renderSvgBarsMask2(bars, index) {
+renderSvgBarsMask(bars, index) {
   if (this.config.show.graph === 'dots') return;
 
   if (!bars) return;
@@ -653,9 +664,16 @@ renderSvgBarsMask2(bars, index) {
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
         </animate>`
       : '';
+    // Must account for this.svg.line_width to prevent double colors on bars around zero y axis.
+    // Must be different for positive and negative values...
+    // Negative values: y should be larger (lh / 2), height minus line_height
+    // Positive values: y should be larger (1/h2), height minus line_height!!
+    if (this._min < 0) {
+    }
     return svg` 
-      <rect class='bar' x=${bar.x} y=${bar.y}
-        height=${bar.height} width=${bar.width} fill='white'
+      <rect class='bar' x=${bar.x} y=${bar.y + (bar.value > 0 ? -this.svg.line_width / 2 : this.svg.line_width / 2)}
+        height=${bar.height - this.svg.line_width / 1 - 2} width=${bar.width} fill='white' stroke='white'
+        stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
         @mouseover=${() => this.setTooltip(index, i, bar.value)}
         @mouseout=${() => (this.tooltip = {})}>
         ${animation}
@@ -669,12 +687,14 @@ renderSvgBarsMask2(bars, index) {
   `;
 }
 
-renderSvgBarsMask(bars, index) {
+renderSvgBarsMask2(bars, index) {
   if (this.config.show.graph === 'dots') return;
 
   if (!bars) return;
-  const mask = `url(#fill-grad-mask-${this.id}-${index}})`;
-  const fill = `url(#fill-grad-${this.id}-${index}`;
+  const maskNeg = `url(#fill-grad-mask-neg-${this.id}-${index}})`;
+  const maskPos = `url(#fill-grad-mask-pos-${this.id}-${index}})`;
+  const fillNeg = `url(#fill-grad-neg-${this.id}-${index}`;
+  const fillPos = `url(#fill-grad-pos-${this.id}-${index}`;
 
   const paths = bars.map((bar, i) => {
     const animation = this.config.animate
@@ -685,29 +705,36 @@ renderSvgBarsMask(bars, index) {
       : '';
     return svg` 
 
-      <rect class='bar' x=${bar.x} y=${bar.y}
-        height=${bar.height} width=${bar.width} fill= ${fill} /*'white'*/
+      <rect class='bar' x=${bar.x} y=${bar.y + (bar.value > 0 ? -this.svg.line_width / 2 : this.svg.line_width / 2)}
+        height=${bar.height - this.svg.line_width / 1 - 2} width=${bar.width}
+        fill=${bar.value > 0 ? fillPos : fillNeg}
+        stroke=${bar.value > 0 ? fillPos : fillNeg}
+        stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
         @mouseover=${() => this.setTooltip(index, i, bar.value)}
         @mouseout=${() => (this.tooltip = {})}>
         ${animation}
       </rect>`;
   });
-
   return svg`
     <defs>
-      <linearGradient id=${`fill-grad-${this.id}-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
+      <linearGradient id=${`fill-grad-pos-${this.id}-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
         <stop stop-color='white' offset='0%' stop-opacity='1'/>
-        <stop stop-color='white' offset='25%' stop-opacity='0.25'/>
-        <stop stop-color='white' offset='100%' stop-opacity='0.0'/>
+        <stop stop-color='white' offset='25%' stop-opacity='0.4'/>
+        <stop stop-color='white' offset='60%' stop-opacity='0.0'/>
+      </linearGradient>
+      <linearGradient id=${`fill-grad-neg-${this.id}-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop stop-color='white' offset='40%' stop-opacity='0'/>
+        <stop stop-color='white' offset='75%' stop-opacity='0.4'/>
+        <stop stop-color='white' offset='100%' stop-opacity='1.0'/>
       </linearGradient>
 
-      <mask id=${`fill-grad-mask-${this.id}-${index}`}>
-        <rect width="100%" height="100%" fill=${`url(#fill-grad-${this.id}-${index})`}
+      <mask id=${`fill-grad-mask-pos-${this.id}-${index}`}>
+        <rect width="100%" height="100%" fill=${`url(#fill-grad-pos-${this.id}-${index})`}
       </mask>
     </defs>  
     <mask id=${`bars-bg-${this.id}-${index}`}>
       ${paths}
-      mask = ${mask}
+      mask = ${maskPos}
     </mask>
   `;
 }

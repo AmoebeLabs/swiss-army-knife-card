@@ -3,6 +3,7 @@ import Colors from './colors';
 export const X = 0;
 export const Y = 1;
 export const V = 2;
+export const Y2 = 3;
 export const ONE_HOUR = 1000 * 3600;
 
 export default class SparklineGraph {
@@ -100,6 +101,20 @@ export default class SparklineGraph {
     return coords;
   }
 
+  // How to account for negative values?
+  // Say: min = -10, max = 30, height = 100
+  // yratio = (60 - -40) / 100 = 1
+  // val = -5
+  // coordY = 100 - ((-5 - -10) / 1) + 0 = 90 / 1 = 90. bar is 100-90 = 10 in height.
+  // Height however should be 10 or -10. Maybe / 0,5, so 20 or -20. (below 0)
+  //
+  // yratio = (100 - 0) / 100 = 1
+  // val = 5
+  // coordY = 100 - ((5 - 0) / 1) + 0 = 90 / 1 = 90. Bar is 100-90 = 10 in height.
+  //
+  // Height is ok. But depending on negative this.min, the bar should be drawn
+  // in reverse, ie coordY is the BOTTOM of the bar (top = 0 - this.min), where in other
+  // situations coordY is the TOP of the bar (bottom = this.min)
   _calcY(coords) {
     // account for logarithmic graph
     const max = this._logarithmic ? Math.log10(Math.max(1, this.max)) : this.max;
@@ -108,8 +123,18 @@ export default class SparklineGraph {
     const yRatio = ((max - min) / this.height) || 1;
     const coords2 = coords.map((coord) => {
       const val = this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V];
-      const coordY = this.height - ((val - min) / yRatio) + this.margin[Y] * 2;
-      return [coord[X], coordY, coord[V]];
+
+      // NO. Y should be the point. Not the top or bottom. Always the value to point.
+      // The rendering should then take action: a dot is a dot on the Y. But an area
+      // should check for negative value, and so for a bar...
+      const offset = (min < 0) ? Math.abs(min) : 0;
+      const coordY2 = (val > 0)
+        ? this.height - (offset / yRatio) - ((val - Math.max(0, min)) / yRatio) + this.margin[Y] * 2
+        : this.height - ((0 - min) / yRatio) + this.margin[Y] * 2;
+      // const coordY = this.height - ((val - Math.max(0, min)) / yRatio) + this.margin[Y] * 2;
+      const coordY = this.height - ((val - (min)) / yRatio) + this.margin[Y] * 2;
+      console.log('coordY, coordY2', coordY, coordY2, coord[V]);
+      return [coord[X], coordY, coord[V], coordY2];
     });
 
     return coords2;
@@ -197,11 +222,27 @@ export default class SparklineGraph {
     return fill;
   }
 
+  // IT seems that getBars() should account for negative values, as this function calculates
+  // the x, y, height and width of the bar that is displayed as an SVG rect.
+  // if this.min < 0
+  // y = coord[Y] + this.min
+  // height = this.height - .. etc. These things are difficult for me. Math sucks...
+  //
   getBars(position, total, spacing = 4) {
     // console.log('getBars', position, total, spacing, this.coords);
     const coords = this._calcY(this.coords);
     const xRatio = ((this.width - spacing) / Math.ceil(this.hours * this.points)) / total;
+    const yRatio = ((this._max - this._min) / this.height) || 1;
+    const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
+    console.log('getbars, offset ', offset);
     // console.log('getBars, xRatio etc.', xRatio, this.width, spacing, this.hours, this.points);
+    return coords.map((coord, i) => ({
+      x: (xRatio * i * total) + (xRatio * position) + spacing,
+      y: this._min > 0 ? coord[Y] : coord[Y2],
+      height: coord[V] > 0 ? this.height - offset - coord[Y] + this.margin[Y] * 4 : coord[Y] - coord[Y2] + this.margin[Y] * 4,
+      width: xRatio - spacing,
+      value: coord[V],
+    }));
     return coords.map((coord, i) => ({
       x: (xRatio * i * total) + (xRatio * position) + spacing,
       y: coord[Y],
