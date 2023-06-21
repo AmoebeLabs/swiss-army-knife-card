@@ -214,8 +214,22 @@ export default class SparklineGraph {
     });
   }
 
-  getFill(path) {
+  getFill2(path) {
     const height = this.height + this.margin[Y] * 4;
+    let fill = path;
+    fill += ` L ${this.width - this.margin[X] * 2}, ${height}`;
+    fill += ` L ${this.coords[0][X]}, ${height} z`;
+    return fill;
+  }
+
+  getFill(path) {
+    // We got the fill, ie the line path. Now make it connect on the y_zero axis
+    // We need a different height...
+    const y_zero = (this._min >= 0) ? this.height
+    : this.height + 1 - ((Math.abs(this._min) / ((this._max - this._min)) * this.height));
+
+    // const height = this.height + this.margin[Y] * 4;
+    const height = y_zero; // + this.margin[Y] * 4;
     let fill = path;
     fill += ` L ${this.width - this.margin[X] * 2}, ${height}`;
     fill += ` L ${this.coords[0][X]}, ${height} z`;

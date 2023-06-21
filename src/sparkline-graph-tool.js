@@ -519,25 +519,50 @@ export default class SparklineGraphTool extends BaseTool {
   if (!fill) return;
   const fade = this.config.show.fill === 'fade';
   const init = this.length[i] || this._card.config.entities[i].show_line === false;
+  // Check for zero crossing...
+  const y_zero = (this.Graph[i]._min >= 0) ? 0
+   : (Math.abs(this.Graph[i]._min) / ((this.Graph[i]._max - this.Graph[i]._min)) * 100);
+  console.log('renderSvgAreaMask, y_zero', y_zero, this.Graph[i]._min, this.Graph[i]._max, this);
   return svg`
     <defs>
-      <linearGradient id=${`fill-grad-${this.id}-${i}`} x1="0%" y1="0%" x2="0%" y2="100%">
+      <linearGradient id=${`fill-grad-pos-${this.id}-${i}`} x1="0%" y1="0%" x2="0%" y2="100%">
         <stop stop-color='white' offset='0%' stop-opacity='1'/>
-        <stop stop-color='white' offset='100%' stop-opacity='.10'/>
+        <stop stop-color='white' offset='100%' stop-opacity='0.1'/>
       </linearGradient>
-      <mask id=${`fill-grad-mask-${this.id}-${i}`}>
-        <rect width="100%" height="100%" fill=${`url(#fill-grad-${this.id}-${i})`} />
+      <mask id=${`fill-grad-mask-pos-${this.id}-${i}`}>
+        <rect width="100%" height="${100 - y_zero}%" fill=${`url(#fill-grad-pos-${this.id}-${i})`}
+         />
+      </mask>
+      <linearGradient id=${`fill-grad-neg-${this.id}-${i}`} x1="0%" y1="100%" x2="0%" y2="0%">
+        <stop stop-color='white' offset='0%' stop-opacity='1'/>
+        <stop stop-color='white' offset='100%' stop-opacity='0.1'/>
+      </linearGradient>
+      <mask id=${`fill-grad-mask-neg-${this.id}-${i}`}>
+        <rect width="100%" y=${100 - y_zero}% height="${y_zero}%" fill=${`url(#fill-grad-neg-${this.id}-${i})`}
+         />
       </mask>
     </defs>
+
     <mask id=${`fill-${this.id}-${i}`}>
       <path class='fill'
         type=${this.config.show.fill}
         .id=${i} anim=${this.config.animate} ?init=${init}
         style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
         fill='white'
-        mask=${fade ? `url(#fill-grad-mask-${this.id}-${i})` : ''}
+        mask=${fade ? `url(#fill-grad-mask-pos-${this.id}-${i})` : ''}
         d=${this.fill[i]}
       />
+      ${this.Graph[i]._min < 0
+        ? svg`<path class='fill'
+            type=${this.config.show.fill}
+            .id=${i} anim=${this.config.animate} ?init=${init}
+            style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
+            fill='white'
+            mask=${fade ? `url(#fill-grad-mask-neg-${this.id}-${i})` : ''}
+            d=${this.fill[i]}
+          />`
+        : ''
+      }
     </mask>`;
 }
 
@@ -653,7 +678,7 @@ renderSvgAreaBackground(fill, i) {
     />`;
 }
 
-renderSvgBarsMask(bars, index) {
+renderSvgBarsMask2(bars, index) {
   if (this.config.show.graph === 'dots') return;
 
   if (!bars) return;
@@ -687,10 +712,11 @@ renderSvgBarsMask(bars, index) {
   `;
 }
 
-renderSvgBarsMask2(bars, index) {
+renderSvgBarsMask(bars, index) {
   if (this.config.show.graph === 'dots') return;
 
   if (!bars) return;
+  const fade = this.config.show.fill === 'fade';
   const maskNeg = `url(#fill-grad-mask-neg-${this.id}-${index}})`;
   const maskPos = `url(#fill-grad-mask-pos-${this.id}-${index}})`;
   const fillNeg = `url(#fill-grad-neg-${this.id}-${index}`;
@@ -707,8 +733,8 @@ renderSvgBarsMask2(bars, index) {
 
       <rect class='bar' x=${bar.x} y=${bar.y + (bar.value > 0 ? -this.svg.line_width / 2 : this.svg.line_width / 2)}
         height=${bar.height - this.svg.line_width / 1 - 2} width=${bar.width}
-        fill=${bar.value > 0 ? fillPos : fillNeg}
-        stroke=${bar.value > 0 ? fillPos : fillNeg}
+        fill=${fade ? (bar.value > 0 ? fillPos : fillNeg) : 'white'}
+        stroke=${fade ? (bar.value > 0 ? fillPos : fillNeg) : 'white'}
         stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
         @mouseover=${() => this.setTooltip(index, i, bar.value)}
         @mouseout=${() => (this.tooltip = {})}>
@@ -717,12 +743,12 @@ renderSvgBarsMask2(bars, index) {
   });
   return svg`
     <defs>
-      <linearGradient id=${`fill-grad-pos-${this.id}-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
+      <linearGradient id=${`fill-grad-pos-${this.id}-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
         <stop stop-color='white' offset='0%' stop-opacity='1'/>
         <stop stop-color='white' offset='25%' stop-opacity='0.4'/>
         <stop stop-color='white' offset='60%' stop-opacity='0.0'/>
       </linearGradient>
-      <linearGradient id=${`fill-grad-neg-${this.id}-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
+      <linearGradient id=${`fill-grad-neg-${this.id}-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
         <stop stop-color='white' offset='40%' stop-opacity='0'/>
         <stop stop-color='white' offset='75%' stop-opacity='0.4'/>
         <stop stop-color='white' offset='100%' stop-opacity='1.0'/>
@@ -743,7 +769,7 @@ renderSvgBarsBackground(bars, index) {
   if (this.config.show.graph === 'dots') return;
   if (!bars) return;
 
-  const fade = this.config.show.fill === 'fade';
+  const fade = this.config.show.fill === 'fadenever';
   if (fade) {
   // Is in fact the rendering of the AreaMask... In this case the barsmask.
   // This is incomplete. Need rendering of the background itself too
