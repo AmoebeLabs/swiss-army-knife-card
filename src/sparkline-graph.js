@@ -8,7 +8,7 @@ export const ONE_HOUR = 1000 * 3600;
 
 export default class SparklineGraph {
   constructor(width, height, margin, hours = 24, points = 1, aggregateFuncName = 'avg', groupBy = 'interval', smoothing = true, logarithmic = false) {
-    const aggregateFuncMap = {
+    this.aggregateFuncMap = {
       avg: this._average,
       median: this._median,
       max: this._maximum,
@@ -19,18 +19,6 @@ export default class SparklineGraph {
       delta: this._delta,
       diff: this._diff,
     };
-
-    // Grrr. Getting sick and tired of that margin stuff. I changed something, and now it is difficult
-    // to get it working again...
-    // this.widthOuter = width;
-    // this.heightOuter = height;
-    // this.widthInner = width - margin[X] * 2;
-    // this.heightInner = height - margin[Y] * 4;
-
-    // NOTE!!!!!!!!!!!!!!!
-    // Should also correct height for the line_width. That is unknown yet. In that case, the
-    // height also changes depending on the line. Margin should take this all into account...
-    // Hmmmmmm.
 
     // Just trying to make sense for the graph drawing area
     this.graphArea = {};
@@ -56,7 +44,7 @@ export default class SparklineGraph {
     this.points = points;
     this.hours = hours;
     this.aggregateFuncName = aggregateFuncName;
-    this._calcPoint = aggregateFuncMap[aggregateFuncName] || this._average;
+    this._calcPoint = this.aggregateFuncMap[aggregateFuncName] || this._average;
     this._smoothing = smoothing;
     this._logarithmic = logarithmic;
     this._groupBy = groupBy;
@@ -74,12 +62,13 @@ export default class SparklineGraph {
   set history(data) { this._history = data; }
 
   update(history = undefined) {
-    // console.log('Graph::update', history);
     if (history) {
       this._history = history;
     }
     if (!this._history) return;
     this._updateEndTime();
+
+    // console.log('update, history = ', history);
 
     const histGroups = this._history.reduce((res, item) => this._reducer(res, item), []);
 
@@ -95,7 +84,81 @@ export default class SparklineGraph {
     this.coords = this._calcPoints(histGroups);
     this.min = Math.min(...this.coords.map((item) => Number(item[V])));
     this.max = Math.max(...this.coords.map((item) => Number(item[V])));
-    // console.log('Graph::update end', this.coords, this.min, this.max);
+
+    // Just testing...
+    // https://stackoverflow.com/questions/43576241/using-reduce-to-find-min-and-max-values
+    const histGroupsMinMax = this._history.reduce((res, item) => this._reducerMinMax(res, item), []);
+
+    // drop potential out of bound entry's except one
+    if (histGroupsMinMax[0][0] && histGroupsMinMax[0][0].length) {
+      histGroupsMinMax[0][0] = [histGroupsMinMax[0][0][histGroupsMinMax[0][0].length - 1]];
+    }
+    if (histGroupsMinMax[1][0] && histGroupsMinMax[1][0].length) {
+      histGroupsMinMax[1][0] = [histGroupsMinMax[1][0][histGroupsMinMax[1][0].length - 1]];
+    }
+
+    // extend length to fill missing history
+    // const requiredNumOfPoints = Math.ceil(this.hours * this.points);
+    histGroupsMinMax[0].length = requiredNumOfPoints;
+    histGroupsMinMax[1].length = requiredNumOfPoints;
+
+    const histGroupsMin = [...histGroups];
+    const histGroupsMax = [...histGroups];
+
+    let prevFunction = this._calcPoint;
+    this._calcPoint = this.aggregateFuncMap.min;
+    this.coordsMin = [];
+    this.coordsMin = this._calcPoints(histGroupsMin);
+    this._calcPoint = this.aggregateFuncMap.max;
+    this.coordsMax = [];
+    this.coordsMax = this._calcPoints(histGroupsMax);
+    this._calcPoint = prevFunction;
+
+    // Adjust scale in this case...
+    this.min = Math.min(...this.coordsMin.map((item) => Number(item[V])));
+    this.max = Math.max(...this.coordsMax.map((item) => Number(item[V])));
+
+    console.log('update, histgroupsmin = ', this.coordsMin, this.coordsMax, this.coords, this.min, this.max);
+  }
+
+  // This reducer calculates the min and max in a bucket. This is the REAL min and max
+  // The other functions calculate the min and max from the function used (mostly avg)!!
+  // This real min/max could be used to show the min/max graph on the background. Some filled
+  // graph would be nice. That would mean we calculate each point (per bucket) and connect the
+  // first point of the min/max array, and the last point of the min/max array.
+  //
+  // Array should be changed to [0][key], so we can pass the res[0] to some function to calculate
+  // the resulting points. Must in that case also pass the function, ie max or min. Not the default
+  // function, as that would give us (again) possible the avg...
+  //
+  // It could run with a single reducer, if using [0] for the buckets to calculate the function
+  // and [1] for min, and [2] for max value in that bucket...
+  _reducerMinMax2(res, item) {
+    const age = this._endTime - new Date(item.last_changed).getTime();
+    const interval = (age / ONE_HOUR * this.points) - this.hours * this.points;
+    const key = interval < 0 ? Math.floor(Math.abs(interval)) : 0;
+    if (!res[key]) { res[key] = []; res[key][0] = []; res[key][1] = []; }
+    // Min value is always 0. So something goes wrong with Number I guess??
+    // If item.state invalid, then returns 0 ???
+    res[key][0] = Math.min(res[key][0] ? res[key][0] : Number.POSITIVE_INFINITY, item.state);
+    // Max seems to be OK!
+    res[key][1] = Math.max(res[key][1], Number(item.state));
+    return res;
+  }
+
+  _reducerMinMax(res, item) {
+    const age = this._endTime - new Date(item.last_changed).getTime();
+    const interval = (age / ONE_HOUR * this.points) - this.hours * this.points;
+    const key = interval < 0 ? Math.floor(Math.abs(interval)) : 0;
+    if (!res[0]) res[0] = [];
+    if (!res[1]) res[1] = [];
+    if (!res[0][key]) { res[0][key] = {}; res[1][key] = {}; }
+    // Min value is always 0. So something goes wrong with Number I guess??
+    // If item.state invalid, then returns 0 ???
+    res[0][key].state = Math.min(res[0][key].state ? res[0][key].state : Number.POSITIVE_INFINITY, item.state);
+    // Max seems to be OK!
+    res[1][key].state = Math.max(res[1][key].state ? res[0][key].state : Number.NEGATIVE_INFINITY, item.state);
+    return res;
   }
 
   _reducer(res, item) {
@@ -115,13 +178,6 @@ export default class SparklineGraph {
     const first = history.filter(Boolean)[0];
     let last = [this._calcPoint(first), this._lastValue(first)];
     const getCoords = (item, i) => {
-      // Getting double margin, so remove this one?
-      // the shift to the right is both for points and the line graph
-      // Weird, but with margin removed, line and dots are OK.
-      //
-      // Margin is already applied elsewhere orso?? Where ????
-      // 2023.06.22
-      // const x = xRatio * i; // + this.margin[X];
       const x = (xRatio * i) + this.drawArea.x;
       if (item)
         last = [this._calcPoint(item), this._lastValue(item)];
@@ -134,32 +190,15 @@ export default class SparklineGraph {
     return coords;
   }
 
-  // How to account for negative values?
-  // Say: min = -10, max = 30, height = 100
-  // yratio = (60 - -40) / 100 = 1
-  // val = -5
-  // coordY = 100 - ((-5 - -10) / 1) + 0 = 90 / 1 = 90. bar is 100-90 = 10 in height.
-  // Height however should be 10 or -10. Maybe / 0,5, so 20 or -20. (below 0)
-  //
-  // yratio = (100 - 0) / 100 = 1
-  // val = 5
-  // coordY = 100 - ((5 - 0) / 1) + 0 = 90 / 1 = 90. Bar is 100-90 = 10 in height.
-  //
-  // Height is ok. But depending on negative this.min, the bar should be drawn
-  // in reverse, ie coordY is the BOTTOM of the bar (top = 0 - this.min), where in other
-  // situations coordY is the TOP of the bar (bottom = this.min)
   _calcY(coords) {
     // account for logarithmic graph
     const max = this._logarithmic ? Math.log10(Math.max(1, this.max)) : this.max;
     const min = this._logarithmic ? Math.log10(Math.max(1, this.min)) : this.min;
 
-    const yRatio = ((max - min) / (this.drawArea.height)) || 1; // - this.margin[Y] * 100)) || 1;
+    const yRatio = ((max - min) / (this.drawArea.height)) || 1;
     const coords2 = coords.map((coord) => {
       const val = this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V];
 
-      // NO. Y should be the point. Not the top or bottom. Always the value to point.
-      // The rendering should then take action: a dot is a dot on the Y. But an area
-      // should check for negative value, and so for a bar...
       const offset = (min < 0) ? Math.abs(min) : 0;
       const val0 = (val > 0)
         ? (val - Math.max(0, min))
@@ -170,22 +209,11 @@ export default class SparklineGraph {
       const coordY2 = (val > 0)
         ? this.drawArea.height + this.drawArea.y * 1 - (offset / yRatio) - ((val - Math.max(0, min)) / yRatio) // - this.margin[Y] * 2
         : this.drawArea.height + this.drawArea.y * 1 - ((0 - min) / yRatio);// - this.margin[Y] * 4;
-      // const coordY = this.height - ((val - Math.max(0, min)) / yRatio) + this.margin[Y] * 2;
-
-      // if negative value
-      // y0 = (point at y zero). Very simple...
-      // max / (max - min) as the 0-1 value for y0 value
-      // if max = 40, min = -20. then y0 = (40 / (40 --20)) = 2/3 = 0,6666
-      // so that height is 2/3 / yRatio. That is the height, ie coordy0
-
-      // const coordY = this.drawArea.height - ((val - (min)) / yRatio); // - this.margin[Y] * 2;
       const coordY = this.drawArea.height + this.drawArea.y * 1 - ((val - (min)) / yRatio); // - this.margin[Y] * 2;
 
       if (this.margin[Y] !== 0)
         console.log('calcY, val, Y = ', val, coordY, coordY2);
 
-      // The actual coordinate also is wrong in some cases...
-      // console.log('coordY, coordY2', coordY, coord[V], y_2, min, max, yRatio);
       return [coord[X], coordY, coord[V], coordY2];
     });
     console.log('calcY', this.drawArea.height, this.drawArea.width, coords2);
@@ -233,6 +261,57 @@ export default class SparklineGraph {
     return path;
   }
 
+  getPathMin() {
+    let { coordsMin } = this;
+    if (coordsMin.length === 1) {
+      coordsMin[1] = [this.width + this.margin[X], 0, coordsMin[0][V]];
+    }
+    coordsMin = this._calcY(this.coordsMin);
+    let next; let Z;
+    let path = '';
+    let last = coordsMin[0];
+    path += `M${last[X]},${last[Y]}`;
+
+    coordsMin.forEach((point) => {
+      next = point;
+      // Z = this._smoothing ? this._midPoint(last[X], last[Y], next[X], next[Y]) : next;
+      Z = next;
+      path += ` ${Z[X]},${Z[Y]}`;
+      path += ` Q ${next[X]},${next[Y]}`;
+      last = next;
+    });
+    path += ` ${next[X]},${next[Y]}`;
+    return path;
+  }
+
+  // Get this in reverse...
+  getPathMax() {
+    let { coordsMax } = this;
+    if (coordsMax.length === 1) {
+      coordsMax[1] = [this.width + this.margin[X], 0, coordsMax[0][V]];
+    }
+    coordsMax = this._calcY(this.coordsMax);
+    let next; let Z;
+    let path = '';
+    // let last = coordsMax[0];
+    let last = coordsMax[coordsMax.length - 1];
+    // path += `M${last[X]},${last[Y]}`;
+
+    coordsMax.reverse().forEach((point, index, points) => {
+      // let revPoint = points[points.length - 1 - index];
+      // next = revPoint;
+      next = point;
+      // Z = this._smoothing ? this._midPoint(last[X], last[Y], next[X], next[Y]) : next;
+      Z = next;
+      path += ` ${Z[X]},${Z[Y]}`;
+      path += ` Q ${next[X]},${next[Y]}`;
+      last = next;
+    });
+    path += ` ${next[X]},${next[Y]}`;
+    path += `M${last[X]},${last[Y]}`;
+    return path;
+  }
+
   computeGradient(thresholds, logarithmic) {
     const scale = logarithmic
       ? Math.log10(Math.max(1, this._max)) - Math.log10(Math.max(1, this._min))
@@ -274,57 +353,39 @@ export default class SparklineGraph {
     return fill;
   }
 
-  getFill(path) {
-    // We got the fill, ie the line path. Now make it connect on the y_zero axis
-    // We need a different height...
-    // const y_zero = (this._min >= 0) ? this.height + this.margin[Y] * 4
-    // : this.height + this.margin[Y] * 4 + 1 - ((Math.abs(this._min) / ((this._max - this._min)) * this.height));
+  // #TODO. Is not right...
+  // Weird stuff...
+  getFillMinMax(pathMin, pathMax) {
+    console.log('getFillMinMax = ', pathMin, pathMax, this.coordsMax, this.coordsMax[0].length);
+    let fill = pathMin;
+    fill += ` L ${this.coordsMax[this.coordsMax.length - 1][X]},
+                ${this.coordsMax[this.coordsMax.length - 1][Y]}`;
+    fill += pathMax;
+    fill += ' z';
+    return fill;
+  }
 
+  getFill(path) {
     const y_zero = (this._min >= 0) ? this.height
     : this.height + 0 - ((Math.abs(this._min) / ((this._max - this._min)) * this.height));
-
-    // const height = this.height + this.margin[Y] * 4;
-    // const height = y_zero + this.margin[Y] * 4; // * 4;
-
-    // Using * 1, the y does not stretch upto the lower y of the graph (you see the margin).
-    // Using * 2, the y does stretch upto the lower y of the graph (you don't see a margin)
-    // Now: what should it be...
-    //
     const height = y_zero + this.drawArea.y * 1.5; // Should be this.svg.line_width;
     let fill = path;
-    // fill += ` L ${this.width + this.margin[X]}, ${height}`;
     fill += ` L ${this.width + this.drawArea.x}, ${height}`;
-    // fill += ` L ${this.width + 0}, ${height}`;
     fill += ` L ${this.coords[0][X]}, ${height} z`;
     return fill;
   }
 
-  // IT seems that getBars() should account for negative values, as this function calculates
-  // the x, y, height and width of the bar that is displayed as an SVG rect.
-  // if this.min < 0
-  // y = coord[Y] + this.min
-  // height = this.height - .. etc. These things are difficult for me. Math sucks...
-  //
   getBars(position, total, spacing = 4) {
-    // console.log('getBars', position, total, spacing, this.coords);
     const coords = this._calcY(this.coords);
-    // Each bar has spacing on the right side. And manually on the left side.
-    // Remove start spacing, and remove end spacing by adding spacing to width
-    // Now the bar has the full width, as it should be!!!!!!
-    // const xRatio = ((this.width - spacing) / Math.ceil(this.hours * this.points)) / total;
     const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
     const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
     const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
-    // console.log('getBars, xRatio etc.', xRatio, this.width, spacing, this.hours, this.points);
 
-    // 2023.06.22
-    // calc is wrong if margin > 0. question is why, and if the Y2 coord is wrong or not.
-    // in that case, the other function should be changed...
-
+    // #TODO:
+    // Just for testing... Logging should be removed!
     coords.map((coord, i) => {
       const x = (xRatio * i * total) + (xRatio * position) + this.drawArea.x;
       const y = this._min > 0 ? coord[Y] : coord[Y2];
-      // const height = coord[V] > 0 ? this.drawArea.height - offset - coord[Y] : coord[Y] - coord[Y2];
       const height = coord[V] > 0 ? this._min < 0 ? coord[V] / yRatio : coord[Y] - coord[Y2] : (coord[V] - this._min) / yRatio;
       const width = xRatio - spacing;
       const value = coord[V];
@@ -337,20 +398,8 @@ export default class SparklineGraph {
     return coords.map((coord, i) => ({
       x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
       y: this._min > 0 ? coord[Y] : coord[Y2],
-      // height: coord[V] > 0 ? this.drawArea.height - offset - coord[Y] : coord[Y] - coord[Y2],
-      // height: coord[V] > 0 ? this.height - offset - coord[Y] + this.margin[Y] * 4 : coord[Y] - coord[Y2] + this.margin[Y] * 4,
-
-      // Works, but with only positive values, bars are too long, upto zero!
-      // height: coord[V] > 0 coord[V] / yRatio : ) : coord[Y] - coord[Y2],
       height: coord[V] > 0 ? (this._min < 0 ? coord[V] / yRatio : (coord[V] - this._min) / yRatio)
                            : coord[Y] - coord[Y2],
-      width: xRatio - spacing,
-      value: coord[V],
-    }));
-    return coords.map((coord, i) => ({
-      x: (xRatio * i * total) + (xRatio * position) + spacing,
-      y: coord[Y],
-      height: this.height - coord[Y] + this.margin[Y] * 4,
       width: xRatio - spacing,
       value: coord[V],
     }));

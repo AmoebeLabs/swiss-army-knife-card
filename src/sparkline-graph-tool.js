@@ -225,9 +225,12 @@ export default class SparklineGraphTool extends BaseTool {
     this.length = [];
     this.entity = [];
     this.line = [];
+    this.lineMin = [];
+    this.lineMax = [];
     this.bar = [];
     this.abs = [];
     this.fill = [];
+    this.fillMinMax = [];
     this.points = [];
     this.gradient = [];
     this.tooltip = {};
@@ -285,10 +288,6 @@ export default class SparklineGraphTool extends BaseTool {
     if (this.dev.debug) console.log('SparklelineGraph constructor coords, dimensions', this.coords, this.dimensions, this.svg, this.config);
   }
 
-  // getFirstDefinedItem(...collection) {
-  //   return collection.find((item) => typeof item !== 'undefined');
-  // }
-
   /** *****************************************************************************
     * SparklineBarChartTool::set series
     *
@@ -299,10 +298,6 @@ export default class SparklineGraphTool extends BaseTool {
     *
     */
   set data(states) {
-    // this._series = Object.assign(states);
-    // this.computeBars();
-    // this._needsRendering = true;
-
     // Bit of an hack.
     // Use set data to set the index of the this.Graph[], ie which entity
     // is updating. This is the real entity_index...
@@ -310,10 +305,6 @@ export default class SparklineGraphTool extends BaseTool {
   }
 
   set series(states) {
-    // this._series = Object.assign(states);
-    // this.computeBars();
-    // this._needsRendering = true;
-    // console.log('SparklineGraphTool::set series(states)', states);
     if ((this.dev) && (this.dev.fakeData)) {
       console.log('SparklineGraphTool::set series(states)', states);
       // How to fake the data...
@@ -325,7 +316,6 @@ export default class SparklineGraphTool extends BaseTool {
         states[i].state = z;
       }
     }
-    console.log('set series: update index =', this.seriesIndex);
     this.Graph[this.seriesIndex].update(states);
 
     this.updateBounds();
@@ -361,6 +351,15 @@ export default class SparklineGraphTool extends BaseTool {
             this.gradient[i] = this.Graph[i].computeGradient(
               config.color_thresholds, this.config.logarithmic,
             );
+          // Just testing with min/max stuff to get path etc.
+          const lineMin = this.Graph[i].getPathMin();
+          const lineMax = this.Graph[i].getPathMax();
+          if (!this.lineMin) this.lineMin = [];
+          if (!this.lineMax) this.lineMax = [];
+          this.lineMin[i] = lineMin;
+          this.lineMax[i] = lineMax;
+          if (!this.fillMinMax) this.fillMinMax = [];
+          this.fillMinMax[i] = this.Graph[i].getFillMinMax(lineMin, lineMax);
         }
       });
       this.line = [...this.line];
@@ -373,8 +372,6 @@ export default class SparklineGraphTool extends BaseTool {
   }
 
   get visibleEntities() {
-    // console.log('visibleEntities', this._card.config.entities.filter((entity) => entity.show_graph !== false));
-    return this._card.config.entities.filter((entity) => entity.show_graph !== false);
     return this._card.config.entities.filter((entity) => entity.show_graph !== false);
   }
 
@@ -392,9 +389,8 @@ export default class SparklineGraphTool extends BaseTool {
   }
 
   get primaryYaxisSeries() {
-    // console.log('YaxisSERIES', this.primaryYaxisEntities.map((entity, index) => this.Graph[index]));
     return this.primaryYaxisEntities.map((entity, index) => this.Graph[index]);
-    return this.primaryYaxisEntities.map((entity) => this.Graph[entity.index]);
+    // return this.primaryYaxisEntities.map((entity) => this.Graph[entity.index]);
   }
 
   get secondaryYaxisSeries() {
@@ -496,7 +492,7 @@ export default class SparklineGraphTool extends BaseTool {
     }
 
     return this._card.config.entities[i].color || intColor || line_color[i] || line_color[0];
-    return this.config.entities[i].color || intColor || line_color[i] || line_color[0];
+    // return this.config.entities[i].color || intColor || line_color[i] || line_color[0];
   }
 
   getEndDate() {
@@ -554,7 +550,7 @@ export default class SparklineGraphTool extends BaseTool {
   // Check for zero crossing...
   const y_zero = (this.Graph[i]._min >= 0) ? 0
    : (Math.abs(this.Graph[i]._min) / ((this.Graph[i]._max - this.Graph[i]._min)) * 100);
-  console.log('renderSvgAreaMask, y_zero', y_zero, this.Graph[i]._min, this.Graph[i]._max, this);
+  // console.log('renderSvgAreaMask, y_zero', y_zero, this.Graph[i]._min, this.Graph[i]._max, this);
   return svg`
     <defs>
       <linearGradient id=${`fill-grad-pos-${this.id}-${i}`} x1="0%" y1="0%" x2="0%" y2="100%">
@@ -596,37 +592,61 @@ export default class SparklineGraphTool extends BaseTool {
         : ''
       }
     </mask>`;
+}
 
-  // <mask id=${`fill-grad-mask-neg-${this.id}-${i}`}>
-  //   <rect width="100%" y=${100 - y_zero}% height="${y_zero}%" fill=${`url(#fill-grad-neg-${this.id}-${i})`}
-  //    />
-  // </mask>
+renderSvgAreaMinMaxMask(fill, i) {
+  if (this.config.show.graph === 'dots') return;
+  if (!fill) return;
+  const fade = this.config.show.fill === 'fade';
+  const init = this.length[i] || this._card.config.entities[i].show_line === false;
+  // Check for zero crossing...
+  const y_zero = (this.Graph[i]._min >= 0) ? 0
+   : (Math.abs(this.Graph[i]._min) / ((this.Graph[i]._max - this.Graph[i]._min)) * 100);
+  // console.log('renderSvgAreaMask, y_zero', y_zero, this.Graph[i]._min, this.Graph[i]._max, this);
+  return svg`
+    <defs>
+      <linearGradient id=${`fill-grad-pos-${this.id}-${i}`} x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop stop-color='white' offset='0%' stop-opacity='1'/>
+        <stop stop-color='white' offset='100%' stop-opacity='0.1'/>
+      </linearGradient>
+      <mask id=${`fill-grad-mask-pos-${this.id}-${i}`}>
+        <rect width="100%" height="${100 - y_zero}%" fill=${this.config.styles.area_mask_above.fill}
+         />
+      </mask>
+      <linearGradient id=${`fill-grad-neg-${this.id}-${i}`} x1="0%" y1="100%" x2="0%" y2="0%">
+        <stop stop-color='white' offset='0%' stop-opacity='1'/>
+        <stop stop-color='white' offset='100%' stop-opacity='0.1'/>
+      </linearGradient>
+      <mask id=${`fill-grad-mask-neg-${this.id}-${i}`}>
+        <rect width="100%" y=${100 - y_zero}% height="${y_zero}%" fill=${this.config.styles.area_mask_below.fill}
+         />
+      </mask>
+    </defs>
 
-  //   <mask id=${`fill-${this.id}-${i}`}>
-  //   <path class='fill'
-  //     type=${this.config.show.fill}
-  //     .id=${i} anim=${this.config.animate} ?init=${init}
-  //     style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
-  //     fill='white'
-  //     mask=${fade ? `url(#fill-grad-mask-pos-${this.id}-${i})` : ''}
-  //     d=${this.fill[i]}
-  //   />
-  //   ${this.Graph[i]._min < 0
-  //     ? svg`<path class='fill'
-  //         type=${this.config.show.fill}
-  //         .id=${i} anim=${this.config.animate} ?init=${init}
-  //         style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
-  //         fill='white'
-  //         mask=${fade ? `url(#fill-grad-mask-neg-${this.id}-${i})` : ''}
-  //         d=${this.fill[i]}
-  //       />`
-  //     : ''
-  //   }
-  // </mask>`;
+    <mask id=${`fillMinMax-${this.id}-${i}`}>
+      <path class='fill'
+        type=${this.config.show.fill}
+        .id=${i} anim=${this.config.animate} ?init=${init}
+        style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
+        fill='#222222'
+        mask=${fade ? `url(#fill-grad-mask-pos-${this.id}-${i})` : ''}
+        d=${this.fillMinMax[i]}
+      />
+      ${this.Graph[i]._min < 0
+        ? svg`<path class='fill'
+            type=${this.config.show.fill}
+            .id=${i} anim=${this.config.animate} ?init=${init}
+            style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
+            fill='#222222'
+            mask=${fade ? `url(#fill-grad-mask-neg-${this.id}-${i})` : ''}
+            d=${this.fillMinMax[i]}
+          />`
+        : ''
+      }
+    </mask>`;
 }
 
 renderSvgLineMask(line, i) {
-  // console.log('render Graph, renderSvgLineMask(line, i)', line, i);
   if (this.config.show.graph === 'dots') return;
   if (!line) return;
 
@@ -645,6 +665,31 @@ renderSvgLineMask(line, i) {
 
   return svg`
     <mask id=${`line-${this.id}-${i}`}>
+      ${path}
+    </mask>
+  `;
+}
+
+renderSvgLineMinMaxMask(line, i) {
+  if (this.config.show.graph === 'dots') return;
+  if (!line) return;
+
+  console.log('renderSvgLineMinMaxMask', line, i);
+  const path = svg`
+    <path
+      class='lineMinMax'
+      .id=${i}
+      anim=${this.config.animate} ?init=${this.length[i]}
+      style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
+      fill='none'
+      stroke-dasharray=${this.length[i] || 'none'} stroke-dashoffset=${this.length[i] || 'none'}
+      stroke=${'white'}
+      stroke-width=${this.svg.line_width}
+      d=${this.line[i]}
+    />`;
+
+  return svg`
+    <mask id=${`lineMinMax-${this.id}-${i}`}>
       ${path}
     </mask>
   `;
@@ -719,6 +764,23 @@ renderSvgLineBackground(line, i) {
     />`;
 }
 
+renderSvgLineMinMaxBackground(line, i) {
+  // Hack
+  if (this.config.show.graph === 'dots') return;
+  // console.log('render Graph, renderSvgLineBackground(line, i)', line, i);
+  if (!line) return;
+  const fill = this.gradient[i]
+    ? `url(#grad-${this.id}-${i})`
+    : this.computeColor(this._card.entities[i].state, i);
+  return svg`
+    <rect class='line--rect'
+      ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== i}
+      id=${`line-rect-${this.id}-${i}`}
+      fill=${fill} height="100%" width="100%"
+      mask=${`url(#lineMinMax-${this.id}-${i})`}
+    />`;
+}
+
 // Render the area below the line graph.
 // Currently called the 'fill', but actually it should be named area, after
 // sparkline area graph according to the mighty internet.
@@ -737,38 +799,19 @@ renderSvgAreaBackground(fill, i) {
     />`;
 }
 
-renderSvgBarsMask2(bars, index) {
-  if (this.config.show.graph === 'dots') return;
-
-  if (!bars) return;
-  const paths = bars.map((bar, i) => {
-    const animation = this.config.animate
-      ? svg`
-        <animate attributeName='y' from=${this.config.height} to=${bar.y} dur='1s' fill='remove'
-          calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
-        </animate>`
-      : '';
-    // Must account for this.svg.line_width to prevent double colors on bars around zero y axis.
-    // Must be different for positive and negative values...
-    // Negative values: y should be larger (lh / 2), height minus line_height
-    // Positive values: y should be larger (1/h2), height minus line_height!!
-    if (this._min < 0) {
-    }
-    return svg` 
-      <rect class='bar' x=${bar.x} y=${bar.y + (bar.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
-        height=${Math.max(0, bar.height - this.svg.line_width / 1 - 2)} width=${bar.width} fill='white' stroke='white'
-        stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
-        @mouseover=${() => this.setTooltip(index, i, bar.value)}
-        @mouseout=${() => (this.tooltip = {})}>
-        ${animation}
-      </rect>`;
-  });
-
+renderSvgAreaMinMaxBackground(fill, i) {
+  // console.log('render Graph, renderSvgAreaBackground(fill, i)', fill, i);
+  if (!fill) return;
+  const svgFill = this.gradient[i]
+    ? `url(#grad-${this.id}-${i})`
+    : this.intColor(this._card.entities[i].state, i);
   return svg`
-    <mask id=${`bars-bg-${this.id}-${index}`}>
-      ${paths}
-    </mask>
-  `;
+    <rect class='fill--rect'
+      ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== i}
+      id=${`fill-rect-${this.id}-${i}`}
+      fill=${svgFill} height="100%" width="100%"
+      mask=${`url(#fillMinMax-${this.id}-${i})`}
+    />`;
 }
 
 renderSvgBarsMask(bars, index) {
@@ -825,10 +868,6 @@ renderSvgBarsMask(bars, index) {
     </mask>
   `;
 }
-// remove the fill???? Not required ???
-//  <mask id=${`fill-grad-mask-pos-${this.id}-${index}`}>
-//  <rect width="100%" height="100%" fill=${`url(#fill-grad-pos-${this.id}-${index})`}
-// </mask>
 
 renderSvgBarsBackground(bars, index) {
   if (this.config.show.graph === 'dots') return;
@@ -884,40 +923,6 @@ renderSvgBarsBackground(bars, index) {
   }
 }
 
-renderSvgBars2(bars, index) {
-  // console.log('render Graph, renderSvgBars(bars, index)', bars, index);
-  if (!bars) return;
-  const items = bars.map((bar, i) => {
-    const animation = this.config.animate
-      ? svg`
-        <animate attributeName='y' from=${this.config.height} to=${bar.y} dur='1s' fill='remove'
-          calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
-        </animate>`
-      : '';
-    const color = this.computeColor(bar.value, index);
-    return svg` 
-      <defs>
-      <linearGradient id=${`fill-grad-${this.id}-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop stop-color='white' offset='0%' stop-opacity='1'/>
-        <stop stop-color='white' offset='100%' stop-opacity='.1'/>
-      </linearGradient>
-      
-      <mask id=${`fill-grad-mask-${this.id}-${index}`}>
-        <rect width="100%" height="100%" fill=${`url(#fill-grad-${this.id}-${index})`}
-      </mask>
-      </defs>
-
-      <rect class='bar' x=${bar.x} y=${bar.y}
-        height=${bar.height} width=${bar.width} fill=${color}
-        @mouseover=${() => this.setTooltip(index, i, bar.value)}
-        @mouseout=${() => (this.tooltip = {})}>
-        mask = ${`fill-grad-mask-${this.id}-${index}`}
-        ${animation}
-      </rect>`;
-  });
-  return svg`<g class='bars' ?anim=${this.config.animate}>${items}</g>`;
-}
-
 // This function to use for coloring the full bar depending on colorstop or color
 // This depends on the style setting. Don't know which one at this point
 renderSvgBars(bars, index) {
@@ -942,29 +947,9 @@ renderSvgBars(bars, index) {
   return svg`<g class='bars' ?anim=${this.config.animate}>${items}</g>`;
 }
 
-    // <svg width='100%' height=${height !== 0 ? '100%' : 0} viewBox='0 0 500 ${height}'
-
 renderSvg() {
-  // console.log('render Graph, renderSvg()', this.fill, this.line, this.bar, this.points, this.config.height, this.config.width);
-  // const { height } = this.config;
-  // const { width } = this.config;
   const height = this.svg.height - this.svg.margin.y * 2;
   const width = this.svg.width - this.svg.margin.x * 2;
-
-  // <svg width='100%' height='100%' viewBox='0 0 400 400'
-
-  // width="${width - this.svg.margin * 2}" height="${height - this.svg.margin * 2}"
-
-  // Margins must be created in the graph, so line width can be compensated.
-  // Can not be done in SVG as it seems now... as all the masks cut-off (as they should)
-  // the overflowing parts...
-  //
-  // <svg width="${width}" height="${height}" overflow="visible"
-  //   x="${this.svg.x + this.svg.margin}" y="${this.svg.y + this.svg.margin}"
-  //   >
-
-  // Version trying to account for overflow
-  // x="${this.svg.margin.x}" y="${this.svg.margin.y}"
 
   return svg`
   <svg width="${this.svg.width}" height="${this.svg.height}" overflow="visible"
@@ -979,6 +964,8 @@ renderSvg() {
         >
         ${this.fill.map((fill, i) => this.renderSvgAreaMask(fill, i))}
         ${this.fill.map((fill, i) => this.renderSvgAreaBackground(fill, i))}
+        ${this.fillMinMax.map((fill, i) => this.renderSvgAreaMinMaxMask(fill, i))}
+        ${this.fillMinMax.map((fill, i) => this.renderSvgAreaMinMaxBackground(fill, i))}
         ${this.line.map((line, i) => this.renderSvgLineMask(line, i))}
         ${this.line.map((line, i) => this.renderSvgLineBackground(line, i))}
         ${this.bar.map((bars, i) => this.renderSvgBarsMask(bars, i))}
@@ -986,43 +973,6 @@ renderSvg() {
         ${this.points.map((points, i) => this.renderSvgPoints(points, i))}
         </svg>
       </g>
-    </svg>`;
-
-  // This one works, but the background gradient does not allow for overflow.
-  return svg`
-  <svg width="${width}" height="${height}" overflow="visible"
-    x="${this.svg.x + this.svg.margin.x}" y="${this.svg.y + this.svg.margin.y}"
-    >
-    <g>
-        <defs>
-          ${this.renderSvgGradient(this.gradient)}
-        </defs>
-        ${this.fill.map((fill, i) => this.renderSvgAreaMask(fill, i))}
-        ${this.fill.map((fill, i) => this.renderSvgAreaBackground(fill, i))}
-        ${this.line.map((line, i) => this.renderSvgLineMask(line, i))}
-        ${this.line.map((line, i) => this.renderSvgLineBackground(line, i))}
-        ${this.bar.map((bars, i) => this.renderSvgBarsMask(bars, i))}
-        ${this.bar.map((bars, i) => this.renderSvgBarsBackground(bars, i))}
-      </g>
-      ${this.points.map((points, i) => this.renderSvgPoints(points, i))}
-    </svg>`;
-        // ${this.bar.map((bars, i) => this.renderSvgBars(bars, i))}
-
-    return svg`
-    <svg width=${width} height=${height !== 0 ? '100%' : 0} viewBox='0 0 ${width} ${height}'
-      x="${this.svg.x}" y="${this.svg.y}"
-      @click=${(e) => e.stopPropagation()}>
-      <g>
-        <defs>
-          ${this.renderSvgGradient(this.gradient)}
-        </defs>
-        ${this.fill.map((fill, i) => this.renderSvgAreaMask(fill, i))}
-        ${this.fill.map((fill, i) => this.renderSvgAreaBackground(fill, i))}
-        ${this.line.map((line, i) => this.renderSvgLineMask(line, i))}
-        ${this.line.map((line, i) => this.renderSvgLineBackground(line, i))}
-        ${this.bar.map((bars, i) => this.renderSvgBars(bars, i))}
-      </g>
-      ${this.points.map((points, i) => this.renderSvgPoints(points, i))}
     </svg>`;
 }
 
