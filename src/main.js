@@ -1792,6 +1792,7 @@ _buildStateString(inState, entityConfig) {
     // console.log('Got new stateHistory', entity);
     if (entity.type === 'graph') {
       // console.log('pushing stateHistory into Graph!!!!', stateHistory);
+      this.toolsets[entity.tsidx].tools[entity.idx].tool.data = entity.entityIndex;
       this.toolsets[entity.tsidx].tools[entity.idx].tool.series = [...stateHistory];
     }
     this.uppdate(entity, stateHistory);

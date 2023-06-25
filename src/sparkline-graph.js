@@ -20,11 +20,37 @@ export default class SparklineGraph {
       diff: this._diff,
     };
 
+    // Grrr. Getting sick and tired of that margin stuff. I changed something, and now it is difficult
+    // to get it working again...
+    // this.widthOuter = width;
+    // this.heightOuter = height;
+    // this.widthInner = width - margin[X] * 2;
+    // this.heightInner = height - margin[Y] * 4;
+
+    // NOTE!!!!!!!!!!!!!!!
+    // Should also correct height for the line_width. That is unknown yet. In that case, the
+    // height also changes depending on the line. Margin should take this all into account...
+    // Hmmmmmm.
+
+    // Just trying to make sense for the graph drawing area
+    this.graphArea = {};
+    this.graphArea.x = 0;
+    this.graphArea.y = 0;
+    this.graphArea.width = width - (2 * this.graphArea.x);
+    this.graphArea.height = height - (2 * this.graphArea.y);
+
+    this.drawArea = {};
+    this.drawArea.x = margin[X];
+    this.drawArea.y = margin[Y];
+    this.drawArea.width = width - (2 * this.drawArea.x);
+    this.drawArea.height = height - (2 * this.drawArea.y);
+
     this._history = undefined;
     this.coords = [];
-    this.width = width; // - margin[X] * 2;
-    this.height = height; // - margin[Y] * 4;
+    this.width = width - margin[X] * 2;
+    this.height = height - margin[Y] * 2;
     this.margin = margin;
+    // Testing
     this._max = 0;
     this._min = 0;
     this.points = points;
@@ -89,7 +115,14 @@ export default class SparklineGraph {
     const first = history.filter(Boolean)[0];
     let last = [this._calcPoint(first), this._lastValue(first)];
     const getCoords = (item, i) => {
-      const x = xRatio * i + this.margin[X];
+      // Getting double margin, so remove this one?
+      // the shift to the right is both for points and the line graph
+      // Weird, but with margin removed, line and dots are OK.
+      //
+      // Margin is already applied elsewhere orso?? Where ????
+      // 2023.06.22
+      // const x = xRatio * i; // + this.margin[X];
+      const x = (xRatio * i) + this.drawArea.x;
       if (item)
         last = [this._calcPoint(item), this._lastValue(item)];
       return coords.push([x, 0, item ? last[0] : last[1]]);
@@ -120,7 +153,7 @@ export default class SparklineGraph {
     const max = this._logarithmic ? Math.log10(Math.max(1, this.max)) : this.max;
     const min = this._logarithmic ? Math.log10(Math.max(1, this.min)) : this.min;
 
-    const yRatio = ((max - min) / this.height) || 1;
+    const yRatio = ((max - min) / (this.drawArea.height)) || 1; // - this.margin[Y] * 100)) || 1;
     const coords2 = coords.map((coord) => {
       const val = this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V];
 
@@ -128,15 +161,34 @@ export default class SparklineGraph {
       // The rendering should then take action: a dot is a dot on the Y. But an area
       // should check for negative value, and so for a bar...
       const offset = (min < 0) ? Math.abs(min) : 0;
+      const val0 = (val > 0)
+        ? (val - Math.max(0, min))
+        : 0;
+
+      const coord0 = this.drawArea.height + this.drawArea.y - val0 / yRatio;
+
       const coordY2 = (val > 0)
-        ? this.height - (offset / yRatio) - ((val - Math.max(0, min)) / yRatio) + this.margin[Y] * 2
-        : this.height - ((0 - min) / yRatio) + this.margin[Y] * 2;
+        ? this.drawArea.height + this.drawArea.y * 1 - (offset / yRatio) - ((val - Math.max(0, min)) / yRatio) // - this.margin[Y] * 2
+        : this.drawArea.height + this.drawArea.y * 1 - ((0 - min) / yRatio);// - this.margin[Y] * 4;
       // const coordY = this.height - ((val - Math.max(0, min)) / yRatio) + this.margin[Y] * 2;
-      const coordY = this.height - ((val - (min)) / yRatio) + this.margin[Y] * 2;
-      console.log('coordY, coordY2', coordY, coordY2, coord[V]);
+
+      // if negative value
+      // y0 = (point at y zero). Very simple...
+      // max / (max - min) as the 0-1 value for y0 value
+      // if max = 40, min = -20. then y0 = (40 / (40 --20)) = 2/3 = 0,6666
+      // so that height is 2/3 / yRatio. That is the height, ie coordy0
+
+      // const coordY = this.drawArea.height - ((val - (min)) / yRatio); // - this.margin[Y] * 2;
+      const coordY = this.drawArea.height + this.drawArea.y * 1 - ((val - (min)) / yRatio); // - this.margin[Y] * 2;
+
+      if (this.margin[Y] !== 0)
+        console.log('calcY, val, Y = ', val, coordY, coordY2);
+
+      // The actual coordinate also is wrong in some cases...
+      // console.log('coordY, coordY2', coordY, coord[V], y_2, min, max, yRatio);
       return [coord[X], coordY, coord[V], coordY2];
     });
-
+    console.log('calcY', this.drawArea.height, this.drawArea.width, coords2);
     return coords2;
   }
 
@@ -225,13 +277,24 @@ export default class SparklineGraph {
   getFill(path) {
     // We got the fill, ie the line path. Now make it connect on the y_zero axis
     // We need a different height...
+    // const y_zero = (this._min >= 0) ? this.height + this.margin[Y] * 4
+    // : this.height + this.margin[Y] * 4 + 1 - ((Math.abs(this._min) / ((this._max - this._min)) * this.height));
+
     const y_zero = (this._min >= 0) ? this.height
-    : this.height + 1 - ((Math.abs(this._min) / ((this._max - this._min)) * this.height));
+    : this.height + 0 - ((Math.abs(this._min) / ((this._max - this._min)) * this.height));
 
     // const height = this.height + this.margin[Y] * 4;
-    const height = y_zero; // + this.margin[Y] * 4;
+    // const height = y_zero + this.margin[Y] * 4; // * 4;
+
+    // Using * 1, the y does not stretch upto the lower y of the graph (you see the margin).
+    // Using * 2, the y does stretch upto the lower y of the graph (you don't see a margin)
+    // Now: what should it be...
+    //
+    const height = y_zero + this.drawArea.y * 1.5; // Should be this.svg.line_width;
     let fill = path;
-    fill += ` L ${this.width - this.margin[X] * 2}, ${height}`;
+    // fill += ` L ${this.width + this.margin[X]}, ${height}`;
+    fill += ` L ${this.width + this.drawArea.x}, ${height}`;
+    // fill += ` L ${this.width + 0}, ${height}`;
     fill += ` L ${this.coords[0][X]}, ${height} z`;
     return fill;
   }
@@ -245,15 +308,42 @@ export default class SparklineGraph {
   getBars(position, total, spacing = 4) {
     // console.log('getBars', position, total, spacing, this.coords);
     const coords = this._calcY(this.coords);
-    const xRatio = ((this.width - spacing) / Math.ceil(this.hours * this.points)) / total;
-    const yRatio = ((this._max - this._min) / this.height) || 1;
+    // Each bar has spacing on the right side. And manually on the left side.
+    // Remove start spacing, and remove end spacing by adding spacing to width
+    // Now the bar has the full width, as it should be!!!!!!
+    // const xRatio = ((this.width - spacing) / Math.ceil(this.hours * this.points)) / total;
+    const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
+    const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
     const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
-    console.log('getbars, offset ', offset);
     // console.log('getBars, xRatio etc.', xRatio, this.width, spacing, this.hours, this.points);
+
+    // 2023.06.22
+    // calc is wrong if margin > 0. question is why, and if the Y2 coord is wrong or not.
+    // in that case, the other function should be changed...
+
+    coords.map((coord, i) => {
+      const x = (xRatio * i * total) + (xRatio * position) + this.drawArea.x;
+      const y = this._min > 0 ? coord[Y] : coord[Y2];
+      // const height = coord[V] > 0 ? this.drawArea.height - offset - coord[Y] : coord[Y] - coord[Y2];
+      const height = coord[V] > 0 ? this._min < 0 ? coord[V] / yRatio : coord[Y] - coord[Y2] : (coord[V] - this._min) / yRatio;
+      const width = xRatio - spacing;
+      const value = coord[V];
+      if (this.margin[Y] > 0) console.log('coords.mapping, i', i, 'x=', Math.round(x),
+         'y=', Math.round(y), 'height=', Math.round(height),
+         'width=', Math.round(width), 'val=', Math.round(value));
+      return true;
+    });
+
     return coords.map((coord, i) => ({
-      x: (xRatio * i * total) + (xRatio * position) + spacing,
+      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
       y: this._min > 0 ? coord[Y] : coord[Y2],
-      height: coord[V] > 0 ? this.height - offset - coord[Y] + this.margin[Y] * 4 : coord[Y] - coord[Y2] + this.margin[Y] * 4,
+      // height: coord[V] > 0 ? this.drawArea.height - offset - coord[Y] : coord[Y] - coord[Y2],
+      // height: coord[V] > 0 ? this.height - offset - coord[Y] + this.margin[Y] * 4 : coord[Y] - coord[Y2] + this.margin[Y] * 4,
+
+      // Works, but with only positive values, bars are too long, upto zero!
+      // height: coord[V] > 0 coord[V] / yRatio : ) : coord[Y] - coord[Y2],
+      height: coord[V] > 0 ? (this._min < 0 ? coord[V] / yRatio : (coord[V] - this._min) / yRatio)
+                           : coord[Y] - coord[Y2],
       width: xRatio - spacing,
       value: coord[V],
     }));
