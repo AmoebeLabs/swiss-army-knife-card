@@ -196,9 +196,17 @@ export default class SparklineGraphTool extends BaseTool {
     if (typeof this.config.position.margin === 'object') {
       this.svg.margin.x = Utils.calculateSvgDimension(this.config.position.margin?.x);
       this.svg.margin.y = Utils.calculateSvgDimension(this.config.position.margin?.y);
+      this.svg.margin.t = Utils.calculateSvgDimension(this.config.position.margin?.t) || this.svg.margin.y;
+      this.svg.margin.r = Utils.calculateSvgDimension(this.config.position.margin?.r) || this.svg.margin.x;
+      this.svg.margin.b = Utils.calculateSvgDimension(this.config.position.margin?.b) || this.svg.margin.y;
+      this.svg.margin.l = Utils.calculateSvgDimension(this.config.position.margin?.l) || this.svg.margin.x;
     } else {
       this.svg.margin.x = Utils.calculateSvgDimension(this.config.position.margin);
       this.svg.margin.y = this.svg.margin.x;
+      this.svg.margin.t = this.svg.margin.x;
+      this.svg.margin.r = this.svg.margin.x;
+      this.svg.margin.b = this.svg.margin.x;
+      this.svg.margin.l = this.svg.margin.x;
     }
     // const theWidth = (this.config.position.orientation === 'vertical') ? this.svg.width : this.svg.height;
 
@@ -316,6 +324,12 @@ export default class SparklineGraphTool extends BaseTool {
         states[i].state = z;
       }
     }
+    if (this._card.config.entities[0].fixed_value === true) {
+      console.log('update, YUP, fixed value...');
+      const last = states[states.length - 1];
+      states = [last, last];
+    }
+
     this.Graph[this.seriesIndex].update(states);
 
     this.updateBounds();
@@ -360,6 +374,9 @@ export default class SparklineGraphTool extends BaseTool {
           this.lineMax[i] = lineMax;
           if (!this.fillMinMax) this.fillMinMax = [];
           this.fillMinMax[i] = this.Graph[i].getFillMinMax(lineMin, lineMax);
+
+          const levels = this.Graph[i].getLevels(0, this.visibleEntities.length, config.bar_spacing);
+          console.log('levels, testing', levels);
         }
       });
       this.line = [...this.line];
