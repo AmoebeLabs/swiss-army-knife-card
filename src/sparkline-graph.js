@@ -42,17 +42,17 @@ export default class SparklineGraph {
     this.graphArea.height = height - (2 * this.graphArea.y);
 
     this.drawArea = {};
-    this.drawArea.x = margin[L];
-    this.drawArea.y = margin[T];
-    this.drawArea.top = margin[T];
-    this.drawArea.bottom = margin[B];
-    this.drawArea.width = width - (margin[L] + margin[R]);
-    this.drawArea.height = height - (margin[T] + margin[B]);
+    this.drawArea.x = margin.l;
+    this.drawArea.y = margin.t;
+    this.drawArea.top = margin.t;
+    this.drawArea.bottom = margin.b;
+    this.drawArea.width = width - (margin.l + margin.r);
+    this.drawArea.height = height - (margin.t + margin.b);
 
     this._history = undefined;
     this.coords = [];
-    this.width = width - margin[X] * 2;
-    this.height = height - margin[Y] * 2;
+    this.width = width; // - margin.x * 2;
+    this.height = height; // - margin.y * 2;
     this.margin = margin;
     // Testing
     this._max = 0;
@@ -65,6 +65,8 @@ export default class SparklineGraph {
     this._logarithmic = logarithmic;
     this._groupBy = groupBy;
     this._endTime = 0;
+    this.valuesPerBucket = 0;
+    this.buckets = 1;
   }
 
   get max() { return this._max; }
@@ -188,8 +190,10 @@ export default class SparklineGraph {
 
   _calcPoints(history) {
     const coords = [];
-    let xRatio = this.width / (this.hours * this.points - 1);
-    xRatio = Number.isFinite(xRatio) ? xRatio : this.width;
+    // let xRatio = this.width / (this.hours * this.points - 1);
+    // xRatio = Number.isFinite(xRatio) ? xRatio : this.width;
+    let xRatio = this.drawArea.width / (this.hours * this.points - 1);
+    xRatio = Number.isFinite(xRatio) ? xRatio : this.drawArea.width;
 
     const first = history.filter(Boolean)[0];
     let last = [this._calcPoint(first), this._lastValue(first)];
@@ -223,11 +227,11 @@ export default class SparklineGraph {
       const coord0 = this.drawArea.height + this.drawArea.y - val0 / yRatio;
 
       const coordY2 = (val > 0)
-        ? this.drawArea.height + this.drawArea.y * 1 - (offset / yRatio) - ((val - Math.max(0, min)) / yRatio) // - this.margin[Y] * 2
-        : this.drawArea.height + this.drawArea.y * 1 - ((0 - min) / yRatio);// - this.margin[Y] * 4;
-      const coordY = this.drawArea.height + this.drawArea.y * 1 - ((val - (min)) / yRatio); // - this.margin[Y] * 2;
+        ? this.drawArea.height + this.drawArea.y * 1 - (offset / yRatio) - ((val - Math.max(0, min)) / yRatio) // - this.margin.y * 2
+        : this.drawArea.height + this.drawArea.y * 1 - ((0 - min) / yRatio);// - this.margin.y * 4;
+      const coordY = this.drawArea.height + this.drawArea.y * 1 - ((val - (min)) / yRatio); // - this.margin.y * 2;
 
-      // if (this.margin[Y] !== 0)
+      // if (this.margin.y !== 0)
       //   console.log('calcY, val, Y = ', val, coordY, coordY2);
 
       return [coord[X], coordY, coord[V], coordY2];
@@ -243,7 +247,9 @@ export default class SparklineGraph {
     const min = this._logarithmic ? Math.log10(Math.max(1, this.min)) : this.min;
 
     const yRatio = ((max - min) / (this.drawArea.height)) || 1;
+    const offset = (min < 0) ? Math.abs(min) : 0;
     let yStack = [];
+    // should be reduce or something... to return an array...
     const coordYs = coord[V].forEach((val, index) => {
       // const val = this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V];
       // const offset = (min < 0) ? Math.abs(min) : 0;
@@ -253,27 +259,22 @@ export default class SparklineGraph {
 
       // const coord0 = this.drawArea.height + this.drawArea.y - val0 / yRatio;
 
-      // const coordY2 = (val > 0)
-      //   ? this.drawArea.height + this.drawArea.y * 1 - (offset / yRatio) - ((val - Math.max(0, min)) / yRatio) // - this.margin[Y] * 2
-      //   : this.drawArea.height + this.drawArea.y * 1 - ((0 - min) / yRatio);// - this.margin[Y] * 4;
-      const coordY = this.drawArea.height + this.drawArea.y * 1 - ((val - (min)) / yRatio); // - this.margin[Y] * 2;
+      const coordY = (val >= 0)
+        ? this.drawArea.height + this.drawArea.y * 1 - (1 * offset / yRatio) - ((val - Math.max(0, min)) / yRatio) // - this.margin.y * 2
+        : this.drawArea.height + this.drawArea.y * 1 - ((0 - val) / yRatio);
+      console.log('_calcLevelY...', val, offset, yRatio, min, max, coordY);
 
       yStack.push(coordY);
-      // if (this.margin[Y] !== 0)
-      //   console.log('calcY, val, Y = ', val, coordY, coordY2);
-
-      console.log('calcLevelY, forEach, yStack', yStack);
-      return [yStack];
-      // return [coordY];
+      return yStack;
     });
-    // console.log('calcY', this.drawArea.height, this.drawArea.width, coords2);
-    return yStack;
+    console.log('calcLevelY, yStack...', yStack);
+    return yStack; // coordYs;
   }
 
   getPoints() {
     let { coords } = this;
     if (coords.length === 1) {
-      coords[1] = [this.width + this.margin[X], 0, coords[0][V]];
+      coords[1] = [this.width + this.margin.x, 0, coords[0][V]];
     }
     coords = this._calcY(this.coords);
     let next; let Z;
@@ -292,7 +293,7 @@ export default class SparklineGraph {
   getPath() {
     let { coords } = this;
     if (coords.length === 1) {
-      coords[1] = [this.width + this.margin[X], 0, coords[0][V]];
+      coords[1] = [this.width + this.margin.x, 0, coords[0][V]];
     }
     coords = this._calcY(this.coords);
     let next; let Z;
@@ -314,7 +315,7 @@ export default class SparklineGraph {
   getPathMin() {
     let { coordsMin } = this;
     if (coordsMin.length === 1) {
-      coordsMin[1] = [this.width + this.margin[X], 0, coordsMin[0][V]];
+      coordsMin[1] = [this.width + this.margin.x, 0, coordsMin[0][V]];
     }
     coordsMin = this._calcY(this.coordsMin);
     let next; let Z;
@@ -338,7 +339,7 @@ export default class SparklineGraph {
   getPathMax() {
     let { coordsMax } = this;
     if (coordsMax.length === 1) {
-      coordsMax[1] = [this.width + this.margin[X], 0, coordsMax[0][V]];
+      coordsMax[1] = [this.width + this.margin.x, 0, coordsMax[0][V]];
     }
     coordsMax = this._calcY(this.coordsMax);
     let next; let Z;
@@ -396,9 +397,9 @@ export default class SparklineGraph {
   }
 
   getFill2(path) {
-    const height = this.height + this.margin[Y] * 4;
+    const height = this.height + this.margin.y * 4;
     let fill = path;
-    fill += ` L ${this.width - this.margin[X] * 2}, ${height}`;
+    fill += ` L ${this.width - this.margin.x * 2}, ${height}`;
     fill += ` L ${this.coords[0][X]}, ${height} z`;
     return fill;
   }
@@ -420,7 +421,7 @@ export default class SparklineGraph {
     : this.height + 0 - ((Math.abs(this._min) / ((this._max - this._min)) * this.height));
     const height = y_zero + this.drawArea.y * 1.5; // Should be this.svg.line_width;
     let fill = path;
-    fill += ` L ${this.width + this.drawArea.x}, ${height}`;
+    fill += ` L ${this.drawArea.width + this.drawArea.x}, ${height}`;
     fill += ` L ${this.coords[0][X]}, ${height} z`;
     return fill;
   }
@@ -433,31 +434,42 @@ export default class SparklineGraph {
     const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
     const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
 
+    // Calculate height of each level rectangle
+    // we have drawarea.height. We have steprange and spacing.
+    // height / steprange = max height rectangle. Minus spacing = height??
+    const levelHeight = (this.drawArea.height - (this.buckets * spacing)) / this.buckets;
+
+    let stepRange;
     let levelCoords = this.coords.map((coord, i) => {
       let newCoord = [];
-      const stepMax = Math.trunc(coord[V] / 10);
-      const stepMin = Math.trunc(this._min / 10);
-      const stepRange = (stepMax - stepMin);
+      const stepMax = Math.trunc(coord[V] / this.valuesPerBucket);
+      const stepMin = Math.trunc(this._min / this.valuesPerBucket);
+      stepRange = (stepMax - stepMin);
 
       newCoord[X] = coord[X];
+      newCoord[Y] = [];
       newCoord[V] = [];
-      for (let i = 0; i <= stepRange; i++) {
-        newCoord[V][i] = stepMin + (i * 10);
+      for (let i = 0; i < stepRange; i++) {
+        // newCoord[V][i] = stepMin - 1 + (i * this.valuesPerBucket);
+        newCoord[V][i] = this._min + (i * this.valuesPerBucket);
       }
       newCoord[Y] = this._calcLevelY(newCoord);
       console.log('getLevels, newCoord = ', newCoord);
-      return [newCoord];
+      // return [newCoord];
+      return newCoord;
     });
     // const coords = this._calcY(this.coords);
-    console.log('getLevels, levelCoords', levelCoords);
+    // console.log('getLevels, levelCoords', levelCoords);
 
+    // #TODO: Negative values to coord[Y2] !!!
     return levelCoords.map((coord, i) => ({
       x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
-      y: this._min > 0 ? coord[Y] : coord[Y2],
-      height: 2 / yRatio, // coord[V] > 0 ? (this._min < 0 ? coord[V] / yRatio : (coord[V] - this._min) / yRatio)
+      y: coord[Y],
+      height: levelHeight, // 1 * (stepRange + 1) / yRatio, // 10, // (yRatio - spacing) / this.buckets, // (this.max - this.min) / this.buckets / yRatio, // coord[V] > 0 ? (this._min < 0 ? coord[V] / yRatio : (coord[V] - this._min) / yRatio)
                           // : coord[Y] - coord[Y2],
       width: xRatio - spacing,
-      value: levelCoords[V],
+      // value: levelCoords[V],
+      value: coord[V],
     }));
   }
 
@@ -475,7 +487,7 @@ export default class SparklineGraph {
     //   const height = coord[V] > 0 ? this._min < 0 ? coord[V] / yRatio : coord[Y] - coord[Y2] : (coord[V] - this._min) / yRatio;
     //   const width = xRatio - spacing;
     //   const value = coord[V];
-    //   if (this.margin[Y] > 0) console.log('coords.mapping, i', i, 'x=', Math.round(x),
+    //   if (this.margin.y > 0) console.log('coords.mapping, i', i, 'x=', Math.round(x),
     //      'y=', Math.round(y), 'height=', Math.round(height),
     //      'width=', Math.round(width), 'val=', Math.round(value));
     //   return true;
