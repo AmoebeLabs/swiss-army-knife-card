@@ -138,6 +138,7 @@ export default class SparklineGraphTool extends BaseTool {
       },
       hours_to_show: 24,
       points_per_hour: 0.5,
+      value_buckets: 10,
       animate: true,
       hour24: false,
       font_size: 10,
@@ -194,12 +195,16 @@ export default class SparklineGraphTool extends BaseTool {
 
     this.svg.margin = {};
     if (typeof this.config.position.margin === 'object') {
-      this.svg.margin.x = Utils.calculateSvgDimension(this.config.position.margin?.x);
-      this.svg.margin.y = Utils.calculateSvgDimension(this.config.position.margin?.y);
-      this.svg.margin.t = Utils.calculateSvgDimension(this.config.position.margin?.t) || this.svg.margin.y;
-      this.svg.margin.r = Utils.calculateSvgDimension(this.config.position.margin?.r) || this.svg.margin.x;
-      this.svg.margin.b = Utils.calculateSvgDimension(this.config.position.margin?.b) || this.svg.margin.y;
-      this.svg.margin.l = Utils.calculateSvgDimension(this.config.position.margin?.l) || this.svg.margin.x;
+      this.svg.margin.t = Utils.calculateSvgDimension(this.config.position.margin?.t)
+          || Utils.calculateSvgDimension(this.config.position.margin?.y);
+      this.svg.margin.b = Utils.calculateSvgDimension(this.config.position.margin?.b)
+          || Utils.calculateSvgDimension(this.config.position.margin?.y);
+      this.svg.margin.r = Utils.calculateSvgDimension(this.config.position.margin?.r)
+          || Utils.calculateSvgDimension(this.config.position.margin?.x);
+      this.svg.margin.l = Utils.calculateSvgDimension(this.config.position.margin?.l)
+          || Utils.calculateSvgDimension(this.config.position.margin?.x);
+      this.svg.margin.x = this.svg.margin.l;
+      this.svg.margin.y = this.svg.margin.t;
     } else {
       this.svg.margin.x = Utils.calculateSvgDimension(this.config.position.margin);
       this.svg.margin.y = this.svg.margin.x;
@@ -236,6 +241,7 @@ export default class SparklineGraphTool extends BaseTool {
     this.lineMin = [];
     this.lineMax = [];
     this.bar = [];
+    this.level = [];
     this.abs = [];
     this.fill = [];
     this.fillMinMax = [];
@@ -276,7 +282,8 @@ export default class SparklineGraphTool extends BaseTool {
         this.svg.graph.width,
         this.svg.graph.height,
         // [0, 0],
-        [this.svg.margin.x, this.svg.margin.y],
+        // [this.svg.margin.x, this.svg.margin.y],
+        this.svg.margin,
         // [this.config.show.fill ? 0 : this.svg.line_width, this.svg.line_width],
         this.config.hours_to_show,
         this.config.points_per_hour,
@@ -375,8 +382,12 @@ export default class SparklineGraphTool extends BaseTool {
           if (!this.fillMinMax) this.fillMinMax = [];
           this.fillMinMax[i] = this.Graph[i].getFillMinMax(lineMin, lineMax);
 
-          const levels = this.Graph[i].getLevels(0, this.visibleEntities.length, config.bar_spacing);
-          console.log('levels, testing', levels);
+          if (this.config.show.graph === 'levels') {
+            this.Graph[i].buckets = this.config.value_buckets;
+            this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.value_buckets;
+            this.level[i] = this.Graph[i].getLevels(0, this.visibleEntities.length, config.bar_spacing);
+            // console.log('levels, testing', this.level[i], this.Graph[i].valuesPerBucket);
+          }
         }
       });
       this.line = [...this.line];
@@ -766,7 +777,7 @@ renderSvgGradient(gradients) {
 // as the drawing (fill) color...
 renderSvgLineBackground(line, i) {
   // Hack
-  if (this.config.show.graph === 'dots') return;
+  if (['dots', 'levels'].includes(this.config.show.graph)) return;
   // console.log('render Graph, renderSvgLineBackground(line, i)', line, i);
   if (!line) return;
   const fill = this.gradient[i]
@@ -783,7 +794,7 @@ renderSvgLineBackground(line, i) {
 
 renderSvgLineMinMaxBackground(line, i) {
   // Hack
-  if (this.config.show.graph === 'dots') return;
+  if (['dots', 'levels'].includes(this.config.show.graph)) return;
   // console.log('render Graph, renderSvgLineBackground(line, i)', line, i);
   if (!line) return;
   const fill = this.gradient[i]
@@ -803,6 +814,7 @@ renderSvgLineMinMaxBackground(line, i) {
 // sparkline area graph according to the mighty internet.
 renderSvgAreaBackground(fill, i) {
   // console.log('render Graph, renderSvgAreaBackground(fill, i)', fill, i);
+  if (['dots', 'levels'].includes(this.config.show.graph)) return;
   if (!fill) return;
   const svgFill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -829,6 +841,74 @@ renderSvgAreaMinMaxBackground(fill, i) {
       fill=${svgFill} height="100%" width="100%"
       mask=${`url(#fillMinMax-${this.id}-${i})`}
     />`;
+}
+
+renderSvgLevelsMask(levels, index) {
+  if (this.config.show.graph !== 'levels') return;
+
+  if (!levels) return;
+  console.log('renderSvgLevelsMask', levels);
+  const fade = this.config.show.fill === 'fade';
+  const maskNeg = `url(#fill-grad-mask-neg-${this.id}-${index}})`;
+  const maskPos = `url(#fill-grad-mask-pos-${this.id}-${index}})`;
+  // const fillNeg = `url(#fill-grad-neg-${this.id}-${index}`;
+  // const fillPos = `url(#fill-grad-pos-${this.id}-${index}`;
+  const fillNeg = this.config.styles.bar_mask_below.fill;
+  const fillPos = this.config.styles.bar_mask_above.fill;
+
+  const paths = levels.map((level, i) => {
+    console.log('renderSvgLevelsMask', i, level);
+    const animation = this.config.animate
+      ? svg`
+        <animate attributeName='y' from=${this.svg.height} to=${level.y} dur='1s' fill='remove'
+          calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
+        </animate>`
+      : '';
+    if (this.config.square === true) {
+      const size = Math.min(level.width, level.height);
+      level.width = size;
+      level.height = size;
+    }
+    const levelRect = level.value.map((single, j) => {
+      const piet = [];
+      return svg`
+      <rect class='level' x=${level.x} y=${level.y[j] - 1 * level.height - this.svg.line_width / 1}
+        height=${Math.max(0, level.height - this.svg.line_width)} width=${level.width}
+        fill=${fade ? (level.value > 0 ? fillPos : fillNeg) : 'white'}
+        stroke=${fade ? (level.value > 0 ? fillPos : fillNeg) : 'white'}
+        stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
+        rx="0%"
+        @mouseover=${() => this.setTooltip(index, j, single)}
+        @mouseout=${() => (this.tooltip = {})}>
+        ${animation}
+      </rect>`;
+    });
+
+    return svg`
+      ${levelRect}`;
+  });
+  return svg`
+    <defs>
+      <linearGradient id=${`fill-grad-pos-${this.id}-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop stop-color='white' offset='0%' stop-opacity='1'/>
+        <stop stop-color='white' offset='25%' stop-opacity='0.4'/>
+        <stop stop-color='white' offset='60%' stop-opacity='0.0'/>
+      </linearGradient>
+      <linearGradient id=${`fill-grad-neg-${this.id}-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop stop-color='white' offset='40%' stop-opacity='0'/>
+        <stop stop-color='white' offset='75%' stop-opacity='0.4'/>
+        <stop stop-color='white' offset='100%' stop-opacity='1.0'/>
+      </linearGradient>
+
+      <mask id=${`fill-grad-mask-pos-${this.id}-${index}`}>
+        <rect width="100%" height="100%"}
+      </mask>
+    </defs>  
+    <mask id=${`levels-bg-${this.id}-${index}`}>
+      ${paths}
+      mask = ${maskPos}
+    </mask>
+  `;
 }
 
 renderSvgBarsMask(bars, index) {
@@ -884,6 +964,60 @@ renderSvgBarsMask(bars, index) {
       mask = ${maskPos}
     </mask>
   `;
+}
+
+renderSvgLevelsBackground(levels, index) {
+  if (this.config.show.graph !== 'levels') return;
+  if (!levels) return;
+
+  const fade = this.config.show.fill === 'fadenever';
+  if (fade) {
+  // Is in fact the rendering of the AreaMask... In this case the barsmask.
+  // This is incomplete. Need rendering of the background itself too
+  // So check AreaBackground too to be complete for the 'fade' functionality of the Area
+    const init = this.length[index] || this._card.config.entities[index].show_line === false;
+    const svgFill = this.gradient[index]
+      ? `url(#grad-${this.id}-${index})`
+      : this.intColor(this._card.entities[index].state, index);
+    const fill = this.gradient[index]
+      ? `url(#fill-grad${this.id}-${index})`
+      : this.intColor(this._card.entities[index].state, index);
+
+      // mask=${`url(#bars-bg-${this.id}-${index})`}
+
+      return svg`
+      <defs>
+        <linearGradient id=${`fill-grad-${this.id}-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop stop-color='white' offset='0%' stop-opacity='1'/>
+          <stop stop-color='white' offset='100%' stop-opacity='.1'/>
+        </linearGradient>
+
+        <mask id=${`fill-grad-mask-${this.id}-${index}`}>
+          <rect width="100%" height="100%" fill=${`url(#fill-grad-${this.id}-${index})`}
+        </mask>
+      </defs>
+
+      <g mask = ${`url(#fill-grad-mask-${this.id}-${index})`}>
+        <rect class='levels--bg'
+          ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== index}
+          id=${`levels-bg-${this.id}-${index}`}
+          fill=${svgFill} height="100%" width="100%"
+          mask=${`url(#levels-bg-${this.id}-${index})`}
+        />
+      /g>`;
+  } else {
+    const fill = this.gradient[index]
+      ? `url(#grad-${this.id}-${index})`
+      : this.computeColor(this._card.entities[index].state, index);
+    console.log('renderSvgBarsBackground', fill, this.gradient[index]);
+      return svg`
+      <rect class='levels--bg'
+        ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== index}
+        id=${`levels-bg-${this.id}-${index}`}
+        fill=${fill} height="100%" width="100%"
+        mask=${`url(#levels-bg-${this.id}-${index})`}
+      />`;
+  }
 }
 
 renderSvgBarsBackground(bars, index) {
@@ -965,8 +1099,8 @@ renderSvgBars(bars, index) {
 }
 
 renderSvg() {
-  const height = this.svg.height - this.svg.margin.y * 2;
-  const width = this.svg.width - this.svg.margin.x * 2;
+  const height = this.svg.height - this.svg.margin.y * 0; // * 2;
+  const width = this.svg.width - this.svg.margin.x * 0; // * 2;
 
   return svg`
   <svg width="${this.svg.width}" height="${this.svg.height}" overflow="visible"
@@ -987,6 +1121,8 @@ renderSvg() {
         ${this.line.map((line, i) => this.renderSvgLineBackground(line, i))}
         ${this.bar.map((bars, i) => this.renderSvgBarsMask(bars, i))}
         ${this.bar.map((bars, i) => this.renderSvgBarsBackground(bars, i))}
+        ${this.level.map((levels, i) => this.renderSvgLevelsMask(levels, i))}
+        ${this.level.map((levels, i) => this.renderSvgLevelsBackground(levels, i))}
         ${this.points.map((points, i) => this.renderSvgPoints(points, i))}
         </svg>
       </g>
