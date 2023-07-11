@@ -12,7 +12,8 @@ export const B = 3;
 export const ONE_HOUR = 1000 * 3600;
 
 export default class SparklineGraph {
-  constructor(width, height, margin, hours = 24, points = 1, aggregateFuncName = 'avg', groupBy = 'interval', smoothing = true, logarithmic = false) {
+  constructor(width, height, margin, hours = 24, points = 1, aggregateFuncName = 'avg', groupBy = 'interval', smoothing = true, logarithmic = false,
+              trafficLights = [], buckets = []) {
     this.aggregateFuncMap = {
       avg: this._average,
       median: this._median,
@@ -66,7 +67,10 @@ export default class SparklineGraph {
     this._groupBy = groupBy;
     this._endTime = 0;
     this.valuesPerBucket = 0;
-    this.buckets = 1;
+    this.levels = 1;
+    this.trafficLights = trafficLights;
+    this.bucketss = buckets;
+    // console.log('constructor, buckets', this.bucketss, this.bucketss.length);
   }
 
   get max() { return this._max; }
@@ -241,7 +245,7 @@ export default class SparklineGraph {
   }
 
   _calcLevelY(coord) {
-    console.log('calcLevelY, coord', coord);
+    // console.log('calcLevelY, coord', coord);
     // account for logarithmic graph
     const max = this._logarithmic ? Math.log10(Math.max(1, this.max)) : this.max;
     const min = this._logarithmic ? Math.log10(Math.max(1, this.min)) : this.min;
@@ -262,12 +266,12 @@ export default class SparklineGraph {
       const coordY = (val >= 0)
         ? this.drawArea.height + this.drawArea.y * 1 - (1 * offset / yRatio) - ((val - Math.max(0, min)) / yRatio) // - this.margin.y * 2
         : this.drawArea.height + this.drawArea.y * 1 - ((0 - val) / yRatio);
-      console.log('_calcLevelY...', val, offset, yRatio, min, max, coordY);
+      // console.log('_calcLevelY...', val, offset, yRatio, min, max, coordY);
 
       yStack.push(coordY);
       return yStack;
     });
-    console.log('calcLevelY, yStack...', yStack);
+    // console.log('calcLevelY, yStack...', yStack);
     return yStack; // coordYs;
   }
 
@@ -437,7 +441,7 @@ export default class SparklineGraph {
     // Calculate height of each level rectangle
     // we have drawarea.height. We have steprange and spacing.
     // height / steprange = max height rectangle. Minus spacing = height??
-    const levelHeight = (this.drawArea.height - (this.buckets * spacing)) / this.buckets;
+    const levelHeight = (this.drawArea.height - (this.levels * spacing)) / this.levels;
 
     let stepRange;
     let levelCoords = this.coords.map((coord, i) => {
@@ -454,7 +458,7 @@ export default class SparklineGraph {
         newCoord[V][i] = this._min + (i * this.valuesPerBucket);
       }
       newCoord[Y] = this._calcLevelY(newCoord);
-      console.log('getLevels, newCoord = ', newCoord);
+      // console.log('getLevels, newCoord = ', newCoord);
       // return [newCoord];
       return newCoord;
     });
@@ -465,10 +469,134 @@ export default class SparklineGraph {
     return levelCoords.map((coord, i) => ({
       x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
       y: coord[Y],
-      height: levelHeight, // 1 * (stepRange + 1) / yRatio, // 10, // (yRatio - spacing) / this.buckets, // (this.max - this.min) / this.buckets / yRatio, // coord[V] > 0 ? (this._min < 0 ? coord[V] / yRatio : (coord[V] - this._min) / yRatio)
+      height: levelHeight, // 1 * (stepRange + 1) / yRatio, // 10, // (yRatio - spacing) / this.levels, // (this.max - this.min) / this.levels / yRatio, // coord[V] > 0 ? (this._min < 0 ? coord[V] / yRatio : (coord[V] - this._min) / yRatio)
                           // : coord[Y] - coord[Y2],
       width: xRatio - spacing,
       // value: levelCoords[V],
+      value: coord[V],
+    }));
+  }
+
+  getTrafficLights(position, total, spacing = 4) {
+    const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
+    // Temp hack...
+    // this._min = this.trafficLights[0];
+    // this._max = this.trafficLights[this.trafficLights.length - 1];
+
+    // const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
+    // const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
+
+    // console.log('getTrafficLights, ENTRY', position, total, spacing, this.coords);
+
+    const bucketHeight = (this.drawArea.height - (this.bucketss.length * spacing)) / this.bucketss.length;
+
+    let stepRange;
+    let levelCoords = this.coords.map((coord, i) => {
+      let newCoord = [];
+      const stepMax = this.bucketss.length;
+      const stepMin = 0;
+      stepRange = (stepMax - stepMin);
+
+      newCoord[X] = coord[X];
+      newCoord[Y] = [];
+      newCoord[V] = [];
+      // Check for buckets, and ranges min/max...
+      // i is the bucket index!
+      let matchStep = -1;
+      let matchBucket = 0;
+      let match = false;
+      // #TODO
+      // Both loops can be in one loop, using else if not (yet) in bucket. There MUST be a bucket
+      // Is the assumption... Or leave it this way, and assume there might be NO bucket...
+      for (let i = 0; i < stepRange; i++) {
+        // In which bucket...
+        // Find matching bucket. Can be any of them defined
+        match = false;
+        matchBucket = 0;
+        for (let j = 0; j < this.bucketss[i].rangeMin.length; j++) {
+          if (coord[V] >= this.bucketss[i].rangeMin[j] && coord[V] < this.bucketss[i].rangeMax[j]) {
+            match = true;
+            matchBucket = j;
+            matchStep = i;
+          }
+        }
+      }
+
+      // We have the matching index
+      for (let i = 0; i <= matchStep; i++) {
+        newCoord[V][i] = this.bucketss[i].length > matchBucket ? this.bucketss[i].rangeMin[matchBucket] : this.bucketss[i].rangeMin[0];
+        newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
+        // console.log('getTrafficLights', i, newCoord[V][i], newCoord[Y][i]);
+      }
+      // for (let i = 0; i < stepRange; i++) {
+      //   if (coord[V] >= this.trafficLights[i]) {
+      //     newCoord[V][i] = this.trafficLights[i];
+      //     newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
+      //   }
+
+      //   console.log('getTrafficLights', i, newCoord[V][i], newCoord[Y][i]);
+      // }
+      return newCoord;
+    });
+    return levelCoords.map((coord, i) => ({
+      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
+      y: coord[Y],
+      height: bucketHeight,
+      width: xRatio - spacing,
+      value: coord[V],
+    }));
+  }
+
+  getTrafficLights2(position, total, spacing = 4) {
+    const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
+    // Temp hack...
+    this._min = this.trafficLights[0];
+    this._max = this.trafficLights[this.trafficLights.length - 1];
+
+    const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
+    const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
+
+    // console.log('getTrafficLights, ENTRY', position, total, spacing, this.coords);
+
+    const bucketHeight = (this.drawArea.height - (this.trafficLights.length * spacing)) / this.trafficLights.length;
+
+    let stepRange;
+    let levelCoords = this.coords.map((coord, i) => {
+      let newCoord = [];
+      const stepMax = this.trafficLights.length;
+      const stepMin = 0;
+      stepRange = (stepMax - stepMin);
+
+      newCoord[X] = coord[X];
+      newCoord[Y] = [];
+      newCoord[V] = [];
+      // Check for buckets, and ranges min/max...
+      // i is the bucket index!
+      for (let i = 0; i < stepRange; i++) {
+        console.log('getTrafficLights, ', this.levels[i]);
+        if (coord[V] >= this.levels[i].rangeMin[0] && coord[V] < this.levels[i].rangeMax[0]) {
+          newCoord[V][i] = this.levels[i].rangeMin[0];
+          newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
+        }
+
+        // console.log('getTrafficLights', i, newCoord[V][i], newCoord[Y][i]);
+      }
+
+      for (let i = 0; i < stepRange; i++) {
+        if (coord[V] >= this.trafficLights[i]) {
+          newCoord[V][i] = this.trafficLights[i];
+          newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
+        }
+
+        console.log('getTrafficLights', i, newCoord[V][i], newCoord[Y][i]);
+      }
+      return newCoord;
+    });
+    return levelCoords.map((coord, i) => ({
+      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
+      y: coord[Y],
+      height: bucketHeight,
+      width: xRatio - spacing,
       value: coord[V],
     }));
   }
