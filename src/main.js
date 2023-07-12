@@ -1729,7 +1729,14 @@ _buildStateString(inState, entityConfig) {
         || (item.type === 'graph')) {
           const end = new Date();
           const start = new Date();
-          start.setHours(end.getHours() - item.tool.config.hours);
+          if (item.tool.config.today === 'today') {
+            start.setHours(0);
+            start.setMinutes(0);
+            start.setSeconds(0);
+            console.log('updateData, setting hours to 0', start, end);
+          } else {
+            start.setHours(end.getHours() - item.tool.config.hours);
+          }
           const attr = this.config.entities[item.tool.config.entity_index].attribute ? this.config.entities[item.tool.config.entity_index].attribute : null;
 
           entityList[j] = ({

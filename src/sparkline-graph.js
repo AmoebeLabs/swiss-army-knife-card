@@ -4,12 +4,16 @@ export const X = 0;
 export const Y = 1;
 export const V = 2;
 export const Y2 = 3;
+export const RX = 4;
+export const RY = 5;
 // Margins
 export const L = 0; // compatible with X
 export const T = 1; // compatible with Y
 export const R = 2;
 export const B = 3;
 export const ONE_HOUR = 1000 * 3600;
+
+export const clockWidth = 20;
 
 export default class SparklineGraph {
   constructor(width, height, margin, hours = 24, points = 1, aggregateFuncName = 'avg', groupBy = 'interval', smoothing = true, logarithmic = false,
@@ -67,7 +71,7 @@ export default class SparklineGraph {
     this._groupBy = groupBy;
     this._endTime = 0;
     this.valuesPerBucket = 0;
-    this.levels = 1;
+    this.levelCount = 1;
     this.trafficLights = trafficLights;
     this.bucketss = buckets;
     // console.log('constructor, buckets', this.bucketss, this.bucketss.length);
@@ -101,7 +105,10 @@ export default class SparklineGraph {
 
     // extend length to fill missing history
     const requiredNumOfPoints = Math.ceil(this.hours * this.points);
-    histGroups.length = requiredNumOfPoints;
+    // #HIER
+    // Temp disable to check what happens...
+    // Seems to work if you want to display history from today, up to current hour!
+    // histGroups.length = requiredNumOfPoints;
 
     this.coords = this._calcPoints(histGroups);
     this.min = Math.min(...this.coords.map((item) => Number(item[V])));
@@ -430,6 +437,113 @@ export default class SparklineGraph {
     return fill;
   }
 
+  polarToCartesian(centerX, centerY, radiusX, radiusY, angleInDegrees) {
+    const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+
+    return {
+      x: centerX + (radiusX * Math.cos(angleInRadians)),
+      y: centerY + (radiusY * Math.sin(angleInRadians)),
+    };
+  }
+
+  _calcClockCoords(argStartAngle, argEndAngle, argClockwise, argRadiusX, argRadiusY, argWidth) {
+    const cx = this.drawArea.x + this.drawArea.width / 2;
+    const cy = this.drawArea.y + this.drawArea.height / 2;
+    const start = this.polarToCartesian(cx, cy, argRadiusX, argRadiusY, argEndAngle);
+    const end = this.polarToCartesian(cx, cy, argRadiusX, argRadiusY, argStartAngle);
+    const largeArcFlag = Math.abs(argEndAngle - argStartAngle) <= 180 ? '0' : '1';
+
+    const sweepFlag = argClockwise ? '0' : '1';
+
+    const cutoutRadiusX = argRadiusX - argWidth;
+    const cutoutRadiusY = argRadiusY - argWidth;
+    const start2 = this.polarToCartesian(cx, cy, cutoutRadiusX, cutoutRadiusY, argEndAngle);
+    const end2 = this.polarToCartesian(cx, cy, cutoutRadiusX, cutoutRadiusY, argStartAngle);
+    return {
+      start, end, start2, end2, largeArcFlag, sweepFlag,
+    };
+  }
+
+  _calcClock(coords) {
+    // const segments = coords.length; // this.hours * this.points;
+    const segments = this.hours * this.points;
+    const angleSize = 360 / segments;
+    const startAngle = 0;
+    // const endAngle = 270;
+    let runningAngle = startAngle;
+    const clockWise = true;
+    // console.log('_calcClock, segments', segments, coords);
+
+    const coords2 = coords.map((coord) => {
+      const piet = 9;
+      const coordY = 8;
+      const coordY2 = 2;
+      let newX = [];
+      let newY = [];
+      let radiusX = [];
+      let radiusY = [];
+      const {
+        start, end, start2, end2, largeArcFlag, sweepFlag,
+      } = this._calcClockCoords(
+        runningAngle, runningAngle + angleSize, clockWise, this.drawArea.width / 2, this.drawArea.height / 2, clockWidth);
+      runningAngle += angleSize;
+      newX.push(start.x, end.x, start2.x, end2.x);
+      newY.push(start.y, end.y, start2.y, end2.y);
+      radiusX.push(this.drawArea.width / 2, this.drawArea.width / 2 - clockWidth);
+      radiusY.push(this.drawArea.height / 2, this.drawArea.height / 2 - clockWidth);
+      // console.log('_calcClock', runningAngle, angleSize, newX, newY);
+      return [newX, newY, coord[V], 0, radiusX, radiusY, largeArcFlag, sweepFlag];
+    });
+    return coords2;
+  }
+
+  getClock(position, total, spacing = 4) {
+    const clockCoords = this._calcClock(this.coords);
+    // console.log('getClock, coords', clockCoords);
+
+    return clockCoords.map((coord, i) => ({
+      start: { x: coord[X][0], y: coord[Y][0] },
+      end: { x: coord[X][1], y: coord[Y][1] },
+      start2: { x: coord[X][2], y: coord[Y][2] },
+      end2: { x: coord[X][3], y: coord[Y][3] },
+      radius: { x: coord[RX][0], y: coord[RY][0] },
+      radius2: { x: coord[RX][1], y: coord[RY][1] },
+      largeArcFlag: coord[6],
+      sweepFlag: coord[7],
+      value: coord[V],
+    }));
+  }
+
+  getClockPaths() {
+    const largeArcFlag = '1'; // Math.abs(argEndAngle - argStartAngle) <= 180 ? '0' : '1';
+    const sweepFlag = '0'; // argClockwise ? '0' : '1';
+    // console.log('getClockPaths, this.clock', this.clock);
+    const clockPaths = this.clock.map((segment, index) => {
+      // const d = [
+      //   'M', segment[X][0], segment[Y][0],
+      //   'A', segment[RX][0], segment[RY][0], 0, largeArcFlag, sweepFlag, segment[X][1], segment[Y][1],
+      //   'L', segment[X][3], segment[Y][3],
+      //   'A', segment[RX][1], segment[RY][1], 0, largeArcFlag, sweepFlag === '0' ? '1' : '0', segment[X][2], segment[Y][2],
+      //   'Z',
+      // ].join(' ');
+      const d = [
+        'M', segment.start.x, segment.start.y,
+        'A', segment.radius.x, segment.radius.y, 0, segment.largeArcFlag, segment.sweepFlag, segment.end.x, segment.end.y,
+        'L', segment.end2.x, segment.end2.y,
+        'A', segment.radius2.x, segment.radius2.y, 0, segment.largeArcFlag, segment.sweepFlag === '0' ? '1' : '0', segment.start2.x, segment.start2.y,
+        'Z',
+      ].join(' ');
+      return d;
+      // 'M', start.x, start.y,
+      // 'A', argRadiusX, argRadiusY, 0, largeArcFlag, sweepFlag, end.x, end.y,
+      // 'L', end2.x, end2.y,
+      // 'A', cutoutRadiusX, cutoutRadiusY, 0, largeArcFlag, sweepFlag === '0' ? '1' : '0', start2.x, start2.y,
+      // 'Z',
+    });
+    // console.log('getClockPaths', clockPaths);
+    return clockPaths;
+  }
+
   // Get array of levels. Just levels which draw a little bar at each level once reached
   getLevels(position, total, spacing = 4) {
     // Should use special _calcY, or calculate special coords with all the values [V] as an array
@@ -441,7 +555,7 @@ export default class SparklineGraph {
     // Calculate height of each level rectangle
     // we have drawarea.height. We have steprange and spacing.
     // height / steprange = max height rectangle. Minus spacing = height??
-    const levelHeight = (this.drawArea.height - (this.levels * spacing)) / this.levels;
+    const levelHeight = (this.drawArea.height - (this.levelCount * spacing)) / this.levelCount;
 
     let stepRange;
     let levelCoords = this.coords.map((coord, i) => {
@@ -469,7 +583,7 @@ export default class SparklineGraph {
     return levelCoords.map((coord, i) => ({
       x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
       y: coord[Y],
-      height: levelHeight, // 1 * (stepRange + 1) / yRatio, // 10, // (yRatio - spacing) / this.levels, // (this.max - this.min) / this.levels / yRatio, // coord[V] > 0 ? (this._min < 0 ? coord[V] / yRatio : (coord[V] - this._min) / yRatio)
+      height: levelHeight, // 1 * (stepRange + 1) / yRatio, // 10, // (yRatio - spacing) / this.levels, // (this.max - this.min) / this.levelCount / yRatio, // coord[V] > 0 ? (this._min < 0 ? coord[V] / yRatio : (coord[V] - this._min) / yRatio)
                           // : coord[Y] - coord[Y2],
       width: xRatio - spacing,
       // value: levelCoords[V],

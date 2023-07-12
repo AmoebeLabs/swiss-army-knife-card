@@ -254,6 +254,7 @@ export default class SparklineGraphTool extends BaseTool {
     this.stateChanged = false;
     this.initial = true;
     this._md5Config = undefined;
+    this.clock = [];
 
     // console.log('SparklineGraphTool::constructor', this.config, this.svg);
     // Use full widt/height for config
@@ -393,6 +394,7 @@ export default class SparklineGraphTool extends BaseTool {
     // console.log('set series, seriesindex ', this.seriesIndex);
     // HACK...
     this.seriesIndex = 0;
+    // console.log('set series, update, graph type', this.config.show.graph);
     this.Graph[this.seriesIndex].update(states);
     // this.Graph[0].update(states);
 
@@ -442,16 +444,21 @@ export default class SparklineGraphTool extends BaseTool {
           this.fillMinMax[i] = this.Graph[i].getFillMinMax(lineMin, lineMax);
 
           if (this.config.show.graph === 'levels') {
-            this.Graph[i].buckets = this.config.value_buckets;
+            this.Graph[i].levelCount = this.config.value_buckets;
             this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.value_buckets;
             this.level[i] = this.Graph[i].getLevels(0, this.visibleEntities.length, config.bar_spacing);
             // console.log('levels, testing', this.level[i], this.Graph[i].valuesPerBucket);
           }
           if (this.config.show.graph === 'trafficlight') {
-            this.Graph[i].buckets = this.config.value_buckets;
+            this.Graph[i].levelCount = this.config.value_buckets;
             this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.value_buckets;
             this.trafficLight[i] = this.Graph[i].getTrafficLights(0, this.visibleEntities.length, config.bar_spacing);
             // console.log('getTrafficLight', this.trafficLight[i], this.Graph[i].trafficLights);
+          }
+          if (this.config.show.graph === 'clock') {
+            this.clock[i] = this.Graph[i].getClock(0, this.visibleEntities.length, 0);
+            this.Graph[i].clock = this.clock[i];
+            // console.log('getClock', this.clock[i]);
           }
         }
       // });
@@ -1235,6 +1242,33 @@ renderSvgBars(bars, index) {
   return svg`<g class='bars' ?anim=${this.config.animate}>${items}</g>`;
 }
 
+renderSvgClockPart(clockPart, pathPart, index) {
+  const color = this.computeColor(clockPart.value, 0);
+  // console.log('renderSvgClockPart', clockPart, 'path=', pathPart, index, color);
+  return svg`
+  <path d=${pathPart}
+    fill=${color}
+    stroke=${color}
+  >
+  `;
+}
+
+renderSvgClock(clock, index) {
+  // console.log('render Graph, renderSvgBars(bars, index)', bars, index);
+  if (!clock) return;
+  const clockPaths = this.Graph[index].getClockPaths();
+  return svg`
+    <g class='clock-segment'
+      ?tooltip=${this.tooltip.entity === index}
+      ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== index}
+      ?init=${this.length[index]}
+      anim=${this.config.animate && this.config.show.points !== 'hover'}
+      style="animation-delay: ${this.config.animate ? `${index * 0.5 + 0.5}s` : '0s'}"
+      stroke-width=${this.svg.line_width / 2}>
+      ${clock.map(((segment, i) => this.renderSvgClockPart(segment, clockPaths[i], i)))}
+    </g>`;
+}
+
 renderSvg() {
   const height = this.svg.height - this.svg.margin.y * 0; // * 2;
   const width = this.svg.width - this.svg.margin.x * 0; // * 2;
@@ -1262,6 +1296,7 @@ renderSvg() {
         ${this.level.map((levels, i) => this.renderSvgLevelsBackground(levels, i))}
         ${this.points.map((points, i) => this.renderSvgPoints(points, i))}
         ${this.trafficLight.map((trafficLights, i) => this.renderSvgTrafficLights(trafficLights, i))}
+        ${this.clock.map((clockPart, i) => this.renderSvgClock(clockPart, i))}
         </svg>
       </g>
     </svg>`;
