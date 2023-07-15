@@ -16,8 +16,8 @@ export const ONE_HOUR = 1000 * 3600;
 export const clockWidth = 20;
 
 export default class SparklineGraph {
-  constructor(width, height, margin, hours = 24, points = 1, aggregateFuncName = 'avg', groupBy = 'interval', smoothing = true, logarithmic = false,
-              trafficLights = [], buckets = []) {
+  constructor(width, height, margin, today, hours = 24, points = 1, aggregateFuncName = 'avg', groupBy = 'interval', smoothing = true, logarithmic = false,
+              trafficLights = [], buckets = [], stateMap = []) {
     this.aggregateFuncMap = {
       avg: this._average,
       median: this._median,
@@ -30,6 +30,7 @@ export default class SparklineGraph {
       diff: this._diff,
     };
 
+    this.today = today;
     // Just trying to make sense for the graph drawing area
     //
     // @2023.07.02
@@ -74,6 +75,7 @@ export default class SparklineGraph {
     this.levelCount = 1;
     this.trafficLights = trafficLights;
     this.bucketss = buckets;
+    this.stateMap = [...stateMap];
     // console.log('constructor, buckets', this.bucketss, this.bucketss.length);
   }
 
@@ -92,9 +94,19 @@ export default class SparklineGraph {
       this._history = history;
     }
     if (!this._history) return;
+    if (this.history?.length === 0) return;
+
     this._updateEndTime();
 
     // console.log('update, history = ', history);
+    if (this.stateMap) {
+      console.log('update, check state map', this.stateMap, this._history);
+      // this._history.forEach((item, index) => {
+      //   if (this.stateMap.length > 0)
+      //   // this._history[index].state = this._convertState(item);
+      //   this._convertState(item);
+      // });
+    }
 
     const histGroups = this._history.reduce((res, item) => this._reducer(res, item), []);
 
@@ -103,12 +115,28 @@ export default class SparklineGraph {
       histGroups[0] = [histGroups[0][histGroups[0].length - 1]];
     }
 
-    // extend length to fill missing history
-    const requiredNumOfPoints = Math.ceil(this.hours * this.points);
+    // extend length to fill missing history.
+    // #TODO:
+    // Fill only upto current time. If graph is about today, only calculate upto now...
+
+    let requiredNumOfPoints;
+    let date = new Date();
+    date.getDate();
+    // for now it is ok...
+    if (this.today === 'today') {
+      let hours = date.getHours() + date.getMinutes() / 60;
+      requiredNumOfPoints = Math.ceil(hours * this.points);
+      console.log('update, hours, etc', hours, this.hours, this.points);
+    } else {
+      requiredNumOfPoints = Math.ceil(this.hours * this.points);
+    }
     // #HIER
     // Temp disable to check what happens...
     // Seems to work if you want to display history from today, up to current hour!
-    // histGroups.length = requiredNumOfPoints;
+    // #TODO
+    // Fix length to current time/date, not upto total timeline. We might have a graph from
+    // today that is getting filled slowly instead of previous 24 hour orso!!
+    histGroups.length = requiredNumOfPoints;
 
     this.coords = this._calcPoints(histGroups);
     this.min = Math.min(...this.coords.map((item) => Number(item[V])));
@@ -542,6 +570,22 @@ export default class SparklineGraph {
     });
     // console.log('getClockPaths', clockPaths);
     return clockPaths;
+  }
+
+  getTimeline(position, total, spacing = 4) {
+    // const coords = this._calcY(this.coords);
+    const coords = this.coords;
+    const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
+    // const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
+    // const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
+
+    return coords.map((coord, i) => ({
+      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+      y: 0, // this.drawArea.height,
+      height: this.drawArea.height,
+      width: xRatio - spacing,
+      value: coord[V],
+    }));
   }
 
   // Get array of levels. Just levels which draw a little bar at each level once reached

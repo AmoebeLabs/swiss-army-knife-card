@@ -1779,6 +1779,12 @@ _buildStateString(inState, entityConfig) {
     // Now we have some history, check if it has valid data and filter out either the entity state or
     // the entity attribute. Ain't that nice!
 
+    // Hack for state mapping...
+    if (entity.type === 'graph') {
+      // console.log('pushing stateHistory into Graph!!!!', stateHistory);
+      this.toolsets[entity.tsidx].tools[entity.idx].tool.processStateMap(newStateHistory);
+    }
+
     let theState;
 
     if (newStateHistory[0] && newStateHistory[0].length > 0) {

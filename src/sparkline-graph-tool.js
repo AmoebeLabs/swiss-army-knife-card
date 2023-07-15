@@ -255,6 +255,7 @@ export default class SparklineGraphTool extends BaseTool {
     this.initial = true;
     this._md5Config = undefined;
     this.clock = [];
+    this.timeline = [];
 
     // console.log('SparklineGraphTool::constructor', this.config, this.svg);
     // Use full widt/height for config
@@ -307,6 +308,23 @@ export default class SparklineGraphTool extends BaseTool {
     this.svg.graph.height = this.svg.height - this.svg.margin.y * 0;
     this.svg.graph.width = this.svg.width - this.svg.margin.x * 0;
 
+    this.config.state_map.forEach((state, i) => {
+      // convert string values to objects
+      if (typeof state === 'string') this.config.state_map[i] = { value: state, label: state };
+      // make sure label is set
+      this.config.state_map[i].label = this.config.state_map[i].label || this.config.state_map[i].value;
+    });
+    // override points per hour to mach group_by function
+    // switch (this.config.group_by) {
+    //   case 'date':
+    //     this.config.points_per_hour = 1 / 24;
+    //     break;
+    //   case 'hour':
+    //     this.config.points_per_hour = 1;
+    //     break;
+    //   default:
+    //     break;
+    // }
     // From MGC
     this.Graph = [];
     this.Graph[0] = new SparklineGraph(
@@ -316,6 +334,7 @@ export default class SparklineGraphTool extends BaseTool {
         // [this.svg.margin.x, this.svg.margin.y],
         this.svg.margin,
         // [this.config.show.fill ? 0 : this.svg.line_width, this.svg.line_width],
+        this.config?.today,
         this.config.hours_to_show,
         this.config.points_per_hour,
         this.config.aggregate_func,
@@ -328,6 +347,7 @@ export default class SparklineGraphTool extends BaseTool {
         this.config.logarithmic,
         this.trafficLights,
         this.buckets,
+        this.config.state_map,
     );
     // this.Graph = this.config.entity_indexes.map(
     //   // this.Graph = this.config.entity_indexes.map(
@@ -458,7 +478,10 @@ export default class SparklineGraphTool extends BaseTool {
           if (this.config.show.graph === 'clock') {
             this.clock[i] = this.Graph[i].getClock(0, this.visibleEntities.length, 0);
             this.Graph[i].clock = this.clock[i];
-            // console.log('getClock', this.clock[i]);
+          }
+          if (this.config.show.graph === 'timeline') {
+            this.timeline[i] = this.Graph[i].getTimeline(0, this.visibleEntities.length, 0);
+            this.Graph[i].timeline = this.timeline[i];
           }
         }
       // });
@@ -469,6 +492,29 @@ export default class SparklineGraphTool extends BaseTool {
 
   hasSeries() {
     return this.defaultEntityIndex();
+  }
+
+  _convertState(res) {
+    const resultIndex = this.config.state_map.findIndex((s) => s.value === res.state);
+    console.log('_convertState, res, result', res, resultIndex);
+    if (resultIndex === -1) {
+      return;
+    }
+
+    res.state = resultIndex;
+  }
+
+  processStateMap(history) {
+    if (this.config.state_map?.length > 0) {
+      console.log('update, check state map', this.config.state_map, history);
+      history[0].forEach((item, index) => {
+        if (this.config.state_map.length > 0)
+        // this._history[index].state = this._convertState(item);
+        this._convertState(item);
+        history[0][index].state = item.state;
+        console.log('processStateMap, item, index', item, index, this.config.state_map);
+      });
+    }
   }
 
   get visibleEntities() {
@@ -728,7 +774,7 @@ renderSvgAreaMinMaxMask(fill, i) {
         type=${this.config.show.fill}
         .id=${i} anim=${this.config.animate} ?init=${init}
         style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
-        fill='#222222'
+        fill='#444444'
         mask=${fade ? `url(#fill-grad-mask-pos-${this.id}-${i})` : ''}
         d=${this.fillMinMax[i]}
       />
@@ -737,7 +783,7 @@ renderSvgAreaMinMaxMask(fill, i) {
             type=${this.config.show.fill}
             .id=${i} anim=${this.config.animate} ?init=${init}
             style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
-            fill='#222222'
+            fill='#444444'
             mask=${fade ? `url(#fill-grad-mask-neg-${this.id}-${i})` : ''}
             d=${this.fillMinMax[i]}
           />`
@@ -747,7 +793,7 @@ renderSvgAreaMinMaxMask(fill, i) {
 }
 
 renderSvgLineMask(line, i) {
-  if (['dots', 'levels', 'trafficlight'].includes(this.config.show.graph)) return;
+  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   if (!line) return;
 
   const path = svg`
@@ -771,7 +817,7 @@ renderSvgLineMask(line, i) {
 }
 
 renderSvgLineMinMaxMask(line, i) {
-  if (['dots', 'levels', 'trafficlight'].includes(this.config.show.graph)) return;
+  if (['dots', 'levels', 'trafficlight', 'çlock'].includes(this.config.show.graph)) return;
   if (!line) return;
 
   console.log('renderSvgLineMinMaxMask', line, i);
@@ -920,7 +966,7 @@ renderSvgGradient(gradients) {
 // as the drawing (fill) color...
 renderSvgLineBackground(line, i) {
   // Hack
-  if (['dots', 'levels', 'trafficlight'].includes(this.config.show.graph)) return;
+  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   // console.log('render Graph, renderSvgLineBackground(line, i)', line, i);
   if (!line) return;
   const fill = this.gradient[i]
@@ -937,7 +983,7 @@ renderSvgLineBackground(line, i) {
 
 renderSvgLineMinMaxBackground(line, i) {
   // Hack
-  if (['dots', 'levels', 'trafficlight'].includes(this.config.show.graph)) return;
+  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   // console.log('render Graph, renderSvgLineBackground(line, i)', line, i);
   if (!line) return;
   const fill = this.gradient[i]
@@ -957,7 +1003,7 @@ renderSvgLineMinMaxBackground(line, i) {
 // sparkline area graph according to the mighty internet.
 renderSvgAreaBackground(fill, i) {
   // console.log('render Graph, renderSvgAreaBackground(fill, i)', fill, i);
-  if (['dots', 'levels', 'trafficlight'].includes(this.config.show.graph)) return;
+  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   if (!fill) return;
   const svgFill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -973,7 +1019,7 @@ renderSvgAreaBackground(fill, i) {
 
 renderSvgAreaMinMaxBackground(fill, i) {
   // console.log('render Graph, renderSvgAreaBackground(fill, i)', fill, i);
-  if (['dots', 'levels', 'trafficlight'].includes(this.config.show.graph)) return;
+  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   if (!fill) return;
   const svgFill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -1253,8 +1299,9 @@ renderSvgClockPart(clockPart, pathPart, index) {
   `;
 }
 
+// See here: https://pro.arcgis.com/en/pro-app/latest/help/analysis/geoprocessing/charts/data-clock.htm
+// for nice naming conventions using ring, wedge and bin!
 renderSvgClock(clock, index) {
-  // console.log('render Graph, renderSvgBars(bars, index)', bars, index);
   if (!clock) return;
   const clockPaths = this.Graph[index].getClockPaths();
   return svg`
@@ -1267,6 +1314,36 @@ renderSvgClock(clock, index) {
       stroke-width=${this.svg.line_width / 2}>
       ${clock.map(((segment, i) => this.renderSvgClockPart(segment, clockPaths[i], i)))}
     </g>`;
+}
+
+// Timeline is wrong name for this type of history graph...
+// But what?
+renderSvgTimeline(timeline, index) {
+  if (!timeline) return;
+
+  const paths = timeline.map((timelinePart, i) => {
+    const color = this.computeColor(timelinePart.value, 0);
+    const animation = this.config.animate
+      ? svg`
+        <animate attributeName='y' from=${this.svg.height} to=${timelinePart.y} dur='1s' fill='remove'
+          calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
+        </animate>`
+      : '';
+    return svg` 
+
+      <rect class='bar' x=${timelinePart.x} y=${timelinePart.y + (timelinePart.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
+        height=${Math.max(0, timelinePart.height - this.svg.line_width / 1 - 0)} width=${timelinePart.width}
+        fill=${color}
+        stroke=${color}
+        stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
+        @mouseover=${() => this.setTooltip(index, i, timelinePart.value)}
+        @mouseout=${() => (this.tooltip = {})}>
+        ${animation}
+      </rect>`;
+  });
+  return svg`
+      ${paths}
+  `;
 }
 
 renderSvg() {
@@ -1297,6 +1374,7 @@ renderSvg() {
         ${this.points.map((points, i) => this.renderSvgPoints(points, i))}
         ${this.trafficLight.map((trafficLights, i) => this.renderSvgTrafficLights(trafficLights, i))}
         ${this.clock.map((clockPart, i) => this.renderSvgClock(clockPart, i))}
+        ${this.timeline.map((timelinePart, i) => this.renderSvgTimeline(timelinePart, i))}
         </svg>
       </g>
     </svg>`;

@@ -7581,8 +7581,8 @@ const ONE_HOUR = 1000 * 3600;
 const clockWidth = 20;
 
 class SparklineGraph {
-  constructor(width, height, margin, hours = 24, points = 1, aggregateFuncName = 'avg', groupBy = 'interval', smoothing = true, logarithmic = false,
-              trafficLights = [], buckets = []) {
+  constructor(width, height, margin, today, hours = 24, points = 1, aggregateFuncName = 'avg', groupBy = 'interval', smoothing = true, logarithmic = false,
+              trafficLights = [], buckets = [], stateMap = []) {
     this.aggregateFuncMap = {
       avg: this._average,
       median: this._median,
@@ -7595,6 +7595,7 @@ class SparklineGraph {
       diff: this._diff,
     };
 
+    this.today = today;
     // Just trying to make sense for the graph drawing area
     //
     // @2023.07.02
@@ -7639,6 +7640,7 @@ class SparklineGraph {
     this.levelCount = 1;
     this.trafficLights = trafficLights;
     this.bucketss = buckets;
+    this.stateMap = [...stateMap];
     // console.log('constructor, buckets', this.bucketss, this.bucketss.length);
   }
 
@@ -7657,9 +7659,19 @@ class SparklineGraph {
       this._history = history;
     }
     if (!this._history) return;
+    if (this.history?.length === 0) return;
+
     this._updateEndTime();
 
     // console.log('update, history = ', history);
+    if (this.stateMap) {
+      console.log('update, check state map', this.stateMap, this._history);
+      // this._history.forEach((item, index) => {
+      //   if (this.stateMap.length > 0)
+      //   // this._history[index].state = this._convertState(item);
+      //   this._convertState(item);
+      // });
+    }
 
     const histGroups = this._history.reduce((res, item) => this._reducer(res, item), []);
 
@@ -7668,12 +7680,28 @@ class SparklineGraph {
       histGroups[0] = [histGroups[0][histGroups[0].length - 1]];
     }
 
-    // extend length to fill missing history
-    const requiredNumOfPoints = Math.ceil(this.hours * this.points);
+    // extend length to fill missing history.
+    // #TODO:
+    // Fill only upto current time. If graph is about today, only calculate upto now...
+
+    let requiredNumOfPoints;
+    let date = new Date();
+    date.getDate();
+    // for now it is ok...
+    if (this.today === 'today') {
+      let hours = date.getHours() + date.getMinutes() / 60;
+      requiredNumOfPoints = Math.ceil(hours * this.points);
+      console.log('update, hours, etc', hours, this.hours, this.points);
+    } else {
+      requiredNumOfPoints = Math.ceil(this.hours * this.points);
+    }
     // #HIER
     // Temp disable to check what happens...
     // Seems to work if you want to display history from today, up to current hour!
-    // histGroups.length = requiredNumOfPoints;
+    // #TODO
+    // Fix length to current time/date, not upto total timeline. We might have a graph from
+    // today that is getting filled slowly instead of previous 24 hour orso!!
+    histGroups.length = requiredNumOfPoints;
 
     this.coords = this._calcPoints(histGroups);
     this.min = Math.min(...this.coords.map((item) => Number(item[V])));
@@ -8102,6 +8130,22 @@ class SparklineGraph {
     });
     // console.log('getClockPaths', clockPaths);
     return clockPaths;
+  }
+
+  getTimeline(position, total, spacing = 4) {
+    // const coords = this._calcY(this.coords);
+    const coords = this.coords;
+    const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
+    // const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
+    // const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
+
+    return coords.map((coord, i) => ({
+      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+      y: 0, // this.drawArea.height,
+      height: this.drawArea.height,
+      width: xRatio - spacing,
+      value: coord[V],
+    }));
   }
 
   // Get array of levels. Just levels which draw a little bar at each level once reached
@@ -8620,6 +8664,7 @@ class SparklineGraphTool extends BaseTool {
     this.initial = true;
     this._md5Config = undefined;
     this.clock = [];
+    this.timeline = [];
 
     // console.log('SparklineGraphTool::constructor', this.config, this.svg);
     // Use full widt/height for config
@@ -8672,6 +8717,23 @@ class SparklineGraphTool extends BaseTool {
     this.svg.graph.height = this.svg.height - this.svg.margin.y * 0;
     this.svg.graph.width = this.svg.width - this.svg.margin.x * 0;
 
+    this.config.state_map.forEach((state, i) => {
+      // convert string values to objects
+      if (typeof state === 'string') this.config.state_map[i] = { value: state, label: state };
+      // make sure label is set
+      this.config.state_map[i].label = this.config.state_map[i].label || this.config.state_map[i].value;
+    });
+    // override points per hour to mach group_by function
+    // switch (this.config.group_by) {
+    //   case 'date':
+    //     this.config.points_per_hour = 1 / 24;
+    //     break;
+    //   case 'hour':
+    //     this.config.points_per_hour = 1;
+    //     break;
+    //   default:
+    //     break;
+    // }
     // From MGC
     this.Graph = [];
     this.Graph[0] = new SparklineGraph(
@@ -8681,6 +8743,7 @@ class SparklineGraphTool extends BaseTool {
         // [this.svg.margin.x, this.svg.margin.y],
         this.svg.margin,
         // [this.config.show.fill ? 0 : this.svg.line_width, this.svg.line_width],
+        this.config?.today,
         this.config.hours_to_show,
         this.config.points_per_hour,
         this.config.aggregate_func,
@@ -8693,6 +8756,7 @@ class SparklineGraphTool extends BaseTool {
         this.config.logarithmic,
         this.trafficLights,
         this.buckets,
+        this.config.state_map,
     );
     // this.Graph = this.config.entity_indexes.map(
     //   // this.Graph = this.config.entity_indexes.map(
@@ -8820,7 +8884,10 @@ class SparklineGraphTool extends BaseTool {
           if (this.config.show.graph === 'clock') {
             this.clock[i] = this.Graph[i].getClock(0, this.visibleEntities.length, 0);
             this.Graph[i].clock = this.clock[i];
-            // console.log('getClock', this.clock[i]);
+          }
+          if (this.config.show.graph === 'timeline') {
+            this.timeline[i] = this.Graph[i].getTimeline(0, this.visibleEntities.length, 0);
+            this.Graph[i].timeline = this.timeline[i];
           }
         }
       // });
@@ -8831,6 +8898,29 @@ class SparklineGraphTool extends BaseTool {
 
   hasSeries() {
     return this.defaultEntityIndex();
+  }
+
+  _convertState(res) {
+    const resultIndex = this.config.state_map.findIndex((s) => s.value === res.state);
+    console.log('_convertState, res, result', res, resultIndex);
+    if (resultIndex === -1) {
+      return;
+    }
+
+    res.state = resultIndex;
+  }
+
+  processStateMap(history) {
+    if (this.config.state_map?.length > 0) {
+      console.log('update, check state map', this.config.state_map, history);
+      history[0].forEach((item, index) => {
+        if (this.config.state_map.length > 0)
+        // this._history[index].state = this._convertState(item);
+        this._convertState(item);
+        history[0][index].state = item.state;
+        console.log('processStateMap, item, index', item, index, this.config.state_map);
+      });
+    }
   }
 
   get visibleEntities() {
@@ -9087,7 +9177,7 @@ renderSvgAreaMinMaxMask(fill, i) {
         type=${this.config.show.fill}
         .id=${i} anim=${this.config.animate} ?init=${init}
         style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
-        fill='#222222'
+        fill='#444444'
         mask=${fade ? `url(#fill-grad-mask-pos-${this.id}-${i})` : ''}
         d=${this.fillMinMax[i]}
       />
@@ -9096,7 +9186,7 @@ renderSvgAreaMinMaxMask(fill, i) {
             type=${this.config.show.fill}
             .id=${i} anim=${this.config.animate} ?init=${init}
             style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
-            fill='#222222'
+            fill='#444444'
             mask=${fade ? `url(#fill-grad-mask-neg-${this.id}-${i})` : ''}
             d=${this.fillMinMax[i]}
           />`
@@ -9106,7 +9196,7 @@ renderSvgAreaMinMaxMask(fill, i) {
 }
 
 renderSvgLineMask(line, i) {
-  if (['dots', 'levels', 'trafficlight'].includes(this.config.show.graph)) return;
+  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   if (!line) return;
 
   const path = svg`
@@ -9130,7 +9220,7 @@ renderSvgLineMask(line, i) {
 }
 
 renderSvgLineMinMaxMask(line, i) {
-  if (['dots', 'levels', 'trafficlight'].includes(this.config.show.graph)) return;
+  if (['dots', 'levels', 'trafficlight', 'çlock'].includes(this.config.show.graph)) return;
   if (!line) return;
 
   console.log('renderSvgLineMinMaxMask', line, i);
@@ -9263,7 +9353,7 @@ renderSvgGradient(gradients) {
 // as the drawing (fill) color...
 renderSvgLineBackground(line, i) {
   // Hack
-  if (['dots', 'levels', 'trafficlight'].includes(this.config.show.graph)) return;
+  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   // console.log('render Graph, renderSvgLineBackground(line, i)', line, i);
   if (!line) return;
   const fill = this.gradient[i]
@@ -9280,7 +9370,7 @@ renderSvgLineBackground(line, i) {
 
 renderSvgLineMinMaxBackground(line, i) {
   // Hack
-  if (['dots', 'levels', 'trafficlight'].includes(this.config.show.graph)) return;
+  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   // console.log('render Graph, renderSvgLineBackground(line, i)', line, i);
   if (!line) return;
   const fill = this.gradient[i]
@@ -9300,7 +9390,7 @@ renderSvgLineMinMaxBackground(line, i) {
 // sparkline area graph according to the mighty internet.
 renderSvgAreaBackground(fill, i) {
   // console.log('render Graph, renderSvgAreaBackground(fill, i)', fill, i);
-  if (['dots', 'levels', 'trafficlight'].includes(this.config.show.graph)) return;
+  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   if (!fill) return;
   const svgFill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -9316,7 +9406,7 @@ renderSvgAreaBackground(fill, i) {
 
 renderSvgAreaMinMaxBackground(fill, i) {
   // console.log('render Graph, renderSvgAreaBackground(fill, i)', fill, i);
-  if (['dots', 'levels', 'trafficlight'].includes(this.config.show.graph)) return;
+  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   if (!fill) return;
   const svgFill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -9595,8 +9685,9 @@ renderSvgClockPart(clockPart, pathPart, index) {
   `;
 }
 
+// See here: https://pro.arcgis.com/en/pro-app/latest/help/analysis/geoprocessing/charts/data-clock.htm
+// for nice naming conventions using ring, wedge and bin!
 renderSvgClock(clock, index) {
-  // console.log('render Graph, renderSvgBars(bars, index)', bars, index);
   if (!clock) return;
   const clockPaths = this.Graph[index].getClockPaths();
   return svg`
@@ -9609,6 +9700,36 @@ renderSvgClock(clock, index) {
       stroke-width=${this.svg.line_width / 2}>
       ${clock.map(((segment, i) => this.renderSvgClockPart(segment, clockPaths[i], i)))}
     </g>`;
+}
+
+// Timeline is wrong name for this type of history graph...
+// But what?
+renderSvgTimeline(timeline, index) {
+  if (!timeline) return;
+
+  const paths = timeline.map((timelinePart, i) => {
+    const color = this.computeColor(timelinePart.value, 0);
+    const animation = this.config.animate
+      ? svg`
+        <animate attributeName='y' from=${this.svg.height} to=${timelinePart.y} dur='1s' fill='remove'
+          calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
+        </animate>`
+      : '';
+    return svg` 
+
+      <rect class='bar' x=${timelinePart.x} y=${timelinePart.y + (timelinePart.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
+        height=${Math.max(0, timelinePart.height - this.svg.line_width / 1 - 0)} width=${timelinePart.width}
+        fill=${color}
+        stroke=${color}
+        stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
+        @mouseover=${() => this.setTooltip(index, i, timelinePart.value)}
+        @mouseout=${() => (this.tooltip = {})}>
+        ${animation}
+      </rect>`;
+  });
+  return svg`
+      ${paths}
+  `;
 }
 
 renderSvg() {
@@ -9639,6 +9760,7 @@ renderSvg() {
         ${this.points.map((points, i) => this.renderSvgPoints(points, i))}
         ${this.trafficLight.map((trafficLights, i) => this.renderSvgTrafficLights(trafficLights, i))}
         ${this.clock.map((clockPart, i) => this.renderSvgClock(clockPart, i))}
+        ${this.timeline.map((timelinePart, i) => this.renderSvgTimeline(timelinePart, i))}
         </svg>
       </g>
     </svg>`;
@@ -15444,6 +15566,12 @@ _buildStateString(inState, entityConfig) {
 
     // Now we have some history, check if it has valid data and filter out either the entity state or
     // the entity attribute. Ain't that nice!
+
+    // Hack for state mapping...
+    if (entity.type === 'graph') {
+      // console.log('pushing stateHistory into Graph!!!!', stateHistory);
+      this.toolsets[entity.tsidx].tools[entity.idx].tool.processStateMap(newStateHistory);
+    }
 
     let theState;
 
