@@ -98,16 +98,6 @@ export default class SparklineGraph {
 
     this._updateEndTime();
 
-    // console.log('update, history = ', history);
-    if (this.stateMap) {
-      console.log('update, check state map', this.stateMap, this._history);
-      // this._history.forEach((item, index) => {
-      //   if (this.stateMap.length > 0)
-      //   // this._history[index].state = this._convertState(item);
-      //   this._convertState(item);
-      // });
-    }
-
     const histGroups = this._history.reduce((res, item) => this._reducer(res, item), []);
 
     // drop potential out of bound entry's except one
@@ -126,7 +116,6 @@ export default class SparklineGraph {
     if (this.today === 'today') {
       let hours = date.getHours() + date.getMinutes() / 60;
       requiredNumOfPoints = Math.ceil(hours * this.points);
-      console.log('update, hours, etc', hours, this.hours, this.points);
     } else {
       requiredNumOfPoints = Math.ceil(this.hours * this.points);
     }
@@ -589,7 +578,7 @@ export default class SparklineGraph {
   }
 
   // Get array of levels. Just levels which draw a little bar at each level once reached
-  getLevels(position, total, spacing = 4) {
+  getEqualizer(position, total, spacing = 4) {
     // Should use special _calcY, or calculate special coords with all the values [V] as an array
     // this coords[][V] has the value. Map them to an array...
     const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
@@ -602,7 +591,7 @@ export default class SparklineGraph {
     const levelHeight = (this.drawArea.height - (this.levelCount * spacing)) / this.levelCount;
 
     let stepRange;
-    let levelCoords = this.coords.map((coord, i) => {
+    let equalizerCoords = this.coords.map((coord, i) => {
       let newCoord = [];
       const stepMax = Math.trunc(coord[V] / this.valuesPerBucket);
       const stepMin = Math.trunc(this._min / this.valuesPerBucket);
@@ -616,15 +605,15 @@ export default class SparklineGraph {
         newCoord[V][i] = this._min + (i * this.valuesPerBucket);
       }
       newCoord[Y] = this._calcLevelY(newCoord);
-      // console.log('getLevels, newCoord = ', newCoord);
+      // console.log('getEqualizer, newCoord = ', newCoord);
       // return [newCoord];
       return newCoord;
     });
     // const coords = this._calcY(this.coords);
-    // console.log('getLevels, levelCoords', levelCoords);
+    // console.log('getEqualizer, levelCoords', levelCoords);
 
     // #TODO: Negative values to coord[Y2] !!!
-    return levelCoords.map((coord, i) => ({
+    return equalizerCoords.map((coord, i) => ({
       x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
       y: coord[Y],
       height: levelHeight, // 1 * (stepRange + 1) / yRatio, // 10, // (yRatio - spacing) / this.levels, // (this.max - this.min) / this.levelCount / yRatio, // coord[V] > 0 ? (this._min < 0 ? coord[V] / yRatio : (coord[V] - this._min) / yRatio)

@@ -7663,16 +7663,6 @@ class SparklineGraph {
 
     this._updateEndTime();
 
-    // console.log('update, history = ', history);
-    if (this.stateMap) {
-      console.log('update, check state map', this.stateMap, this._history);
-      // this._history.forEach((item, index) => {
-      //   if (this.stateMap.length > 0)
-      //   // this._history[index].state = this._convertState(item);
-      //   this._convertState(item);
-      // });
-    }
-
     const histGroups = this._history.reduce((res, item) => this._reducer(res, item), []);
 
     // drop potential out of bound entry's except one
@@ -7691,7 +7681,6 @@ class SparklineGraph {
     if (this.today === 'today') {
       let hours = date.getHours() + date.getMinutes() / 60;
       requiredNumOfPoints = Math.ceil(hours * this.points);
-      console.log('update, hours, etc', hours, this.hours, this.points);
     } else {
       requiredNumOfPoints = Math.ceil(this.hours * this.points);
     }
@@ -8149,7 +8138,7 @@ class SparklineGraph {
   }
 
   // Get array of levels. Just levels which draw a little bar at each level once reached
-  getLevels(position, total, spacing = 4) {
+  getEqualizer(position, total, spacing = 4) {
     // Should use special _calcY, or calculate special coords with all the values [V] as an array
     // this coords[][V] has the value. Map them to an array...
     const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
@@ -8162,7 +8151,7 @@ class SparklineGraph {
     const levelHeight = (this.drawArea.height - (this.levelCount * spacing)) / this.levelCount;
 
     let stepRange;
-    let levelCoords = this.coords.map((coord, i) => {
+    let equalizerCoords = this.coords.map((coord, i) => {
       let newCoord = [];
       const stepMax = Math.trunc(coord[V] / this.valuesPerBucket);
       const stepMin = Math.trunc(this._min / this.valuesPerBucket);
@@ -8176,15 +8165,15 @@ class SparklineGraph {
         newCoord[V][i] = this._min + (i * this.valuesPerBucket);
       }
       newCoord[Y] = this._calcLevelY(newCoord);
-      // console.log('getLevels, newCoord = ', newCoord);
+      // console.log('getEqualizer, newCoord = ', newCoord);
       // return [newCoord];
       return newCoord;
     });
     // const coords = this._calcY(this.coords);
-    // console.log('getLevels, levelCoords', levelCoords);
+    // console.log('getEqualizer, levelCoords', levelCoords);
 
     // #TODO: Negative values to coord[Y2] !!!
-    return levelCoords.map((coord, i) => ({
+    return equalizerCoords.map((coord, i) => ({
       x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
       y: coord[Y],
       height: levelHeight, // 1 * (stepRange + 1) / yRatio, // 10, // (yRatio - spacing) / this.levels, // (this.max - this.min) / this.levelCount / yRatio, // coord[V] > 0 ? (this._min < 0 ? coord[V] / yRatio : (coord[V] - this._min) / yRatio)
@@ -8650,7 +8639,7 @@ class SparklineGraphTool extends BaseTool {
     this.lineMin = [];
     this.lineMax = [];
     this.bar = [];
-    this.level = [];
+    this.equalizer = [];
     this.trafficLight = [];
     this.abs = [];
     this.fill = [];
@@ -8869,11 +8858,11 @@ class SparklineGraphTool extends BaseTool {
           if (!this.fillMinMax) this.fillMinMax = [];
           this.fillMinMax[i] = this.Graph[i].getFillMinMax(lineMin, lineMax);
 
-          if (this.config.show.graph === 'levels') {
+          if (this.config.show.graph === 'equalizer') {
             this.Graph[i].levelCount = this.config.value_buckets;
             this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.value_buckets;
-            this.level[i] = this.Graph[i].getLevels(0, this.visibleEntities.length, config.bar_spacing);
-            // console.log('levels, testing', this.level[i], this.Graph[i].valuesPerBucket);
+            this.equalizer[i] = this.Graph[i].getEqualizer(0, this.visibleEntities.length, config.bar_spacing);
+            // console.log('equalizer, testing', this.equalizer[i], this.Graph[i].valuesPerBucket);
           }
           if (this.config.show.graph === 'trafficlight') {
             this.Graph[i].levelCount = this.config.value_buckets;
@@ -8902,7 +8891,6 @@ class SparklineGraphTool extends BaseTool {
 
   _convertState(res) {
     const resultIndex = this.config.state_map.findIndex((s) => s.value === res.state);
-    console.log('_convertState, res, result', res, resultIndex);
     if (resultIndex === -1) {
       return;
     }
@@ -8912,13 +8900,11 @@ class SparklineGraphTool extends BaseTool {
 
   processStateMap(history) {
     if (this.config.state_map?.length > 0) {
-      console.log('update, check state map', this.config.state_map, history);
       history[0].forEach((item, index) => {
         if (this.config.state_map.length > 0)
         // this._history[index].state = this._convertState(item);
         this._convertState(item);
         history[0][index].state = item.state;
-        console.log('processStateMap, item, index', item, index, this.config.state_map);
       });
     }
   }
@@ -9092,7 +9078,8 @@ class SparklineGraphTool extends BaseTool {
   }
 
   renderSvgAreaMask(fill, i) {
-  if (this.config.show.graph === 'dots') return;
+  if (this.config.show.graph !== 'line') return;
+  // if (this.config.show.graph === 'dots') return;
   if (!fill) return;
   const fade = this.config.show.fill === 'fade';
   const init = this.length[i] || this._card.config.entities[i].show_line === false;
@@ -9144,7 +9131,7 @@ class SparklineGraphTool extends BaseTool {
 }
 
 renderSvgAreaMinMaxMask(fill, i) {
-  if (this.config.show.graph === 'dots') return;
+  if (this.config.show.graph !== 'line') return;
   if (!fill) return;
   const fade = this.config.show.fill === 'fade';
   const init = this.length[i] || this._card.config.entities[i].show_line === false;
@@ -9196,7 +9183,8 @@ renderSvgAreaMinMaxMask(fill, i) {
 }
 
 renderSvgLineMask(line, i) {
-  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
+  if (this.config.show.graph !== 'line') return;
+  // if (['dots', 'equalizer', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   if (!line) return;
 
   const path = svg`
@@ -9220,7 +9208,8 @@ renderSvgLineMask(line, i) {
 }
 
 renderSvgLineMinMaxMask(line, i) {
-  if (['dots', 'levels', 'trafficlight', 'çlock'].includes(this.config.show.graph)) return;
+  if (this.config.show.graph !== 'line') return;
+  // if (['dots', 'equalizer', 'trafficlight', 'çlock'].includes(this.config.show.graph)) return;
   if (!line) return;
 
   console.log('renderSvgLineMinMaxMask', line, i);
@@ -9353,7 +9342,8 @@ renderSvgGradient(gradients) {
 // as the drawing (fill) color...
 renderSvgLineBackground(line, i) {
   // Hack
-  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
+  if (this.config.show.graph !== 'line') return;
+  // if (['dots', 'equalizer', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   // console.log('render Graph, renderSvgLineBackground(line, i)', line, i);
   if (!line) return;
   const fill = this.gradient[i]
@@ -9370,7 +9360,8 @@ renderSvgLineBackground(line, i) {
 
 renderSvgLineMinMaxBackground(line, i) {
   // Hack
-  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
+  if (this.config.show.graph !== 'line') return;
+  // if (['dots', 'equalizer', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   // console.log('render Graph, renderSvgLineBackground(line, i)', line, i);
   if (!line) return;
   const fill = this.gradient[i]
@@ -9390,7 +9381,8 @@ renderSvgLineMinMaxBackground(line, i) {
 // sparkline area graph according to the mighty internet.
 renderSvgAreaBackground(fill, i) {
   // console.log('render Graph, renderSvgAreaBackground(fill, i)', fill, i);
-  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
+  if (this.config.show.graph !== 'line') return;
+  // if (['dots', 'equalizer', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   if (!fill) return;
   const svgFill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -9406,7 +9398,8 @@ renderSvgAreaBackground(fill, i) {
 
 renderSvgAreaMinMaxBackground(fill, i) {
   // console.log('render Graph, renderSvgAreaBackground(fill, i)', fill, i);
-  if (['dots', 'levels', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
+  if (this.config.show.graph !== 'line') return;
+  // if (['dots', 'equalizer', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
   if (!fill) return;
   const svgFill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -9420,11 +9413,11 @@ renderSvgAreaMinMaxBackground(fill, i) {
     />`;
 }
 
-renderSvgLevelsMask(levels, index) {
-  if (this.config.show.graph !== 'levels') return;
+renderSvgEqualizerMask(equalizer, index) {
+  if (this.config.show.graph !== 'equalizer') return;
 
-  if (!levels) return;
-  // console.log('renderSvgLevelsMask', levels);
+  if (!equalizer) return;
+  // console.log('renderSvgEqualizerMask', equalizer);
   const fade = this.config.show.fill === 'fade';
   `url(#fill-grad-mask-neg-${this.id}-${index}})`;
   const maskPos = `url(#fill-grad-mask-pos-${this.id}-${index}})`;
@@ -9433,25 +9426,25 @@ renderSvgLevelsMask(levels, index) {
   const fillNeg = this.config.styles.bar_mask_below.fill;
   const fillPos = this.config.styles.bar_mask_above.fill;
 
-  const paths = levels.map((level, i) => {
-    // console.log('renderSvgLevelsMask', i, level);
+  const paths = equalizer.map((equalizerPart, i) => {
+    // console.log('renderSvgEqualizerMask', i, level);
     const animation = this.config.animate
       ? svg`
-        <animate attributeName='y' from=${this.svg.height} to=${level.y} dur='1s' fill='remove'
+        <animate attributeName='y' from=${this.svg.height} to=${equalizerPart.y} dur='1s' fill='remove'
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
         </animate>`
       : '';
     if (this.config.square === true) {
-      const size = Math.min(level.width, level.height);
-      level.width = size;
-      level.height = size;
+      const size = Math.min(equalizerPart.width, equalizerPart.height);
+      equalizerPart.width = size;
+      equalizerPart.height = size;
     }
-    const levelRect = level.value.map((single, j) => {
+    const equalizerPartRect = equalizerPart.value.map((single, j) => {
       return svg`
-      <rect class='level' x=${level.x} y=${level.y[j] - 1 * level.height - this.svg.line_width / 1}
-        height=${Math.max(0, level.height - this.svg.line_width)} width=${level.width}
-        fill=${fade ? (level.value > 0 ? fillPos : fillNeg) : 'white'}
-        stroke=${fade ? (level.value > 0 ? fillPos : fillNeg) : 'white'}
+      <rect class='level' x=${equalizerPart.x} y=${equalizerPart.y[j] - 1 * equalizerPart.height - this.svg.line_width / 1}
+        height=${Math.max(0, equalizerPart.height - this.svg.line_width)} width=${equalizerPart.width}
+        fill=${fade ? (equalizerPart.value > 0 ? fillPos : fillNeg) : 'white'}
+        stroke=${fade ? (equalizerPart.value > 0 ? fillPos : fillNeg) : 'white'}
         stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
         rx="0%"
         @mouseover=${() => this.setTooltip(index, j, single)}
@@ -9461,7 +9454,7 @@ renderSvgLevelsMask(levels, index) {
     });
 
     return svg`
-      ${levelRect}`;
+      ${equalizerPartRect}`;
   });
   return svg`
     <defs>
@@ -9480,7 +9473,7 @@ renderSvgLevelsMask(levels, index) {
         <rect width="100%" height="100%"}
       </mask>
     </defs>  
-    <mask id=${`levels-bg-${this.id}-${index}`}>
+    <mask id=${`equalizer-bg-${this.id}-${index}`}>
       ${paths}
       mask = ${maskPos}
     </mask>
@@ -9488,7 +9481,8 @@ renderSvgLevelsMask(levels, index) {
 }
 
 renderSvgBarsMask(bars, index) {
-  if (this.config.show.graph === 'dots') return;
+  if (this.config.show.graph !== 'bar') return;
+  // if (this.config.show.graph === 'dots') return;
 
   if (!bars) return;
   const fade = this.config.show.fill === 'fade';
@@ -9542,9 +9536,9 @@ renderSvgBarsMask(bars, index) {
   `;
 }
 
-renderSvgLevelsBackground(levels, index) {
-  if (this.config.show.graph !== 'levels') return;
-  if (!levels) return;
+renderSvgEqualizerBackground(equalizer, index) {
+  if (this.config.show.graph !== 'equalizer') return;
+  if (!equalizer) return;
 
   const fade = this.config.show.fill === 'fadenever';
   if (fade) {
@@ -9574,11 +9568,11 @@ renderSvgLevelsBackground(levels, index) {
       </defs>
 
       <g mask = ${`url(#fill-grad-mask-${this.id}-${index})`}>
-        <rect class='levels--bg'
+        <rect class='equalizer--bg'
           ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== index}
-          id=${`levels-bg-${this.id}-${index}`}
+          id=${`equalizer-bg-${this.id}-${index}`}
           fill=${svgFill} height="100%" width="100%"
-          mask=${`url(#levels-bg-${this.id}-${index})`}
+          mask=${`url(#equalizer-bg-${this.id}-${index})`}
         />
       /g>`;
   } else {
@@ -9587,17 +9581,18 @@ renderSvgLevelsBackground(levels, index) {
       : this.computeColor(this._card.entities[index].state, index);
     // console.log('renderSvgBarsBackground', fill, this.gradient[index]);
       return svg`
-      <rect class='levels--bg'
+      <rect class='equalizer--bg'
         ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== index}
-        id=${`levels-bg-${this.id}-${index}`}
+        id=${`equalizer-bg-${this.id}-${index}`}
         fill=${fill} height="100%" width="100%"
-        mask=${`url(#levels-bg-${this.id}-${index})`}
+        mask=${`url(#equalizer-bg-${this.id}-${index})`}
       />`;
   }
 }
 
 renderSvgBarsBackground(bars, index) {
-  if (this.config.show.graph === 'dots') return;
+  if (this.config.show.graph !== 'bar') return;
+  // if (this.config.show.graph === 'dots') return;
   if (!bars) return;
 
   const fade = this.config.show.fill === 'fadenever';
@@ -9674,14 +9669,44 @@ renderSvgBars(bars, index) {
   return svg`<g class='bars' ?anim=${this.config.animate}>${items}</g>`;
 }
 
-renderSvgClockPart(clockPart, pathPart, index) {
-  const color = this.computeColor(clockPart.value, 0);
+renderSvgClockBin(bin, path, index) {
+  const color = this.computeColor(bin.value, 0);
   // console.log('renderSvgClockPart', clockPart, 'path=', pathPart, index, color);
   return svg`
-  <path d=${pathPart}
+  <path d=${path}
     fill=${color}
     stroke=${color}
   >
+  `;
+}
+
+renderSvgClockBackground(radius) {
+  return svg`
+    <circle class="clock-background"
+      r="${radius}" cx=${this.svg.width / 2} cy="${this.svg.height / 2}"
+      style="fill: lightgray; stroke: lightgray; stroke-width: 20;"
+    />
+  `;
+}
+
+renderSvgClockFace(radius) {
+  return svg`
+    <circle class="ring ring--seconds" pathlength="48"
+      r="${radius}" cx=${this.svg.width / 2} cy="${this.svg.height / 2}"
+      style="fill: transparent; stroke: black; stroke-width: 5;
+      stroke-dasharray: .1 .9; stroke-dashoffset: .05;" />
+    <circle class="ring ring--hours" pathlength="12"
+      r="${radius}" cx=${this.svg.width / 2} cy="${this.svg.height / 2}"
+      style="fill:transparent;stroke:gray;stroke-width:10;
+      stroke-dasharray:.05 .95; stroke-dashoffset: .025;" />
+    <text x="${this.svg.width / 2}" y="${(this.svg.height / 2) - (this.svg.height / 4)}"
+     font-size="5em" alignment-baseline="middle" text-anchor="middle">24</text>
+    <text x="${this.svg.width / 2}" y="${(this.svg.height / 2) + (this.svg.height / 4)}"
+     font-size="5em" alignment-baseline="middle" text-anchor="middle">12</text>
+    <text x="${(this.svg.width / 2) + (this.svg.width / 4)}" y="${(this.svg.height / 2)}"
+     font-size="5em" alignment-baseline="middle" text-anchor="middle">6</text>
+     <text x="${(this.svg.width / 2) - (this.svg.width / 4)}" y="${(this.svg.height / 2)}"
+     font-size="5em" alignment-baseline="middle" text-anchor="middle">18</text>
   `;
 }
 
@@ -9698,7 +9723,9 @@ renderSvgClock(clock, index) {
       anim=${this.config.animate && this.config.show.points !== 'hover'}
       style="animation-delay: ${this.config.animate ? `${index * 0.5 + 0.5}s` : '0s'}"
       stroke-width=${this.svg.line_width / 2}>
-      ${clock.map(((segment, i) => this.renderSvgClockPart(segment, clockPaths[i], i)))}
+      ${this.renderSvgClockBackground(100)}
+      ${clock.map(((bin, i) => this.renderSvgClockBin(bin, clockPaths[i], i)))}
+      ${this.renderSvgClockFace(100)}
     </g>`;
 }
 
@@ -9755,8 +9782,8 @@ renderSvg() {
         ${this.line.map((line, i) => this.renderSvgLineBackground(line, i))}
         ${this.bar.map((bars, i) => this.renderSvgBarsMask(bars, i))}
         ${this.bar.map((bars, i) => this.renderSvgBarsBackground(bars, i))}
-        ${this.level.map((levels, i) => this.renderSvgLevelsMask(levels, i))}
-        ${this.level.map((levels, i) => this.renderSvgLevelsBackground(levels, i))}
+        ${this.equalizer.map((equalizer, i) => this.renderSvgEqualizerMask(equalizer, i))}
+        ${this.equalizer.map((equalizer, i) => this.renderSvgEqualizerBackground(equalizer, i))}
         ${this.points.map((points, i) => this.renderSvgPoints(points, i))}
         ${this.trafficLight.map((trafficLights, i) => this.renderSvgTrafficLights(trafficLights, i))}
         ${this.clock.map((clockPart, i) => this.renderSvgClock(clockPart, i))}
