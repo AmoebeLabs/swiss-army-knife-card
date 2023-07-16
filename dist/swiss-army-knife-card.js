@@ -8125,13 +8125,18 @@ class SparklineGraph {
     // const coords = this._calcY(this.coords);
     const coords = this.coords;
     const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
-    // const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
+    const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
     // const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
+    console.log('getTimeLine, min/max/ratios', this._min, this._max, xRatio, yRatio, this.drawArea.height);
 
+    const bucketHeight = (this.drawArea.height - (this.bucketss.length * 0)) / this.bucketss.length;
+    console.log('getTimeLine, buckets', this.drawArea.height, this.bucketss.length, coords);
+
+    // Check with show.variant = audio!!
     return coords.map((coord, i) => ({
       x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-      y: 0, // this.drawArea.height,
-      height: this.drawArea.height,
+      y: this.drawArea.height / 2 - coord[V] * (bucketHeight / 2), // 0,
+      height: coord[V] * bucketHeight,
       width: xRatio - spacing,
       value: coord[V],
     }));
@@ -9916,6 +9921,8 @@ renderSvgClock(clock, index) {
 renderSvgTimeline(timeline, index) {
   if (!timeline) return;
 
+  console.log('renderSvgTimeline, line width', this.config.line_width, this.svg.line_width);
+
   const paths = timeline.map((timelinePart, i) => {
     const color = this.computeColor(timelinePart.value, 0);
     const animation = this.config.animate
@@ -9927,7 +9934,8 @@ renderSvgTimeline(timeline, index) {
     return svg` 
 
       <rect class='bar' x=${timelinePart.x} y=${timelinePart.y + (timelinePart.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
-        height=${Math.max(0, timelinePart.height - this.svg.line_width / 1 - 0)} width=${timelinePart.width}
+        height=${Math.max(0, timelinePart.height - this.svg.line_width)}
+        width=${Math.max(timelinePart.width - this.svg.line_width, 1)}
         fill=${color}
         stroke=${color}
         stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"

@@ -565,9 +565,32 @@ export default class SparklineGraph {
     // const coords = this._calcY(this.coords);
     const coords = this.coords;
     const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
-    // const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
+    const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
     // const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
+    console.log('getTimeLine, min/max/ratios', this._min, this._max, xRatio, yRatio, this.drawArea.height);
 
+    const bucketHeight = (this.drawArea.height - (this.bucketss.length * 0)) / this.bucketss.length;
+    console.log('getTimeLine, buckets', this.drawArea.height, this.bucketss.length, coords);
+
+    // Check with show.variant = audio!!
+    // This one has digital stuff right. But a sensor is very small due to incorrect max value!
+    return coords.map((coord, i) => ({
+      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+      y: this.drawArea.height / 2 - coord[V] * (bucketHeight / 2), // 0,
+      height: coord[V] * bucketHeight,
+      width: xRatio - spacing,
+      value: coord[V],
+    }));
+    // THis one is almost oke for sensors, but others go wrong...
+    // Sensor does not have the right min/max: it is the max from the real max, not from the
+    // average that is used. WHY?
+    return coords.map((coord, i) => ({
+      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+      y: this.drawArea.height / 2 - ((coord[V] - this._min) / yRatio * bucketHeight / 2), // 0,
+      height: (coord[V] - this._min) / yRatio * bucketHeight,
+      width: xRatio - spacing,
+      value: coord[V],
+    }));
     return coords.map((coord, i) => ({
       x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
       y: 0, // this.drawArea.height,
