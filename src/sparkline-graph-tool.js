@@ -340,6 +340,7 @@ export default class SparklineGraphTool extends BaseTool {
       this.config.color_thresholds_transition,
     );
 
+    this.clockWidth = Utils.calculateSvgDimension(this.config?.clock?.size || 5);
     // Graph settings
     this.svg.graph = {};
     // this.svg.graph.height = this.svg.height - this.svg.line_width;
@@ -354,6 +355,8 @@ export default class SparklineGraphTool extends BaseTool {
       // make sure label is set
       this.config.state_map[i].label = this.config.state_map[i].label || this.config.state_map[i].value;
     });
+    let { config } = this;
+
     // override points per hour to mach group_by function
     // switch (this.config.group_by) {
     //   case 'date':
@@ -388,6 +391,7 @@ export default class SparklineGraphTool extends BaseTool {
         this.trafficLights,
         this.buckets,
         this.config.state_map,
+        config,
     );
     // this.Graph = this.config.entity_indexes.map(
     //   // this.Graph = this.config.entity_indexes.map(
@@ -1422,11 +1426,11 @@ renderSvgClockBin(bin, path, index) {
 }
 
 renderSvgClockBackground(radius) {
-  const clockWidth = 20;
+  // const clockWidth = 20;
   const {
     start, end, start2, end2, largeArcFlag, sweepFlag,
-  } = this.Graph[0]._calcClockCoords(0, 359.9, true, radius, radius, clockWidth);
-  const radius2 = { x: radius - clockWidth, y: radius - clockWidth };
+  } = this.Graph[0]._calcClockCoords(0, 359.9, true, radius, radius, this.clockWidth);
+  const radius2 = { x: radius - this.clockWidth, y: radius - this.clockWidth };
 
   const d = [
     'M', start.x, start.y,
@@ -1439,7 +1443,7 @@ renderSvgClockBackground(radius) {
   return svg`
     <path class="graph-clock--background"
       d="${d}"
-      style="fill: lightgray; stroke-width: 0;"
+      style="fill: lightgray; stroke-width: 0; opacity: 0.1;"
     />
   `;
 }
@@ -1553,8 +1557,8 @@ renderSvgTimeline(timeline, index) {
       : '';
     return svg` 
 
-      <rect class='bar' x=${timelinePart.x} y=${timelinePart.y + (timelinePart.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
-        height=${Math.max(0, timelinePart.height - this.svg.line_width)}
+      <rect class='timeline' x=${timelinePart.x} y=${timelinePart.y + (timelinePart.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
+        height=${Math.max(1, timelinePart.height - this.svg.line_width)}
         width=${Math.max(timelinePart.width - this.svg.line_width, 1)}
         fill=${color}
         stroke=${color}

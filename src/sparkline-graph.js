@@ -1,4 +1,5 @@
 import Colors from './colors';
+import Utils from './utils';
 
 export const X = 0;
 export const Y = 1;
@@ -17,7 +18,7 @@ export const clockWidth = 20;
 
 export default class SparklineGraph {
   constructor(width, height, margin, today, hours = 24, points = 1, aggregateFuncName = 'avg', groupBy = 'interval', smoothing = true, logarithmic = false,
-              trafficLights = [], buckets = [], stateMap = []) {
+              trafficLights = [], buckets = [], stateMap = [], config = {}) {
     this.aggregateFuncMap = {
       avg: this._average,
       median: this._median,
@@ -31,6 +32,8 @@ export default class SparklineGraph {
     };
 
     this.today = today;
+    this.config = config;
+    console.log('constructor, this.config', this.config);
     // Just trying to make sense for the graph drawing area
     //
     // @2023.07.02
@@ -76,6 +79,7 @@ export default class SparklineGraph {
     this.trafficLights = trafficLights;
     this.bucketss = buckets;
     this.stateMap = [...stateMap];
+    this.clockWidth = Utils.calculateSvgDimension(this.config?.clock?.size || 5);
     // console.log('constructor, buckets', this.bucketss, this.bucketss.length);
   }
 
@@ -131,40 +135,42 @@ export default class SparklineGraph {
     this.min = Math.min(...this.coords.map((item) => Number(item[V])));
     this.max = Math.max(...this.coords.map((item) => Number(item[V])));
 
-    // Just testing...
-    // https://stackoverflow.com/questions/43576241/using-reduce-to-find-min-and-max-values
-    const histGroupsMinMax = this._history.reduce((res, item) => this._reducerMinMax(res, item), []);
+    if ((this.config.show.graph === 'line') && (this.config.line?.show_minmax === true)) {
+      // Just testing...
+      // https://stackoverflow.com/questions/43576241/using-reduce-to-find-min-and-max-values
+      const histGroupsMinMax = this._history.reduce((res, item) => this._reducerMinMax(res, item), []);
 
-    // drop potential out of bound entry's except one
-    if (histGroupsMinMax[0][0] && histGroupsMinMax[0][0].length) {
-      histGroupsMinMax[0][0] = [histGroupsMinMax[0][0][histGroupsMinMax[0][0].length - 1]];
+      // drop potential out of bound entry's except one
+      if (histGroupsMinMax[0][0] && histGroupsMinMax[0][0].length) {
+        histGroupsMinMax[0][0] = [histGroupsMinMax[0][0][histGroupsMinMax[0][0].length - 1]];
+      }
+      if (histGroupsMinMax[1][0] && histGroupsMinMax[1][0].length) {
+        histGroupsMinMax[1][0] = [histGroupsMinMax[1][0][histGroupsMinMax[1][0].length - 1]];
+      }
+
+      // extend length to fill missing history
+      // const requiredNumOfPoints = Math.ceil(this.hours * this.points);
+      histGroupsMinMax[0].length = requiredNumOfPoints;
+      histGroupsMinMax[1].length = requiredNumOfPoints;
+
+      const histGroupsMin = [...histGroups];
+      const histGroupsMax = [...histGroups];
+
+      let prevFunction = this._calcPoint;
+      this._calcPoint = this.aggregateFuncMap.min;
+      this.coordsMin = [];
+      this.coordsMin = this._calcPoints(histGroupsMin);
+      this._calcPoint = this.aggregateFuncMap.max;
+      this.coordsMax = [];
+      this.coordsMax = this._calcPoints(histGroupsMax);
+      this._calcPoint = prevFunction;
+
+      // Adjust scale in this case...
+      this.min = Math.min(...this.coordsMin.map((item) => Number(item[V])));
+      this.max = Math.max(...this.coordsMax.map((item) => Number(item[V])));
+
+      // console.log('update, histgroupsmin = ', this.coordsMin, this.coordsMax, this.coords, this.min, this.max);
     }
-    if (histGroupsMinMax[1][0] && histGroupsMinMax[1][0].length) {
-      histGroupsMinMax[1][0] = [histGroupsMinMax[1][0][histGroupsMinMax[1][0].length - 1]];
-    }
-
-    // extend length to fill missing history
-    // const requiredNumOfPoints = Math.ceil(this.hours * this.points);
-    histGroupsMinMax[0].length = requiredNumOfPoints;
-    histGroupsMinMax[1].length = requiredNumOfPoints;
-
-    const histGroupsMin = [...histGroups];
-    const histGroupsMax = [...histGroups];
-
-    let prevFunction = this._calcPoint;
-    this._calcPoint = this.aggregateFuncMap.min;
-    this.coordsMin = [];
-    this.coordsMin = this._calcPoints(histGroupsMin);
-    this._calcPoint = this.aggregateFuncMap.max;
-    this.coordsMax = [];
-    this.coordsMax = this._calcPoints(histGroupsMax);
-    this._calcPoint = prevFunction;
-
-    // Adjust scale in this case...
-    this.min = Math.min(...this.coordsMin.map((item) => Number(item[V])));
-    this.max = Math.max(...this.coordsMax.map((item) => Number(item[V])));
-
-    // console.log('update, histgroupsmin = ', this.coordsMin, this.coordsMax, this.coords, this.min, this.max);
   }
 
   // This reducer calculates the min and max in a bucket. This is the REAL min and max
@@ -490,11 +496,27 @@ export default class SparklineGraph {
     let runningAngle = startAngle;
     const clockWise = true;
     // console.log('_calcClock, segments', segments, coords);
+    // let ringWidth; // = 20;
+
+    // For sunburst:
+    // value determines how wide the part is. radiusx/y is max radius and clockwidth = length
+    // calcClockcoords calculates from wider ring to inner ring using clockwidth..
+    const wRatio = ((this._max - this._min) / this.clockWidth);
 
     const coords2 = coords.map((coord) => {
       const piet = 9;
       const coordY = 8;
       const coordY2 = 2;
+      let ringWidth;
+      let radius;
+      if (this.config.show?.variant === 'sunburst') {
+      // Sunburst calcs...
+        ringWidth = (coord[V] - this._min) / wRatio;
+        radius = this.drawArea.width / 2 - this.clockWidth + ((coord[V] - this._min) / wRatio / 1);
+      } else {
+        ringWidth = this.clockWidth;
+        radius = this.drawArea.width / 2;
+      }
       let newX = [];
       let newY = [];
       let radiusX = [];
@@ -502,12 +524,16 @@ export default class SparklineGraph {
       const {
         start, end, start2, end2, largeArcFlag, sweepFlag,
       } = this._calcClockCoords(
-        runningAngle, runningAngle + angleSize, clockWise, this.drawArea.width / 2, this.drawArea.height / 2, clockWidth);
+        runningAngle, runningAngle + angleSize, clockWise,
+        radius, radius, ringWidth);
+      // } = this._calcClockCoords(
+      //   runningAngle, runningAngle + angleSize, clockWise,
+      //   this.drawArea.width / 2, this.drawArea.height / 2, clockWidth);
       runningAngle += angleSize;
       newX.push(start.x, end.x, start2.x, end2.x);
       newY.push(start.y, end.y, start2.y, end2.y);
-      radiusX.push(this.drawArea.width / 2, this.drawArea.width / 2 - clockWidth);
-      radiusY.push(this.drawArea.height / 2, this.drawArea.height / 2 - clockWidth);
+      radiusX.push(this.drawArea.width / 2, this.drawArea.width / 2 - this.clockWidth);
+      radiusY.push(this.drawArea.height / 2, this.drawArea.height / 2 - this.clockWidth);
       // console.log('_calcClock', runningAngle, angleSize, newX, newY);
       return [newX, newY, coord[V], 0, radiusX, radiusY, largeArcFlag, sweepFlag];
     });
@@ -516,7 +542,8 @@ export default class SparklineGraph {
 
   getClock(position, total, spacing = 4) {
     const clockCoords = this._calcClock(this.coords);
-    // console.log('getClock, coords', clockCoords);
+    if (this.config.show?.variant === 'sunburst')
+      console.log('getClock, coords', clockCoords);
 
     return clockCoords.map((coord, i) => ({
       start: { x: coord[X][0], y: coord[Y][0] },
@@ -574,30 +601,44 @@ export default class SparklineGraph {
 
     // Check with show.variant = audio!!
     // This one has digital stuff right. But a sensor is very small due to incorrect max value!
-    return coords.map((coord, i) => ({
-      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-      y: this.drawArea.height / 2 - coord[V] * (bucketHeight / 2), // 0,
-      height: coord[V] * bucketHeight,
-      width: xRatio - spacing,
-      value: coord[V],
-    }));
+    // return coords.map((coord, i) => ({
+    //   x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+    //   y: this.drawArea.height / 2 - coord[V] * (bucketHeight / 2), // 0,
+    //   height: coord[V] * bucketHeight,
+    //   width: xRatio - spacing,
+    //   value: coord[V],
+    // }));
     // THis one is almost oke for sensors, but others go wrong...
     // Sensor does not have the right min/max: it is the max from the real max, not from the
     // average that is used. WHY?
-    return coords.map((coord, i) => ({
-      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-      y: this.drawArea.height / 2 - ((coord[V] - this._min) / yRatio * bucketHeight / 2), // 0,
-      height: (coord[V] - this._min) / yRatio * bucketHeight,
-      width: xRatio - spacing,
-      value: coord[V],
-    }));
-    return coords.map((coord, i) => ({
-      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-      y: 0, // this.drawArea.height,
-      height: this.drawArea.height,
-      width: xRatio - spacing,
-      value: coord[V],
-    }));
+    //
+    // Now seems to work for sensors and others. Don't use bucketheight anymore...
+    //
+    // We must have a minimal height. Lets make that the bucketHeight? Would that work?
+    // Otherwise the lowest value (as _min is dedecucted) will be 0, hence height will be zero!
+    // That is NOT what we want..., certainly not in the case of a digital sensor. In that case
+    // we want the full range!
+    //
+    // Settin the lower_bound to some value works!
+    // Also: setting the lower_bound to a high value creates a 'default' timeline, altough not
+    // every line is exactly the same height due to roundings etc.
+    if (this.config.show.variant === 'audio') {
+      return coords.map((coord, i) => ({
+        x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+        y: this.drawArea.height / 2 - ((coord[V] - this._min) / yRatio / 2), // * bucketHeight / 2), // 0,
+        height: (coord[V] - this._min) / yRatio, // * bucketHeight,
+        width: xRatio - spacing,
+        value: coord[V],
+      }));
+    } else {
+      return coords.map((coord, i) => ({
+        x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+        y: 0, // this.drawArea.height,
+        height: this.drawArea.height,
+        width: xRatio - spacing,
+        value: coord[V],
+      }));
+    }
   }
 
   // Get array of levels. Just levels which draw a little bar at each level once reached
