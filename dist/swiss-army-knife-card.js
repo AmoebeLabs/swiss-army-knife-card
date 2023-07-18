@@ -8538,6 +8538,16 @@ class SparklineGraphTool extends BaseTool {
     this.classes.clock_face_hour_marks = {};
     this.classes.clock_face_hour_numbers = {};
 
+    // Helper lines stuff
+    this.classes.helper_line1 = {};
+    this.classes.helper_line2 = {};
+    this.classes.helper_line3 = {};
+
+    this.styles.helper_line1 = {};
+    this.styles.helper_line2 = {};
+    this.styles.helper_line3 = {};
+
+    // eslint-disable-next-line dot-notation
     this.styles.tool = {};
     this.styles.bar = {};
     this.styles.line = {};
@@ -8627,6 +8637,48 @@ class SparklineGraphTool extends BaseTool {
       // make sure label is set
       this.config.state_map[i].label = this.config.state_map[i].label || this.config.state_map[i].value;
     });
+    // Helper lines
+    this.helperLines = [];
+    if (typeof this.config.helper_lines === 'object') {
+      let j = 0;
+      let helpers = Object.keys(this.config.helper_lines);
+      helpers.forEach((helperLine) => {
+        this.helperLines[j] = {
+          id: helperLine,
+          zpos: this.config.helper_lines[helperLine]?.zpos || 'above',
+          yshift: Utils.calculateSvgDimension(this.config.helper_lines[helperLine]?.yshift) || 0,
+        };
+        j += 1;
+      });
+    }
+    if (this.helperLines.length > 0)
+      console.log('helperLines', this.helperLines);
+
+    // Other lines test
+    this.xAxis = {};
+    this.xAxis.lines = [];
+    if (typeof this.config.x_axis?.lines === 'object') {
+      let j = 0;
+      let helpers = this.config.x_axis.lines;
+      helpers.forEach((helperLine) => {
+        this.xAxis.lines[j] = {
+          id: helperLine.name,
+          zpos: helperLine?.zpos || 'above',
+          yshift: Utils.calculateSvgDimension(helperLine?.yshift) || 0,
+        };
+        j += 1;
+      });
+    }
+    if (this.xAxis.lines.length > 0)
+      console.log('xAxis.lines', this.xAxis.lines);
+
+    // this.xAxis.numbers = {};
+    if (typeof this.config.x_axis?.numbers === 'object') {
+      this.xAxis.numbers = { ...this.config.x_axis.numbers };
+    }
+    if (this.xAxis.numbers)
+      console.log('xAxis.numbers', this.xAxis.numbers);
+
     let { config } = this;
 
     // override points per hour to mach group_by function
@@ -9683,6 +9735,7 @@ renderSvgClock(clock, index) {
 renderSvgTimeline(timeline, index) {
   if (!timeline) return;
 
+  console.log('rendertimeline, styles = ', this.styles.helper_line1);
   const paths = timeline.map((timelinePart, i) => {
     const color = this.computeColor(timelinePart.value, 0);
     const animation = this.config.animate
@@ -9703,16 +9756,73 @@ renderSvgTimeline(timeline, index) {
         ${animation}
       </rect>`;
   });
+  // stroke="lightgray" stroke-dasharray="0.5, 119" stroke-width="${this.svg.graph.height}"
+
+  const linesBelow = this.xAxis.lines.map((helperLine) => {
+    console.log('linesBelow', helperLine);
+    if (helperLine.zpos === 'below') {
+      return [svg`
+        <line class=${classMap(this.classes[helperLine.id])}) style="${styleMap(this.styles[helperLine.id])}"
+        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        pathLength="240"
+        >
+        </line>
+        `];
+    } else return [''];
+  });
+  this.helperLines.map((helperLine) => {
+    console.log('linesBelow', helperLine);
+    if (helperLine.zpos === 'below') {
+      // const helperClass = this.classes[helperLine.id];
+      // const helperStyle = this.styles[helperLine.id];
+      // console.log('linesBelow', helperLine, helperClass, helperStyle);
+      return [svg`
+        <line class=${classMap(this.classes[helperLine.id])}) style="${styleMap(this.styles[helperLine.id])}"
+        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        pathLength="240"
+        >
+        </line>
+        `];
+    } else return [''];
+  });
+  const linesAbove = this.xAxis.lines.map((helperLine) => {
+    console.log('linesAbove', helperLine);
+    if (helperLine.zpos === 'above') {
+      return [svg`
+        <line class="${classMap(this.classes[helperLine.id])}"
+              style="${styleMap(this.styles[helperLine.id])}"
+        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        pathLength="240"
+        >
+        </line>
+        `];
+    } else return [''];
+  });
+  this.helperLines.map((helperLine) => {
+    console.log('linesAbove', helperLine);
+    if (helperLine.zpos === 'above') {
+      // const helperClass = this.classes[helperLine.id];
+      // const helperStyle = this.styles[helperLine.id];
+      // console.log('linesAbove', helperLine, helperClass, helperStyle);
+      return [svg`
+        <line class="${classMap(this.classes[helperLine.id])}"
+              style="${styleMap(this.styles[helperLine.id])}"
+        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        pathLength="240"
+        >
+        </line>
+        `];
+    } else return [''];
+  });
+  console.log('renderSvgTimeline, lines', this.helperLines, linesAbove, linesBelow);
   return svg`
-    <g>
-      <line class="${this.classes.timeline_bg}" timeline-bg" styles="${this.styles.timeline_bg}"
-      x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2}"
-      x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2}"
-      stroke="lightgray" stroke-dasharray="0.5, 119" stroke-width="${this.svg.graph.height}"
-      pathLength=240>
-      </line>
-    </g>
+    ${linesBelow}
     ${paths}
+    ${linesAbove}
   `;
 }
 // pathLength=24"${this.svg.graph.width / 4}">
