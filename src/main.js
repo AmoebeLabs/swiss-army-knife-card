@@ -1733,7 +1733,7 @@ _buildStateString(inState, entityConfig) {
             start.setHours(0);
             start.setMinutes(0);
             start.setSeconds(0);
-            console.log('updateData, setting hours to 0', start, end);
+            // console.log('updateData, setting hours to 0', start, end);
           } else {
             start.setHours(end.getHours() - item.tool.config.hours);
           }

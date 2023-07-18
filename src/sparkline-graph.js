@@ -33,7 +33,6 @@ export default class SparklineGraph {
 
     this.today = today;
     this.config = config;
-    console.log('constructor, this.config', this.config);
     // Just trying to make sense for the graph drawing area
     //
     // @2023.07.02
@@ -60,8 +59,8 @@ export default class SparklineGraph {
 
     this._history = undefined;
     this.coords = [];
-    this.width = width; // - margin.x * 2;
-    this.height = height; // - margin.y * 2;
+    this.width = width;
+    this.height = height;
     this.margin = margin;
     // Testing
     this._max = 0;
@@ -80,7 +79,6 @@ export default class SparklineGraph {
     this.bucketss = buckets;
     this.stateMap = [...stateMap];
     this.clockWidth = Utils.calculateSvgDimension(this.config?.clock?.size || 5);
-    // console.log('constructor, buckets', this.bucketss, this.bucketss.length);
   }
 
   get max() { return this._max; }
@@ -123,12 +121,6 @@ export default class SparklineGraph {
     } else {
       requiredNumOfPoints = Math.ceil(this.hours * this.points);
     }
-    // #HIER
-    // Temp disable to check what happens...
-    // Seems to work if you want to display history from today, up to current hour!
-    // #TODO
-    // Fix length to current time/date, not upto total timeline. We might have a graph from
-    // today that is getting filled slowly instead of previous 24 hour orso!!
     histGroups.length = requiredNumOfPoints;
 
     this.coords = this._calcPoints(histGroups);
@@ -168,8 +160,6 @@ export default class SparklineGraph {
       // Adjust scale in this case...
       this.min = Math.min(...this.coordsMin.map((item) => Number(item[V])));
       this.max = Math.max(...this.coordsMax.map((item) => Number(item[V])));
-
-      // console.log('update, histgroupsmin = ', this.coordsMin, this.coordsMax, this.coords, this.min, this.max);
     }
   }
 
@@ -185,18 +175,6 @@ export default class SparklineGraph {
   //
   // It could run with a single reducer, if using [0] for the buckets to calculate the function
   // and [1] for min, and [2] for max value in that bucket...
-  _reducerMinMax2(res, item) {
-    const age = this._endTime - new Date(item.last_changed).getTime();
-    const interval = (age / ONE_HOUR * this.points) - this.hours * this.points;
-    const key = interval < 0 ? Math.floor(Math.abs(interval)) : 0;
-    if (!res[key]) { res[key] = []; res[key][0] = []; res[key][1] = []; }
-    // Min value is always 0. So something goes wrong with Number I guess??
-    // If item.state invalid, then returns 0 ???
-    res[key][0] = Math.min(res[key][0] ? res[key][0] : Number.POSITIVE_INFINITY, item.state);
-    // Max seems to be OK!
-    res[key][1] = Math.max(res[key][1], Number(item.state));
-    return res;
-  }
 
   _reducerMinMax(res, item) {
     const age = this._endTime - new Date(item.last_changed).getTime();
@@ -265,17 +243,12 @@ export default class SparklineGraph {
         : this.drawArea.height + this.drawArea.y * 1 - ((0 - min) / yRatio);// - this.margin.y * 4;
       const coordY = this.drawArea.height + this.drawArea.y * 1 - ((val - (min)) / yRatio); // - this.margin.y * 2;
 
-      // if (this.margin.y !== 0)
-      //   console.log('calcY, val, Y = ', val, coordY, coordY2);
-
       return [coord[X], coordY, coord[V], coordY2];
     });
-    // console.log('calcY', this.drawArea.height, this.drawArea.width, coords2);
     return coords2;
   }
 
   _calcLevelY(coord) {
-    // console.log('calcLevelY, coord', coord);
     // account for logarithmic graph
     const max = this._logarithmic ? Math.log10(Math.max(1, this.max)) : this.max;
     const min = this._logarithmic ? Math.log10(Math.max(1, this.min)) : this.min;
@@ -285,24 +258,13 @@ export default class SparklineGraph {
     let yStack = [];
     // should be reduce or something... to return an array...
     const coordYs = coord[V].forEach((val, index) => {
-      // const val = this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V];
-      // const offset = (min < 0) ? Math.abs(min) : 0;
-      // const val0 = (val > 0)
-      //   ? (val - Math.max(0, min))
-      //   : 0;
-
-      // const coord0 = this.drawArea.height + this.drawArea.y - val0 / yRatio;
-
       const coordY = (val >= 0)
         ? this.drawArea.height + this.drawArea.y * 1 - (1 * offset / yRatio) - ((val - Math.max(0, min)) / yRatio) // - this.margin.y * 2
         : this.drawArea.height + this.drawArea.y * 1 - ((0 - val) / yRatio);
-      // console.log('_calcLevelY...', val, offset, yRatio, min, max, coordY);
-
       yStack.push(coordY);
       return yStack;
     });
-    // console.log('calcLevelY, yStack...', yStack);
-    return yStack; // coordYs;
+    return yStack;
   }
 
   getPoints() {
@@ -430,18 +392,9 @@ export default class SparklineGraph {
     });
   }
 
-  getFill2(path) {
-    const height = this.height + this.margin.y * 4;
-    let fill = path;
-    fill += ` L ${this.width - this.margin.x * 2}, ${height}`;
-    fill += ` L ${this.coords[0][X]}, ${height} z`;
-    return fill;
-  }
-
   // #TODO. Is not right...
   // Weird stuff...
   getFillMinMax(pathMin, pathMax) {
-    // console.log('getFillMinMax = ', pathMin, pathMax, this.coordsMax, this.coordsMax[0].length);
     let fill = pathMin;
     fill += ` L ${this.coordsMax[this.coordsMax.length - 1][X]},
                 ${this.coordsMax[this.coordsMax.length - 1][Y]}`;
@@ -488,18 +441,13 @@ export default class SparklineGraph {
   }
 
   _calcClock(coords) {
-    // const segments = coords.length; // this.hours * this.points;
     const max = this._logarithmic ? Math.log10(Math.max(1, this.max)) : this.max;
     const min = this._logarithmic ? Math.log10(Math.max(1, this.min)) : this.min;
     const segments = this.hours * this.points;
     const angleSize = 360 / segments;
     const startAngle = 0;
-    // const endAngle = 270;
     let runningAngle = startAngle;
     const clockWise = true;
-    // console.log('_calcClock, segments', segments, coords);
-    // let ringWidth; // = 20;
-
     // For sunburst:
     // value determines how wide the part is. radiusx/y is max radius and clockwidth = length
     // calcClockcoords calculates from wider ring to inner ring using clockwidth..
@@ -540,7 +488,6 @@ export default class SparklineGraph {
       newY.push(start.y, end.y, start2.y, end2.y);
       radiusX.push(this.drawArea.width / 2, this.drawArea.width / 2 - this.clockWidth);
       radiusY.push(this.drawArea.height / 2, this.drawArea.height / 2 - this.clockWidth);
-      // console.log('_calcClock', runningAngle, angleSize, newX, newY);
       return [newX, newY, coord[V], 0, radiusX, radiusY, largeArcFlag, sweepFlag];
     });
     return coords2;
@@ -548,8 +495,6 @@ export default class SparklineGraph {
 
   getClock(position, total, spacing = 4) {
     const clockCoords = this._calcClock(this.coords);
-    if (this.config.show?.variant === 'sunburst')
-      console.log('getClock, coords', clockCoords);
 
     return clockCoords.map((coord, i) => ({
       start: { x: coord[X][0], y: coord[Y][0] },
@@ -565,17 +510,7 @@ export default class SparklineGraph {
   }
 
   getClockPaths() {
-    const largeArcFlag = '1'; // Math.abs(argEndAngle - argStartAngle) <= 180 ? '0' : '1';
-    const sweepFlag = '0'; // argClockwise ? '0' : '1';
-    // console.log('getClockPaths, this.clock', this.clock);
     const clockPaths = this.clock.map((segment, index) => {
-      // const d = [
-      //   'M', segment[X][0], segment[Y][0],
-      //   'A', segment[RX][0], segment[RY][0], 0, largeArcFlag, sweepFlag, segment[X][1], segment[Y][1],
-      //   'L', segment[X][3], segment[Y][3],
-      //   'A', segment[RX][1], segment[RY][1], 0, largeArcFlag, sweepFlag === '0' ? '1' : '0', segment[X][2], segment[Y][2],
-      //   'Z',
-      // ].join(' ');
       const d = [
         'M', segment.start.x, segment.start.y,
         'A', segment.radius.x, segment.radius.y, 0, segment.largeArcFlag, segment.sweepFlag, segment.end.x, segment.end.y,
@@ -584,53 +519,20 @@ export default class SparklineGraph {
         'Z',
       ].join(' ');
       return d;
-      // 'M', start.x, start.y,
-      // 'A', argRadiusX, argRadiusY, 0, largeArcFlag, sweepFlag, end.x, end.y,
-      // 'L', end2.x, end2.y,
-      // 'A', cutoutRadiusX, cutoutRadiusY, 0, largeArcFlag, sweepFlag === '0' ? '1' : '0', start2.x, start2.y,
-      // 'Z',
     });
-    // console.log('getClockPaths', clockPaths);
     return clockPaths;
   }
 
   getTimeline(position, total, spacing = 4) {
-    // const coords = this._calcY(this.coords);
     const max = this._logarithmic ? Math.log10(Math.max(1, this.max)) : this.max;
     const min = this._logarithmic ? Math.log10(Math.max(1, this.min)) : this.min;
 
     const coords = this.coords;
     const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
     const yRatio = ((max - min) / this.drawArea.height) || 1;
-    // const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
-    console.log('getTimeLine, min/max/ratios', this.min, min, this.max, max, xRatio, yRatio, this.drawArea.height);
 
     const bucketHeight = (this.drawArea.height - (this.bucketss.length * 0)) / this.bucketss.length;
-    console.log('getTimeLine, buckets', this.drawArea.height, this.bucketss.length, coords);
 
-    // Check with show.variant = audio!!
-    // This one has digital stuff right. But a sensor is very small due to incorrect max value!
-    // return coords.map((coord, i) => ({
-    //   x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-    //   y: this.drawArea.height / 2 - coord[V] * (bucketHeight / 2), // 0,
-    //   height: coord[V] * bucketHeight,
-    //   width: xRatio - spacing,
-    //   value: coord[V],
-    // }));
-    // THis one is almost oke for sensors, but others go wrong...
-    // Sensor does not have the right min/max: it is the max from the real max, not from the
-    // average that is used. WHY?
-    //
-    // Now seems to work for sensors and others. Don't use bucketheight anymore...
-    //
-    // We must have a minimal height. Lets make that the bucketHeight? Would that work?
-    // Otherwise the lowest value (as _min is dedecucted) will be 0, hence height will be zero!
-    // That is NOT what we want..., certainly not in the case of a digital sensor. In that case
-    // we want the full range!
-    //
-    // Settin the lower_bound to some value works!
-    // Also: setting the lower_bound to a high value creates a 'default' timeline, altough not
-    // every line is exactly the same height due to roundings etc.
     if (this.config.show.variant === 'audio') {
       return coords.map((coord, i) => ({
         x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
@@ -642,7 +544,7 @@ export default class SparklineGraph {
     } else {
       return coords.map((coord, i) => ({
         x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-        y: 0, // this.drawArea.height,
+        y: 0,
         height: this.drawArea.height,
         width: xRatio - spacing,
         value: coord[V],
@@ -652,8 +554,6 @@ export default class SparklineGraph {
 
   // Get array of levels. Just levels which draw a little bar at each level once reached
   getEqualizer(position, total, spacing = 4) {
-    // Should use special _calcY, or calculate special coords with all the values [V] as an array
-    // this coords[][V] has the value. Map them to an array...
     const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
     const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
     const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
@@ -674,18 +574,11 @@ export default class SparklineGraph {
       newCoord[Y] = [];
       newCoord[V] = [];
       for (let i = 0; i < stepRange; i++) {
-        // newCoord[V][i] = stepMin - 1 + (i * this.valuesPerBucket);
         newCoord[V][i] = this._min + (i * this.valuesPerBucket);
       }
       newCoord[Y] = this._calcLevelY(newCoord);
-      // console.log('getEqualizer, newCoord = ', newCoord);
-      // return [newCoord];
       return newCoord;
     });
-    // const coords = this._calcY(this.coords);
-    // console.log('getEqualizer, levelCoords', levelCoords);
-
-    // #TODO: Negative values to coord[Y2] !!!
     return equalizerCoords.map((coord, i) => ({
       x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
       y: coord[Y],
@@ -699,15 +592,6 @@ export default class SparklineGraph {
 
   getTrafficLights(position, total, spacing = 4) {
     const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
-    // Temp hack...
-    // this._min = this.trafficLights[0];
-    // this._max = this.trafficLights[this.trafficLights.length - 1];
-
-    // const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
-    // const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
-
-    // console.log('getTrafficLights, ENTRY', position, total, spacing, this.coords);
-
     const bucketHeight = (this.drawArea.height - (this.bucketss.length * spacing)) / this.bucketss.length;
 
     let stepRange;
@@ -746,69 +630,6 @@ export default class SparklineGraph {
       for (let i = 0; i <= matchStep; i++) {
         newCoord[V][i] = this.bucketss[i].length > matchBucket ? this.bucketss[i].rangeMin[matchBucket] : this.bucketss[i].rangeMin[0];
         newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
-        // console.log('getTrafficLights', i, newCoord[V][i], newCoord[Y][i]);
-      }
-      // for (let i = 0; i < stepRange; i++) {
-      //   if (coord[V] >= this.trafficLights[i]) {
-      //     newCoord[V][i] = this.trafficLights[i];
-      //     newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
-      //   }
-
-      //   console.log('getTrafficLights', i, newCoord[V][i], newCoord[Y][i]);
-      // }
-      return newCoord;
-    });
-    return levelCoords.map((coord, i) => ({
-      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
-      y: coord[Y],
-      height: bucketHeight,
-      width: xRatio - spacing,
-      value: coord[V],
-    }));
-  }
-
-  getTrafficLights2(position, total, spacing = 4) {
-    const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
-    // Temp hack...
-    this._min = this.trafficLights[0];
-    this._max = this.trafficLights[this.trafficLights.length - 1];
-
-    const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
-    const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
-
-    // console.log('getTrafficLights, ENTRY', position, total, spacing, this.coords);
-
-    const bucketHeight = (this.drawArea.height - (this.trafficLights.length * spacing)) / this.trafficLights.length;
-
-    let stepRange;
-    let levelCoords = this.coords.map((coord, i) => {
-      let newCoord = [];
-      const stepMax = this.trafficLights.length;
-      const stepMin = 0;
-      stepRange = (stepMax - stepMin);
-
-      newCoord[X] = coord[X];
-      newCoord[Y] = [];
-      newCoord[V] = [];
-      // Check for buckets, and ranges min/max...
-      // i is the bucket index!
-      for (let i = 0; i < stepRange; i++) {
-        console.log('getTrafficLights, ', this.levels[i]);
-        if (coord[V] >= this.levels[i].rangeMin[0] && coord[V] < this.levels[i].rangeMax[0]) {
-          newCoord[V][i] = this.levels[i].rangeMin[0];
-          newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
-        }
-
-        // console.log('getTrafficLights', i, newCoord[V][i], newCoord[Y][i]);
-      }
-
-      for (let i = 0; i < stepRange; i++) {
-        if (coord[V] >= this.trafficLights[i]) {
-          newCoord[V][i] = this.trafficLights[i];
-          newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
-        }
-
-        console.log('getTrafficLights', i, newCoord[V][i], newCoord[Y][i]);
       }
       return newCoord;
     });
@@ -826,20 +647,6 @@ export default class SparklineGraph {
     const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
     const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
     const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
-
-    // #TODO:
-    // Just for testing... Logging should be removed!
-    // coords.map((coord, i) => {
-    //   const x = (xRatio * i * total) + (xRatio * position) + this.drawArea.x;
-    //   const y = this._min > 0 ? coord[Y] : coord[Y2];
-    //   const height = coord[V] > 0 ? this._min < 0 ? coord[V] / yRatio : coord[Y] - coord[Y2] : (coord[V] - this._min) / yRatio;
-    //   const width = xRatio - spacing;
-    //   const value = coord[V];
-    //   if (this.margin.y > 0) console.log('coords.mapping, i', i, 'x=', Math.round(x),
-    //      'y=', Math.round(y), 'height=', Math.round(height),
-    //      'width=', Math.round(width), 'val=', Math.round(value));
-    //   return true;
-    // });
 
     return coords.map((coord, i) => ({
       x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
