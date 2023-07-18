@@ -630,6 +630,11 @@ export default class SparklineGraphTool extends BaseTool {
         history[0][index].state = item.state;
       });
     }
+    if (this.config.value_factor !== 0) {
+      history[0].forEach((item, index) => {
+        history[0][index].state = item.state * this.config.value_factor;
+      });
+    }
   }
 
   get visibleEntities() {

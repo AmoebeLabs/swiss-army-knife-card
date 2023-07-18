@@ -8051,6 +8051,8 @@ class SparklineGraph {
 
   _calcClock(coords) {
     // const segments = coords.length; // this.hours * this.points;
+    const max = this._logarithmic ? Math.log10(Math.max(1, this.max)) : this.max;
+    const min = this._logarithmic ? Math.log10(Math.max(1, this.min)) : this.min;
     const segments = this.hours * this.points;
     const angleSize = 360 / segments;
     const startAngle = 0;
@@ -8063,15 +8065,19 @@ class SparklineGraph {
     // For sunburst:
     // value determines how wide the part is. radiusx/y is max radius and clockwidth = length
     // calcClockcoords calculates from wider ring to inner ring using clockwidth..
-    const wRatio = ((this._max - this._min) / this.clockWidth);
+    // const wRatio = ((this._max - this._min) / this.clockWidth);
+    const wRatio = ((max - min) / this.clockWidth);
 
     const coords2 = coords.map((coord) => {
       let ringWidth;
       let radius;
       if (this.config.show?.variant === 'sunburst') {
       // Sunburst calcs...
-        ringWidth = (coord[V] - this._min) / wRatio;
-        radius = this.drawArea.width / 2 - this.clockWidth + ((coord[V] - this._min) / wRatio / 1);
+        // ringWidth = (coord[V] - this._min) / wRatio;
+        ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
+        // radius = this.drawArea.width / 2 - this.clockWidth + ((coord[V] - this._min) / wRatio / 1);
+        // radius = this.drawArea.width / 2 - this.clockWidth + (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio / 1);
+        radius = this.drawArea.width / 2 - this.clockWidth + ringWidth;
       } else {
         ringWidth = this.clockWidth;
         radius = this.drawArea.width / 2;
@@ -8147,11 +8153,14 @@ class SparklineGraph {
 
   getTimeline(position, total, spacing = 4) {
     // const coords = this._calcY(this.coords);
+    const max = this._logarithmic ? Math.log10(Math.max(1, this.max)) : this.max;
+    const min = this._logarithmic ? Math.log10(Math.max(1, this.min)) : this.min;
+
     const coords = this.coords;
     const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
-    const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
+    const yRatio = ((max - min) / this.drawArea.height) || 1;
     // const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
-    console.log('getTimeLine, min/max/ratios', this._min, this._max, xRatio, yRatio, this.drawArea.height);
+    console.log('getTimeLine, min/max/ratios', this.min, min, this.max, max, xRatio, yRatio, this.drawArea.height);
 
     (this.drawArea.height - (this.bucketss.length * 0)) / this.bucketss.length;
     console.log('getTimeLine, buckets', this.drawArea.height, this.bucketss.length, coords);
@@ -8182,8 +8191,8 @@ class SparklineGraph {
     if (this.config.show.variant === 'audio') {
       return coords.map((coord, i) => ({
         x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-        y: this.drawArea.height / 2 - ((coord[V] - this._min) / yRatio / 2), // * bucketHeight / 2), // 0,
-        height: (coord[V] - this._min) / yRatio, // * bucketHeight,
+        y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2), // * bucketHeight / 2), // 0,
+        height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio, // * bucketHeight,
         width: xRatio - spacing,
         value: coord[V],
       }));
@@ -9084,6 +9093,11 @@ class SparklineGraphTool extends BaseTool {
         // this._history[index].state = this._convertState(item);
         this._convertState(item);
         history[0][index].state = item.state;
+      });
+    }
+    if (this.config.value_factor !== 0) {
+      history[0].forEach((item, index) => {
+        history[0][index].state = item.state * this.config.value_factor;
       });
     }
   }
