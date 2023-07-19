@@ -1704,7 +1704,7 @@ _buildStateString(inState, entityConfig) {
     if (skipInitialState) url += '&skip_initial_state';
     url += '&minimal_response';
 
-    // console.log('fetchRecent - call is', entityId, start, end, skipInitialState, url);
+    console.log('update, fetchRecent - call is', entityId, start, end, skipInitialState, url);
     return this._hass.callApi('GET', url);
   }
 
@@ -1729,10 +1729,19 @@ _buildStateString(inState, entityConfig) {
         || (item.type === 'graph')) {
           const end = new Date();
           const start = new Date();
-          if (item.tool.config.today === 'today') {
-            start.setHours(0);
-            start.setMinutes(0);
-            start.setSeconds(0);
+          if (item.tool.config.x_axis?.start_on === 'yesterday') {
+            start.setHours(0, 0, 0, 0);
+            start.setHours(start.getHours() - 24);
+            // end.setDate(start.getDate());
+            end.setHours(0, 0, 0, 0); // end.getHours() + 24);
+
+            // start.setMinutes(0);
+            // start.setSeconds(0);
+            console.log('updateData, yesterday, setting hours', start, end);
+          } else if ((item.tool.config.today === 'today') || (item.tool.config.x_axis?.start_on === 'today')) {
+            start.setHours(0, 0, 0, 0);
+            // start.setMinutes(0);
+            // start.setSeconds(0);
             // console.log('updateData, setting hours to 0', start, end);
           } else {
             start.setHours(end.getHours() - item.tool.config.hours);
@@ -1775,6 +1784,7 @@ _buildStateString(inState, entityConfig) {
 
     // Get history for this entity and/or attribute.
     let newStateHistory = await this.fetchRecent(entity.entityId, start, end, skipInitialState);
+    console.log('update, updateEntity, newStateHistory', entity.entityId, start, end, newStateHistory);
 
     // Now we have some history, check if it has valid data and filter out either the entity state or
     // the entity attribute. Ain't that nice!
@@ -1807,8 +1817,10 @@ _buildStateString(inState, entityConfig) {
       // console.log('pushing stateHistory into Graph!!!!', stateHistory);
       this.toolsets[entity.tsidx].tools[entity.idx].tool.data = entity.entityIndex;
       this.toolsets[entity.tsidx].tools[entity.idx].tool.series = [...stateHistory];
+      this.requestUpdate();
+    } else {
+      this.uppdate(entity, stateHistory);
     }
-    this.uppdate(entity, stateHistory);
   }
 
   uppdate(entity, hist) {

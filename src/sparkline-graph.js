@@ -17,7 +17,8 @@ export const ONE_HOUR = 1000 * 3600;
 export const clockWidth = 20;
 
 export default class SparklineGraph {
-  constructor(width, height, margin, today, hours = 24, points = 1, aggregateFuncName = 'avg', groupBy = 'interval', smoothing = true, logarithmic = false,
+  constructor(width, height, margin, startOn, hours = 24, points = 1, aggregateFuncName = 'avg',
+              groupBy = 'interval', smoothing = true, logarithmic = false,
               trafficLights = [], buckets = [], stateMap = [], config = {}) {
     this.aggregateFuncMap = {
       avg: this._average,
@@ -31,7 +32,7 @@ export default class SparklineGraph {
       diff: this._diff,
     };
 
-    this.today = today;
+    this.startOn = startOn;
     this.config = config;
     // Just trying to make sense for the graph drawing area
     //
@@ -115,7 +116,7 @@ export default class SparklineGraph {
     let date = new Date();
     date.getDate();
     // for now it is ok...
-    if (this.today === 'today') {
+    if (this.startOn === 'today') {
       let hours = date.getHours() + date.getMinutes() / 60;
       requiredNumOfPoints = Math.ceil(hours * this.points);
     } else {
@@ -123,6 +124,9 @@ export default class SparklineGraph {
     }
     histGroups.length = requiredNumOfPoints;
 
+    if (this.startOn === 'yesterday') {
+      console.log('update, yesterday, history = ', this.history, histGroups);
+    }
     this.coords = this._calcPoints(histGroups);
     this.min = Math.min(...this.coords.map((item) => Number(item[V])));
     this.max = Math.max(...this.coords.map((item) => Number(item[V])));
@@ -714,21 +718,28 @@ export default class SparklineGraph {
 
   _updateEndTime() {
     this._endTime = new Date();
-    switch (this._groupBy) {
-      case 'month':
-        this._endTime.setMonth(this._endTime.getMonth() + 1);
-        this._endTime.setDate(1);
-        break;
-      case 'date':
-        this._endTime.setDate(this._endTime.getDate() + 1);
-        this._endTime.setHours(0, 0, 0, 0);
-        break;
-      case 'hour':
-        this._endTime.setHours(this._endTime.getHours() + 1);
-        this._endTime.setMinutes(0, 0, 0);
-        break;
-      default:
-        break;
+    if (this.startOn === 'yesterday') {
+      // #TODO:
+      // Should account for hours_to_show. Maybe user wants to show the past 48 hours.
+      // Now I assume it is just yesterday, ie hours_to_show === 24
+      this._endTime.setHours(0, 0, 0, 0);
+    } else {
+      switch (this._groupBy) {
+        case 'month':
+          this._endTime.setMonth(this._endTime.getMonth() + 1);
+          this._endTime.setDate(1);
+          break;
+        case 'date':
+          this._endTime.setDate(this._endTime.getDate() + 1);
+          this._endTime.setHours(0, 0, 0, 0);
+          break;
+        case 'hour':
+          this._endTime.setHours(this._endTime.getHours() + 1);
+          this._endTime.setMinutes(0, 0, 0);
+          break;
+        default:
+          break;
+      }
     }
   }
 }

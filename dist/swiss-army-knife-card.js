@@ -7579,7 +7579,8 @@ const RY = 5;
 const ONE_HOUR = 1000 * 3600;
 
 class SparklineGraph {
-  constructor(width, height, margin, today, hours = 24, points = 1, aggregateFuncName = 'avg', groupBy = 'interval', smoothing = true, logarithmic = false,
+  constructor(width, height, margin, startOn, hours = 24, points = 1, aggregateFuncName = 'avg',
+              groupBy = 'interval', smoothing = true, logarithmic = false,
               trafficLights = [], buckets = [], stateMap = [], config = {}) {
     this.aggregateFuncMap = {
       avg: this._average,
@@ -7593,7 +7594,7 @@ class SparklineGraph {
       diff: this._diff,
     };
 
-    this.today = today;
+    this.startOn = startOn;
     this.config = config;
     // Just trying to make sense for the graph drawing area
     //
@@ -7677,7 +7678,7 @@ class SparklineGraph {
     let date = new Date();
     date.getDate();
     // for now it is ok...
-    if (this.today === 'today') {
+    if (this.startOn === 'today') {
       let hours = date.getHours() + date.getMinutes() / 60;
       requiredNumOfPoints = Math.ceil(hours * this.points);
     } else {
@@ -7685,6 +7686,9 @@ class SparklineGraph {
     }
     histGroups.length = requiredNumOfPoints;
 
+    if (this.startOn === 'yesterday') {
+      console.log('update, yesterday, history = ', this.history, histGroups);
+    }
     this.coords = this._calcPoints(histGroups);
     this.min = Math.min(...this.coords.map((item) => Number(item[V])));
     this.max = Math.max(...this.coords.map((item) => Number(item[V])));
@@ -8268,19 +8272,26 @@ class SparklineGraph {
 
   _updateEndTime() {
     this._endTime = new Date();
-    switch (this._groupBy) {
-      case 'month':
-        this._endTime.setMonth(this._endTime.getMonth() + 1);
-        this._endTime.setDate(1);
-        break;
-      case 'date':
-        this._endTime.setDate(this._endTime.getDate() + 1);
-        this._endTime.setHours(0, 0, 0, 0);
-        break;
-      case 'hour':
-        this._endTime.setHours(this._endTime.getHours() + 1);
-        this._endTime.setMinutes(0, 0, 0);
-        break;
+    if (this.startOn === 'yesterday') {
+      // #TODO:
+      // Should account for hours_to_show. Maybe user wants to show the past 48 hours.
+      // Now I assume it is just yesterday, ie hours_to_show === 24
+      this._endTime.setHours(0, 0, 0, 0);
+    } else {
+      switch (this._groupBy) {
+        case 'month':
+          this._endTime.setMonth(this._endTime.getMonth() + 1);
+          this._endTime.setDate(1);
+          break;
+        case 'date':
+          this._endTime.setDate(this._endTime.getDate() + 1);
+          this._endTime.setHours(0, 0, 0, 0);
+          break;
+        case 'hour':
+          this._endTime.setHours(this._endTime.getHours() + 1);
+          this._endTime.setMinutes(0, 0, 0);
+          break;
+      }
     }
   }
 }
@@ -8413,14 +8424,29 @@ class SparklineGraphTool extends BaseTool {
         width: 25,
         margin: 0.5,
       },
-      hours_to_show: 24,
-      points_per_hour: 0.5,
+      x_axis: {
+        hours_to_show: 24,
+        bins_per_hour: 0.5,
+        group_by: 'interval',
+        start_on: 'interval',
+      },
+      y_axis: {
+        logarithmic: false,
+        value_factor: 0,
+        aggregate_func: 'avg',
+      },
+      _hours_to_show: 24,
+      _points_per_hour: 0.5,
+      _bins_per_hour: 0.5,
+      _group_by: 'interval',
+      _start_on: 'interval',
+      _logarithmic: false,
+      _value_factor: 0,
+      _aggregate_func: 'avg',
       value_buckets: 10,
       animate: true,
       hour24: false,
       font_size: 10,
-      aggregate_func: 'avg',
-      group_by: 'interval',
       line_color: [...DEFAULT_COLORS],
       color_thresholds: [],
       color_thresholds_transition: 'smooth',
@@ -8430,7 +8456,6 @@ class SparklineGraphTool extends BaseTool {
       smoothing: true,
       state_map: [],
       cache: true,
-      value_factor: 0,
       color: 'var(--primary-color)',
       clock: {
         size: 5,
@@ -8655,13 +8680,13 @@ class SparklineGraphTool extends BaseTool {
       console.log('helperLines', this.helperLines);
 
     // Other lines test
-    this.xAxis = {};
-    this.xAxis.lines = [];
-    if (typeof this.config.x_axis?.lines === 'object') {
+    this.xLines = {};
+    this.xLines.lines = [];
+    if (typeof this.config.x_lines?.lines === 'object') {
       let j = 0;
-      let helpers = this.config.x_axis.lines;
+      let helpers = this.config.x_lines.lines;
       helpers.forEach((helperLine) => {
-        this.xAxis.lines[j] = {
+        this.xLines.lines[j] = {
           id: helperLine.name,
           zpos: helperLine?.zpos || 'above',
           yshift: Utils.calculateSvgDimension(helperLine?.yshift) || 0,
@@ -8669,51 +8694,121 @@ class SparklineGraphTool extends BaseTool {
         j += 1;
       });
     }
-    if (this.xAxis.lines.length > 0)
-      console.log('xAxis.lines', this.xAxis.lines);
+    if (this.xLines.lines.length > 0)
+      console.log('xAxis.lines', this.xLines.lines);
 
-    // this.xAxis.numbers = {};
-    if (typeof this.config.x_axis?.numbers === 'object') {
-      this.xAxis.numbers = { ...this.config.x_axis.numbers };
+    // this.xLines.numbers = {};
+    if (typeof this.config.x_lines?.numbers === 'object') {
+      this.xLines.numbers = { ...this.config.x_lines.numbers };
     }
-    if (this.xAxis.numbers)
-      console.log('xAxis.numbers', this.xAxis.numbers);
+    if (this.xLines.numbers)
+      console.log('xAxis.numbers', this.xLines.numbers);
 
     let { config } = this;
 
-    // override points per hour to mach group_by function
-    // switch (this.config.group_by) {
+    // override points per hour to match group_by function
+    // switch (this.config.x_axis.group_by) {
+    //   case 'week':
+    //     this.config.x_axis.bins_per_hour = 1 / (24 * 7);
+    //     break;
     //   case 'date':
-    //     this.config.points_per_hour = 1 / 24;
+    //     this.config.x_axis.bins_per_hour = 1 / 24;
     //     break;
     //   case 'hour':
-    //     this.config.points_per_hour = 1;
+    //     this.config.x_axis.bins_per_hour = 1;
+    //     break;
+    //   case 'quarterhour':
+    //     this.config.x_axis.bins_per_hour = 4;
     //     break;
     //   default:
     //     break;
     // }
     // From MGC
+    // if (this.config.points_per_hour)
+    //   this.config.x_axis.bins_per_hour = this.config.points_per_hour;
     this.Graph = [];
     this.Graph[0] = new SparklineGraph(
-        this.svg.graph.width,
-        this.svg.graph.height,
-        this.svg.margin,
-        this.config?.today,
-        this.config.hours_to_show,
-        this.config.points_per_hour,
-        this.config.aggregate_func,
-        this.config.group_by,
-        getFirstDefinedItem(
-          this.config.smoothing,
-          !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
-          // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
-        ),
-        this.config.logarithmic,
-        this.trafficLights,
-        this.buckets,
-        this.config.state_map,
-        config,
+      this.svg.graph.width,
+      this.svg.graph.height,
+      this.svg.margin,
+      this.config.x_axis.start_on,
+      this.config.x_axis.hours_to_show,
+      this.config.x_axis.bins_per_hour,
+      this.config.y_axis.aggregate_func,
+      this.config.x_axis.group_by,
+      getFirstDefinedItem(
+        this.config.smoothing,
+        !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
+        // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
+      ),
+      this.config.y_axis.logarithmic,
+      this.trafficLights,
+      this.buckets,
+      this.config.state_map,
+      config,
     );
+    // this.Graph[0] = new SparklineGraph(
+    //   this.svg.graph.width,
+    //   this.svg.graph.height,
+    //   this.svg.margin,
+    //   this.config.x_axis.start_on,
+    //   this.config.x_axis.hours_to_show || this.config.hours_to_show,
+    //   this.config.x_axis.bins_per_hour || this.config.points_per_hour,
+    //   this.config.y_axis.aggregate_func || this.config.aggregate_func,
+    //   this.config.y_axis.group_by || this.config.group_by,
+    //   getFirstDefinedItem(
+    //     this.config.smoothing,
+    //     !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
+    //     // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
+    //   ),
+    //   this.config.y_axis.logarithmic || this.config.y_axis.logarithmic,
+    //   this.trafficLights,
+    //   this.buckets,
+    //   this.config.state_map,
+    //   config,
+    // );
+
+    // this.Graph[0] = new SparklineGraph(
+    //   this.svg.graph.width,
+    //   this.svg.graph.height,
+    //   this.svg.margin,
+    //   this.config?.x_axis?.start_on,
+    //   this.config?.x_axis?.hours_to_show || this.config.hours_to_show,
+    //   this.config?.x_axis?.bins_per_hour || this.config.x_axis.bins_per_hour,
+    //   this.config?.y_axis?.aggregate_func || this.config.aggregate_func,
+    //   this.config?.y_axis?.group_by || this.config.group_by,
+    //   getFirstDefinedItem(
+    //     this.config.smoothing,
+    //     !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
+    //     // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
+    //   ),
+    //   this.config?.y_axis?.logarithmic || this.config.y_axis.logarithmic,
+    //   this.trafficLights,
+    //   this.buckets,
+    //   this.config.state_map,
+    //   config,
+    // );
+
+    // this.Graph[0] = new SparklineGraph(
+    //     this.svg.graph.width,
+    //     this.svg.graph.height,
+    //     this.svg.margin,
+    //     this.config?.start_on,
+    //     this.config.hours_to_show,
+    //     this.config.x_axis.bins_per_hour,
+    //     this.config.aggregate_func,
+    //     this.config.group_by,
+    //     getFirstDefinedItem(
+    //       this.config.smoothing,
+    //       !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
+    //       // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
+    //     ),
+    //     this.config.y_axis.logarithmic,
+    //     this.trafficLights,
+    //     this.buckets,
+    //     this.config.state_map,
+    //     config,
+    // );
   }
 
   /** *****************************************************************************
@@ -8773,7 +8868,7 @@ class SparklineGraphTool extends BaseTool {
           // Add the next 4 lines as a hack
           if (config.color_thresholds.length > 0 && !this._card.config.entities[i].color)
             this.gradient[i] = this.Graph[i].computeGradient(
-              config.color_thresholds, this.config.logarithmic,
+              config.color_thresholds, this.config.y_axis.logarithmic,
             );
         // +++++ Check for 'area' or 'line' graph type
         } else if (['area', 'line'].includes(config.show.graph)) {
@@ -8830,7 +8925,7 @@ class SparklineGraphTool extends BaseTool {
         // Add the next 4 lines as a hack
         if (config.color_thresholds.length > 0 && !this._card.config.entities[i].color)
         this.gradient[i] = this.Graph[i].computeGradient(
-          config.color_thresholds, this.config.logarithmic,
+          config.color_thresholds, this.config.y_axis.logarithmic,
         );
 
       this.line = [...this.line];
@@ -8860,9 +8955,9 @@ class SparklineGraphTool extends BaseTool {
         history[0][index].state = item.state;
       });
     }
-    if (this.config.value_factor !== 0) {
+    if (this.config.y_axis.value_factor !== 0) {
       history[0].forEach((item, index) => {
-        history[0][index].state = item.state * this.config.value_factor;
+        history[0][index].state = item.state * this.config.y_axis.value_factor;
       });
     }
   }
@@ -8934,18 +9029,18 @@ class SparklineGraphTool extends BaseTool {
   updateBounds({ config } = this) {
     this.bound = this.getBoundaries(
       this.primaryYaxisSeries,
-      config.lower_bound,
-      config.upper_bound,
+      config.y_axis.lower_bound,
+      config.y_axis.upper_bound,
       this.bound,
-      config.min_bound_range,
+      config.y_axis.min_bound_range,
     );
 
     this.boundSecondary = this.getBoundaries(
       this.secondaryYaxisSeries,
-      config.lower_bound_secondary,
-      config.upper_bound_secondary,
+      config.y_axis.lower_bound_secondary,
+      config.y_axis.upper_bound_secondary,
       this.boundSecondary,
-      config.min_bound_range_secondary,
+      config.y_axis.min_bound_range_secondary,
     );
   }
 
@@ -8992,7 +9087,7 @@ class SparklineGraphTool extends BaseTool {
 
   getEndDate() {
     const date = new Date();
-    switch (this.config.group_by) {
+    switch (this.config.x_axis.group_by) {
       case 'date':
         date.setDate(date.getDate() + 1);
         date.setHours(0, 0, 0);
@@ -9002,20 +9097,28 @@ class SparklineGraphTool extends BaseTool {
         date.setMinutes(0, 0);
         break;
     }
+    switch (this.config.x_axis.start_on) {
+      case 'today':
+        break;
+      case 'yesterday':
+        // date.setDate(date.getDate() - 1);
+        date.setHours(0, 0, 0, 0);
+        break;
+    }
     return date;
   }
 
   setTooltip(entity, index, value, label = null) {
     const {
-      points_per_hour,
+      bins_per_hour,
       hours_to_show,
       format,
-    } = this.config;
-    const offset = hours_to_show < 1 && points_per_hour < 1
-      ? points_per_hour * hours_to_show
-      : 1 / points_per_hour;
+    } = this.config.x_axis;
+    const offset = hours_to_show < 1 && bins_per_hour < 1
+      ? bins_per_hour * hours_to_show
+      : 1 / bins_per_hour;
 
-    const id = Math.abs(index + 1 - Math.ceil(hours_to_show * points_per_hour));
+    const id = Math.abs(index + 1 - Math.ceil(hours_to_show * bins_per_hour));
 
     const now = this.getEndDate();
 
@@ -9597,7 +9700,8 @@ renderSvgBars(bars, index) {
 }
 
 renderSvgClockBin(bin, path, index) {
-  const color = this.computeColor(bin.value, 0);
+  // const color = this.computeColor(bin.value, 0);
+  const color = this.intColor(bin.value, 0);
   return svg`
   <path d=${path}
     fill=${color}
@@ -9737,7 +9841,9 @@ renderSvgTimeline(timeline, index) {
 
   console.log('rendertimeline, styles = ', this.styles.helper_line1);
   const paths = timeline.map((timelinePart, i) => {
-    const color = this.computeColor(timelinePart.value, 0);
+    // const color = this.computeColor(timelinePart.value, 0);
+    const color = this.intColor(timelinePart.value, 0);
+
     const animation = this.config.animate
       ? svg`
         <animate attributeName='y' from=${this.svg.height} to=${timelinePart.y} dur='1s' fill='remove'
@@ -9758,7 +9864,7 @@ renderSvgTimeline(timeline, index) {
   });
   // stroke="lightgray" stroke-dasharray="0.5, 119" stroke-width="${this.svg.graph.height}"
 
-  const linesBelow = this.xAxis.lines.map((helperLine) => {
+  const linesBelow = this.xLines.lines.map((helperLine) => {
     console.log('linesBelow', helperLine);
     if (helperLine.zpos === 'below') {
       return [svg`
@@ -9787,7 +9893,7 @@ renderSvgTimeline(timeline, index) {
         `];
     } else return [''];
   });
-  const linesAbove = this.xAxis.lines.map((helperLine) => {
+  const linesAbove = this.xLines.lines.map((helperLine) => {
     console.log('linesAbove', helperLine);
     if (helperLine.zpos === 'above') {
       return [svg`
@@ -15588,7 +15694,7 @@ _buildStateString(inState, entityConfig) {
     if (skipInitialState) url += '&skip_initial_state';
     url += '&minimal_response';
 
-    // console.log('fetchRecent - call is', entityId, start, end, skipInitialState, url);
+    console.log('update, fetchRecent - call is', entityId, start, end, skipInitialState, url);
     return this._hass.callApi('GET', url);
   }
 
@@ -15613,10 +15719,19 @@ _buildStateString(inState, entityConfig) {
         || (item.type === 'graph')) {
           const end = new Date();
           const start = new Date();
-          if (item.tool.config.today === 'today') {
-            start.setHours(0);
-            start.setMinutes(0);
-            start.setSeconds(0);
+          if (item.tool.config.x_axis?.start_on === 'yesterday') {
+            start.setHours(0, 0, 0, 0);
+            start.setHours(start.getHours() - 24);
+            // end.setDate(start.getDate());
+            end.setHours(0, 0, 0, 0); // end.getHours() + 24);
+
+            // start.setMinutes(0);
+            // start.setSeconds(0);
+            console.log('updateData, yesterday, setting hours', start, end);
+          } else if ((item.tool.config.today === 'today') || (item.tool.config.x_axis?.start_on === 'today')) {
+            start.setHours(0, 0, 0, 0);
+            // start.setMinutes(0);
+            // start.setSeconds(0);
             // console.log('updateData, setting hours to 0', start, end);
           } else {
             start.setHours(end.getHours() - item.tool.config.hours);
@@ -15659,6 +15774,7 @@ _buildStateString(inState, entityConfig) {
 
     // Get history for this entity and/or attribute.
     let newStateHistory = await this.fetchRecent(entity.entityId, start, end, skipInitialState);
+    console.log('update, updateEntity, newStateHistory', entity.entityId, start, end, newStateHistory);
 
     // Now we have some history, check if it has valid data and filter out either the entity state or
     // the entity attribute. Ain't that nice!
@@ -15691,8 +15807,10 @@ _buildStateString(inState, entityConfig) {
       // console.log('pushing stateHistory into Graph!!!!', stateHistory);
       this.toolsets[entity.tsidx].tools[entity.idx].tool.data = entity.entityIndex;
       this.toolsets[entity.tsidx].tools[entity.idx].tool.series = [...stateHistory];
+      this.requestUpdate();
+    } else {
+      this.uppdate(entity, stateHistory);
     }
-    this.uppdate(entity, stateHistory);
   }
 
   uppdate(entity, hist) {
