@@ -1732,19 +1732,12 @@ _buildStateString(inState, entityConfig) {
           if (item.tool.config.x_axis?.start_on === 'yesterday') {
             start.setHours(0, 0, 0, 0);
             start.setHours(start.getHours() - 24);
-            // end.setDate(start.getDate());
-            end.setHours(0, 0, 0, 0); // end.getHours() + 24);
-
-            // start.setMinutes(0);
-            // start.setSeconds(0);
+            end.setHours(0, 0, 0, 0);
             console.log('updateData, yesterday, setting hours', start, end);
           } else if ((item.tool.config.today === 'today') || (item.tool.config.x_axis?.start_on === 'today')) {
             start.setHours(0, 0, 0, 0);
-            // start.setMinutes(0);
-            // start.setSeconds(0);
-            // console.log('updateData, setting hours to 0', start, end);
           } else {
-            start.setHours(end.getHours() - item.tool.config.hours);
+            start.setHours(end.getHours() - (item.tool.config.x_axis?.hours_to_show || item.tool.config.hours));
           }
           const attr = this.config.entities[item.tool.config.entity_index].attribute ? this.config.entities[item.tool.config.entity_index].attribute : null;
 

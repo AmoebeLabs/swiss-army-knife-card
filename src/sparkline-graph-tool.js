@@ -146,6 +146,7 @@ export default class SparklineGraphTool extends BaseTool {
         logarithmic: false,
         value_factor: 0,
         aggregate_func: 'avg',
+        smoothing: true,
       },
       _hours_to_show: 24,
       _points_per_hour: 0.5,
@@ -164,8 +165,6 @@ export default class SparklineGraphTool extends BaseTool {
       color_thresholds_transition: 'smooth',
       line_width: 5,
       bar_spacing: 4,
-      compress: true,
-      smoothing: true,
       state_map: [],
       cache: true,
       color: 'var(--primary-color)',
@@ -449,7 +448,7 @@ export default class SparklineGraphTool extends BaseTool {
       this.config.y_axis.aggregate_func,
       this.config.x_axis.group_by,
       getFirstDefinedItem(
-        this.config.smoothing,
+        this.config.y_axis.smoothing,
         !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
         // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
       ),

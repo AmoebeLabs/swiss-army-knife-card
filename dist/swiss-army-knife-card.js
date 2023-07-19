@@ -7671,9 +7671,6 @@ class SparklineGraph {
     }
 
     // extend length to fill missing history.
-    // #TODO:
-    // Fill only upto current time. If graph is about today, only calculate upto now...
-
     let requiredNumOfPoints;
     let date = new Date();
     date.getDate();
@@ -7768,8 +7765,6 @@ class SparklineGraph {
 
   _calcPoints(history) {
     const coords = [];
-    // let xRatio = this.width / (this.hours * this.points - 1);
-    // xRatio = Number.isFinite(xRatio) ? xRatio : this.width;
     let xRatio = this.drawArea.width / (this.hours * this.points - 1);
     xRatio = Number.isFinite(xRatio) ? xRatio : this.drawArea.width;
 
@@ -7887,7 +7882,6 @@ class SparklineGraph {
 
     coordsMin.forEach((point) => {
       next = point;
-      // Z = this._smoothing ? this._midPoint(last[X], last[Y], next[X], next[Y]) : next;
       Z = next;
       path += ` ${Z[X]},${Z[Y]}`;
       path += ` Q ${next[X]},${next[Y]}`;
@@ -7911,10 +7905,7 @@ class SparklineGraph {
     // path += `M${last[X]},${last[Y]}`;
 
     coordsMax.reverse().forEach((point, index, points) => {
-      // let revPoint = points[points.length - 1 - index];
-      // next = revPoint;
       next = point;
-      // Z = this._smoothing ? this._midPoint(last[X], last[Y], next[X], next[Y]) : next;
       Z = next;
       path += ` ${Z[X]},${Z[Y]}`;
       path += ` Q ${next[X]},${next[Y]}`;
@@ -8014,21 +8005,13 @@ class SparklineGraph {
     const startAngle = 0;
     let runningAngle = startAngle;
     const clockWise = true;
-    // For sunburst:
-    // value determines how wide the part is. radiusx/y is max radius and clockwidth = length
-    // calcClockcoords calculates from wider ring to inner ring using clockwidth..
-    // const wRatio = ((this._max - this._min) / this.clockWidth);
     const wRatio = ((max - min) / this.clockWidth);
 
     const coords2 = coords.map((coord) => {
       let ringWidth;
       let radius;
       if (this.config.show?.variant === 'sunburst') {
-      // Sunburst calcs...
-        // ringWidth = (coord[V] - this._min) / wRatio;
         ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
-        // radius = this.drawArea.width / 2 - this.clockWidth + ((coord[V] - this._min) / wRatio / 1);
-        // radius = this.drawArea.width / 2 - this.clockWidth + (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio / 1);
         radius = this.drawArea.width / 2 - this.clockWidth + ringWidth;
       } else {
         ringWidth = this.clockWidth;
@@ -8043,9 +8026,6 @@ class SparklineGraph {
       } = this._calcClockCoords(
         runningAngle, runningAngle + angleSize, clockWise,
         radius, radius, ringWidth);
-      // } = this._calcClockCoords(
-      //   runningAngle, runningAngle + angleSize, clockWise,
-      //   this.drawArea.width / 2, this.drawArea.height / 2, clockWidth);
       runningAngle += angleSize;
       newX.push(start.x, end.x, start2.x, end2.x);
       newY.push(start.y, end.y, start2.y, end2.y);
@@ -8434,6 +8414,7 @@ class SparklineGraphTool extends BaseTool {
         logarithmic: false,
         value_factor: 0,
         aggregate_func: 'avg',
+        smoothing: true,
       },
       _hours_to_show: 24,
       _points_per_hour: 0.5,
@@ -8452,8 +8433,6 @@ class SparklineGraphTool extends BaseTool {
       color_thresholds_transition: 'smooth',
       line_width: 5,
       bar_spacing: 4,
-      compress: true,
-      smoothing: true,
       state_map: [],
       cache: true,
       color: 'var(--primary-color)',
@@ -8737,7 +8716,7 @@ class SparklineGraphTool extends BaseTool {
       this.config.y_axis.aggregate_func,
       this.config.x_axis.group_by,
       getFirstDefinedItem(
-        this.config.smoothing,
+        this.config.y_axis.smoothing,
         !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
         // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
       ),
@@ -15722,19 +15701,12 @@ _buildStateString(inState, entityConfig) {
           if (item.tool.config.x_axis?.start_on === 'yesterday') {
             start.setHours(0, 0, 0, 0);
             start.setHours(start.getHours() - 24);
-            // end.setDate(start.getDate());
-            end.setHours(0, 0, 0, 0); // end.getHours() + 24);
-
-            // start.setMinutes(0);
-            // start.setSeconds(0);
+            end.setHours(0, 0, 0, 0);
             console.log('updateData, yesterday, setting hours', start, end);
           } else if ((item.tool.config.today === 'today') || (item.tool.config.x_axis?.start_on === 'today')) {
             start.setHours(0, 0, 0, 0);
-            // start.setMinutes(0);
-            // start.setSeconds(0);
-            // console.log('updateData, setting hours to 0', start, end);
           } else {
-            start.setHours(end.getHours() - item.tool.config.hours);
+            start.setHours(end.getHours() - (item.tool.config.x_axis?.hours_to_show || item.tool.config.hours));
           }
           const attr = this.config.entities[item.tool.config.entity_index].attribute ? this.config.entities[item.tool.config.entity_index].attribute : null;
 

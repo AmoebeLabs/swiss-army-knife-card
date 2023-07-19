@@ -109,9 +109,6 @@ export default class SparklineGraph {
     }
 
     // extend length to fill missing history.
-    // #TODO:
-    // Fill only upto current time. If graph is about today, only calculate upto now...
-
     let requiredNumOfPoints;
     let date = new Date();
     date.getDate();
@@ -206,8 +203,6 @@ export default class SparklineGraph {
 
   _calcPoints(history) {
     const coords = [];
-    // let xRatio = this.width / (this.hours * this.points - 1);
-    // xRatio = Number.isFinite(xRatio) ? xRatio : this.width;
     let xRatio = this.drawArea.width / (this.hours * this.points - 1);
     xRatio = Number.isFinite(xRatio) ? xRatio : this.drawArea.width;
 
@@ -325,7 +320,6 @@ export default class SparklineGraph {
 
     coordsMin.forEach((point) => {
       next = point;
-      // Z = this._smoothing ? this._midPoint(last[X], last[Y], next[X], next[Y]) : next;
       Z = next;
       path += ` ${Z[X]},${Z[Y]}`;
       path += ` Q ${next[X]},${next[Y]}`;
@@ -349,10 +343,7 @@ export default class SparklineGraph {
     // path += `M${last[X]},${last[Y]}`;
 
     coordsMax.reverse().forEach((point, index, points) => {
-      // let revPoint = points[points.length - 1 - index];
-      // next = revPoint;
       next = point;
-      // Z = this._smoothing ? this._midPoint(last[X], last[Y], next[X], next[Y]) : next;
       Z = next;
       path += ` ${Z[X]},${Z[Y]}`;
       path += ` Q ${next[X]},${next[Y]}`;
@@ -452,10 +443,6 @@ export default class SparklineGraph {
     const startAngle = 0;
     let runningAngle = startAngle;
     const clockWise = true;
-    // For sunburst:
-    // value determines how wide the part is. radiusx/y is max radius and clockwidth = length
-    // calcClockcoords calculates from wider ring to inner ring using clockwidth..
-    // const wRatio = ((this._max - this._min) / this.clockWidth);
     const wRatio = ((max - min) / this.clockWidth);
 
     const coords2 = coords.map((coord) => {
@@ -465,11 +452,7 @@ export default class SparklineGraph {
       let ringWidth;
       let radius;
       if (this.config.show?.variant === 'sunburst') {
-      // Sunburst calcs...
-        // ringWidth = (coord[V] - this._min) / wRatio;
         ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
-        // radius = this.drawArea.width / 2 - this.clockWidth + ((coord[V] - this._min) / wRatio / 1);
-        // radius = this.drawArea.width / 2 - this.clockWidth + (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio / 1);
         radius = this.drawArea.width / 2 - this.clockWidth + ringWidth;
       } else {
         ringWidth = this.clockWidth;
@@ -484,9 +467,6 @@ export default class SparklineGraph {
       } = this._calcClockCoords(
         runningAngle, runningAngle + angleSize, clockWise,
         radius, radius, ringWidth);
-      // } = this._calcClockCoords(
-      //   runningAngle, runningAngle + angleSize, clockWise,
-      //   this.drawArea.width / 2, this.drawArea.height / 2, clockWidth);
       runningAngle += angleSize;
       newX.push(start.x, end.x, start2.x, end2.x);
       newY.push(start.y, end.y, start2.y, end2.y);
