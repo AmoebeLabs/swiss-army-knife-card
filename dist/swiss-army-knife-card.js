@@ -8790,6 +8790,22 @@ class SparklineGraphTool extends BaseTool {
     // );
   }
 
+  set value(state) {
+    console.log('GraphTool - set value IN', state);
+
+    if (this._stateValue === state) return false;
+
+    const changed = super.value = state;
+
+    // Fake history update only for fixed_value...
+    if (this.config.y_axis.fixed_value === true) {
+      let histState = state;
+      const stateHistory = [{ state: histState }];
+      this.series = stateHistory;
+    }
+    return changed;
+  }
+
   /** *****************************************************************************
     * SparklineBarChartTool::set series
     *
@@ -9310,6 +9326,7 @@ renderSvgTrafficLight(trafficLight, i) {
     adjustX = (trafficLight.width - size) / 2;
     adjustY = (trafficLight.height - size) / 2;
   }
+
   const levelRect = trafficLight.value.map((single, j) => {
     // Computecolor uses the gradient calculations, which use fractions to get the gradient
     // Adjust to get the right color bucket...
@@ -9324,7 +9341,7 @@ renderSvgTrafficLight(trafficLight, i) {
       fill=${color}
       stroke=${color}
       stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
-      rx="10%"
+      rx="50%"
       @mouseover=${() => this.setTooltip(i, j, single)}
       @mouseout=${() => (this.tooltip = {})}>
     </rect>`;
@@ -9337,6 +9354,32 @@ renderSvgTrafficLight(trafficLight, i) {
 renderSvgTrafficLights(trafficLights, i) {
   if (!trafficLights) return;
   const color = this.computeColor(this._card.entities[i].state, i);
+  const linesBelow = this.xLines.lines.map((helperLine) => {
+    if (helperLine.zpos === 'below') {
+      return [svg`
+        <line class=${classMap(this.classes[helperLine.id])}) style="${styleMap(this.styles[helperLine.id])}"
+        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        pathLength="240"
+        >
+        </line>
+        `];
+    } else return [''];
+  });
+  const linesAbove = this.xLines.lines.map((helperLine) => {
+    console.log('linesAbove', helperLine);
+    if (helperLine.zpos === 'above') {
+      return [svg`
+        <line class="${classMap(this.classes[helperLine.id])}"
+              style="${styleMap(this.styles[helperLine.id])}"
+        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        pathLength="240"
+        >
+        </line>
+        `];
+    } else return [''];
+  });
   return svg`
     <g class='traffic-lights'
       ?tooltip=${this.tooltip.entity === i}
@@ -9347,7 +9390,9 @@ renderSvgTrafficLights(trafficLights, i) {
       fill=${color}
       stroke=${color}
       stroke-width=${this.svg.line_width / 2}>
+      ${linesBelow}
       ${trafficLights.map((trafficLight) => this.renderSvgTrafficLight(trafficLight, i))}
+      ${linesAbove}
     </g>`;
 }
 
@@ -9844,24 +9889,7 @@ renderSvgTimeline(timeline, index) {
   // stroke="lightgray" stroke-dasharray="0.5, 119" stroke-width="${this.svg.graph.height}"
 
   const linesBelow = this.xLines.lines.map((helperLine) => {
-    console.log('linesBelow', helperLine);
     if (helperLine.zpos === 'below') {
-      return [svg`
-        <line class=${classMap(this.classes[helperLine.id])}) style="${styleMap(this.styles[helperLine.id])}"
-        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
-        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
-        pathLength="240"
-        >
-        </line>
-        `];
-    } else return [''];
-  });
-  this.helperLines.map((helperLine) => {
-    console.log('linesBelow', helperLine);
-    if (helperLine.zpos === 'below') {
-      // const helperClass = this.classes[helperLine.id];
-      // const helperStyle = this.styles[helperLine.id];
-      // console.log('linesBelow', helperLine, helperClass, helperStyle);
       return [svg`
         <line class=${classMap(this.classes[helperLine.id])}) style="${styleMap(this.styles[helperLine.id])}"
         x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
@@ -9875,23 +9903,6 @@ renderSvgTimeline(timeline, index) {
   const linesAbove = this.xLines.lines.map((helperLine) => {
     console.log('linesAbove', helperLine);
     if (helperLine.zpos === 'above') {
-      return [svg`
-        <line class="${classMap(this.classes[helperLine.id])}"
-              style="${styleMap(this.styles[helperLine.id])}"
-        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
-        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
-        pathLength="240"
-        >
-        </line>
-        `];
-    } else return [''];
-  });
-  this.helperLines.map((helperLine) => {
-    console.log('linesAbove', helperLine);
-    if (helperLine.zpos === 'above') {
-      // const helperClass = this.classes[helperLine.id];
-      // const helperStyle = this.styles[helperLine.id];
-      // console.log('linesAbove', helperLine, helperClass, helperStyle);
       return [svg`
         <line class="${classMap(this.classes[helperLine.id])}"
               style="${styleMap(this.styles[helperLine.id])}"
