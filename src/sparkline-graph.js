@@ -403,7 +403,9 @@ export default class SparklineGraph {
     : this.height + 0 - ((Math.abs(this._min) / ((this._max - this._min)) * this.height));
     const height = y_zero + this.drawArea.y * 1.5; // Should be this.svg.line_width;
     let fill = path;
-    fill += ` L ${this.drawArea.width + this.drawArea.x}, ${height}`;
+    // fill += ` L ${this.drawArea.width + this.drawArea.x}, ${height}`;
+    // fill += ` L ${this.coords[0][X]}, ${height} z`;
+    fill += ` L ${this.coords[this.coords.length - 1][X] + this.drawArea.x}, ${height}`;
     fill += ` L ${this.coords[0][X]}, ${height} z`;
     return fill;
   }

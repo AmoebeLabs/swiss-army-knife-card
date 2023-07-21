@@ -7965,7 +7965,9 @@ class SparklineGraph {
     : this.height + 0 - ((Math.abs(this._min) / ((this._max - this._min)) * this.height));
     const height = y_zero + this.drawArea.y * 1.5; // Should be this.svg.line_width;
     let fill = path;
-    fill += ` L ${this.drawArea.width + this.drawArea.x}, ${height}`;
+    // fill += ` L ${this.drawArea.width + this.drawArea.x}, ${height}`;
+    // fill += ` L ${this.coords[0][X]}, ${height} z`;
+    fill += ` L ${this.coords[this.coords.length - 1][X] + this.drawArea.x}, ${height}`;
     fill += ` L ${this.coords[0][X]}, ${height} z`;
     return fill;
   }
@@ -8542,6 +8544,16 @@ class SparklineGraphTool extends BaseTool {
     this.classes.clock_face_hour_marks = {};
     this.classes.clock_face_hour_numbers = {};
 
+    this.classes.timeline = {};
+    this.classes.timeline_graph = {};
+    this.styles.timeline = {};
+    this.styles.timeline_graph = {};
+
+    this.classes.clock = {};
+    this.classes.clock_graph = {};
+    this.styles.clock = {};
+    this.styles.clock_graph = {};
+
     // Helper lines stuff
     this.classes.helper_line1 = {};
     this.classes.helper_line2 = {};
@@ -8797,7 +8809,9 @@ class SparklineGraphTool extends BaseTool {
 
     const changed = super.value = state;
 
-    // Fake history update only for fixed_value...
+    // Push realtime data into the history graph for fixed_value...
+    // Maybe in future: history is fetched once, and then real time updates add
+    // data to the existing history graph, and deletes old data points...
     if (this.config.y_axis.fixed_value === true) {
       let histState = state;
       const stateHistory = [{ state: histState }];
@@ -9452,13 +9466,43 @@ renderSvgAreaBackground(fill, i) {
   const svgFill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
     : this.intColor(this._card.entities[i].state, i);
-  return svg`
+    const linesBelow = this.xLines.lines.map((helperLine) => {
+      if (helperLine.zpos === 'below') {
+        return [svg`
+          <line class=${classMap(this.classes[helperLine.id])}) style="${styleMap(this.styles[helperLine.id])}"
+          x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+          x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+          pathLength="240"
+          >
+          </line>
+          `];
+      } else return [''];
+    });
+    const linesAbove = this.xLines.lines.map((helperLine) => {
+      console.log('linesAbove', helperLine);
+      if (helperLine.zpos === 'above') {
+        return [svg`
+          <line class="${classMap(this.classes[helperLine.id])}"
+                style="${styleMap(this.styles[helperLine.id])}"
+          x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+          x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+          pathLength="240"
+          >
+          </line>
+          `];
+      } else return [''];
+    });
+
+    return svg`
+    ${linesBelow}
     <rect class='fill--rect'
       ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== i}
       id=${`fill-rect-${this.id}-${i}`}
       fill=${svgFill} height="100%" width="100%"
       mask=${`url(#fill-${this.id}-${i})`}
-    />`;
+    />
+    ${linesAbove}
+    `;
 }
 
 renderSvgAreaMinMaxBackground(fill, i) {
@@ -9727,7 +9771,9 @@ renderSvgClockBin(bin, path, index) {
   // const color = this.computeColor(bin.value, 0);
   const color = this.intColor(bin.value, 0);
   return svg`
-  <path d=${path}
+  <path class="${classMap(this.classes.clock_graph)}"
+        style="${styleMap(this.styles.clock_graph)}"
+    d=${path}
     fill=${color}
     stroke=${color}
   >
@@ -9875,7 +9921,8 @@ renderSvgTimeline(timeline, index) {
         </animate>`
       : '';
     return svg` 
-      <rect class='timeline' x=${timelinePart.x} y=${timelinePart.y + (timelinePart.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
+      <rect class=${classMap(this.classes.timeline_graph)}) style="${styleMap(this.styles.timeline_graph)}"
+        x=${timelinePart.x} y=${timelinePart.y + (timelinePart.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
         height=${Math.max(1, timelinePart.height - this.svg.line_width)}
         width=${Math.max(timelinePart.width - this.svg.line_width, 1)}
         fill=${color}
