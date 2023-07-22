@@ -7683,9 +7683,7 @@ class SparklineGraph {
     }
     histGroups.length = requiredNumOfPoints;
 
-    if (this.startOn === 'yesterday') {
-      console.log('update, yesterday, history = ', this.history, histGroups);
-    }
+    if (this.startOn === 'yesterday') ;
     this.coords = this._calcPoints(histGroups);
     this.min = Math.min(...this.coords.map((item) => Number(item[V])));
     this.max = Math.max(...this.coords.map((item) => Number(item[V])));
@@ -7749,8 +7747,10 @@ class SparklineGraph {
     // Min value is always 0. So something goes wrong with Number I guess??
     // If item.state invalid, then returns 0 ???
     res[0][key].state = Math.min(res[0][key].state ? res[0][key].state : Number.POSITIVE_INFINITY, item.state);
+    res[0][key].haState = Math.min(res[0][key].haState ? res[0][key].haState : Number.POSITIVE_INFINITY, item.haState);
     // Max seems to be OK!
     res[1][key].state = Math.max(res[1][key].state ? res[0][key].state : Number.NEGATIVE_INFINITY, item.state);
+    res[1][key].haState = Math.max(res[1][key].haState ? res[0][key].haState : Number.NEGATIVE_INFINITY, item.haState);
     return res;
   }
 
@@ -8079,52 +8079,13 @@ class SparklineGraph {
     (this.drawArea.height - (this.bucketss.length * 0)) / this.bucketss.length;
 
     if (this.config.show.variant === 'audio') {
-      if (this.config.y_axis.use_value === 'binn') {
-        console.log('getTimeLine, using bin...', this.config.y_axis);
-        const stepMax = this.bucketss.length;
-        const stepMin = 0;
-        let stepRange = (stepMax - stepMin);
-        const yRatioBin = stepRange / this.drawArea.height;
-
-        return coords.map((coord, i) => {
-          let matchStep = -1;
-          let matchBucket = 0;
-          let match = false;
-          // #TODO
-          // Both loops can be in one loop, using else if not (yet) in bucket. There MUST be a bucket
-          // Is the assumption... Or leave it this way, and assume there might be NO bucket...
-          for (let i = 0; i < stepRange; i++) {
-            // In which bucket...
-            // Find matching bucket. Can be any of them defined
-            // match = false;
-            matchBucket = 0;
-            for (let j = 0; j < this.bucketss[i].rangeMin.length; j++) {
-              if (coord[V] >= this.bucketss[i].rangeMin[j] && coord[V] < this.bucketss[i].rangeMax[j]) {
-                match = true;
-                matchBucket = j;
-                matchStep = i;
-              }
-            }
-          }
-          const newValue = this.bucketss[matchStep].bucket; // rangeMin[matchBucket];
-          console.log('getTimeLine, bin', match, coord[V], newValue, matchStep, matchBucket, this.bucketss);
-          return {
-            x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-            y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, newValue)) : newValue) - stepMin) / yRatioBin / 2),
-            height: ((this._logarithmic ? Math.log10(Math.max(1, newValue)) : newValue) - stepMin) / yRatioBin,
-            width: xRatio - spacing,
-            value: coord[V], // newValue,
-            };
-        });
-      } else {
-        return coords.map((coord, i) => ({
-          x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-          y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2), // * bucketHeight / 2), // 0,
-          height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio, // * bucketHeight,
-          width: xRatio - spacing,
-          value: coord[V],
-        }));
-      }
+      return coords.map((coord, i) => ({
+        x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+        y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2), // * bucketHeight / 2), // 0,
+        height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio, // * bucketHeight,
+        width: xRatio - spacing,
+        value: coord[V],
+      }));
     } else {
       return coords.map((coord, i) => ({
         x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
@@ -8206,8 +8167,12 @@ class SparklineGraph {
       }
 
       // We have the matching index
-      for (let i = 0; i <= matchStep; i++) {
-        newCoord[V][i] = this.bucketss[i].length > matchBucket ? this.bucketss[i].rangeMin[matchBucket] : this.bucketss[i].rangeMin[0];
+      // for (let i = 0; i <= matchStep; i++) {
+      //   newCoord[V][i] = this.bucketss[i].length > matchBucket ? this.bucketss[i].rangeMin[matchBucket] : this.bucketss[i].rangeMin[0];
+      //   newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
+      // }
+      for (let i = 0; i <= stepRange; i++) {
+        if (i <= matchStep) newCoord[V][i] = this.bucketss[i].length > matchBucket ? this.bucketss[i].rangeMin[matchBucket] : this.bucketss[i].rangeMin[0];
         newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
       }
       return newCoord;
@@ -8705,8 +8670,8 @@ class SparklineGraphTool extends BaseTool {
         j += 1;
       });
     }
-    if (this.helperLines.length > 0)
-      console.log('helperLines', this.helperLines);
+    // if (this.helperLines.length > 0)
+    //   console.log('helperLines', this.helperLines);
 
     // Other lines test
     this.xLines = {};
@@ -8723,15 +8688,15 @@ class SparklineGraphTool extends BaseTool {
         j += 1;
       });
     }
-    if (this.xLines.lines.length > 0)
-      console.log('xAxis.lines', this.xLines.lines);
+    // if (this.xLines.lines.length > 0)
+    //   console.log('xAxis.lines', this.xLines.lines);
 
     // this.xLines.numbers = {};
     if (typeof this.config.x_lines?.numbers === 'object') {
       this.xLines.numbers = { ...this.config.x_lines.numbers };
     }
-    if (this.xLines.numbers)
-      console.log('xAxis.numbers', this.xLines.numbers);
+    // if (this.xLines.numbers)
+    //   console.log('xAxis.numbers', this.xLines.numbers);
 
     let { config } = this;
 
@@ -8841,7 +8806,7 @@ class SparklineGraphTool extends BaseTool {
   }
 
   set value(state) {
-    console.log('GraphTool - set value IN', state);
+    // console.log('GraphTool - set value IN', state);
 
     if (this._stateValue === state) return false;
 
@@ -9014,7 +8979,7 @@ class SparklineGraphTool extends BaseTool {
     if (this.config.state_map?.length > 0) {
       history[0].forEach((item, index) => {
         if (this.config.state_map.length > 0)
-        // this._history[index].state = this._convertState(item);
+        history[0][index].haState = item.state;
         this._convertState(item);
         history[0][index].state = item.state;
       });
@@ -9022,17 +8987,12 @@ class SparklineGraphTool extends BaseTool {
     if (this.config.y_axis?.use_value === 'bin') {
       history[0].forEach((item, index) => {
         let matchStep = -1;
-        let matchBucket = 0;
         let match = false;
         match = false;
         for (let i = 0; i < this.buckets.length; i++) {
-          // In which bucket...
-          // Find matching bucket. Can be any of them defined
-          matchBucket = 0;
           for (let j = 0; j < this.buckets[i].rangeMin.length; j++) {
             if (item.state >= this.buckets[i].rangeMin[j] && item.state < this.buckets[i].rangeMax[j]) {
               match = true;
-              matchBucket = j;
               matchStep = i;
             }
           }
@@ -9040,13 +9000,14 @@ class SparklineGraphTool extends BaseTool {
         if (!match) {
           console.log('processStateMap - ILLEGAL value', item, index);
         }
-        const newValue = this.buckets[matchStep].bucket; // rangeMin[matchBucket];
-        console.log('processStateMap, converting bins', history[0][index].state, newValue, matchBucket, matchStep, this.buckets[matchStep]);
+        const newValue = this.buckets[matchStep].bucket;
+        history[0][index].haState = item.state;
         history[0][index].state = newValue;
       });
     }
     if (this.config.y_axis.value_factor !== 0) {
       history[0].forEach((item, index) => {
+        history[0][index].haState = item.state;
         history[0][index].state = item.state * this.config.y_axis.value_factor;
       });
     }
@@ -9422,6 +9383,24 @@ renderSvgTrafficLight(trafficLight, i) {
     adjustY = (trafficLight.height - size) / 2;
   }
 
+  // What if single array of rects, and just color them with a nice animation, ie
+  // animation on change of color. Should look nice...
+  const bgRect = this.buckets.map((bucket, k) => {
+    console.log('bgRect', bucket, k, trafficLight);
+    return svg`
+    <rect class='bg-level'
+      x=${trafficLight.x + adjustX + this.svg.line_width / 2}
+      y=${trafficLight.y[k] - 1 * trafficLight.height - this.svg.line_width / 1}
+      height=${Math.max(0, trafficLight.height - 2 * adjustY - this.svg.line_width)}
+      width=${Math.max(0, trafficLight.width - 2 * adjustX - this.svg.line_width)}
+      fill="var(--theme-sys-elevation-surface-neutral4)"
+      stroke="var(--theme-sys-elevation-surface-neutral4)"
+      opacity="1"
+      stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
+      rx="50%">
+    </rect>`;
+  });
+
   const levelRect = trafficLight.value.map((single, j) => {
     // Computecolor uses the gradient calculations, which use fractions to get the gradient
     // Adjust to get the right color bucket...
@@ -9443,7 +9422,9 @@ renderSvgTrafficLight(trafficLight, i) {
   });
 
   return svg`
-    ${levelRect}`;
+    ${bgRect}
+    ${levelRect}
+    `;
 }
 
 renderSvgTrafficLights(trafficLights, i) {
@@ -9462,7 +9443,7 @@ renderSvgTrafficLights(trafficLights, i) {
     } else return [''];
   });
   const linesAbove = this.xLines.lines.map((helperLine) => {
-    console.log('linesAbove', helperLine);
+    // console.log('linesAbove', helperLine);
     if (helperLine.zpos === 'above') {
       return [svg`
         <line class="${classMap(this.classes[helperLine.id])}"
@@ -9560,7 +9541,7 @@ renderSvgAreaBackground(fill, i) {
       } else return [''];
     });
     const linesAbove = this.xLines.lines.map((helperLine) => {
-      console.log('linesAbove', helperLine);
+      // console.log('linesAbove', helperLine);
       if (helperLine.zpos === 'above') {
         return [svg`
           <line class="${classMap(this.classes[helperLine.id])}"
@@ -9877,7 +9858,7 @@ renderSvgClockBackground(radius) {
   return svg`
     <path class="graph-clock--background"
       d="${d}"
-      style="fill: lightgray; stroke-width: 0; opacity: 0.1;"
+      style="fill: var(--theme-sys-elevation-surface-neutral4); stroke-width: 0; opacity: 0.1;"
     />
   `;
 }
@@ -9990,8 +9971,8 @@ renderSvgClock(clock, index) {
 renderSvgTimeline(timeline, index) {
   if (!timeline) return;
 
-  console.log('rendertimeline, styles = ', this.styles.helper_line1);
-  if (this.config.y_axis?.use_value === 'bin') console.log('renderSvgTimeline, bin, timeline', timeline);
+  // console.log('rendertimeline, styles = ', this.styles.helper_line1);
+  // if (this.config.y_axis?.use_value === 'bin') console.log('renderSvgTimeline, bin, timeline', timeline);
   const paths = timeline.map((timelinePart, i) => {
     // const color = this.computeColor(timelinePart.value, 0);
     // Should use different value for use_value: bin. In that case the index in the colorstop
@@ -10010,7 +9991,7 @@ renderSvgTimeline(timeline, index) {
             + (this.buckets[flooredValue].rangeMax[0] - this.buckets[flooredValue].rangeMin[0]) * (timelinePart.value - flooredValue);
         // color = this.intColor(this.buckets[flooredValue].value[0], 0);
         color = this.intColor(colorValue, 0);
-        console.log('rendertimeline, color bin', this.buckets, timelinePart.value, this.buckets[flooredValue].value[0]);
+        // console.log('rendertimeline, color bin', this.buckets, timelinePart.value, this.buckets[flooredValue].value[0]);
       } else {
         // Weird stuff. What is that illegal value???
         console.log('rendertimeline, illegal value', timelinePart.value);
@@ -10053,7 +10034,7 @@ renderSvgTimeline(timeline, index) {
     } else return [''];
   });
   const linesAbove = this.xLines.lines.map((helperLine) => {
-    console.log('linesAbove', helperLine);
+    // console.log('linesAbove', helperLine);
     if (helperLine.zpos === 'above') {
       return [svg`
         <line class="${classMap(this.classes[helperLine.id])}"
@@ -10066,7 +10047,7 @@ renderSvgTimeline(timeline, index) {
         `];
     } else return [''];
   });
-  console.log('renderSvgTimeline, lines', this.helperLines, linesAbove, linesBelow);
+  // console.log('renderSvgTimeline, lines', this.helperLines, linesAbove, linesBelow);
   return svg`
     ${linesBelow}
     ${paths}
@@ -15836,7 +15817,7 @@ _buildStateString(inState, entityConfig) {
     if (skipInitialState) url += '&skip_initial_state';
     url += '&minimal_response';
 
-    console.log('update, fetchRecent - call is', entityId, start, end, skipInitialState, url);
+    // console.log('update, fetchRecent - call is', entityId, start, end, skipInitialState, url);
     return this._hass.callApi('GET', url);
   }
 
@@ -15909,7 +15890,7 @@ _buildStateString(inState, entityConfig) {
 
     // Get history for this entity and/or attribute.
     let newStateHistory = await this.fetchRecent(entity.entityId, start, end, skipInitialState);
-    console.log('update, updateEntity, newStateHistory', entity.entityId, start, end, newStateHistory);
+    // console.log('update, updateEntity, newStateHistory', entity.entityId, start, end, newStateHistory);
 
     // Now we have some history, check if it has valid data and filter out either the entity state or
     // the entity attribute. Ain't that nice!

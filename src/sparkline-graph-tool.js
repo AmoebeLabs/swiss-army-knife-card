@@ -396,8 +396,8 @@ export default class SparklineGraphTool extends BaseTool {
         j += 1;
       });
     }
-    if (this.helperLines.length > 0)
-      console.log('helperLines', this.helperLines);
+    // if (this.helperLines.length > 0)
+    //   console.log('helperLines', this.helperLines);
 
     // Other lines test
     this.xLines = {};
@@ -414,15 +414,15 @@ export default class SparklineGraphTool extends BaseTool {
         j += 1;
       });
     }
-    if (this.xLines.lines.length > 0)
-      console.log('xAxis.lines', this.xLines.lines);
+    // if (this.xLines.lines.length > 0)
+    //   console.log('xAxis.lines', this.xLines.lines);
 
     // this.xLines.numbers = {};
     if (typeof this.config.x_lines?.numbers === 'object') {
       this.xLines.numbers = { ...this.config.x_lines.numbers };
     }
-    if (this.xLines.numbers)
-      console.log('xAxis.numbers', this.xLines.numbers);
+    // if (this.xLines.numbers)
+    //   console.log('xAxis.numbers', this.xLines.numbers);
 
     let { config } = this;
 
@@ -532,7 +532,7 @@ export default class SparklineGraphTool extends BaseTool {
   }
 
   set value(state) {
-    console.log('GraphTool - set value IN', state);
+    // console.log('GraphTool - set value IN', state);
 
     if (this._stateValue === state) return false;
 
@@ -707,7 +707,7 @@ export default class SparklineGraphTool extends BaseTool {
     if (this.config.state_map?.length > 0) {
       history[0].forEach((item, index) => {
         if (this.config.state_map.length > 0)
-        // this._history[index].state = this._convertState(item);
+        history[0][index].haState = item.state;
         this._convertState(item);
         history[0][index].state = item.state;
       });
@@ -733,13 +733,14 @@ export default class SparklineGraphTool extends BaseTool {
         if (!match) {
           console.log('processStateMap - ILLEGAL value', item, index);
         }
-        const newValue = this.buckets[matchStep].bucket; // rangeMin[matchBucket];
-        console.log('processStateMap, converting bins', history[0][index].state, newValue, matchBucket, matchStep, this.buckets[matchStep]);
+        const newValue = this.buckets[matchStep].bucket;
+        history[0][index].haState = item.state;
         history[0][index].state = newValue;
       });
     }
     if (this.config.y_axis.value_factor !== 0) {
       history[0].forEach((item, index) => {
+        history[0][index].haState = item.state;
         history[0][index].state = item.state * this.config.y_axis.value_factor;
       });
     }
@@ -1120,6 +1121,25 @@ renderSvgTrafficLight(trafficLight, i) {
     adjustY = (trafficLight.height - size) / 2;
   }
 
+  // What if single array of rects, and just color them with a nice animation, ie
+  // animation on change of color. Should look nice...
+  const bgRect = this.buckets.map((bucket, k) => {
+    const piet = [];
+    console.log('bgRect', bucket, k, trafficLight);
+    return svg`
+    <rect class='bg-level'
+      x=${trafficLight.x + adjustX + this.svg.line_width / 2}
+      y=${trafficLight.y[k] - 1 * trafficLight.height - this.svg.line_width / 1}
+      height=${Math.max(0, trafficLight.height - 2 * adjustY - this.svg.line_width)}
+      width=${Math.max(0, trafficLight.width - 2 * adjustX - this.svg.line_width)}
+      fill="var(--theme-sys-elevation-surface-neutral4)"
+      stroke="var(--theme-sys-elevation-surface-neutral4)"
+      opacity="1"
+      stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
+      rx="50%">
+    </rect>`;
+  });
+
   const levelRect = trafficLight.value.map((single, j) => {
     const piet = [];
     // Computecolor uses the gradient calculations, which use fractions to get the gradient
@@ -1142,7 +1162,9 @@ renderSvgTrafficLight(trafficLight, i) {
   });
 
   return svg`
-    ${levelRect}`;
+    ${bgRect}
+    ${levelRect}
+    `;
 }
 
 renderSvgTrafficLights(trafficLights, i) {
@@ -1161,7 +1183,7 @@ renderSvgTrafficLights(trafficLights, i) {
     } else return [''];
   });
   const linesAbove = this.xLines.lines.map((helperLine) => {
-    console.log('linesAbove', helperLine);
+    // console.log('linesAbove', helperLine);
     if (helperLine.zpos === 'above') {
       return [svg`
         <line class="${classMap(this.classes[helperLine.id])}"
@@ -1259,7 +1281,7 @@ renderSvgAreaBackground(fill, i) {
       } else return [''];
     });
     const linesAbove = this.xLines.lines.map((helperLine) => {
-      console.log('linesAbove', helperLine);
+      // console.log('linesAbove', helperLine);
       if (helperLine.zpos === 'above') {
         return [svg`
           <line class="${classMap(this.classes[helperLine.id])}"
@@ -1577,7 +1599,7 @@ renderSvgClockBackground(radius) {
   return svg`
     <path class="graph-clock--background"
       d="${d}"
-      style="fill: lightgray; stroke-width: 0; opacity: 0.1;"
+      style="fill: var(--theme-sys-elevation-surface-neutral4); stroke-width: 0; opacity: 0.1;"
     />
   `;
 }
@@ -1690,8 +1712,8 @@ renderSvgClock(clock, index) {
 renderSvgTimeline(timeline, index) {
   if (!timeline) return;
 
-  console.log('rendertimeline, styles = ', this.styles.helper_line1);
-  if (this.config.y_axis?.use_value === 'bin') console.log('renderSvgTimeline, bin, timeline', timeline);
+  // console.log('rendertimeline, styles = ', this.styles.helper_line1);
+  // if (this.config.y_axis?.use_value === 'bin') console.log('renderSvgTimeline, bin, timeline', timeline);
   const paths = timeline.map((timelinePart, i) => {
     // const color = this.computeColor(timelinePart.value, 0);
     // Should use different value for use_value: bin. In that case the index in the colorstop
@@ -1710,7 +1732,7 @@ renderSvgTimeline(timeline, index) {
             + (this.buckets[flooredValue].rangeMax[0] - this.buckets[flooredValue].rangeMin[0]) * (timelinePart.value - flooredValue);
         // color = this.intColor(this.buckets[flooredValue].value[0], 0);
         color = this.intColor(colorValue, 0);
-        console.log('rendertimeline, color bin', this.buckets, timelinePart.value, this.buckets[flooredValue].value[0]);
+        // console.log('rendertimeline, color bin', this.buckets, timelinePart.value, this.buckets[flooredValue].value[0]);
       } else {
         // Weird stuff. What is that illegal value???
         console.log('rendertimeline, illegal value', timelinePart.value);
@@ -1753,7 +1775,7 @@ renderSvgTimeline(timeline, index) {
     } else return [''];
   });
   const linesAbove = this.xLines.lines.map((helperLine) => {
-    console.log('linesAbove', helperLine);
+    // console.log('linesAbove', helperLine);
     if (helperLine.zpos === 'above') {
       return [svg`
         <line class="${classMap(this.classes[helperLine.id])}"
@@ -1766,7 +1788,7 @@ renderSvgTimeline(timeline, index) {
         `];
     } else return [''];
   });
-  console.log('renderSvgTimeline, lines', this.helperLines, linesAbove, linesBelow);
+  // console.log('renderSvgTimeline, lines', this.helperLines, linesAbove, linesBelow);
   return svg`
     ${linesBelow}
     ${paths}

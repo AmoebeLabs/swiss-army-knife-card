@@ -122,7 +122,7 @@ export default class SparklineGraph {
     histGroups.length = requiredNumOfPoints;
 
     if (this.startOn === 'yesterday') {
-      console.log('update, yesterday, history = ', this.history, histGroups);
+      // console.log('update, yesterday, history = ', this.history, histGroups);
     }
     this.coords = this._calcPoints(histGroups);
     this.min = Math.min(...this.coords.map((item) => Number(item[V])));
@@ -187,8 +187,10 @@ export default class SparklineGraph {
     // Min value is always 0. So something goes wrong with Number I guess??
     // If item.state invalid, then returns 0 ???
     res[0][key].state = Math.min(res[0][key].state ? res[0][key].state : Number.POSITIVE_INFINITY, item.state);
+    res[0][key].haState = Math.min(res[0][key].haState ? res[0][key].haState : Number.POSITIVE_INFINITY, item.haState);
     // Max seems to be OK!
     res[1][key].state = Math.max(res[1][key].state ? res[0][key].state : Number.NEGATIVE_INFINITY, item.state);
+    res[1][key].haState = Math.max(res[1][key].haState ? res[0][key].haState : Number.NEGATIVE_INFINITY, item.haState);
     return res;
   }
 
@@ -520,52 +522,13 @@ export default class SparklineGraph {
     const bucketHeight = (this.drawArea.height - (this.bucketss.length * 0)) / this.bucketss.length;
 
     if (this.config.show.variant === 'audio') {
-      if (this.config.y_axis.use_value === 'binn') {
-        console.log('getTimeLine, using bin...', this.config.y_axis);
-        const stepMax = this.bucketss.length;
-        const stepMin = 0;
-        let stepRange = (stepMax - stepMin);
-        const yRatioBin = stepRange / this.drawArea.height;
-
-        return coords.map((coord, i) => {
-          let matchStep = -1;
-          let matchBucket = 0;
-          let match = false;
-          // #TODO
-          // Both loops can be in one loop, using else if not (yet) in bucket. There MUST be a bucket
-          // Is the assumption... Or leave it this way, and assume there might be NO bucket...
-          for (let i = 0; i < stepRange; i++) {
-            // In which bucket...
-            // Find matching bucket. Can be any of them defined
-            // match = false;
-            matchBucket = 0;
-            for (let j = 0; j < this.bucketss[i].rangeMin.length; j++) {
-              if (coord[V] >= this.bucketss[i].rangeMin[j] && coord[V] < this.bucketss[i].rangeMax[j]) {
-                match = true;
-                matchBucket = j;
-                matchStep = i;
-              }
-            }
-          }
-          const newValue = this.bucketss[matchStep].bucket; // rangeMin[matchBucket];
-          console.log('getTimeLine, bin', match, coord[V], newValue, matchStep, matchBucket, this.bucketss);
-          return {
-            x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-            y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, newValue)) : newValue) - stepMin) / yRatioBin / 2),
-            height: ((this._logarithmic ? Math.log10(Math.max(1, newValue)) : newValue) - stepMin) / yRatioBin,
-            width: xRatio - spacing,
-            value: coord[V], // newValue,
-            };
-        });
-      } else {
-        return coords.map((coord, i) => ({
-          x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-          y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2), // * bucketHeight / 2), // 0,
-          height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio, // * bucketHeight,
-          width: xRatio - spacing,
-          value: coord[V],
-        }));
-      }
+      return coords.map((coord, i) => ({
+        x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+        y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2), // * bucketHeight / 2), // 0,
+        height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio, // * bucketHeight,
+        width: xRatio - spacing,
+        value: coord[V],
+      }));
     } else {
       return coords.map((coord, i) => ({
         x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
@@ -652,8 +615,12 @@ export default class SparklineGraph {
       }
 
       // We have the matching index
-      for (let i = 0; i <= matchStep; i++) {
-        newCoord[V][i] = this.bucketss[i].length > matchBucket ? this.bucketss[i].rangeMin[matchBucket] : this.bucketss[i].rangeMin[0];
+      // for (let i = 0; i <= matchStep; i++) {
+      //   newCoord[V][i] = this.bucketss[i].length > matchBucket ? this.bucketss[i].rangeMin[matchBucket] : this.bucketss[i].rangeMin[0];
+      //   newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
+      // }
+      for (let i = 0; i <= stepRange; i++) {
+        if (i <= matchStep) newCoord[V][i] = this.bucketss[i].length > matchBucket ? this.bucketss[i].rangeMin[matchBucket] : this.bucketss[i].rangeMin[0];
         newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
       }
       return newCoord;
