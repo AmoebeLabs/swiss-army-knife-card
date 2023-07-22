@@ -8079,13 +8079,52 @@ class SparklineGraph {
     (this.drawArea.height - (this.bucketss.length * 0)) / this.bucketss.length;
 
     if (this.config.show.variant === 'audio') {
-      return coords.map((coord, i) => ({
-        x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-        y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2), // * bucketHeight / 2), // 0,
-        height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio, // * bucketHeight,
-        width: xRatio - spacing,
-        value: coord[V],
-      }));
+      if (this.config.y_axis.use_value === 'binn') {
+        console.log('getTimeLine, using bin...', this.config.y_axis);
+        const stepMax = this.bucketss.length;
+        const stepMin = 0;
+        let stepRange = (stepMax - stepMin);
+        const yRatioBin = stepRange / this.drawArea.height;
+
+        return coords.map((coord, i) => {
+          let matchStep = -1;
+          let matchBucket = 0;
+          let match = false;
+          // #TODO
+          // Both loops can be in one loop, using else if not (yet) in bucket. There MUST be a bucket
+          // Is the assumption... Or leave it this way, and assume there might be NO bucket...
+          for (let i = 0; i < stepRange; i++) {
+            // In which bucket...
+            // Find matching bucket. Can be any of them defined
+            // match = false;
+            matchBucket = 0;
+            for (let j = 0; j < this.bucketss[i].rangeMin.length; j++) {
+              if (coord[V] >= this.bucketss[i].rangeMin[j] && coord[V] < this.bucketss[i].rangeMax[j]) {
+                match = true;
+                matchBucket = j;
+                matchStep = i;
+              }
+            }
+          }
+          const newValue = this.bucketss[matchStep].bucket; // rangeMin[matchBucket];
+          console.log('getTimeLine, bin', match, coord[V], newValue, matchStep, matchBucket, this.bucketss);
+          return {
+            x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+            y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, newValue)) : newValue) - stepMin) / yRatioBin / 2),
+            height: ((this._logarithmic ? Math.log10(Math.max(1, newValue)) : newValue) - stepMin) / yRatioBin,
+            width: xRatio - spacing,
+            value: coord[V], // newValue,
+            };
+        });
+      } else {
+        return coords.map((coord, i) => ({
+          x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+          y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2), // * bucketHeight / 2), // 0,
+          height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio, // * bucketHeight,
+          width: xRatio - spacing,
+          value: coord[V],
+        }));
+      }
     } else {
       return coords.map((coord, i) => ({
         x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
@@ -8431,8 +8470,8 @@ class SparklineGraphTool extends BaseTool {
       hour24: false,
       font_size: 10,
       line_color: [...DEFAULT_COLORS],
-      color_thresholds: [],
-      color_thresholds_transition: 'smooth',
+      colorstops: [],
+      colorstops_transition: 'smooth',
       line_width: 5,
       bar_spacing: 4,
       state_map: [],
@@ -8492,7 +8531,6 @@ class SparklineGraphTool extends BaseTool {
           fill: 'url(#sak-graph-bar-mask-bt-80)',
         },
       },
-      colorstops: [],
       show: { style: 'fixedcolor' },
     };
 
@@ -8610,12 +8648,12 @@ class SparklineGraphTool extends BaseTool {
     // this.svg.y += this.svg.line_width / 2;
     // this.svg.height -= this.svg.line_width;
     this.trafficLights = [];
-    this.config.color_thresholds.map((value, index) => (
+    this.config.colorstops.map((value, index) => (
       this.trafficLights[index] = value.value
     ));
 
     this.buckets = [];
-    this.config.color_thresholds.map((value, index) => {
+    this.config.colorstops.map((value, index) => {
       let bucketIndex;
       bucketIndex = (value.bucket !== undefined) ? value.bucket : index;
       if (!this.buckets[bucketIndex]) {
@@ -8629,16 +8667,16 @@ class SparklineGraphTool extends BaseTool {
       // Assume right order from low to high and that next index is upper range
       //
       let rangeMin = value.value;
-      let rangeMax = this.config.color_thresholds[index + 1]?.value || Infinity;
+      let rangeMax = this.config.colorstops[index + 1]?.value || Infinity;
       this.buckets[bucketIndex].value.push(value.value);
       this.buckets[bucketIndex].rangeMin.push(rangeMin);
       this.buckets[bucketIndex].rangeMax.push(rangeMax);
       return true;
     });
 
-    this.config.color_thresholds = computeThresholds(
-      this.config.color_thresholds,
-      this.config.color_thresholds_transition,
+    this.config.colorstops = computeThresholds(
+      this.config.colorstops,
+      this.config.colorstops_transition,
     );
 
     this.clockWidth = Utils.calculateSvgDimension(this.config?.clock?.size || 5);
@@ -8875,9 +8913,9 @@ class SparklineGraphTool extends BaseTool {
           this.bar[i] = this.Graph[i].getBars(graphPos, numVisible, config.bar_spacing);
           graphPos += 1;
           // Add the next 4 lines as a hack
-          if (config.color_thresholds.length > 0 && !this._card.config.entities[i].color)
+          if (config.colorstops.length > 0 && !this._card.config.entities[i].color)
             this.gradient[i] = this.Graph[i].computeGradient(
-              config.color_thresholds, this.config.y_axis.logarithmic,
+              config.colorstops, this.config.y_axis.logarithmic,
             );
         // +++++ Check for 'area' or 'line' graph type
         } else if (['area', 'line'].includes(config.show.graph)) {
@@ -8932,9 +8970,9 @@ class SparklineGraphTool extends BaseTool {
         }
 
         // Add the next 4 lines as a hack
-        if (config.color_thresholds.length > 0 && !this._card.config.entities[i].color)
+        if (config.colorstops.length > 0 && !this._card.config.entities[i].color)
         this.gradient[i] = this.Graph[i].computeGradient(
-          config.color_thresholds, this.config.y_axis.logarithmic,
+          config.colorstops, this.config.y_axis.logarithmic,
         );
 
       this.line = [...this.line];
@@ -8955,6 +8993,23 @@ class SparklineGraphTool extends BaseTool {
     res.state = resultIndex;
   }
 
+  // NOTE!!!!!!!!!!!!
+  // Should this function return a record with:
+  // - source value
+  // - mapped value
+  // - bucket value (or same as mapped value)
+  // In that case the software can choose what to get, depending on the mode.
+  // I think that that is more consistent than the current 'bin' implementation.
+  // That one hides the source value, which is then is fetched again using reverse
+  // lookup in the buckets to get the proper value for computing the color!
+  // WOuld this work:
+  // - .state = source value
+  // - .mapped = mapped value
+  // - .xlated = translated value, or bucket/bin. Or same as .mapped.
+  // OR, if no mapping or else, use state as the resulting value.
+  // - .state = translated value
+  // - .sourceState = source state
+  // if no .sourceState there, nothing translated. No extra memory and stuff
   processStateMap(history) {
     if (this.config.state_map?.length > 0) {
       history[0].forEach((item, index) => {
@@ -8962,6 +9017,32 @@ class SparklineGraphTool extends BaseTool {
         // this._history[index].state = this._convertState(item);
         this._convertState(item);
         history[0][index].state = item.state;
+      });
+    }
+    if (this.config.y_axis?.use_value === 'bin') {
+      history[0].forEach((item, index) => {
+        let matchStep = -1;
+        let matchBucket = 0;
+        let match = false;
+        match = false;
+        for (let i = 0; i < this.buckets.length; i++) {
+          // In which bucket...
+          // Find matching bucket. Can be any of them defined
+          matchBucket = 0;
+          for (let j = 0; j < this.buckets[i].rangeMin.length; j++) {
+            if (item.state >= this.buckets[i].rangeMin[j] && item.state < this.buckets[i].rangeMax[j]) {
+              match = true;
+              matchBucket = j;
+              matchStep = i;
+            }
+          }
+        }
+        if (!match) {
+          console.log('processStateMap - ILLEGAL value', item, index);
+        }
+        const newValue = this.buckets[matchStep].bucket; // rangeMin[matchBucket];
+        console.log('processStateMap, converting bins', history[0][index].state, newValue, matchBucket, matchStep, this.buckets[matchStep]);
+        history[0][index].state = newValue;
       });
     }
     if (this.config.y_axis.value_factor !== 0) {
@@ -9054,38 +9135,38 @@ class SparklineGraphTool extends BaseTool {
   }
 
   computeColor(inState, i) {
-    const { color_thresholds, line_color } = this.config;
+    const { colorstops, line_color } = this.config;
     const state = Number(inState) || 0;
     const threshold = {
       color: line_color[i] || line_color[0],
-      ...color_thresholds.slice(-1)[0],
-      ...color_thresholds.find((ele) => ele.value < state),
+      ...colorstops.slice(-1)[0],
+      ...colorstops.find((ele) => ele.value < state),
     };
     return this._card.config.entities[i].color || threshold.color;
   }
 
   intColor(inState, i) {
-    const { color_thresholds, line_color } = this.config;
+    const { colorstops, line_color } = this.config;
     const state = Number(inState) || 0;
 
     let intColor;
-    if (color_thresholds.length > 0) {
+    if (colorstops.length > 0) {
       // HACK. Keep check for 'bar' !!!
       if (this.config.show.graph === 'bar') {
-        const { color } = color_thresholds.find((ele) => ele.value < state)
-          || color_thresholds.slice(-1)[0];
+        const { color } = colorstops.find((ele) => ele.value < state)
+          || colorstops.slice(-1)[0];
         intColor = color;
       } else {
-        const index = color_thresholds.findIndex((ele) => ele.value < state);
-        const c1 = color_thresholds[index];
-        const c2 = color_thresholds[index - 1];
+        const index = colorstops.findIndex((ele) => ele.value < state);
+        const c1 = colorstops[index];
+        const c2 = colorstops[index - 1];
         if (c2) {
           const factor = (c2.value - inState) / (c2.value - c1.value);
           intColor = Colors.getGradientValue(c2.color, c1.color, factor);
         } else {
           intColor = index
-            ? color_thresholds[color_thresholds.length - 1].color
-            : color_thresholds[0].color;
+            ? colorstops[colorstops.length - 1].color
+            : colorstops[0].color;
         }
       }
     }
@@ -9910,9 +9991,33 @@ renderSvgTimeline(timeline, index) {
   if (!timeline) return;
 
   console.log('rendertimeline, styles = ', this.styles.helper_line1);
+  if (this.config.y_axis?.use_value === 'bin') console.log('renderSvgTimeline, bin, timeline', timeline);
   const paths = timeline.map((timelinePart, i) => {
     // const color = this.computeColor(timelinePart.value, 0);
-    const color = this.intColor(timelinePart.value, 0);
+    // Should use different value for use_value: bin. In that case the index in the colorstop
+    // should be used, ie reverse lookup. Not the start/end values of the stop itself, but the
+    // bucket value!!
+    let color;
+    if (this.config.y_axis?.use_value === 'bin') {
+      // If aggrerate func = avg, one might get fractions! Floor those!!
+      // However, fraction is still calculated on height, so you can see that it was not in the same
+      // bucket all the time. Should also color that one with intColor?? Ie show smoothing ??
+      // In that case: if value is 0.3, calculate value in range?
+      // rangeMin + rangeMin * fractionOf(value)
+      const flooredValue = Math.floor(timelinePart.value);
+      if (this.buckets[flooredValue]?.value) {
+        const colorValue = this.buckets[flooredValue].value[0]
+            + (this.buckets[flooredValue].rangeMax[0] - this.buckets[flooredValue].rangeMin[0]) * (timelinePart.value - flooredValue);
+        // color = this.intColor(this.buckets[flooredValue].value[0], 0);
+        color = this.intColor(colorValue, 0);
+        console.log('rendertimeline, color bin', this.buckets, timelinePart.value, this.buckets[flooredValue].value[0]);
+      } else {
+        // Weird stuff. What is that illegal value???
+        console.log('rendertimeline, illegal value', timelinePart.value);
+      }
+    } else {
+      color = this.intColor(timelinePart.value, 0);
+    }
 
     const animation = this.config.animate
       ? svg`

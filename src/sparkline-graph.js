@@ -520,13 +520,52 @@ export default class SparklineGraph {
     const bucketHeight = (this.drawArea.height - (this.bucketss.length * 0)) / this.bucketss.length;
 
     if (this.config.show.variant === 'audio') {
-      return coords.map((coord, i) => ({
-        x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-        y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2), // * bucketHeight / 2), // 0,
-        height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio, // * bucketHeight,
-        width: xRatio - spacing,
-        value: coord[V],
-      }));
+      if (this.config.y_axis.use_value === 'binn') {
+        console.log('getTimeLine, using bin...', this.config.y_axis);
+        const stepMax = this.bucketss.length;
+        const stepMin = 0;
+        let stepRange = (stepMax - stepMin);
+        const yRatioBin = stepRange / this.drawArea.height;
+
+        return coords.map((coord, i) => {
+          let matchStep = -1;
+          let matchBucket = 0;
+          let match = false;
+          // #TODO
+          // Both loops can be in one loop, using else if not (yet) in bucket. There MUST be a bucket
+          // Is the assumption... Or leave it this way, and assume there might be NO bucket...
+          for (let i = 0; i < stepRange; i++) {
+            // In which bucket...
+            // Find matching bucket. Can be any of them defined
+            // match = false;
+            matchBucket = 0;
+            for (let j = 0; j < this.bucketss[i].rangeMin.length; j++) {
+              if (coord[V] >= this.bucketss[i].rangeMin[j] && coord[V] < this.bucketss[i].rangeMax[j]) {
+                match = true;
+                matchBucket = j;
+                matchStep = i;
+              }
+            }
+          }
+          const newValue = this.bucketss[matchStep].bucket; // rangeMin[matchBucket];
+          console.log('getTimeLine, bin', match, coord[V], newValue, matchStep, matchBucket, this.bucketss);
+          return {
+            x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+            y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, newValue)) : newValue) - stepMin) / yRatioBin / 2),
+            height: ((this._logarithmic ? Math.log10(Math.max(1, newValue)) : newValue) - stepMin) / yRatioBin,
+            width: xRatio - spacing,
+            value: coord[V], // newValue,
+            };
+        });
+      } else {
+        return coords.map((coord, i) => ({
+          x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+          y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2), // * bucketHeight / 2), // 0,
+          height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio, // * bucketHeight,
+          width: xRatio - spacing,
+          value: coord[V],
+        }));
+      }
     } else {
       return coords.map((coord, i) => ({
         x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
