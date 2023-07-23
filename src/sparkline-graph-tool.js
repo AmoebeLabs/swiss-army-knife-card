@@ -671,6 +671,11 @@ export default class SparklineGraphTool extends BaseTool {
       this.line = [...this.line];
     }
     this.updating = false;
+    if (this._firstUpdatedCalled) {
+      this._firstUpdatedCalled = false;
+    } else {
+      this._firstUpdatedCalled = true;
+    }
   }
 
   hasSeries() {
@@ -1332,30 +1337,52 @@ renderSvgEqualizerMask(equalizer, index) {
   const fillNeg = this.config.styles.bar_mask_below.fill;
   const fillPos = this.config.styles.bar_mask_above.fill;
 
+  let size;
+  if (this.config.square === true) {
+    // Redistribute height
+    size = Math.min(equalizer[0].width, equalizer[0].height);
+    if (size < equalizer[0].height) {
+      let spaceBetween = (this.svg.height - (this.config.value_buckets * size)) / (this.config.value_buckets - 1);
+
+      let newEq = equalizer.map((equalizerPart, i) => {
+        let eq = { ...equalizerPart };
+        for (let j = 0; j < equalizerPart.y.length; j++) {
+          eq.y[j] = this.svg.height - (j * (size + spaceBetween));
+        }
+        eq.width = size;
+        eq.height = size;
+        return eq;
+      });
+      equalizer = [...newEq];
+    }
+  }
   const paths = equalizer.map((equalizerPart, i) => {
-    const animation = this.config.animate
+    const equalizerPartRect = equalizerPart.value.map((single, j) => {
+      const piet = [];
+      const animation = this.config.animate
       ? svg`
-        <animate attributeName='y' from=${this.svg.height} to=${equalizerPart.y} dur='1s' fill='remove'
+        <animate attributeName='y'
+          from=${this.svg.height} to=${equalizerPart.y[j] - 1 * equalizerPart.height - this.svg.line_width}
+          begin='0s' dur='5s' fill='remove' restart='whenNotActive' repeatCount='1'
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
         </animate>`
       : '';
-    if (this.config.square === true) {
-      const size = Math.min(equalizerPart.width, equalizerPart.height);
-      equalizerPart.width = size;
-      equalizerPart.height = size;
-    }
-    const equalizerPartRect = equalizerPart.value.map((single, j) => {
-      const piet = [];
+      // jj = j;
       return svg`
-      <rect class='level' x=${equalizerPart.x} y=${equalizerPart.y[j] - 1 * equalizerPart.height - this.svg.line_width / 1}
-        height=${Math.max(0, equalizerPart.height - this.svg.line_width)} width=${equalizerPart.width}
+      <rect class='level'
+        data-size=${size}
+        x=${equalizerPart.x}
+        y=${equalizerPart.y[j] - equalizerPart.height - this.svg.line_width / 100000}
+        height=${Math.max(0, equalizerPart.height - this.svg.line_width)}
+        width=${Math.max(0, equalizerPart.width - this.svg.line_width)}
         fill=${fade ? (equalizerPart.value > 0 ? fillPos : fillNeg) : 'white'}
         stroke=${fade ? (equalizerPart.value > 0 ? fillPos : fillNeg) : 'white'}
         stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
         rx="0%"
+        style="transition: fill 5s ease;"
         @mouseover=${() => this.setTooltip(index, j, single)}
         @mouseout=${() => (this.tooltip = {})}>
-        ${animation}
+        ${this._firstUpdatedCalled ? animation : ''}
       </rect>`;
     });
 

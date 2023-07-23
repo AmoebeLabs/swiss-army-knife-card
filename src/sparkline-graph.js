@@ -260,7 +260,7 @@ export default class SparklineGraph {
     // should be reduce or something... to return an array...
     const coordYs = coord[V].forEach((val, index) => {
       const coordY = (val >= 0)
-        ? this.drawArea.height + this.drawArea.y * 1 - (1 * offset / yRatio) - ((val - Math.max(0, min)) / yRatio) // - this.margin.y * 2
+        ? this.drawArea.height + this.drawArea.y * 1 - (1 * offset / yRatio) - ((val - Math.max(0, min)) / yRatio)
         : this.drawArea.height + this.drawArea.y * 1 - ((0 - val) / yRatio);
       yStack.push(coordY);
       return yStack;
@@ -568,12 +568,10 @@ export default class SparklineGraph {
       return newCoord;
     });
     return equalizerCoords.map((coord, i) => ({
-      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
+      x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
       y: coord[Y],
-      height: levelHeight, // 1 * (stepRange + 1) / yRatio, // 10, // (yRatio - spacing) / this.levels, // (this.max - this.min) / this.levelCount / yRatio, // coord[V] > 0 ? (this._min < 0 ? coord[V] / yRatio : (coord[V] - this._min) / yRatio)
-                          // : coord[Y] - coord[Y2],
+      height: levelHeight,
       width: xRatio - spacing,
-      // value: levelCoords[V],
       value: coord[V],
     }));
   }
