@@ -186,6 +186,10 @@ export default class SparklineGraphTool extends BaseTool {
           'sak-graph__line': true,
           hover: true,
         },
+        traffic_light_background: {
+        },
+        traffic_light_foreground: {
+        },
         clock_face_day_night: {
           'sak-graph__clock-face_day-night': true,
         },
@@ -202,6 +206,10 @@ export default class SparklineGraphTool extends BaseTool {
         line: {
         },
         bar: {
+        },
+        traffic_light_background: {
+        },
+        traffic_light_foreground: {
         },
         clock_face_day_night: {
         },
@@ -277,6 +285,13 @@ export default class SparklineGraphTool extends BaseTool {
     this.classes.timeline_graph = {};
     this.styles.timeline = {};
     this.styles.timeline_graph = {};
+
+    this.classes.traffic_light = {};
+    this.classes.traffic_light_background = {};
+    this.styles.traffic_light_background = {};
+
+    this.classes.traffic_light_foreground = {};
+    this.styles.traffic_light_foreground = {};
 
     this.classes.clock = {};
     this.classes.clock_graph = {};
@@ -1120,55 +1135,54 @@ renderSvgPoints(points, i) {
 renderSvgTrafficLight(trafficLight, i) {
   let adjustX = 0;
   let adjustY = 0;
+  // if (this.config.square === true) {
+  //   const size = Math.min(trafficLight.width, trafficLight.height);
+  //   adjustX = (trafficLight.width - size) / 2;
+  //   adjustY = (trafficLight.height - size) / 2;
+  // }
+  let size;
   if (this.config.square === true) {
-    const size = Math.min(trafficLight.width, trafficLight.height);
-    adjustX = (trafficLight.width - size) / 2;
-    adjustY = (trafficLight.height - size) / 2;
-  }
+    // Redistribute height
+    size = Math.min(trafficLight.width, trafficLight.height);
+    if (size < trafficLight.height) {
+      let spaceBetween = (this.svg.height - (this.buckets.length * size)) / (this.buckets.length - 1);
 
-  // What if single array of rects, and just color them with a nice animation, ie
-  // animation on change of color. Should look nice...
-  const bgRect = this.buckets.map((bucket, k) => {
+      for (let j = 0; j < this.buckets.length; j++) {
+        trafficLight.y[j] = this.svg.height - (j * (size + spaceBetween));
+      }
+      trafficLight.height = size;
+      trafficLight.width = size;
+    }
+  }
+  const tlRect = this.buckets.map((bucket, k) => {
     const piet = [];
     console.log('bgRect', bucket, k, trafficLight);
-    return svg`
-    <rect class='bg-level'
-      x=${trafficLight.x + adjustX + this.svg.line_width / 2}
-      y=${trafficLight.y[k] - 1 * trafficLight.height - this.svg.line_width / 1}
-      height=${Math.max(0, trafficLight.height - 2 * adjustY - this.svg.line_width)}
-      width=${Math.max(0, trafficLight.width - 2 * adjustX - this.svg.line_width)}
-      fill="var(--theme-sys-elevation-surface-neutral4)"
-      stroke="var(--theme-sys-elevation-surface-neutral4)"
-      opacity="1"
-      stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
-      rx="50%">
-    </rect>`;
-  });
+    const hasValue = typeof trafficLight.value[k] !== 'undefined';
+    const classList = hasValue
+      ? this.classes.traffic_light_foreground
+      : this.classes.traffic_light_background;
+    const styleList = hasValue
+      ? this.styles.traffic_light_foreground
+      : this.styles.traffic_light_background;
+    const color = hasValue
+      ? this.computeColor(trafficLight.value[k] + 0.001, 0)
+      : 'var(--theme-sys-elevation-surface-neutral4)';
 
-  const levelRect = trafficLight.value.map((single, j) => {
-    const piet = [];
-    // Computecolor uses the gradient calculations, which use fractions to get the gradient
-    // Adjust to get the right color bucket...
-    // fill=${color}
-    const color = this.computeColor(single + 0.001, 0);
     return svg`
-    <rect class='level'
+    <rect class="${classMap(classList)}" style="${styleMap(styleList)}"
       x=${trafficLight.x + adjustX + this.svg.line_width / 2}
-      y=${trafficLight.y[j] - 1 * trafficLight.height - this.svg.line_width / 1}
+      y=${trafficLight.y[k] - 1 * trafficLight.height - this.svg.line_width / 100000}
       height=${Math.max(0, trafficLight.height - 2 * adjustY - this.svg.line_width)}
       width=${Math.max(0, trafficLight.width - 2 * adjustX - this.svg.line_width)}
+      stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
       fill=${color}
       stroke=${color}
-      stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
-      rx="50%"
-      @mouseover=${() => this.setTooltip(i, j, single)}
-      @mouseout=${() => (this.tooltip = {})}>
+      pathLength="10"
+    >
     </rect>`;
   });
-
   return svg`
-    ${bgRect}
-    ${levelRect}
+    ${tlRect}
     `;
 }
 
@@ -1363,7 +1377,7 @@ renderSvgEqualizerMask(equalizer, index) {
       ? svg`
         <animate attributeName='y'
           from=${this.svg.height} to=${equalizerPart.y[j] - 1 * equalizerPart.height - this.svg.line_width}
-          begin='0s' dur='5s' fill='remove' restart='whenNotActive' repeatCount='1'
+          begin='0s' dur='2s' fill='remove' restart='whenNotActive' repeatCount='1'
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
         </animate>`
       : '';
