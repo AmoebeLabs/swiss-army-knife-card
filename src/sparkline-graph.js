@@ -240,8 +240,8 @@ export default class SparklineGraph {
       const coord0 = this.drawArea.height + this.drawArea.y - val0 / yRatio;
 
       const coordY2 = (val > 0)
-        ? this.drawArea.height + this.drawArea.y * 1 - (offset / yRatio) - ((val - Math.max(0, min)) / yRatio) // - this.margin.y * 2
-        : this.drawArea.height + this.drawArea.y * 1 - ((0 - min) / yRatio);// - this.margin.y * 4;
+        ? this.drawArea.height + this.drawArea.top * 1 - (offset / yRatio) - ((val - Math.max(0, min)) / yRatio) // - this.margin.y * 2
+        : this.drawArea.height + this.drawArea.top * 1 - ((0 - min) / yRatio);// - this.margin.y * 4;
       const coordY = this.drawArea.height + this.drawArea.y * 1 - ((val - (min)) / yRatio); // - this.margin.y * 2;
 
       return [coord[X], coordY, coord[V], coordY2];
@@ -249,6 +249,8 @@ export default class SparklineGraph {
     return coords2;
   }
 
+  // Calculate y coordinate for level stuff
+  // The calculated y coordinate is the TOP y coodinate of the rectangle to be displayed
   _calcLevelY(coord) {
     // account for logarithmic graph
     const max = this._logarithmic ? Math.log10(Math.max(1, this.max)) : this.max;
@@ -260,11 +262,12 @@ export default class SparklineGraph {
     // should be reduce or something... to return an array...
     const coordYs = coord[V].forEach((val, index) => {
       const coordY = (val >= 0)
-        ? this.drawArea.height + this.drawArea.y * 1 - (1 * offset / yRatio) - ((val - Math.max(0, min)) / yRatio)
-        : this.drawArea.height + this.drawArea.y * 1 - ((0 - val) / yRatio);
+        ? this.drawArea.height + this.drawArea.top * 1 - (1 * offset / yRatio) - ((val - Math.max(0, min)) / yRatio)
+        : this.drawArea.height + this.drawArea.top * 1 - ((0 - val) / yRatio);
       yStack.push(coordY);
       return yStack;
     });
+    console.log('_calcLevelY, yStack', yStack);
     return yStack;
   }
 
@@ -578,7 +581,7 @@ export default class SparklineGraph {
 
   getTrafficLights(position, total, spacing = 4) {
     const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
-    const bucketHeight = (this.drawArea.height - (this.bucketss.length * spacing)) / this.bucketss.length;
+    const bucketHeight = (this.drawArea.height - ((this.bucketss.length - 1) * spacing)) / this.bucketss.length;
 
     let stepRange;
     let levelCoords = this.coords.map((coord, i) => {
@@ -619,7 +622,7 @@ export default class SparklineGraph {
       // }
       for (let i = 0; i <= stepRange; i++) {
         if (i <= matchStep) newCoord[V][i] = this.bucketss[i].length > matchBucket ? this.bucketss[i].rangeMin[matchBucket] : this.bucketss[i].rangeMin[0];
-        newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
+        newCoord[Y][i] = this.drawArea.height + this.margin.t - i * (bucketHeight + spacing);
       }
       return newCoord;
     });

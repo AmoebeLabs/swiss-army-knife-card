@@ -1149,7 +1149,7 @@ class SwissArmyKnifeCard extends LitElement {
       clearInterval(this.interval);
       this.interval = setInterval(
         () => this.updateOnInterval(),
-        this._hass ? this.entityHistory.update_interval * 1000 : 1000,
+        this._hass ? this.entityHistory.update_interval * 1000 : 100,
       );
     }
     if (this.dev.debug) console.log('ConnectedCallback', this.cardId);

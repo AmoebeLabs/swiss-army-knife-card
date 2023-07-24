@@ -266,10 +266,6 @@ export default class SparklineGraphTool extends BaseTool {
       if (['absolute', 'relative'].includes(this.config.clock.face?.show_hour_numbers))
         this.svg.clockface.hourNumbersRadius = Utils.calculateSvgDimension(this.config.clock.face.hour_numbers_radius);
     }
-    // const theWidth = (this.config.position.orientation === 'vertical') ? this.svg.width : this.svg.height;
-
-    // this.svg.barWidth = (theWidth - (((this.config.hours / this.config.barhours) - 1)
-    //                               * this.svg.margin)) / (this.config.hours / this.config.barhours);
     this._data = [];
     this._bars = [];
     this._scale = {};
@@ -348,11 +344,7 @@ export default class SparklineGraphTool extends BaseTool {
     this.config.width = this.svg.width;
     this.config.height = this.svg.height;
 
-    // Correct x/y pos with line_width to prevent cut-off
     this.svg.line_width = Utils.calculateSvgDimension(this.config.line_width);
-    // this.svg.x = this.config.show.fill ? this.svg.x : this.svg.x + this.svg.line_width / 2;
-    // this.svg.y += this.svg.line_width / 2;
-    // this.svg.height -= this.svg.line_width;
     this.trafficLights = [];
     this.config.colorstops.map((value, index) => (
       this.trafficLights[index] = value.value
@@ -397,23 +389,6 @@ export default class SparklineGraphTool extends BaseTool {
       // make sure label is set
       this.config.state_map[i].label = this.config.state_map[i].label || this.config.state_map[i].value;
     });
-    // Helper lines
-    this.helperLines = [];
-    if (typeof this.config.helper_lines === 'object') {
-      let j = 0;
-      let helpers = Object.keys(this.config.helper_lines);
-      helpers.forEach((helperLine) => {
-        this.helperLines[j] = {
-          id: helperLine,
-          zpos: this.config.helper_lines[helperLine]?.zpos || 'above',
-          yshift: Utils.calculateSvgDimension(this.config.helper_lines[helperLine]?.yshift) || 0,
-        };
-        j += 1;
-      });
-    }
-    // if (this.helperLines.length > 0)
-    //   console.log('helperLines', this.helperLines);
-
     // Other lines test
     this.xLines = {};
     this.xLines.lines = [];
@@ -429,18 +404,15 @@ export default class SparklineGraphTool extends BaseTool {
         j += 1;
       });
     }
-    // if (this.xLines.lines.length > 0)
-    //   console.log('xAxis.lines', this.xLines.lines);
-
-    // this.xLines.numbers = {};
     if (typeof this.config.x_lines?.numbers === 'object') {
       this.xLines.numbers = { ...this.config.x_lines.numbers };
     }
-    // if (this.xLines.numbers)
-    //   console.log('xAxis.numbers', this.xLines.numbers);
 
     let { config } = this;
 
+    // #TODO:
+    // Should be enabled again, but watch for changes!!!!!!!!!!!!!!!
+    //
     // override points per hour to match group_by function
     // switch (this.config.x_axis.group_by) {
     //   case 'week':
@@ -482,73 +454,10 @@ export default class SparklineGraphTool extends BaseTool {
       this.config.state_map,
       config,
     );
-    // this.Graph[0] = new SparklineGraph(
-    //   this.svg.graph.width,
-    //   this.svg.graph.height,
-    //   this.svg.margin,
-    //   this.config.x_axis.start_on,
-    //   this.config.x_axis.hours_to_show || this.config.hours_to_show,
-    //   this.config.x_axis.bins_per_hour || this.config.points_per_hour,
-    //   this.config.y_axis.aggregate_func || this.config.aggregate_func,
-    //   this.config.y_axis.group_by || this.config.group_by,
-    //   getFirstDefinedItem(
-    //     this.config.smoothing,
-    //     !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
-    //     // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
-    //   ),
-    //   this.config.y_axis.logarithmic || this.config.y_axis.logarithmic,
-    //   this.trafficLights,
-    //   this.buckets,
-    //   this.config.state_map,
-    //   config,
-    // );
-
-    // this.Graph[0] = new SparklineGraph(
-    //   this.svg.graph.width,
-    //   this.svg.graph.height,
-    //   this.svg.margin,
-    //   this.config?.x_axis?.start_on,
-    //   this.config?.x_axis?.hours_to_show || this.config.hours_to_show,
-    //   this.config?.x_axis?.bins_per_hour || this.config.x_axis.bins_per_hour,
-    //   this.config?.y_axis?.aggregate_func || this.config.aggregate_func,
-    //   this.config?.y_axis?.group_by || this.config.group_by,
-    //   getFirstDefinedItem(
-    //     this.config.smoothing,
-    //     !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
-    //     // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
-    //   ),
-    //   this.config?.y_axis?.logarithmic || this.config.y_axis.logarithmic,
-    //   this.trafficLights,
-    //   this.buckets,
-    //   this.config.state_map,
-    //   config,
-    // );
-
-    // this.Graph[0] = new SparklineGraph(
-    //     this.svg.graph.width,
-    //     this.svg.graph.height,
-    //     this.svg.margin,
-    //     this.config?.start_on,
-    //     this.config.hours_to_show,
-    //     this.config.x_axis.bins_per_hour,
-    //     this.config.aggregate_func,
-    //     this.config.group_by,
-    //     getFirstDefinedItem(
-    //       this.config.smoothing,
-    //       !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
-    //       // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
-    //     ),
-    //     this.config.y_axis.logarithmic,
-    //     this.trafficLights,
-    //     this.buckets,
-    //     this.config.state_map,
-    //     config,
-    // );
+    this._firstDataReceived = false;
   }
 
   set value(state) {
-    // console.log('GraphTool - set value IN', state);
-
     if (this._stateValue === state) return false;
 
     const changed = super.value = state;
@@ -688,8 +597,10 @@ export default class SparklineGraphTool extends BaseTool {
     this.updating = false;
     if (this._firstUpdatedCalled) {
       this._firstUpdatedCalled = false;
+      this._firstDataReceived = true;
     } else {
       this._firstUpdatedCalled = true;
+      this._firstDataReceived = false;
     }
   }
 
@@ -1117,7 +1028,6 @@ renderSvgPoint(point, i) {
 renderSvgPoints(points, i) {
   if (!points) return;
   const color = this.computeColor(this._card.entities[i].state, i);
-  // const color = this.computeColor(this.entity[i].state, i);
   return svg`
     <g class='line--points'
       ?tooltip=${this.tooltip.entity === i}
@@ -1127,28 +1037,22 @@ renderSvgPoints(points, i) {
       style="animation-delay: ${this.config.animate ? `${i * 0.5 + 0.5}s` : '0s'}"
       fill=${color}
       stroke=${color}
-      stroke-width=${this.svg.line_width / 2}>
+      stroke-width=${this.svg.line_width / 2}
+      >
       ${points.map((point) => this.renderSvgPoint(point, i))}
     </g>`;
 }
 
 renderSvgTrafficLight(trafficLight, i) {
-  let adjustX = 0;
-  let adjustY = 0;
-  // if (this.config.square === true) {
-  //   const size = Math.min(trafficLight.width, trafficLight.height);
-  //   adjustX = (trafficLight.width - size) / 2;
-  //   adjustY = (trafficLight.height - size) / 2;
-  // }
   let size;
   if (this.config.square === true) {
     // Redistribute height
     size = Math.min(trafficLight.width, trafficLight.height);
     if (size < trafficLight.height) {
-      let spaceBetween = (this.svg.height - (this.buckets.length * size)) / (this.buckets.length - 1);
+      let spaceBetween = (this.svg.graph.height - (this.buckets.length * size)) / (this.buckets.length - 1);
 
       for (let j = 0; j < this.buckets.length; j++) {
-        trafficLight.y[j] = this.svg.height - (j * (size + spaceBetween));
+        trafficLight.y[j] = this.svg.graph.height + this.svg.margin.y - (j * (size + spaceBetween));
       }
       trafficLight.height = size;
       trafficLight.width = size;
@@ -1167,18 +1071,24 @@ renderSvgTrafficLight(trafficLight, i) {
     const color = hasValue
       ? this.computeColor(trafficLight.value[k] + 0.001, 0)
       : 'var(--theme-sys-elevation-surface-neutral4)';
+    // Safari needs an rx attribute. Can't handle rx as style, so fix this
+    // by adding the attribute if defined in styles section...
+      const rx = hasValue
+    ? this.styles.traffic_light_foreground?.rx || 0
+    : this.styles.traffic_light_background?.rx || 0;
 
     return svg`
     <rect class="${classMap(classList)}" style="${styleMap(styleList)}"
-      x=${trafficLight.x + adjustX + this.svg.line_width / 2}
-      y=${trafficLight.y[k] - 1 * trafficLight.height - this.svg.line_width / 100000}
-      height=${Math.max(0, trafficLight.height - 2 * adjustY - this.svg.line_width)}
-      width=${Math.max(0, trafficLight.width - 2 * adjustX - this.svg.line_width)}
+      x=${trafficLight.x + this.svg.line_width / 2}
+      y=${trafficLight.y[k] - 1 * trafficLight.height + this.svg.line_width / 2}
+      height=${Math.max(0, trafficLight.height - this.svg.line_width)}
+      width=${Math.max(0, trafficLight.width - this.svg.line_width)}
       stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
       fill=${color}
       stroke=${color}
       pathLength="10"
-    >
+      rx=${rx}
+      >
     </rect>`;
   });
   return svg`
@@ -1202,7 +1112,6 @@ renderSvgTrafficLights(trafficLights, i) {
     } else return [''];
   });
   const linesAbove = this.xLines.lines.map((helperLine) => {
-    // console.log('linesAbove', helperLine);
     if (helperLine.zpos === 'above') {
       return [svg`
         <line class="${classMap(this.classes[helperLine.id])}"
@@ -1224,7 +1133,8 @@ renderSvgTrafficLights(trafficLights, i) {
       style="animation-delay: ${this.config.animate ? `${i * 0.5 + 0.5}s` : '0s'}"
       fill=${color}
       stroke=${color}
-      stroke-width=${this.svg.line_width / 2}>
+      stroke-width=${this.svg.line_width / 2}
+      >
       ${linesBelow}
       ${trafficLights.map((trafficLight) => this.renderSvgTrafficLight(trafficLight, i))}
       ${linesAbove}
@@ -1300,7 +1210,6 @@ renderSvgAreaBackground(fill, i) {
       } else return [''];
     });
     const linesAbove = this.xLines.lines.map((helperLine) => {
-      // console.log('linesAbove', helperLine);
       if (helperLine.zpos === 'above') {
         return [svg`
           <line class="${classMap(this.classes[helperLine.id])}"
@@ -1443,7 +1352,7 @@ renderSvgBarsMask(bars, index) {
   const paths = bars.map((bar, i) => {
     const animation = this.config.animate
       ? svg`
-        <animate attributeName='y' from=${this.svg.height} to=${bar.y} dur='1s' fill='remove'
+        <animate attributeName='y' from=${this.svg.height} to=${bar.y} dur='2s' fill='remove'
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
         </animate>`
       : '';
@@ -1456,7 +1365,7 @@ renderSvgBarsMask(bars, index) {
         stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
         @mouseover=${() => this.setTooltip(index, i, bar.value)}
         @mouseout=${() => (this.tooltip = {})}>
-        ${animation}
+        ${this._firstUpdatedCalled ? animation : ''}
       </rect>`;
   });
   return svg`
@@ -1595,7 +1504,7 @@ renderSvgBars(bars, index) {
   const items = bars.map((bar, i) => {
     const animation = this.config.animate
       ? svg`
-        <animate attributeName='y' from=${this.svg.height} to=${bar.y} dur='1s' fill='remove'
+        <animate attributeName='y' from=${this.svg.height} to=${bar.y} dur='2s' fill='remove'
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
         </animate>`
       : '';
@@ -1605,7 +1514,7 @@ renderSvgBars(bars, index) {
         height=${bar.height} width=${bar.width} fill=${color}
         @mouseover=${() => this.setTooltip(index, i, bar.value)}
         @mouseout=${() => (this.tooltip = {})}>
-        ${animation}
+        ${this._firstUpdatedCalled ? animation : ''}
       </rect>`;
   });
   return svg`<g class='bars' ?anim=${this.config.animate}>${items}</g>`;
@@ -1752,9 +1661,6 @@ renderSvgClock(clock, index) {
 //   calculations? That won't be hard to calculate/display just the hour. Not more!!
 renderSvgTimeline(timeline, index) {
   if (!timeline) return;
-
-  // console.log('rendertimeline, styles = ', this.styles.helper_line1);
-  // if (this.config.y_axis?.use_value === 'bin') console.log('renderSvgTimeline, bin, timeline', timeline);
   const paths = timeline.map((timelinePart, i) => {
     // const color = this.computeColor(timelinePart.value, 0);
     // Should use different value for use_value: bin. In that case the index in the colorstop
@@ -1771,9 +1677,7 @@ renderSvgTimeline(timeline, index) {
       if (this.buckets[flooredValue]?.value) {
         const colorValue = this.buckets[flooredValue].value[0]
             + (this.buckets[flooredValue].rangeMax[0] - this.buckets[flooredValue].rangeMin[0]) * (timelinePart.value - flooredValue);
-        // color = this.intColor(this.buckets[flooredValue].value[0], 0);
         color = this.intColor(colorValue, 0);
-        // console.log('rendertimeline, color bin', this.buckets, timelinePart.value, this.buckets[flooredValue].value[0]);
       } else {
         // Weird stuff. What is that illegal value???
         console.log('rendertimeline, illegal value', timelinePart.value);
@@ -1784,7 +1688,7 @@ renderSvgTimeline(timeline, index) {
 
     const animation = this.config.animate
       ? svg`
-        <animate attributeName='y' from=${this.svg.height} to=${timelinePart.y} dur='1s' fill='remove'
+        <animate attributeName='x' from=${this.svg.margin.x} to=${timelinePart.x} dur='3s' fill='remove'
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
         </animate>`
       : '';
@@ -1798,49 +1702,44 @@ renderSvgTimeline(timeline, index) {
         stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
         @mouseover=${() => this.setTooltip(index, i, timelinePart.value)}
         @mouseout=${() => (this.tooltip = {})}>
-        ${animation}
+        ${this._firstUpdatedCalled ? animation : ''}
       </rect>`;
   });
   // stroke="lightgray" stroke-dasharray="0.5, 119" stroke-width="${this.svg.graph.height}"
 
-  const linesBelow = this.xLines.lines.map((helperLine) => {
-    if (helperLine.zpos === 'below') {
+  const linesBelow = this.xLines.lines.map((line) => {
+    if (line.zpos === 'below') {
       return [svg`
-        <line class=${classMap(this.classes[helperLine.id])}) style="${styleMap(this.styles[helperLine.id])}"
-        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
-        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        <line class=${classMap(this.classes[line.id])}) style="${styleMap(this.styles[line.id])}"
+        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + line.yshift}"
+        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + line.yshift}"
         pathLength="240"
         >
         </line>
         `];
     } else return [''];
   });
-  const linesAbove = this.xLines.lines.map((helperLine) => {
-    // console.log('linesAbove', helperLine);
-    if (helperLine.zpos === 'above') {
+  const linesAbove = this.xLines.lines.map((line) => {
+    if (line.zpos === 'above') {
       return [svg`
-        <line class="${classMap(this.classes[helperLine.id])}"
-              style="${styleMap(this.styles[helperLine.id])}"
-        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
-        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        <line class="${classMap(this.classes[line.id])}"
+              style="${styleMap(this.styles[line.id])}"
+        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + line.yshift}"
+        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + line.yshift}"
         pathLength="240"
         >
         </line>
         `];
     } else return [''];
   });
-  // console.log('renderSvgTimeline, lines', this.helperLines, linesAbove, linesBelow);
   return svg`
     ${linesBelow}
     ${paths}
     ${linesAbove}
   `;
 }
-// pathLength=24"${this.svg.graph.width / 4}">
 
 renderSvg() {
-  const height = this.svg.height - this.svg.margin.y * 0; // * 2;
-  const width = this.svg.width - this.svg.margin.x * 0; // * 2;
   this.MergeAnimationClassIfChanged();
   this.MergeAnimationStyleIfChanged();
 
@@ -1888,7 +1787,7 @@ renderSvg() {
   }
 
   /** *****************************************************************************
-    * SparklineBarChartTool::render()
+    * SparklineGraphTool::render()
     *
     * Summary.
     * The actual render() function called by the card for each tool.
