@@ -136,26 +136,18 @@ export default class SparklineGraphTool extends BaseTool {
         width: 25,
         margin: 0.5,
       },
-      x_axis: {
+      period: {
         hours_to_show: 24,
         bins_per_hour: 0.5,
         group_by: 'interval',
         start_on: 'interval',
       },
-      y_axis: {
+      states: {
         logarithmic: false,
         value_factor: 0,
         aggregate_func: 'avg',
         smoothing: true,
       },
-      _hours_to_show: 24,
-      _points_per_hour: 0.5,
-      _bins_per_hour: 0.5,
-      _group_by: 'interval',
-      _start_on: 'interval',
-      _logarithmic: false,
-      _value_factor: 0,
-      _aggregate_func: 'avg',
       value_buckets: 10,
       animate: true,
       hour24: false,
@@ -414,41 +406,41 @@ export default class SparklineGraphTool extends BaseTool {
     // Should be enabled again, but watch for changes!!!!!!!!!!!!!!!
     //
     // override points per hour to match group_by function
-    // switch (this.config.x_axis.group_by) {
+    // switch (this.config.period.group_by) {
     //   case 'week':
-    //     this.config.x_axis.bins_per_hour = 1 / (24 * 7);
+    //     this.config.period.bins_per_hour = 1 / (24 * 7);
     //     break;
     //   case 'date':
-    //     this.config.x_axis.bins_per_hour = 1 / 24;
+    //     this.config.period.bins_per_hour = 1 / 24;
     //     break;
     //   case 'hour':
-    //     this.config.x_axis.bins_per_hour = 1;
+    //     this.config.period.bins_per_hour = 1;
     //     break;
     //   case 'quarterhour':
-    //     this.config.x_axis.bins_per_hour = 4;
+    //     this.config.period.bins_per_hour = 4;
     //     break;
     //   default:
     //     break;
     // }
     // From MGC
     // if (this.config.points_per_hour)
-    //   this.config.x_axis.bins_per_hour = this.config.points_per_hour;
+    //   this.config.period.bins_per_hour = this.config.points_per_hour;
     this.Graph = [];
     this.Graph[0] = new SparklineGraph(
       this.svg.graph.width,
       this.svg.graph.height,
       this.svg.margin,
-      this.config.x_axis.start_on,
-      this.config.x_axis.hours_to_show,
-      this.config.x_axis.bins_per_hour,
-      this.config.y_axis.aggregate_func,
-      this.config.x_axis.group_by,
+      this.config.period.start_on,
+      this.config.period.hours_to_show,
+      this.config.period.bins_per_hour,
+      this.config.states.aggregate_func,
+      this.config.period.group_by,
       getFirstDefinedItem(
-        this.config.y_axis.smoothing,
+        this.config.states.smoothing,
         !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
         // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
       ),
-      this.config.y_axis.logarithmic,
+      this.config.states.logarithmic,
       this.trafficLights,
       this.buckets,
       this.config.state_map,
@@ -465,7 +457,7 @@ export default class SparklineGraphTool extends BaseTool {
     // Push realtime data into the history graph for fixed_value...
     // Maybe in future: history is fetched once, and then real time updates add
     // data to the existing history graph, and deletes old data points...
-    if (this.config.y_axis.fixed_value === true) {
+    if (this.config.states.fixed_value === true) {
       let histState = state;
       const stateHistory = [{ state: histState }];
       this.series = stateHistory;
@@ -519,7 +511,7 @@ export default class SparklineGraphTool extends BaseTool {
       // this._card.entities.forEach((entity, i) => {
       // this.entity.forEach((entity, i) => {
       if (!entity || this.Graph[i].coords.length === 0) return;
-        const bound = this._card.config.entities[i].y_axis === 'secondary' ? this.boundSecondary : this.bound;
+        const bound = this._card.config.entities[i].states === 'secondary' ? this.boundSecondary : this.bound;
         [this.Graph[i].min, this.Graph[i].max] = [bound[0], bound[1]];
 
         // Process each type of graph, including its options...
@@ -532,7 +524,7 @@ export default class SparklineGraphTool extends BaseTool {
           // Add the next 4 lines as a hack
           if (config.colorstops.length > 0 && !this._card.config.entities[i].color)
             this.gradient[i] = this.Graph[i].computeGradient(
-              config.colorstops, this.config.y_axis.logarithmic,
+              config.colorstops, this.config.states.logarithmic,
             );
         // +++++ Check for 'area' or 'line' graph type
         } else if (['area', 'line'].includes(config.show.graph)) {
@@ -589,7 +581,7 @@ export default class SparklineGraphTool extends BaseTool {
         // Add the next 4 lines as a hack
         if (config.colorstops.length > 0 && !this._card.config.entities[i].color)
         this.gradient[i] = this.Graph[i].computeGradient(
-          config.colorstops, this.config.y_axis.logarithmic,
+          config.colorstops, this.config.states.logarithmic,
         );
 
       this.line = [...this.line];
@@ -643,7 +635,7 @@ export default class SparklineGraphTool extends BaseTool {
         history[0][index].state = item.state;
       });
     }
-    if (this.config.y_axis?.use_value === 'bin') {
+    if (this.config.states?.use_value === 'bin') {
       history[0].forEach((item, index) => {
         let matchStep = -1;
         let matchBucket = 0;
@@ -669,10 +661,10 @@ export default class SparklineGraphTool extends BaseTool {
         history[0][index].state = newValue;
       });
     }
-    if (this.config.y_axis.value_factor !== 0) {
+    if (this.config.states.value_factor !== 0) {
       history[0].forEach((item, index) => {
         history[0][index].haState = item.state;
-        history[0][index].state = item.state * this.config.y_axis.value_factor;
+        history[0][index].state = item.state * this.config.states.value_factor;
       });
     }
   }
@@ -683,12 +675,12 @@ export default class SparklineGraphTool extends BaseTool {
   }
 
   get primaryYaxisEntities() {
-    return this.visibleEntities.filter((entity) => entity.y_axis === undefined
-      || entity.y_axis === 'primary');
+    return this.visibleEntities.filter((entity) => entity.states === undefined
+      || entity.states === 'primary');
   }
 
   get secondaryYaxisEntities() {
-    return this.visibleEntities.filter((entity) => entity.y_axis === 'secondary');
+    return this.visibleEntities.filter((entity) => entity.states === 'secondary');
   }
 
   get visibleLegends() {
@@ -745,18 +737,18 @@ export default class SparklineGraphTool extends BaseTool {
   updateBounds({ config } = this) {
     this.bound = this.getBoundaries(
       this.primaryYaxisSeries,
-      config.y_axis.lower_bound,
-      config.y_axis.upper_bound,
+      config.states.lower_bound,
+      config.states.upper_bound,
       this.bound,
-      config.y_axis.min_bound_range,
+      config.states.min_bound_range,
     );
 
     this.boundSecondary = this.getBoundaries(
       this.secondaryYaxisSeries,
-      config.y_axis.lower_bound_secondary,
-      config.y_axis.upper_bound_secondary,
+      config.states.lower_bound_secondary,
+      config.states.upper_bound_secondary,
       this.boundSecondary,
-      config.y_axis.min_bound_range_secondary,
+      config.states.min_bound_range_secondary,
     );
   }
 
@@ -803,7 +795,7 @@ export default class SparklineGraphTool extends BaseTool {
 
   getEndDate() {
     const date = new Date();
-    switch (this.config.x_axis.group_by) {
+    switch (this.config.period.group_by) {
       case 'date':
         date.setDate(date.getDate() + 1);
         date.setHours(0, 0, 0);
@@ -815,7 +807,7 @@ export default class SparklineGraphTool extends BaseTool {
       default:
         break;
     }
-    switch (this.config.x_axis.start_on) {
+    switch (this.config.period.start_on) {
       case 'today':
         break;
       case 'yesterday':
@@ -833,7 +825,7 @@ export default class SparklineGraphTool extends BaseTool {
       bins_per_hour,
       hours_to_show,
       format,
-    } = this.config.x_axis;
+    } = this.config.period;
     const offset = hours_to_show < 1 && bins_per_hour < 1
       ? bins_per_hour * hours_to_show
       : 1 / bins_per_hour;
@@ -1667,7 +1659,7 @@ renderSvgTimeline(timeline, index) {
     // should be used, ie reverse lookup. Not the start/end values of the stop itself, but the
     // bucket value!!
     let color;
-    if (this.config.y_axis?.use_value === 'bin') {
+    if (this.config.states?.use_value === 'bin') {
       // If aggrerate func = avg, one might get fractions! Floor those!!
       // However, fraction is still calculated on height, so you can see that it was not in the same
       // bucket all the time. Should also color that one with intColor?? Ie show smoothing ??

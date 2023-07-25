@@ -1729,15 +1729,15 @@ _buildStateString(inState, entityConfig) {
         || (item.type === 'graph')) {
           const end = new Date();
           const start = new Date();
-          if (item.tool.config.x_axis?.start_on === 'yesterday') {
+          if (item.tool.config.period?.start_on === 'yesterday') {
             start.setHours(0, 0, 0, 0);
             start.setHours(start.getHours() - 24);
             end.setHours(0, 0, 0, 0);
             console.log('updateData, yesterday, setting hours', start, end);
-          } else if ((item.tool.config.today === 'today') || (item.tool.config.x_axis?.start_on === 'today')) {
+          } else if ((item.tool.config.today === 'today') || (item.tool.config.period?.start_on === 'today')) {
             start.setHours(0, 0, 0, 0);
           } else {
-            start.setHours(end.getHours() - (item.tool.config.x_axis?.hours_to_show || item.tool.config.hours));
+            start.setHours(end.getHours() - (item.tool.config.period?.hours_to_show || item.tool.config.hours));
           }
           const attr = this.config.entities[item.tool.config.entity_index].attribute ? this.config.entities[item.tool.config.entity_index].attribute : null;
 
