@@ -137,12 +137,11 @@ export default class SparklineGraphTool extends BaseTool {
         margin: 0.5,
       },
       period: {
-        hours_to_show: 24,
-        bins_per_hour: 0.5,
+        type: 'unknown',
+        real_time: false,
         group_by: 'interval',
-        start_on: 'interval',
       },
-      states: {
+      state_values: {
         logarithmic: false,
         value_factor: 0,
         aggregate_func: 'avg',
@@ -225,7 +224,47 @@ export default class SparklineGraphTool extends BaseTool {
       show: { style: 'fixedcolor' },
     };
 
+    const DEFAULT_CALENDER_CONFIG = {
+      calendar: {
+        period: 'day',
+        offset: 0,
+        duration: {
+          hour: 24,
+        },
+        bins: {
+          per_hour: 1,
+        },
+      },
+    };
+
+    const DEFAULT_ROLLING_WINDOW_CONFIG = {
+      rolling_window: {
+        duration: {
+          hour: 24,
+        },
+        bins: {
+          per_hour: 1,
+        },
+      },
+    };
+
+    const DEFAULT_REAL_TIME_CONFIG = {
+      period: {
+        real_time: true,
+      },
+    };
+
     super(argToolset, Merge.mergeDeep(DEFAULT_GRAPH_CONFIG, argConfig), argPos);
+
+    if (this.config.period.real_time) {
+      this.config.period.type = 'real_time';
+    } else if (this.config.period?.calendar) {
+      this.config.period.type = 'calendar';
+      this.config.period = Merge.mergeDeep(DEFAULT_CALENDER_CONFIG, this.config.period);
+    } else if (this.config.period?.rolling_window) {
+      this.config.period.type = 'rolling_window';
+      this.config.period = Merge.mergeDeep(DEFAULT_ROLLING_WINDOW_CONFIG, this.config.period);
+    }
 
     this.svg.margin = {};
     if (typeof this.config.position.margin === 'object') {
@@ -425,26 +464,21 @@ export default class SparklineGraphTool extends BaseTool {
     // From MGC
     // if (this.config.points_per_hour)
     //   this.config.period.bins_per_hour = this.config.points_per_hour;
+    this.config.state_values.smoothing = getFirstDefinedItem(
+      this.config.state_values.smoothing,
+      !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
+      // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
+    );
+
     this.Graph = [];
     this.Graph[0] = new SparklineGraph(
       this.svg.graph.width,
       this.svg.graph.height,
       this.svg.margin,
-      this.config.period.start_on,
-      this.config.period.hours_to_show,
-      this.config.period.bins_per_hour,
-      this.config.states.aggregate_func,
-      this.config.period.group_by,
-      getFirstDefinedItem(
-        this.config.states.smoothing,
-        !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
-        // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
-      ),
-      this.config.states.logarithmic,
+      this.config,
       this.trafficLights,
       this.buckets,
       this.config.state_map,
-      config,
     );
     this._firstDataReceived = false;
   }
@@ -457,7 +491,8 @@ export default class SparklineGraphTool extends BaseTool {
     // Push realtime data into the history graph for fixed_value...
     // Maybe in future: history is fetched once, and then real time updates add
     // data to the existing history graph, and deletes old data points...
-    if (this.config.states.fixed_value === true) {
+    // if (this.config.state_values.fixed_value === true) {
+    if (this.config.period.type === 'real_time') {
       let histState = state;
       const stateHistory = [{ state: histState }];
       this.series = stateHistory;
@@ -524,7 +559,7 @@ export default class SparklineGraphTool extends BaseTool {
           // Add the next 4 lines as a hack
           if (config.colorstops.length > 0 && !this._card.config.entities[i].color)
             this.gradient[i] = this.Graph[i].computeGradient(
-              config.colorstops, this.config.states.logarithmic,
+              config.colorstops, this.config.state_values.logarithmic,
             );
         // +++++ Check for 'area' or 'line' graph type
         } else if (['area', 'line'].includes(config.show.graph)) {
@@ -581,7 +616,7 @@ export default class SparklineGraphTool extends BaseTool {
         // Add the next 4 lines as a hack
         if (config.colorstops.length > 0 && !this._card.config.entities[i].color)
         this.gradient[i] = this.Graph[i].computeGradient(
-          config.colorstops, this.config.states.logarithmic,
+          config.colorstops, this.config.state_values.logarithmic,
         );
 
       this.line = [...this.line];
@@ -635,7 +670,7 @@ export default class SparklineGraphTool extends BaseTool {
         history[0][index].state = item.state;
       });
     }
-    if (this.config.states?.use_value === 'bin') {
+    if (this.config.state_values?.use_value === 'bin') {
       history[0].forEach((item, index) => {
         let matchStep = -1;
         let matchBucket = 0;
@@ -661,10 +696,10 @@ export default class SparklineGraphTool extends BaseTool {
         history[0][index].state = newValue;
       });
     }
-    if (this.config.states.value_factor !== 0) {
+    if (this.config.state_values.value_factor !== 0) {
       history[0].forEach((item, index) => {
         history[0][index].haState = item.state;
-        history[0][index].state = item.state * this.config.states.value_factor;
+        history[0][index].state = item.state * this.config.state_values.value_factor;
       });
     }
   }
@@ -737,18 +772,18 @@ export default class SparklineGraphTool extends BaseTool {
   updateBounds({ config } = this) {
     this.bound = this.getBoundaries(
       this.primaryYaxisSeries,
-      config.states.lower_bound,
-      config.states.upper_bound,
+      config.state_values.lower_bound,
+      config.state_values.upper_bound,
       this.bound,
-      config.states.min_bound_range,
+      config.state_values.min_bound_range,
     );
 
     this.boundSecondary = this.getBoundaries(
       this.secondaryYaxisSeries,
-      config.states.lower_bound_secondary,
-      config.states.upper_bound_secondary,
+      config.state_values.lower_bound_secondary,
+      config.state_values.upper_bound_secondary,
       this.boundSecondary,
-      config.states.min_bound_range_secondary,
+      config.state_values.min_bound_range_secondary,
     );
   }
 
@@ -795,7 +830,7 @@ export default class SparklineGraphTool extends BaseTool {
 
   getEndDate() {
     const date = new Date();
-    switch (this.config.period.group_by) {
+    switch (this.config.period?.group_by) {
       case 'date':
         date.setDate(date.getDate() + 1);
         date.setHours(0, 0, 0);
@@ -807,11 +842,9 @@ export default class SparklineGraphTool extends BaseTool {
       default:
         break;
     }
-    switch (this.config.period.start_on) {
-      case 'today':
-        break;
-      case 'yesterday':
-        // date.setDate(date.getDate() - 1);
+    // When starting on a calendar period, always start at 00:00 hours
+    switch (this.config.period?.calendar?.period) {
+      case 'day':
         date.setHours(0, 0, 0, 0);
         break;
       default:
@@ -821,6 +854,8 @@ export default class SparklineGraphTool extends BaseTool {
   }
 
   setTooltip(entity, index, value, label = null) {
+    // #TODO: Disable
+    return;
     const {
       bins_per_hour,
       hours_to_show,
@@ -1052,7 +1087,6 @@ renderSvgTrafficLight(trafficLight, i) {
   }
   const tlRect = this.buckets.map((bucket, k) => {
     const piet = [];
-    console.log('bgRect', bucket, k, trafficLight);
     const hasValue = typeof trafficLight.value[k] !== 'undefined';
     const classList = hasValue
       ? this.classes.traffic_light_foreground
@@ -1659,7 +1693,7 @@ renderSvgTimeline(timeline, index) {
     // should be used, ie reverse lookup. Not the start/end values of the stop itself, but the
     // bucket value!!
     let color;
-    if (this.config.states?.use_value === 'bin') {
+    if (this.config.state_values?.use_value === 'bin') {
       // If aggrerate func = avg, one might get fractions! Floor those!!
       // However, fraction is still calculated on height, so you can see that it was not in the same
       // bucket all the time. Should also color that one with intColor?? Ie show smoothing ??

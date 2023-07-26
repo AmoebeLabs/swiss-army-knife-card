@@ -17,9 +17,9 @@ export const ONE_HOUR = 1000 * 3600;
 export const clockWidth = 20;
 
 export default class SparklineGraph {
-  constructor(width, height, margin, startOn, hours = 24, points = 1, aggregateFuncName = 'avg',
-              groupBy = 'interval', smoothing = true, logarithmic = false,
-              trafficLights = [], buckets = [], stateMap = [], config = {}) {
+  constructor(width, height, margin, config,
+              trafficLights = [], buckets = [], stateMap = [],
+              ) {
     this.aggregateFuncMap = {
       avg: this._average,
       median: this._median,
@@ -32,8 +32,8 @@ export default class SparklineGraph {
       diff: this._diff,
     };
 
-    this.startOn = startOn;
     this.config = config;
+
     // Just trying to make sense for the graph drawing area
     //
     // @2023.07.02
@@ -66,13 +66,17 @@ export default class SparklineGraph {
     // Testing
     this._max = 0;
     this._min = 0;
-    this.points = points;
-    this.hours = hours;
-    this.aggregateFuncName = aggregateFuncName;
-    this._calcPoint = this.aggregateFuncMap[aggregateFuncName] || this._average;
-    this._smoothing = smoothing;
-    this._logarithmic = logarithmic;
-    this._groupBy = groupBy;
+    this.points = this.config.period?.calendar?.bins?.per_hour
+                  || this.config.period?.rolling_window?.bins?.per_hour
+                  || 1;
+    this.hours = this.config.period?.calendar?.duration?.hour
+                  || this.config.period?.rolling_window?.duration?.hour
+                  || 24;
+    this.aggregateFuncName = this.config.state_values.aggregate_func;
+    this._calcPoint = this.aggregateFuncMap[this.aggregateFuncName] || this._average;
+    this._smoothing = this.config.state_values?.smoothing;
+    this._logarithmic = this.config.state_values?.logarithmic;
+    this._groupBy = this.config.period.groupBy;
     this._endTime = 0;
     this.valuesPerBucket = 0;
     this.levelCount = 1;
@@ -80,6 +84,12 @@ export default class SparklineGraph {
     this.bucketss = buckets;
     this.stateMap = [...stateMap];
     this.clockWidth = Utils.calculateSvgDimension(this.config?.clock?.size || 5);
+
+    // if (this.config.period.real_time) {
+    //   console.log('constructor, real-time', this.hours, this.points);
+    //   this.hours = 0.1;
+    //   this.points = 1;
+    // }
   }
 
   get max() { return this._max; }
@@ -97,12 +107,23 @@ export default class SparklineGraph {
       this._history = history;
     }
     if (!this._history) return;
-    if (this.history?.length === 0) return;
+    if (this._history?.length === 0) return;
 
+    // Update time stuff
     this._updateEndTime();
+    let date = new Date();
+    date.getDate();
+    this.offsetHours = 0;
+    if (this.config.period?.calendar?.period === 'day') {
+      // HACK to make sure any calculation uses the right amount of hours for today only!!
+      // Does not work for shifting to yesterday I think
+      let hours = date.getHours() + date.getMinutes() / 60;
+      this.offsetHours = Math.abs(this.config.period.calendar.offset * 24);
+      // this.hours = hours;
+      // console.log('update, calc hours this time', this.hours);
+    }
 
     const histGroups = this._history.reduce((res, item) => this._reducer(res, item), []);
-
     // drop potential out of bound entry's except one
     if (histGroups[0] && histGroups[0].length) {
       histGroups[0] = [histGroups[0][histGroups[0].length - 1]];
@@ -110,21 +131,39 @@ export default class SparklineGraph {
 
     // extend length to fill missing history.
     let requiredNumOfPoints;
-    let date = new Date();
-    date.getDate();
     // for now it is ok...
-    if (this.startOn === 'today') {
-      let hours = date.getHours() + date.getMinutes() / 60;
-      requiredNumOfPoints = Math.ceil(hours * this.points);
-    } else {
-      requiredNumOfPoints = Math.ceil(this.hours * this.points);
+    this.offsetHours = 0;
+    switch (this.config.period.type) {
+      case 'real_time':
+            requiredNumOfPoints = 1;
+            this.hours = 1;
+          break;
+      case 'calendar':
+        if (this.config.period?.calendar?.period === 'day') {
+          let hours = this.hours;
+          if (this.config.period.calendar.offset === 0) {
+            hours = date.getHours() + date.getMinutes() / 60;
+          } else {
+            this.offsetHours = Math.abs(this.config.period.calendar.offset * 24);
+            // console.log('update, offsethours', this.offsetHours);
+          }
+          requiredNumOfPoints = Math.ceil(hours * this.points);
+        }
+        break;
+      case 'rolling_window':
+        requiredNumOfPoints = Math.ceil(this.hours * this.points);
+        break;
+      default:
+        break;
     }
+
     histGroups.length = requiredNumOfPoints;
 
-    if (this.startOn === 'yesterday') {
-      // console.log('update, yesterday, history = ', this.history, histGroups);
+    try {
+      this.coords = this._calcPoints(histGroups);
+    } catch (error) {
+      console.log('error in calcpoints');
     }
-    this.coords = this._calcPoints(histGroups);
     this.min = Math.min(...this.coords.map((item) => Number(item[V])));
     this.max = Math.max(...this.coords.map((item) => Number(item[V])));
 
@@ -194,9 +233,17 @@ export default class SparklineGraph {
     return res;
   }
 
+  // #TODO @2023.07.26:
+  // The reducer should not have to check for hours. This wasn't required some changes ago
+  // Must be looked in to...
   _reducer(res, item) {
+    const hours = (this.config.period?.calendar?.period === 'day')
+                  ? (this.config.period.calendar.offset === 0)
+                    ? new Date().getHours() + new Date().getMinutes() / 60
+                    : 24
+                  : this.hours;
     const age = this._endTime - new Date(item.last_changed).getTime();
-    const interval = (age / ONE_HOUR * this.points) - this.hours * this.points;
+    const interval = (age / ONE_HOUR * this.points) - (hours) * this.points; // was this.hours!!
     const key = interval < 0 ? Math.floor(Math.abs(interval)) : 0;
     if (!res[key]) res[key] = [];
     res[key].push(item);
@@ -267,7 +314,7 @@ export default class SparklineGraph {
       yStack.push(coordY);
       return yStack;
     });
-    console.log('_calcLevelY, yStack', yStack);
+    // console.log('_calcLevelY, yStack', yStack);
     return yStack;
   }
 
@@ -707,11 +754,15 @@ export default class SparklineGraph {
 
   _updateEndTime() {
     this._endTime = new Date();
-    if (this.startOn === 'yesterday') {
-      // #TODO:
-      // Should account for hours_to_show. Maybe user wants to show the past 48 hours.
-      // Now I assume it is just yesterday, ie hours_to_show === 24
-      this._endTime.setHours(0, 0, 0, 0);
+    if (this.config.period.type === 'calendar') {
+      if ((this.config.period.calendar.period === 'day')
+        && (this.config.period.calendar.offset !== 0)) {
+        // #TODO:
+        // Should account for hours_to_show. Maybe user wants to show the past 48 hours.
+        // Now I assume it is just yesterday, ie hours_to_show === 24
+        this._endTime.setHours(0, 0, 0, 0);
+        this.hours = 24;
+       }
     } else {
       switch (this._groupBy) {
         case 'month':

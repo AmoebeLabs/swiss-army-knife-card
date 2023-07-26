@@ -1703,8 +1703,6 @@ _buildStateString(inState, entityConfig) {
     if (end) url += `&end_time=${end.toISOString()}`;
     if (skipInitialState) url += '&skip_initial_state';
     url += '&minimal_response';
-
-    // console.log('update, fetchRecent - call is', entityId, start, end, skipInitialState, url);
     return this._hass.callApi('GET', url);
   }
 
@@ -1727,22 +1725,29 @@ _buildStateString(inState, entityConfig) {
       toolset.tools.map((item, i) => {
         if ((item.type === 'bar')
         || (item.type === 'graph')) {
+          if (item.tool.config?.period?.type === 'real_time') return true;
           const end = new Date();
           const start = new Date();
-          if (item.tool.config.period?.start_on === 'yesterday') {
+          if (item.tool.config.period?.calendar?.period === 'day') {
             start.setHours(0, 0, 0, 0);
-            start.setHours(start.getHours() - 24);
-            end.setHours(0, 0, 0, 0);
-            console.log('updateData, yesterday, setting hours', start, end);
-          } else if ((item.tool.config.today === 'today') || (item.tool.config.period?.start_on === 'today')) {
-            start.setHours(0, 0, 0, 0);
+            start.setHours(start.getHours() + item.tool.config.period.calendar.offset * 24);
+            // For now assume 24 hours always, so if offset != 0, set end...
+            if (item.tool.config.period.calendar.offset !== 0) end.setHours(0, 0, 0, 0);
           } else {
-            start.setHours(end.getHours() - (item.tool.config.period?.hours_to_show || item.tool.config.hours));
+            start.setHours(end.getHours()
+              - (item.tool.config.period?.rolling_window?.duration?.hour || item.tool.config.hours));
           }
           const attr = this.config.entities[item.tool.config.entity_index].attribute ? this.config.entities[item.tool.config.entity_index].attribute : null;
 
           entityList[j] = ({
-            tsidx: k, entityIndex: item.tool.config.entity_index, entityId: this.entities[item.tool.config.entity_index].entity_id, attrId: attr, start, end, type: item.type, idx: i,
+            tsidx: k,
+            entityIndex: item.tool.config.entity_index,
+            entityId: this.entities[item.tool.config.entity_index].entity_id,
+            attrId: attr,
+            start,
+            end,
+            type: item.type,
+            idx: i,
             // tsidx: k, entityIndex: item.tool.config.entity_index, entityId: this.entities[item.tool.config.entity_index].entity_id, attrId: attr, start, end, type: 'bar', idx: i,
           });
           j += 1;
