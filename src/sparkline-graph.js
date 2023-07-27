@@ -410,7 +410,11 @@ export default class SparklineGraph {
     const scale = logarithmic
       ? Math.log10(Math.max(1, this._max)) - Math.log10(Math.max(1, this._min))
       : this._max - this._min;
-
+    // Must account for bottom margin. How????
+    // Percentage of bottom is
+    const scaleOffset = scale / (this.graphArea.height - this.margin.b) * this.graphArea.height - scale;
+    // const scaleOff
+    console.log('computeGradient, scaleOffset', scaleOffset);
     return thresholds.map((stop, index, arr) => {
       let color;
       if (stop.value > this._max && arr[index + 1]) {
@@ -430,7 +434,7 @@ export default class SparklineGraph {
           - Math.log10(Math.max(1, stop.value)))
           * (100 / scale);
       } else {
-        offset = (this._max - stop.value) * (100 / scale);
+        offset = (this._max - stop.value) * (100 / (scale + scaleOffset));
       }
       return {
         color: color || stop.color,

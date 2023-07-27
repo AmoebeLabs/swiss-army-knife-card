@@ -7793,6 +7793,9 @@ class SparklineGraph {
     return res;
   }
 
+  // #TODO @2023.07.26:
+  // The reducer should not have to check for hours. This wasn't required some changes ago
+  // Must be looked in to...
   _reducer(res, item) {
     const hours = (this.config.period?.calendar?.period === 'day')
                   ? (this.config.period.calendar.offset === 0)
@@ -7967,7 +7970,10 @@ class SparklineGraph {
     const scale = logarithmic
       ? Math.log10(Math.max(1, this._max)) - Math.log10(Math.max(1, this._min))
       : this._max - this._min;
-
+    // Must account for bottom margin. How????
+    // Percentage of bottom is
+    const scaleOffset = scale / (this.graphArea.height - this.margin.b) * this.graphArea.height - scale;
+    console.log('computeGradient, scaleOffset', scaleOffset);
     return thresholds.map((stop, index, arr) => {
       let color;
       if (stop.value > this._max && arr[index + 1]) {
@@ -7987,7 +7993,7 @@ class SparklineGraph {
           - Math.log10(Math.max(1, stop.value)))
           * (100 / scale);
       } else {
-        offset = (this._max - stop.value) * (100 / scale);
+        offset = (this._max - stop.value) * (100 / (scale + scaleOffset));
       }
       return {
         color: color || stop.color,
@@ -8929,6 +8935,7 @@ class SparklineGraphTool extends BaseTool {
         this.gradient[i] = this.Graph[i].computeGradient(
           config.colorstops, this.config.state_values.logarithmic,
         );
+        console.log('The Gradient = ', this.gradient[i]);
 
       this.line = [...this.line];
     }
@@ -9991,7 +9998,7 @@ renderSvgTimeline(timeline, index) {
         </animate>`
       : '';
     return svg` 
-      <rect class=${classMap(this.classes.timeline_graph)}) style="${styleMap(this.styles.timeline_graph)}"
+      <rect class=${classMap(this.classes.timeline_graph)} style="${styleMap(this.styles.timeline_graph)}"
         x=${timelinePart.x} y=${timelinePart.y + (timelinePart.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
         height=${Math.max(1, timelinePart.height - this.svg.line_width)}
         width=${Math.max(timelinePart.width - this.svg.line_width, 1)}
@@ -10008,7 +10015,7 @@ renderSvgTimeline(timeline, index) {
   const linesBelow = this.xLines.lines.map((line) => {
     if (line.zpos === 'below') {
       return [svg`
-        <line class=${classMap(this.classes[line.id])}) style="${styleMap(this.styles[line.id])}"
+        <line class=${classMap(this.classes[line.id])} style="${styleMap(this.styles[line.id])}"
         x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + line.yshift}"
         x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + line.yshift}"
         pathLength="240"
@@ -10031,9 +10038,15 @@ renderSvgTimeline(timeline, index) {
     } else return [''];
   });
   return svg`
-    ${linesBelow}
-    ${paths}
-    ${linesAbove}
+    <g id="linesBelow">
+      ${linesBelow}
+    </g>
+    <g id="rects">
+      ${paths}
+    </g>
+    <g id="linesAbove">
+      ${linesAbove}
+    </g>
   `;
 }
 
