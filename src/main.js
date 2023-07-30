@@ -1724,7 +1724,7 @@ _buildStateString(inState, entityConfig) {
     this.toolsets.map((toolset, k) => {
       toolset.tools.map((item, i) => {
         if ((item.type === 'bar')
-        || (item.type === 'graph')) {
+        || (item.type === 'sparkline')) {
           if (item.tool.config?.period?.type === 'real_time') return true;
           const end = new Date();
           const start = new Date();
@@ -1788,7 +1788,7 @@ _buildStateString(inState, entityConfig) {
     // the entity attribute. Ain't that nice!
 
     // Hack for state mapping...
-    if (entity.type === 'graph') {
+    if (entity.type === 'sparkline') {
       // console.log('pushing stateHistory into Graph!!!!', stateHistory);
       this.toolsets[entity.tsidx].tools[entity.idx].tool.processStateMap(newStateHistory);
     }
@@ -1811,7 +1811,7 @@ _buildStateString(inState, entityConfig) {
     stateHistory = [...stateHistory, ...newStateHistory];
 
     // console.log('Got new stateHistory', entity);
-    if (entity.type === 'graph') {
+    if (entity.type === 'sparkline') {
       // console.log('pushing stateHistory into Graph!!!!', stateHistory);
       this.toolsets[entity.tsidx].tools[entity.idx].tool.data = entity.entityIndex;
       this.toolsets[entity.tsidx].tools[entity.idx].tool.series = [...stateHistory];
@@ -1840,7 +1840,7 @@ _buildStateString(inState, entityConfig) {
     let barhours = 2;
 
     if ((entity.type === 'bar')
-    || (entity.type === 'graph')) {
+    || (entity.type === 'sparkline')) {
       if (this.dev.debug) console.log('entity.type == bar', entity);
 
       hours = this.toolsets[entity.tsidx].tools[entity.idx].tool.config.hours;

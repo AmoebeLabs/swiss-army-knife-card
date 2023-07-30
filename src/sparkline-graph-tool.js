@@ -181,6 +181,9 @@ export default class SparklineGraphTool extends BaseTool {
         },
         traffic_light_foreground: {
         },
+        clock_background: {
+          'sak-graph-clock__background': true,
+        },
         clock_face_day_night: {
           'sak-graph__clock-face_day-night': true,
         },
@@ -201,6 +204,10 @@ export default class SparklineGraphTool extends BaseTool {
         traffic_light_background: {
         },
         traffic_light_foreground: {
+        },
+        clock_background: {
+          fill: 'lightgray',
+          opacity: '0.8',
         },
         clock_face_day_night: {
         },
@@ -308,10 +315,10 @@ export default class SparklineGraphTool extends BaseTool {
     this.classes.clock_face_hour_marks = {};
     this.classes.clock_face_hour_numbers = {};
 
-    this.classes.timeline = {};
-    this.classes.timeline_graph = {};
-    this.styles.timeline = {};
-    this.styles.timeline_graph = {};
+    this.classes.barcode = {};
+    this.classes.barcode_graph = {};
+    this.styles.barcode = {};
+    this.styles.barcode_graph = {};
 
     this.classes.traffic_light = {};
     this.classes.traffic_light_background = {};
@@ -320,9 +327,14 @@ export default class SparklineGraphTool extends BaseTool {
     this.classes.traffic_light_foreground = {};
     this.styles.traffic_light_foreground = {};
 
+    this.classes.equalizer_part = {};
+    this.styles.equalizer_part = {};
+
     this.classes.clock = {};
+    this.classes.clock_background = {};
     this.classes.clock_graph = {};
     this.styles.clock = {};
+    this.styles.clock_background = {};
     this.styles.clock_graph = {};
 
     // Helper lines stuff
@@ -369,7 +381,7 @@ export default class SparklineGraphTool extends BaseTool {
     this.initial = true;
     this._md5Config = undefined;
     this.clock = [];
-    this.timeline = [];
+    this.barcode = [];
 
     // Use full widt/height for config
     this.config.width = this.svg.width;
@@ -539,7 +551,7 @@ export default class SparklineGraphTool extends BaseTool {
     this.updateBounds();
 
     let { config } = this;
-    if (config.show.graph) {
+    if (config.show.chart_type) {
       let graphPos = 0;
       let entity = this._card.config.entities[this.defaultEntityIndex()];
       const i = 0;
@@ -553,7 +565,7 @@ export default class SparklineGraphTool extends BaseTool {
         const numVisible = this.visibleEntities.length;
 
         // +++++ Check for 'bar' graph type
-        if (config.show.graph === 'bar') {
+        if (config.show.chart_type === 'bar') {
           this.bar[i] = this.Graph[i].getBars(graphPos, numVisible, config.bar_spacing);
           graphPos += 1;
           // Add the next 4 lines as a hack
@@ -562,13 +574,13 @@ export default class SparklineGraphTool extends BaseTool {
               config.colorstops, this.config.state_values.logarithmic,
             );
         // +++++ Check for 'area' or 'line' graph type
-        } else if (['area', 'line'].includes(config.show.graph)) {
+        } else if (['area', 'line'].includes(config.show.chart_type)) {
           const line = this.Graph[i].getPath();
           if (this._card.config.entities[i].show_line !== false) this.line[i] = line;
         }
 
         // +++++ Check for 'area' graph type
-        if (config.show.graph === 'area') {
+        if (config.show.chart_type === 'area') {
           this.fill[i] = this.Graph[i].getFill(this.line[i]);
         }
 
@@ -585,32 +597,32 @@ export default class SparklineGraphTool extends BaseTool {
         }
 
         // +++++ Check for 'dots' graph type or if dots are enabled for area or line graph
-        if ((config.show.graph === 'dots')
+        if ((config.show.chart_type === 'dots')
           || (config?.area?.show_dots === true)
           || (config?.line?.show_dots === true)) {
           this.points[i] = this.Graph[i].getPoints();
 
         // +++++ Check for 'equilizer' graph type
-        } else if (this.config.show.graph === 'equalizer') {
+        } else if (this.config.show.chart_type === 'equalizer') {
           this.Graph[i].levelCount = this.config.value_buckets;
           this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.value_buckets;
           this.equalizer[i] = this.Graph[i].getEqualizer(0, this.visibleEntities.length, config.bar_spacing);
 
         // +++++ Check for 'trafficlight' graph type
-        } else if (this.config.show.graph === 'trafficlight') {
+        } else if (this.config.show.chart_type === 'trafficlight') {
           this.Graph[i].levelCount = this.config.value_buckets;
           this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.value_buckets;
           this.trafficLight[i] = this.Graph[i].getTrafficLights(0, this.visibleEntities.length, config.bar_spacing);
 
         // +++++ Check for 'number' graph type
-        } else if (this.config.show.graph === 'clock') {
+        } else if (this.config.show.chart_type === 'clock') {
           this.clock[i] = this.Graph[i].getClock(0, this.visibleEntities.length, 0);
           this.Graph[i].clock = this.clock[i];
 
         // +++++ Check for 'number' graph type
-        } else if (this.config.show.graph === 'timeline') {
-          this.timeline[i] = this.Graph[i].getTimeline(0, this.visibleEntities.length, 0);
-          this.Graph[i].timeline = this.timeline[i];
+        } else if (this.config.show.chart_type === 'barcode') {
+          this.barcode[i] = this.Graph[i].getTimeline(0, this.visibleEntities.length, config.bar_spacing);
+          this.Graph[i].barcode = this.barcode[i];
         }
 
         // Add the next 4 lines as a hack
@@ -618,7 +630,6 @@ export default class SparklineGraphTool extends BaseTool {
         this.gradient[i] = this.Graph[i].computeGradient(
           config.colorstops, this.config.state_values.logarithmic,
         );
-        console.log('The Gradient = ', this.gradient[i]);
 
       this.line = [...this.line];
     }
@@ -806,7 +817,7 @@ export default class SparklineGraphTool extends BaseTool {
     let intColor;
     if (colorstops.length > 0) {
       // HACK. Keep check for 'bar' !!!
-      if (this.config.show.graph === 'bar') {
+      if (this.config.show.chart_type === 'bar') {
         const { color } = colorstops.find((ele) => ele.value < state)
           || colorstops.slice(-1)[0];
         intColor = color;
@@ -887,7 +898,7 @@ export default class SparklineGraphTool extends BaseTool {
   }
 
   renderSvgAreaMask(fill, i) {
-  if (this.config.show.graph !== 'area') return;
+  if (this.config.show.chart_type !== 'area') return;
   if (!fill) return;
   const fade = this.config.show.fill === 'fade';
   const init = this.length[i] || this._card.config.entities[i].show_line === false;
@@ -938,7 +949,7 @@ export default class SparklineGraphTool extends BaseTool {
 }
 
 renderSvgAreaMinMaxMask(fill, i) {
-  if (this.config.show.graph !== 'line') return;
+  if (this.config.show.chart_type !== 'line') return;
   if (!fill) return;
   const fade = this.config.show.fill === 'fade';
   const init = this.length[i] || this._card.config.entities[i].show_line === false;
@@ -989,8 +1000,8 @@ renderSvgAreaMinMaxMask(fill, i) {
 }
 
 renderSvgLineMask(line, i) {
-  // if (this.config.show.graph !== 'line') return;
-  // if (['dots', 'equalizer', 'trafficlight', 'clock'].includes(this.config.show.graph)) return;
+  // if (this.config.show.chart_type !== 'line') return;
+  // if (['dots', 'equalizer', 'trafficlight', 'clock'].includes(this.config.show.chart_type)) return;
   if (!line) return;
 
   const path = svg`
@@ -1014,7 +1025,7 @@ renderSvgLineMask(line, i) {
 }
 
 renderSvgLineMinMaxMask(line, i) {
-  if (this.config.show.graph !== 'line') return;
+  if (this.config.show.chart_type !== 'line') return;
   if (!line) return;
 
   const path = svg`
@@ -1108,8 +1119,8 @@ renderSvgTrafficLight(trafficLight, i) {
     <rect class="${classMap(classList)}" style="${styleMap(styleList)}"
       x=${trafficLight.x + this.svg.line_width / 2}
       y=${trafficLight.y[k] - 1 * trafficLight.height + this.svg.line_width / 2}
-      height=${Math.max(0, trafficLight.height - this.svg.line_width)}
-      width=${Math.max(0, trafficLight.width - this.svg.line_width)}
+      height=${Math.max(1, trafficLight.height - this.svg.line_width)}
+      width=${Math.max(1, trafficLight.width - this.svg.line_width)}
       stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
       fill=${color}
       stroke=${color}
@@ -1190,18 +1201,48 @@ renderSvgLineBackground(line, i) {
   const fill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
     : this.computeColor(this._card.entities[i].state, i);
+
+  const linesBelow = this.xLines.lines.map((helperLine) => {
+    if (helperLine.zpos === 'below') {
+      return [svg`
+        <line class=${classMap(this.classes[helperLine.id])}) style="${styleMap(this.styles[helperLine.id])}"
+        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        pathLength="240"
+        >
+        </line>
+        `];
+    } else return [''];
+  });
+  const linesAbove = this.xLines.lines.map((helperLine) => {
+    if (helperLine.zpos === 'above') {
+      return [svg`
+        <line class="${classMap(this.classes[helperLine.id])}"
+              style="${styleMap(this.styles[helperLine.id])}"
+        x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+        pathLength="240"
+        >
+        </line>
+        `];
+    } else return [''];
+  });
+
   return svg`
+    ${linesBelow}
     <rect class='line--rect'
       ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== i}
       id=${`line-rect-${this.id}-${i}`}
       fill=${fill} height="100%" width="100%"
       mask=${`url(#line-${this.id}-${i})`}
-    />`;
+    />
+    ${linesAbove}
+    `;
 }
 
 renderSvgLineMinMaxBackground(line, i) {
   // Hack
-  if (this.config.show.graph !== 'line') return;
+  if (this.config.show.chart_type !== 'line') return;
   if (!line) return;
   const fill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -1219,7 +1260,7 @@ renderSvgLineMinMaxBackground(line, i) {
 // Currently called the 'fill', but actually it should be named area, after
 // sparkline area graph according to the mighty internet.
 renderSvgAreaBackground(fill, i) {
-  if (this.config.show.graph !== 'area') return;
+  if (this.config.show.chart_type !== 'area') return;
   if (!fill) return;
   const svgFill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -1263,7 +1304,7 @@ renderSvgAreaBackground(fill, i) {
 }
 
 renderSvgAreaMinMaxBackground(fill, i) {
-  if (this.config.show.graph !== 'line') return;
+  if (this.config.show.chart_type !== 'line') return;
   if (!fill) return;
   const svgFill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -1278,7 +1319,7 @@ renderSvgAreaMinMaxBackground(fill, i) {
 }
 
 renderSvgEqualizerMask(equalizer, index) {
-  if (this.config.show.graph !== 'equalizer') return;
+  if (this.config.show.chart_type !== 'equalizer') return;
 
   if (!equalizer) return;
   const fade = this.config.show.fill === 'fade';
@@ -1319,12 +1360,13 @@ renderSvgEqualizerMask(equalizer, index) {
       : '';
       // jj = j;
       return svg`
-      <rect class='level'
+      <rect class="${classMap(this.classes.equalizer_part)}"
+            style="${styleMap(this.styles.equalizer_part)}"
         data-size=${size}
         x=${equalizerPart.x}
         y=${equalizerPart.y[j] - equalizerPart.height - this.svg.line_width / 100000}
-        height=${Math.max(0, equalizerPart.height - this.svg.line_width)}
-        width=${Math.max(0, equalizerPart.width - this.svg.line_width)}
+        height=${Math.max(1, equalizerPart.height - this.svg.line_width)}
+        width=${Math.max(1, equalizerPart.width - this.svg.line_width)}
         fill=${fade ? (equalizerPart.value > 0 ? fillPos : fillNeg) : 'white'}
         stroke=${fade ? (equalizerPart.value > 0 ? fillPos : fillNeg) : 'white'}
         stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
@@ -1364,8 +1406,8 @@ renderSvgEqualizerMask(equalizer, index) {
 }
 
 renderSvgBarsMask(bars, index) {
-  if (this.config.show.graph !== 'bar') return;
-  // if (this.config.show.graph === 'dots') return;
+  if (this.config.show.chart_type !== 'bar') return;
+  // if (this.config.show.chart_type === 'dots') return;
 
   if (!bars) return;
   const fade = this.config.show.fill === 'fade';
@@ -1386,7 +1428,7 @@ renderSvgBarsMask(bars, index) {
     return svg` 
 
       <rect class='bar' x=${bar.x} y=${bar.y + (bar.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
-        height=${Math.max(0, bar.height - this.svg.line_width / 1 - 0)} width=${bar.width}
+        height=${Math.max(1, bar.height - this.svg.line_width / 1 - 0)} width=${bar.width}
         fill=${fade ? (bar.value > 0 ? fillPos : fillNeg) : 'white'}
         stroke=${fade ? (bar.value > 0 ? fillPos : fillNeg) : 'white'}
         stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
@@ -1420,7 +1462,7 @@ renderSvgBarsMask(bars, index) {
 }
 
 renderSvgEqualizerBackground(equalizer, index) {
-  if (this.config.show.graph !== 'equalizer') return;
+  if (this.config.show.chart_type !== 'equalizer') return;
   if (!equalizer) return;
 
   const fade = this.config.show.fill === 'fadenever';
@@ -1460,19 +1502,48 @@ renderSvgEqualizerBackground(equalizer, index) {
     const fill = this.gradient[index]
       ? `url(#grad-${this.id}-${index})`
       : this.computeColor(this._card.entities[index].state, index);
+
+      const linesBelow = this.xLines.lines.map((helperLine) => {
+        if (helperLine.zpos === 'below') {
+          return [svg`
+            <line class=${classMap(this.classes[helperLine.id])}) style="${styleMap(this.styles[helperLine.id])}"
+            x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+            x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+            pathLength="240"
+            >
+            </line>
+            `];
+        } else return [''];
+      });
+      const linesAbove = this.xLines.lines.map((helperLine) => {
+        if (helperLine.zpos === 'above') {
+          return [svg`
+            <line class="${classMap(this.classes[helperLine.id])}"
+                  style="${styleMap(this.styles[helperLine.id])}"
+            x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+            x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + helperLine.yshift}"
+            pathLength="240"
+            >
+            </line>
+            `];
+        } else return [''];
+      });
       return svg`
+      ${linesBelow}
       <rect class='equalizer--bg'
         ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== index}
         id=${`equalizer-bg-${this.id}-${index}`}
         fill=${fill} height="100%" width="100%"
         mask=${`url(#equalizer-bg-${this.id}-${index})`}
-      />`;
+      />
+      ${linesAbove}
+      `;
   }
 }
 
 renderSvgBarsBackground(bars, index) {
-  if (this.config.show.graph !== 'bar') return;
-  // if (this.config.show.graph === 'dots') return;
+  if (this.config.show.chart_type !== 'bar') return;
+  // if (this.config.show.chart_type === 'dots') return;
   if (!bars) return;
 
   const fade = this.config.show.fill === 'fadenever';
@@ -1574,12 +1645,14 @@ renderSvgClockBackground(radius) {
     'Z',
   ].join(' ');
   return svg`
-    <path class="graph-clock--background"
+    <path
+      style="fill: lightgray; opacity: 0.4"
       d="${d}"
-      style="fill: var(--theme-sys-elevation-surface-neutral4); stroke-width: 0; opacity: 0.1;"
     />
   `;
 }
+// class="${classMap(this.classes.clock_background)}"
+// style="${classMap(this.styles.clock_background)}"
 
 renderSvgClockFace(radius) {
   if (!this.config?.clock?.face) return svg``;
@@ -1673,23 +1746,10 @@ renderSvgClock(clock, index) {
     </g>`;
 }
 
-// Timeline is wrong name for this type of history graph...
-// But what?
-// Timeline could get:
-// - background rect
-// - centerline, to go line. Calculated from timeline.length and x coords to start from
-// - helper line 1
-// - helper line 2
-// - with the two helper lines, user can make a sort of x-axis division stuff. Say 1 full
-//   line from start to finish, and one line with a dasharray to make vertical dashes...
-//   The two helper lines should have some offset from center to position them!
-// - The helper lines should be generic for every graph, altough the clock will ignore them!
-// - Add number helpers too? Again max 4? Relative and absolute? Relative this time with
-//   calculations? That won't be hard to calculate/display just the hour. Not more!!
-renderSvgTimeline(timeline, index) {
-  if (!timeline) return;
-  const paths = timeline.map((timelinePart, i) => {
-    // const color = this.computeColor(timelinePart.value, 0);
+renderSvgBarcode(barcode, index) {
+  if (!barcode) return;
+  const paths = barcode.map((barcodePart, i) => {
+    // const color = this.computeColor(barcodePart.value, 0);
     // Should use different value for use_value: bin. In that case the index in the colorstop
     // should be used, ie reverse lookup. Not the start/end values of the stop itself, but the
     // bucket value!!
@@ -1700,34 +1760,36 @@ renderSvgTimeline(timeline, index) {
       // bucket all the time. Should also color that one with intColor?? Ie show smoothing ??
       // In that case: if value is 0.3, calculate value in range?
       // rangeMin + rangeMin * fractionOf(value)
-      const flooredValue = Math.floor(timelinePart.value);
+      const flooredValue = Math.floor(barcodePart.value);
       if (this.buckets[flooredValue]?.value) {
         const colorValue = this.buckets[flooredValue].value[0]
-            + (this.buckets[flooredValue].rangeMax[0] - this.buckets[flooredValue].rangeMin[0]) * (timelinePart.value - flooredValue);
+            + (this.buckets[flooredValue].rangeMax[0] - this.buckets[flooredValue].rangeMin[0]) * (barcodePart.value - flooredValue);
         color = this.intColor(colorValue, 0);
       } else {
         // Weird stuff. What is that illegal value???
-        console.log('rendertimeline, illegal value', timelinePart.value);
+        console.log('renderbarcode, illegal value', barcodePart.value);
       }
     } else {
-      color = this.intColor(timelinePart.value, 0);
+      color = this.intColor(barcodePart.value, 0);
     }
 
     const animation = this.config.animate
       ? svg`
-        <animate attributeName='x' from=${this.svg.margin.x} to=${timelinePart.x} dur='3s' fill='remove'
+        <animate attributeName='x' from=${this.svg.margin.x} to=${barcodePart.x} dur='3s' fill='remove'
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
         </animate>`
       : '';
     return svg` 
-      <rect class=${classMap(this.classes.timeline_graph)} style="${styleMap(this.styles.timeline_graph)}"
-        x=${timelinePart.x} y=${timelinePart.y + (timelinePart.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
-        height=${Math.max(1, timelinePart.height - this.svg.line_width)}
-        width=${Math.max(timelinePart.width - this.svg.line_width, 1)}
+      <rect class=${classMap(this.classes.barcode_graph)}
+            style="${styleMap(this.styles.barcode_graph)}"
+        x=${barcodePart.x}
+        y=${barcodePart.y + this.svg.margin.t + (barcodePart.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
+        height=${Math.max(1, barcodePart.height - this.svg.margin.t - this.svg.margin.b - this.svg.line_width)}
+        width=${Math.max(barcodePart.width - this.svg.line_width, 1)}
         fill=${color}
         stroke=${color}
         stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
-        @mouseover=${() => this.setTooltip(index, i, timelinePart.value)}
+        @mouseover=${() => this.setTooltip(index, i, barcodePart.value)}
         @mouseout=${() => (this.tooltip = {})}>
         ${this._firstUpdatedCalled ? animation : ''}
       </rect>`;
@@ -1799,7 +1861,7 @@ renderSvg() {
         ${this.equalizer.map((equalizer, i) => this.renderSvgEqualizerMask(equalizer, i))}
         ${this.equalizer.map((equalizer, i) => this.renderSvgEqualizerBackground(equalizer, i))}
         ${this.points.map((points, i) => this.renderSvgPoints(points, i))}
-        ${this.timeline.map((timelinePart, i) => this.renderSvgTimeline(timelinePart, i))}
+        ${this.barcode.map((barcodePart, i) => this.renderSvgBarcode(barcodePart, i))}
         ${this.trafficLight.map((trafficLights, i) => this.renderSvgTrafficLights(trafficLights, i))}
         </svg>
       </g>

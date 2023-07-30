@@ -167,7 +167,7 @@ export default class SparklineGraph {
     this.min = Math.min(...this.coords.map((item) => Number(item[V])));
     this.max = Math.max(...this.coords.map((item) => Number(item[V])));
 
-    if ((this.config.show.graph === 'line') && (this.config.line?.show_minmax === true)) {
+    if ((this.config.show.chart_type === 'line') && (this.config.line?.show_minmax === true)) {
       // Just testing...
       // https://stackoverflow.com/questions/43576241/using-reduce-to-find-min-and-max-values
       const histGroupsMinMax = this._history.reduce((res, item) => this._reducerMinMax(res, item), []);
@@ -413,8 +413,6 @@ export default class SparklineGraph {
     // Must account for bottom margin. How????
     // Percentage of bottom is
     const scaleOffset = scale / (this.graphArea.height - this.margin.b) * this.graphArea.height - scale;
-    // const scaleOff
-    console.log('computeGradient, scaleOffset', scaleOffset);
     return thresholds.map((stop, index, arr) => {
       let color;
       if (stop.value > this._max && arr[index + 1]) {
@@ -509,12 +507,24 @@ export default class SparklineGraph {
       const coordY2 = 2;
       let ringWidth;
       let radius;
-      if (this.config.show?.variant === 'sunburst') {
-        ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
-        radius = this.drawArea.width / 2 - this.clockWidth + ringWidth;
-      } else {
-        ringWidth = this.clockWidth;
-        radius = this.drawArea.width / 2;
+      switch (this.config.show?.chart_variant) {
+        case 'sunburst':
+        case 'sunburst_centered':
+          ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
+          radius = (this.drawArea.width - this.clockWidth + ringWidth) / 2;
+          break;
+        case 'sunburst_outward':
+            ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
+            radius = this.drawArea.width / 2 - this.clockWidth + ringWidth;
+            break;
+        case 'sunburst_inward':
+          ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
+          radius = this.drawArea.width / 2;
+        break;
+        default:
+          ringWidth = this.clockWidth;
+          radius = this.drawArea.width / 2;
+          break;
       }
       let newX = [];
       let newY = [];
@@ -575,11 +585,11 @@ export default class SparklineGraph {
 
     const bucketHeight = (this.drawArea.height - (this.bucketss.length * 0)) / this.bucketss.length;
 
-    if (this.config.show.variant === 'audio') {
+    if (this.config.show.chart_variant === 'audio') {
       return coords.map((coord, i) => ({
         x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
         y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2), // * bucketHeight / 2), // 0,
-        height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio, // * bucketHeight,
+        height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio,
         width: xRatio - spacing,
         value: coord[V],
       }));

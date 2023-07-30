@@ -97,7 +97,7 @@ export default class Toolset {
       bar: SparklineBarChartTool,
       circle: CircleTool,
       ellipse: EllipseTool,
-      graph: SparklineGraphTool,
+      sparkline: SparklineGraphTool,
       horseshoe: HorseshoeTool,
       icon: EntityIconTool,
       line: LineTool,
@@ -129,7 +129,7 @@ export default class Toolset {
         // eslint-disable-next-line no-bitwise
         this._card.entityHistory.needed |= (toolConfig.type === 'bar');
         // eslint-disable-next-line no-bitwise
-        this._card.entityHistory.needed |= (toolConfig.type === 'graph');
+        this._card.entityHistory.needed |= (toolConfig.type === 'sparkline');
         this.tools.push({ type: toolConfig.type, index: toolConfig.id, tool: newTool });
       }
       return true;
