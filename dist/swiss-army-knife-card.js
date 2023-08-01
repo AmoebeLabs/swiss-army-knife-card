@@ -8065,6 +8065,8 @@ class SparklineGraph {
     let runningAngle = startAngle;
     const clockWise = true;
     const wRatio = ((max - min) / this.radialBarcodeSize);
+    console.log('_calcRadialBarcode, params', isBackground, columnSpacing, rowSpacing);
+    // columnSpacing /= segments;
 
     const coords2 = coords.map((coord) => {
       const value = !isBackground ? coord[V] : max;
@@ -8099,7 +8101,7 @@ class SparklineGraph {
       const {
         start, end, start2, end2, largeArcFlag, sweepFlag,
       } = this._calcRadialBarcodeCoords(
-        runningAngle + columnSpacing / 2, runningAngle + angleSize - columnSpacing / 2, clockWise,
+        runningAngle + columnSpacing, runningAngle + angleSize - columnSpacing, clockWise,
         radius, radius, ringWidth);
       runningAngle += angleSize;
       newX.push(start.x, end.x, start2.x, end2.x);
@@ -8291,6 +8293,8 @@ class SparklineGraph {
     const xRatio = ((this.drawArea.width + columnSpacing) / Math.ceil(this.hours * this.points)) / total;
     const yRatio = ((max - min) / this.drawArea.height) || 1;
 
+    console.log('getBarCode, args', position, total, columnSpacing, rowSpacing);
+
     (this.drawArea.height - (this.gradeRanks.length * 0)) / this.gradeRanks.length;
 
     switch (this.config.show.chart_variant) {
@@ -8299,7 +8303,7 @@ class SparklineGraph {
           x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
           y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2),
           height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio,
-          width: xRatio - columnSpacing,
+          width: xRatio - columnSpacing / 2,
           value: coord[V],
         }));
       case 'audio_top':
@@ -8307,7 +8311,7 @@ class SparklineGraph {
           x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
           y: 0,
           height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio,
-          width: xRatio - columnSpacing,
+          width: xRatio - columnSpacing / 2,
           value: coord[V],
         }));
       case 'audio_bottom':
@@ -8315,7 +8319,7 @@ class SparklineGraph {
           x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
           y: this.drawArea.height / 1 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio),
           height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio,
-          width: xRatio - columnSpacing,
+          width: xRatio - columnSpacing / 2,
           value: coord[V],
         }));
       default:
@@ -8323,7 +8327,7 @@ class SparklineGraph {
           x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
           y: 0,
           height: this.drawArea.height,
-          width: xRatio - columnSpacing,
+          width: xRatio - columnSpacing / 2,
           value: coord[V],
         }));
       }
@@ -8661,7 +8665,7 @@ class SparklineGraphTool extends BaseTool {
       colorstops: [],
       colorstops_transition: 'smooth',
       // line_width: 5,
-      bar_spacing: 4,
+      // bar_spacing: 4,
       state_map: [],
       cache: true,
       color: 'var(--primary-color)',
@@ -8890,9 +8894,9 @@ class SparklineGraphTool extends BaseTool {
     this.config.width = this.svg.width;
     this.config.height = this.svg.height;
 
-    this.svg.line_width = Utils.calculateSvgDimension(this.config[this.config.chart_type]?.line_width || this.config.line_width || 4);
-    this.svg.column_spacing = Utils.calculateSvgDimension(this.config[this.config.chart_type]?.colomn_spacing || this.config.bar_spacing || 1);
-    this.svg.row_spacing = Utils.calculateSvgDimension(this.config[this.config.chart_type]?.row_spacing || this.config.bar_spacing || 1);
+    this.svg.line_width = Utils.calculateSvgDimension(this.config[this.config.show.chart_type]?.line_width || this.config.line_width || 0);
+    this.svg.column_spacing = Utils.calculateSvgDimension(this.config[this.config.show.chart_type]?.column_spacing || this.config.bar_spacing || 1);
+    this.svg.row_spacing = Utils.calculateSvgDimension(this.config[this.config.show.chart_type]?.row_spacing || this.config.bar_spacing || 1);
 
     this.gradeValues = [];
     this.config.colorstops.map((value, index) => (
@@ -9112,27 +9116,28 @@ class SparklineGraphTool extends BaseTool {
           this.Graph[i].levelCount = this.config.value_buckets;
           this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.value_buckets;
           this.equalizer[i] = this.Graph[i].getEqualizer(0, this.visibleEntities.length,
-                                            this.svg.colomn_spacing, this.svg.row_spacing);
+                                            this.svg.column_spacing, this.svg.row_spacing);
 
         // +++++ Check for 'graded' graph type
         } else if (this.config.show.chart_type === 'graded') {
           this.Graph[i].levelCount = this.config.value_buckets;
           this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.value_buckets;
           this.graded[i] = this.Graph[i].getGrades(0, this.visibleEntities.length,
-            this.svg.colomn_spacing, this.svg.row_spacing);
+            this.svg.column_spacing, this.svg.row_spacing);
 
         // +++++ Check for 'radial_barcode' graph type
         } else if (this.config.show.chart_type === 'radial_barcode') {
-          this.radialBarcodeChartBackground[i] = this.Graph[i].getRadialBarcodeBackground(0, this.visibleEntities.length, this.svg.colomn_spacing);
+          this.radialBarcodeChartBackground[i] = this.Graph[i].getRadialBarcodeBackground(0, this.visibleEntities.length,
+                                                        this.svg.column_spacing, this.svg.row_spacing);
           this.radialBarcodeChart[i] = this.Graph[i].getRadialBarcode(0, this.visibleEntities.length,
-                                                        this.svg.colomn_spacing, this.svg.row_spacing);
+                                                        this.svg.column_spacing, this.svg.row_spacing);
           this.Graph[i].radialBarcodeBackground = this.radialBarcodeChartBackground[i];
           this.Graph[i].radialBarcode = this.radialBarcodeChart[i];
 
         // +++++ Check for 'barcode' graph type
         } else if (this.config.show.chart_type === 'barcode') {
           this.barcodeChart[i] = this.Graph[i].getBarcode(0, this.visibleEntities.length,
-                                                         this.svg.colomn_spacing, this.svg.row_spacing);
+                                                         this.svg.column_spacing, this.svg.row_spacing);
           this.Graph[i].barcodeChart = this.barcodeChart[i];
         }
 
@@ -10273,7 +10278,7 @@ renderSvgBarcode(barcode, index) {
         x=${barcodePart.x}
         y=${barcodePart.y + this.svg.margin.t + (barcodePart.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
         height=${Math.max(1, barcodePart.height - this.svg.margin.t - this.svg.margin.b - this.svg.line_width)}
-        width=${Math.max(barcodePart.width - this.svg.line_width, 1)}
+        width=${Math.max(barcodePart.width, 1)}
         fill=${color}
         stroke=${color}
         stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"

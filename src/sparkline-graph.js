@@ -503,6 +503,8 @@ export default class SparklineGraph {
     let runningAngle = startAngle;
     const clockWise = true;
     const wRatio = ((max - min) / this.radialBarcodeSize);
+    console.log('_calcRadialBarcode, params', isBackground, columnSpacing, rowSpacing);
+    // columnSpacing /= segments;
 
     const coords2 = coords.map((coord) => {
       const piet = 9;
@@ -540,7 +542,7 @@ export default class SparklineGraph {
       const {
         start, end, start2, end2, largeArcFlag, sweepFlag,
       } = this._calcRadialBarcodeCoords(
-        runningAngle + columnSpacing / 2, runningAngle + angleSize - columnSpacing / 2, clockWise,
+        runningAngle + columnSpacing, runningAngle + angleSize - columnSpacing, clockWise,
         radius, radius, ringWidth);
       runningAngle += angleSize;
       newX.push(start.x, end.x, start2.x, end2.x);
@@ -732,6 +734,8 @@ export default class SparklineGraph {
     const xRatio = ((this.drawArea.width + columnSpacing) / Math.ceil(this.hours * this.points)) / total;
     const yRatio = ((max - min) / this.drawArea.height) || 1;
 
+    console.log('getBarCode, args', position, total, columnSpacing, rowSpacing);
+
     const bucketHeight = (this.drawArea.height - (this.gradeRanks.length * 0)) / this.gradeRanks.length;
 
     switch (this.config.show.chart_variant) {
@@ -740,7 +744,7 @@ export default class SparklineGraph {
           x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
           y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2),
           height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio,
-          width: xRatio - columnSpacing,
+          width: xRatio - columnSpacing / 2,
           value: coord[V],
         }));
         break;
@@ -749,7 +753,7 @@ export default class SparklineGraph {
           x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
           y: 0,
           height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio,
-          width: xRatio - columnSpacing,
+          width: xRatio - columnSpacing / 2,
           value: coord[V],
         }));
         break;
@@ -758,7 +762,7 @@ export default class SparklineGraph {
           x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
           y: this.drawArea.height / 1 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio),
           height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio,
-          width: xRatio - columnSpacing,
+          width: xRatio - columnSpacing / 2,
           value: coord[V],
         }));
         break;
@@ -767,7 +771,7 @@ export default class SparklineGraph {
           x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
           y: 0,
           height: this.drawArea.height,
-          width: xRatio - columnSpacing,
+          width: xRatio - columnSpacing / 2,
           value: coord[V],
         }));
         break;
