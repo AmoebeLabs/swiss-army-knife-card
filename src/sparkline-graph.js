@@ -14,11 +14,11 @@ export const R = 2;
 export const B = 3;
 export const ONE_HOUR = 1000 * 3600;
 
-export const clockWidth = 20;
+// export const clockWidth = 20;
 
 export default class SparklineGraph {
   constructor(width, height, margin, config,
-              trafficLights = [], buckets = [], stateMap = [],
+              gradeValues = [], gradeRanks = [], stateMap = [],
               ) {
     this.aggregateFuncMap = {
       avg: this._average,
@@ -80,10 +80,10 @@ export default class SparklineGraph {
     this._endTime = 0;
     this.valuesPerBucket = 0;
     this.levelCount = 1;
-    this.trafficLights = trafficLights;
-    this.bucketss = buckets;
+    this.gradeValues = gradeValues;
+    this.gradeRanks = gradeRanks;
     this.stateMap = [...stateMap];
-    this.clockWidth = Utils.calculateSvgDimension(this.config?.clock?.size || 5);
+    this.radialBarcodeSize = Utils.calculateSvgDimension(this.config?.radial_barcode?.size || 5);
 
     // if (this.config.period.real_time) {
     //   console.log('constructor, real-time', this.hours, this.points);
@@ -167,7 +167,10 @@ export default class SparklineGraph {
     this.min = Math.min(...this.coords.map((item) => Number(item[V])));
     this.max = Math.max(...this.coords.map((item) => Number(item[V])));
 
-    if ((this.config.show.chart_type === 'line') && (this.config.line?.show_minmax === true)) {
+    // Check for line and area for minmax calculations
+    if (['line', 'area'].includes(this.config.show.chart_type)
+      && (this.config.line?.show_minmax === true
+          || this.config.area?.show_minmax === true)) {
       // Just testing...
       // https://stackoverflow.com/questions/43576241/using-reduce-to-find-min-and-max-values
       const histGroupsMinMax = this._history.reduce((res, item) => this._reducerMinMax(res, item), []);
@@ -443,7 +446,7 @@ export default class SparklineGraph {
 
   // #TODO. Is not right...
   // Weird stuff...
-  getFillMinMax(pathMin, pathMax) {
+  getAreaMinMax(pathMin, pathMax) {
     let fill = pathMin;
     fill += ` L ${this.coordsMax[this.coordsMax.length - 1][X]},
                 ${this.coordsMax[this.coordsMax.length - 1][Y]}`;
@@ -452,7 +455,7 @@ export default class SparklineGraph {
     return fill;
   }
 
-  getFill(path) {
+  getArea(path) {
     const y_zero = (this._min >= 0) ? this.height
     : this.height + 0 - ((Math.abs(this._min) / ((this._max - this._min)) * this.height));
     const height = y_zero + this.drawArea.y * 1.5; // Should be this.svg.line_width;
@@ -473,7 +476,7 @@ export default class SparklineGraph {
     };
   }
 
-  _calcClockCoords(argStartAngle, argEndAngle, argClockwise, argRadiusX, argRadiusY, argWidth) {
+  _calcRadialBarcodeCoords(argStartAngle, argEndAngle, argClockwise, argRadiusX, argRadiusY, argWidth) {
     const cx = this.drawArea.x + this.drawArea.width / 2;
     const cy = this.drawArea.y + this.drawArea.height / 2;
     const start = this.polarToCartesian(cx, cy, argRadiusX, argRadiusY, argEndAngle);
@@ -491,7 +494,7 @@ export default class SparklineGraph {
     };
   }
 
-  _calcClock(coords) {
+  _calcRadialBarcode(coords, isBackground = false, columnSpacing = 4, rowSpacing = 4) {
     const max = this._logarithmic ? Math.log10(Math.max(1, this.max)) : this.max;
     const min = this._logarithmic ? Math.log10(Math.max(1, this.min)) : this.min;
     const segments = this.hours * this.points;
@@ -499,30 +502,34 @@ export default class SparklineGraph {
     const startAngle = 0;
     let runningAngle = startAngle;
     const clockWise = true;
-    const wRatio = ((max - min) / this.clockWidth);
+    const wRatio = ((max - min) / this.radialBarcodeSize);
 
     const coords2 = coords.map((coord) => {
       const piet = 9;
       const coordY = 8;
       const coordY2 = 2;
+      const value = !isBackground ? coord[V] : max;
       let ringWidth;
       let radius;
       switch (this.config.show?.chart_variant) {
         case 'sunburst':
         case 'sunburst_centered':
-          ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
-          radius = (this.drawArea.width - this.clockWidth + ringWidth) / 2;
+          // ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
+          ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
+          radius = (this.drawArea.width - this.radialBarcodeSize + ringWidth) / 2;
           break;
         case 'sunburst_outward':
-            ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
-            radius = this.drawArea.width / 2 - this.clockWidth + ringWidth;
+            // ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
+            ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
+            radius = this.drawArea.width / 2 - this.radialBarcodeSize + ringWidth;
             break;
         case 'sunburst_inward':
-          ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
+          // ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
+          ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
           radius = this.drawArea.width / 2;
         break;
         default:
-          ringWidth = this.clockWidth;
+          ringWidth = this.radialBarcodeSize;
           radius = this.drawArea.width / 2;
           break;
       }
@@ -532,23 +539,82 @@ export default class SparklineGraph {
       let radiusY = [];
       const {
         start, end, start2, end2, largeArcFlag, sweepFlag,
-      } = this._calcClockCoords(
-        runningAngle, runningAngle + angleSize, clockWise,
+      } = this._calcRadialBarcodeCoords(
+        runningAngle + columnSpacing / 2, runningAngle + angleSize - columnSpacing / 2, clockWise,
         radius, radius, ringWidth);
       runningAngle += angleSize;
       newX.push(start.x, end.x, start2.x, end2.x);
       newY.push(start.y, end.y, start2.y, end2.y);
-      radiusX.push(this.drawArea.width / 2, this.drawArea.width / 2 - this.clockWidth);
-      radiusY.push(this.drawArea.height / 2, this.drawArea.height / 2 - this.clockWidth);
+      radiusX.push(this.drawArea.width / 2, this.drawArea.width / 2 - this.radialBarcodeSize);
+      radiusY.push(this.drawArea.height / 2, this.drawArea.height / 2 - this.radialBarcodeSize);
+      // return [newX, newY, coord[V], 0, radiusX, radiusY, largeArcFlag, sweepFlag];
       return [newX, newY, coord[V], 0, radiusX, radiusY, largeArcFlag, sweepFlag];
     });
+    if (isBackground) {
+      console.log('_calcRadialBarcode', isBackground, coords.length, segments);
+      if (coords.length !== segments) {
+        let ringWidth;
+        let radius;
+        const value = max;
+        switch (this.config.show?.chart_variant) {
+          case 'sunburst':
+          case 'sunburst_centered':
+            // ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
+            ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
+            radius = (this.drawArea.width - this.radialBarcodeSize + ringWidth) / 2;
+            break;
+          case 'sunburst_outward':
+              // ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
+              ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
+              radius = this.drawArea.width / 2 - this.radialBarcodeSize + ringWidth;
+              break;
+          case 'sunburst_inward':
+            // ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
+            ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
+            radius = this.drawArea.width / 2;
+          break;
+          default:
+            ringWidth = this.radialBarcodeSize;
+            radius = this.drawArea.width / 2;
+            break;
+        }
+        let bgCoords = [];
+        for (let bg = coords.length; bg < segments; bg++) {
+          bgCoords[bg] = {};
+          bgCoords[bg][X] = bg;
+          bgCoords[bg][Y] = 0;
+          bgCoords[bg][V] = max;
+          let newX = [];
+          let newY = [];
+          let radiusX = [];
+          let radiusY = [];
+          const {
+            start, end, start2, end2, largeArcFlag, sweepFlag,
+          } = this._calcRadialBarcodeCoords(
+            runningAngle + 0.5, runningAngle + angleSize - 0.5, clockWise,
+            radius, radius, ringWidth);
+          runningAngle += angleSize;
+          newX.push(start.x, end.x, start2.x, end2.x);
+          newY.push(start.y, end.y, start2.y, end2.y);
+          radiusX.push(this.drawArea.width / 2, this.drawArea.width / 2 - this.radialBarcodeSize);
+          radiusY.push(this.drawArea.height / 2, this.drawArea.height / 2 - this.radialBarcodeSize);
+          // console.log('TEST', bg, newX, newY, value, 0, radiusX, radiusY, largeArcFlag, sweepFlag);
+          coords2.push([newX, newY, undefined, 0, radiusX, radiusY, largeArcFlag, sweepFlag]);
+        }
+      }
+    }
+    // console.log('TEST, coords2', coords2);
     return coords2;
   }
 
-  getClock(position, total, spacing = 4) {
-    const clockCoords = this._calcClock(this.coords);
+  getRadialBarcodeBackground(position, total, columnSpacing = 4, rowSpacing = 4) {
+    this.backgroundCoords = [];
+    this.backgroundCoords = [...this.coords];
+    // this.backgroundCoords.length = this.hours * this.points;
+    const radialBarcodeCoords = this._calcRadialBarcode(this.backgroundCoords, true, columnSpacing, rowSpacing);
+    // console.log('getRadialBarcodeBackground', radialBarcodeCoords);
 
-    return clockCoords.map((coord, i) => ({
+    return radialBarcodeCoords.map((coord, i) => ({
       start: { x: coord[X][0], y: coord[Y][0] },
       end: { x: coord[X][1], y: coord[Y][1] },
       start2: { x: coord[X][2], y: coord[Y][2] },
@@ -561,59 +627,163 @@ export default class SparklineGraph {
     }));
   }
 
-  getClockPaths() {
-    const clockPaths = this.clock.map((segment, index) => {
+  getRadialBarcodeBackgroundPaths() {
+    const radialBarcodeBackgroundPaths = this.radialBarcodeBackground.map((segment, index) => {
+      let rOuterX;
+      let rOuterY;
+      let rInnerX;
+      let rInnerY;
+      let sweepFlagTest = '0';
+
+      if (['flower', 'rice_grain'].includes(this.config.show?.chart_viz)) {
+        const difX1 = Math.abs(segment.start.x - segment.end.x);
+        const difY1 = Math.abs(segment.start.y - segment.end.y);
+        rOuterX = Math.sqrt(difX1 * difX1 + difY1 * difY1) / 2;
+        rOuterY = rOuterX;
+
+        const difX2 = Math.abs(segment.start2.x - segment.end2.x);
+        const difY2 = Math.abs(segment.start2.y - segment.end2.y);
+        rInnerX = Math.sqrt(difX2 * difX2 + difY2 * difY2) / 2;
+        rInnerY = rInnerX;
+        sweepFlagTest = this.config.show.chart_viz === 'rice_grain' ? '1' : '0';
+      } else {
+        rOuterX = segment.radius.x;
+        rOuterY = segment.radius.y;
+        rInnerX = segment.radius2.x;
+        rInnerY = segment.radius2.y;
+      }
       const d = [
         'M', segment.start.x, segment.start.y,
-        'A', segment.radius.x, segment.radius.y, 0, segment.largeArcFlag, segment.sweepFlag, segment.end.x, segment.end.y,
+        'A', rOuterX, rOuterY, 0, segment.largeArcFlag, segment.sweepFlag, segment.end.x, segment.end.y,
         'L', segment.end2.x, segment.end2.y,
-        'A', segment.radius2.x, segment.radius2.y, 0, segment.largeArcFlag, segment.sweepFlag === '0' ? '1' : '0', segment.start2.x, segment.start2.y,
+        'A', rInnerX, rInnerY, 0, segment.largeArcFlag, segment.sweepFlag === sweepFlagTest ? '1' : '0', segment.start2.x, segment.start2.y,
         'Z',
       ].join(' ');
       return d;
     });
-    return clockPaths;
+    return radialBarcodeBackgroundPaths;
   }
 
-  getTimeline(position, total, spacing = 4) {
+  getRadialBarcode(position, total, columnSpacing = 4, rowSpacing = 4) {
+    const radialBarcodeCoords = this._calcRadialBarcode(this.coords, false, columnSpacing, rowSpacing);
+
+    return radialBarcodeCoords.map((coord, i) => ({
+      start: { x: coord[X][0], y: coord[Y][0] },
+      end: { x: coord[X][1], y: coord[Y][1] },
+      start2: { x: coord[X][2], y: coord[Y][2] },
+      end2: { x: coord[X][3], y: coord[Y][3] },
+      radius: { x: coord[RX][0], y: coord[RY][0] },
+      radius2: { x: coord[RX][1], y: coord[RY][1] },
+      largeArcFlag: coord[6],
+      sweepFlag: coord[7],
+      value: coord[V],
+    }));
+  }
+
+  getRadialBarcodePaths() {
+    const radialBarcodePaths = this.radialBarcode.map((segment, index) => {
+      let rOuterX;
+      let rOuterY;
+      let rInnerX;
+      let rInnerY;
+      let sweepFlagTest = '0';
+
+      if (['flower', 'rice_grain'].includes(this.config.show?.chart_viz)) {
+        const difX1 = Math.abs(segment.start.x - segment.end.x);
+        const difY1 = Math.abs(segment.start.y - segment.end.y);
+        rOuterX = Math.sqrt(difX1 * difX1 + difY1 * difY1) / 2;
+        rOuterY = rOuterX;
+
+        const difX2 = Math.abs(segment.start2.x - segment.end2.x);
+        const difY2 = Math.abs(segment.start2.y - segment.end2.y);
+        rInnerX = Math.sqrt(difX2 * difX2 + difY2 * difY2) / 2;
+        rInnerY = rInnerX;
+        sweepFlagTest = this.config.show.chart_viz === 'rice_grain' ? '1' : '0';
+      } else {
+        rOuterX = segment.radius.x;
+        rOuterY = segment.radius.y;
+        rInnerX = segment.radius2.x;
+        rInnerY = segment.radius2.y;
+      }
+      const d = [
+        'M', segment.start.x, segment.start.y,
+        'A', rOuterX, rOuterY, 0, segment.largeArcFlag, segment.sweepFlag, segment.end.x, segment.end.y,
+        'L', segment.end2.x, segment.end2.y,
+        'A', rInnerX, rInnerY, 0, segment.largeArcFlag, segment.sweepFlag === sweepFlagTest ? '1' : '0', segment.start2.x, segment.start2.y,
+        'Z',
+      ].join(' ');
+      // const d = [
+      //   'M', segment.start.x, segment.start.y,
+      //   'A', segment.radius.x, segment.radius.y, 0, segment.largeArcFlag, segment.sweepFlag, segment.end.x, segment.end.y,
+      //   'L', segment.end2.x, segment.end2.y,
+      //   'A', segment.radius2.x, segment.radius2.y, 0, segment.largeArcFlag, segment.sweepFlag === '0' ? '1' : '0', segment.start2.x, segment.start2.y,
+      //   'Z',
+      // ].join(' ');
+      return d;
+    });
+    return radialBarcodePaths;
+  }
+
+  getBarcode(position, total, columnSpacing = 4, rowSpacing = 4) {
     const max = this._logarithmic ? Math.log10(Math.max(1, this.max)) : this.max;
     const min = this._logarithmic ? Math.log10(Math.max(1, this.min)) : this.min;
 
     const coords = this.coords;
-    const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
+    const xRatio = ((this.drawArea.width + columnSpacing) / Math.ceil(this.hours * this.points)) / total;
     const yRatio = ((max - min) / this.drawArea.height) || 1;
 
-    const bucketHeight = (this.drawArea.height - (this.bucketss.length * 0)) / this.bucketss.length;
+    const bucketHeight = (this.drawArea.height - (this.gradeRanks.length * 0)) / this.gradeRanks.length;
 
-    if (this.config.show.chart_variant === 'audio') {
-      return coords.map((coord, i) => ({
-        x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-        y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2), // * bucketHeight / 2), // 0,
-        height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio,
-        width: xRatio - spacing,
-        value: coord[V],
-      }));
-    } else {
-      return coords.map((coord, i) => ({
-        x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
-        y: 0,
-        height: this.drawArea.height,
-        width: xRatio - spacing,
-        value: coord[V],
-      }));
-    }
+    switch (this.config.show.chart_variant) {
+      case 'audio':
+        return coords.map((coord, i) => ({
+          x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+          y: this.drawArea.height / 2 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio / 2),
+          height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio,
+          width: xRatio - columnSpacing,
+          value: coord[V],
+        }));
+        break;
+      case 'audio_top':
+        return coords.map((coord, i) => ({
+          x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+          y: 0,
+          height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio,
+          width: xRatio - columnSpacing,
+          value: coord[V],
+        }));
+        break;
+      case 'audio_bottom':
+        return coords.map((coord, i) => ({
+          x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+          y: this.drawArea.height / 1 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio),
+          height: ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio,
+          width: xRatio - columnSpacing,
+          value: coord[V],
+        }));
+        break;
+      default:
+        return coords.map((coord, i) => ({
+          x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
+          y: 0,
+          height: this.drawArea.height,
+          width: xRatio - columnSpacing,
+          value: coord[V],
+        }));
+        break;
+      }
   }
 
   // Get array of levels. Just levels which draw a little bar at each level once reached
-  getEqualizer(position, total, spacing = 4) {
-    const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
+  getEqualizer(position, total, columnSpacing = 4, rowSpacing = 4) {
+    const xRatio = ((this.drawArea.width + columnSpacing) / Math.ceil(this.hours * this.points)) / total;
     const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
     const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
 
     // Calculate height of each level rectangle
     // we have drawarea.height. We have steprange and spacing.
     // height / steprange = max height rectangle. Minus spacing = height??
-    const levelHeight = (this.drawArea.height - (this.levelCount * spacing)) / this.levelCount;
+    const levelHeight = (this.drawArea.height - (this.levelCount * rowSpacing)) / this.levelCount;
 
     let stepRange;
     let equalizerCoords = this.coords.map((coord, i) => {
@@ -635,19 +805,19 @@ export default class SparklineGraph {
       x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
       y: coord[Y],
       height: levelHeight,
-      width: xRatio - spacing,
+      width: xRatio - columnSpacing,
       value: coord[V],
     }));
   }
 
-  getTrafficLights(position, total, spacing = 4) {
-    const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
-    const bucketHeight = (this.drawArea.height - ((this.bucketss.length - 1) * spacing)) / this.bucketss.length;
+  getGrades(position, total, columnSpacing = 4, rowSpacing = 4) {
+    const xRatio = ((this.drawArea.width + columnSpacing) / Math.ceil(this.hours * this.points)) / total;
+    const bucketHeight = (this.drawArea.height - ((this.gradeRanks.length - 1) * rowSpacing)) / this.gradeRanks.length;
 
     let stepRange;
     let levelCoords = this.coords.map((coord, i) => {
       let newCoord = [];
-      const stepMax = this.bucketss.length;
+      const stepMax = this.gradeRanks.length;
       const stepMin = 0;
       stepRange = (stepMax - stepMin);
 
@@ -667,8 +837,8 @@ export default class SparklineGraph {
         // Find matching bucket. Can be any of them defined
         match = false;
         matchBucket = 0;
-        for (let j = 0; j < this.bucketss[i].rangeMin.length; j++) {
-          if (coord[V] >= this.bucketss[i].rangeMin[j] && coord[V] < this.bucketss[i].rangeMax[j]) {
+        for (let j = 0; j < this.gradeRanks[i].rangeMin.length; j++) {
+          if (coord[V] >= this.gradeRanks[i].rangeMin[j] && coord[V] < this.gradeRanks[i].rangeMax[j]) {
             match = true;
             matchBucket = j;
             matchStep = i;
@@ -678,12 +848,12 @@ export default class SparklineGraph {
 
       // We have the matching index
       // for (let i = 0; i <= matchStep; i++) {
-      //   newCoord[V][i] = this.bucketss[i].length > matchBucket ? this.bucketss[i].rangeMin[matchBucket] : this.bucketss[i].rangeMin[0];
+      //   newCoord[V][i] = this.gradeRanks[i].length > matchBucket ? this.gradeRanks[i].rangeMin[matchBucket] : this.gradeRanks[i].rangeMin[0];
       //   newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
       // }
       for (let i = 0; i <= stepRange; i++) {
-        if (i <= matchStep) newCoord[V][i] = this.bucketss[i].length > matchBucket ? this.bucketss[i].rangeMin[matchBucket] : this.bucketss[i].rangeMin[0];
-        newCoord[Y][i] = this.drawArea.height + this.margin.t - i * (bucketHeight + spacing);
+        if (i <= matchStep) newCoord[V][i] = this.gradeRanks[i].length > matchBucket ? this.gradeRanks[i].rangeMin[matchBucket] : this.gradeRanks[i].rangeMin[0];
+        newCoord[Y][i] = this.drawArea.height + this.margin.t - i * (bucketHeight + rowSpacing);
       }
       return newCoord;
     });
@@ -691,14 +861,14 @@ export default class SparklineGraph {
       x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x, // Remove start spacing + spacing,
       y: coord[Y],
       height: bucketHeight,
-      width: xRatio - spacing,
+      width: xRatio - columnSpacing,
       value: coord[V],
     }));
   }
 
-  getBars(position, total, spacing = 4) {
+  getBars(position, total, columnSpacing = 4, rowSpacing = 4) {
     const coords = this._calcY(this.coords);
-    const xRatio = ((this.drawArea.width + spacing) / Math.ceil(this.hours * this.points)) / total;
+    const xRatio = ((this.drawArea.width + columnSpacing) / Math.ceil(this.hours * this.points)) / total;
     const yRatio = ((this._max - this._min) / this.drawArea.height) || 1;
     const offset = this._min < 0 ? (Math.abs(this._min)) / yRatio : 0;
 
@@ -707,7 +877,7 @@ export default class SparklineGraph {
       y: this._min > 0 ? coord[Y] : coord[Y2],
       height: coord[V] > 0 ? (this._min < 0 ? coord[V] / yRatio : (coord[V] - this._min) / yRatio)
                            : coord[Y] - coord[Y2],
-      width: xRatio - spacing,
+      width: xRatio - columnSpacing,
       value: coord[V],
     }));
   }
