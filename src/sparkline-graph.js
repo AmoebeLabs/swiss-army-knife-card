@@ -507,10 +507,7 @@ export default class SparklineGraph {
     // columnSpacing /= segments;
 
     const coords2 = coords.map((coord) => {
-      const piet = 9;
-      const coordY = 8;
-      const coordY2 = 2;
-      const value = !isBackground ? coord[V] : max;
+      const value = !isBackground ? coord[V] : this.max;
       let ringWidth;
       let radius;
       switch (this.config.show?.chart_variant) {
@@ -550,14 +547,14 @@ export default class SparklineGraph {
       radiusX.push(this.drawArea.width / 2, this.drawArea.width / 2 - this.radialBarcodeSize);
       radiusY.push(this.drawArea.height / 2, this.drawArea.height / 2 - this.radialBarcodeSize);
       // return [newX, newY, coord[V], 0, radiusX, radiusY, largeArcFlag, sweepFlag];
-      return [newX, newY, coord[V], 0, radiusX, radiusY, largeArcFlag, sweepFlag];
+      return [newX, newY, value, 0, radiusX, radiusY, largeArcFlag, sweepFlag];
     });
     if (isBackground) {
       console.log('_calcRadialBarcode', isBackground, coords.length, segments);
       if (coords.length !== segments) {
         let ringWidth;
         let radius;
-        const value = max;
+        const value = this.max;
         switch (this.config.show?.chart_variant) {
           case 'sunburst':
           case 'sunburst_centered':
@@ -593,7 +590,7 @@ export default class SparklineGraph {
           const {
             start, end, start2, end2, largeArcFlag, sweepFlag,
           } = this._calcRadialBarcodeCoords(
-            runningAngle + 0.5, runningAngle + angleSize - 0.5, clockWise,
+            runningAngle + columnSpacing, runningAngle + angleSize - columnSpacing, clockWise,
             radius, radius, ringWidth);
           runningAngle += angleSize;
           newX.push(start.x, end.x, start2.x, end2.x);
@@ -601,7 +598,7 @@ export default class SparklineGraph {
           radiusX.push(this.drawArea.width / 2, this.drawArea.width / 2 - this.radialBarcodeSize);
           radiusY.push(this.drawArea.height / 2, this.drawArea.height / 2 - this.radialBarcodeSize);
           // console.log('TEST', bg, newX, newY, value, 0, radiusX, radiusY, largeArcFlag, sweepFlag);
-          coords2.push([newX, newY, undefined, 0, radiusX, radiusY, largeArcFlag, sweepFlag]);
+          coords2.push([newX, newY, value, 0, radiusX, radiusY, largeArcFlag, sweepFlag]);
         }
       }
     }
@@ -637,17 +634,29 @@ export default class SparklineGraph {
       let rInnerY;
       let sweepFlagTest = '0';
 
-      if (['flower', 'rice_grain'].includes(this.config.show?.chart_viz)) {
-        const difX1 = Math.abs(segment.start.x - segment.end.x);
-        const difY1 = Math.abs(segment.start.y - segment.end.y);
-        rOuterX = Math.sqrt(difX1 * difX1 + difY1 * difY1) / 2;
-        rOuterY = rOuterX;
-
-        const difX2 = Math.abs(segment.start2.x - segment.end2.x);
-        const difY2 = Math.abs(segment.start2.y - segment.end2.y);
-        rInnerX = Math.sqrt(difX2 * difX2 + difY2 * difY2) / 2;
-        rInnerY = rInnerX;
-        sweepFlagTest = this.config.show.chart_viz === 'rice_grain' ? '1' : '0';
+      if (['flower', 'flower2', 'rice_grain'].includes(this.config.show?.chart_viz)) {
+        // Outer part. For flower2 this depends on the inward/outward setting
+        if ((this.config.show.chart_viz === 'flower2')
+         && (this.config.show.chart_variant === 'sunburst_inward')) {
+          rOuterX = segment.radius.x;
+          rOuterY = segment.radius.y;
+        } else {
+          const difX1 = Math.abs(segment.start.x - segment.end.x);
+          const difY1 = Math.abs(segment.start.y - segment.end.y);
+          rOuterX = Math.sqrt(difX1 * difX1 + difY1 * difY1) / 2;
+          rOuterY = rOuterX;
+        }
+        if ((this.config.show.chart_viz === 'flower2')
+         && (this.config.show.chart_variant === 'sunburst_outward')) {
+          rInnerX = segment.radius2.x;
+          rInnerY = segment.radius2.y;
+        } else {
+          const difX2 = Math.abs(segment.start2.x - segment.end2.x);
+          const difY2 = Math.abs(segment.start2.y - segment.end2.y);
+          rInnerX = Math.sqrt(difX2 * difX2 + difY2 * difY2) / 2;
+          rInnerY = rInnerX;
+          sweepFlagTest = ['rice_grain', 'flower2'].includes(this.config.show.chart_viz) ? '1' : '0';
+        }
       } else {
         rOuterX = segment.radius.x;
         rOuterY = segment.radius.y;
@@ -690,17 +699,29 @@ export default class SparklineGraph {
       let rInnerY;
       let sweepFlagTest = '0';
 
-      if (['flower', 'rice_grain'].includes(this.config.show?.chart_viz)) {
-        const difX1 = Math.abs(segment.start.x - segment.end.x);
-        const difY1 = Math.abs(segment.start.y - segment.end.y);
-        rOuterX = Math.sqrt(difX1 * difX1 + difY1 * difY1) / 2;
-        rOuterY = rOuterX;
-
-        const difX2 = Math.abs(segment.start2.x - segment.end2.x);
-        const difY2 = Math.abs(segment.start2.y - segment.end2.y);
-        rInnerX = Math.sqrt(difX2 * difX2 + difY2 * difY2) / 2;
-        rInnerY = rInnerX;
-        sweepFlagTest = this.config.show.chart_viz === 'rice_grain' ? '1' : '0';
+      if (['flower', 'flower2', 'rice_grain'].includes(this.config.show?.chart_viz)) {
+        // Outer part. For flower2 this depends on the inward/outward setting
+        if ((this.config.show.chart_viz === 'flower2')
+         && (this.config.show.chart_variant === 'sunburst_inward')) {
+          rOuterX = segment.radius.x;
+          rOuterY = segment.radius.y;
+        } else {
+          const difX1 = Math.abs(segment.start.x - segment.end.x);
+          const difY1 = Math.abs(segment.start.y - segment.end.y);
+          rOuterX = Math.sqrt(difX1 * difX1 + difY1 * difY1) / 2;
+          rOuterY = rOuterX;
+        }
+        if ((this.config.show.chart_viz === 'flower2')
+         && (this.config.show.chart_variant === 'sunburst_outward')) {
+          rInnerX = segment.radius2.x;
+          rInnerY = segment.radius2.y;
+        } else {
+          const difX2 = Math.abs(segment.start2.x - segment.end2.x);
+          const difY2 = Math.abs(segment.start2.y - segment.end2.y);
+          rInnerX = Math.sqrt(difX2 * difX2 + difY2 * difY2) / 2;
+          rInnerY = rInnerX;
+          sweepFlagTest = ['rice_grain', 'flower2'].includes(this.config.show.chart_viz) ? '1' : '0';
+        }
       } else {
         rOuterX = segment.radius.x;
         rOuterY = segment.radius.y;
