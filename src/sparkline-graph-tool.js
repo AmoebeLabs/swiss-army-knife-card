@@ -154,8 +154,6 @@ export default class SparklineGraphTool extends BaseTool {
       line_color: [...DEFAULT_COLORS],
       colorstops: [],
       colorstops_transition: 'smooth',
-      // line_width: 5,
-      // bar_spacing: 4,
       state_map: [],
       cache: true,
       color: 'var(--primary-color)',
@@ -206,10 +204,6 @@ export default class SparklineGraphTool extends BaseTool {
         graded_foreground: {
         },
         radial_barcode_background: {
-          // fill: 'lightgray',
-          // stroke: 'lightgray',
-          // 'stroke-width': '3',
-          // opacity: '0.2',
         },
         radial_barcode_face_day_night: {
         },
@@ -507,10 +501,9 @@ export default class SparklineGraphTool extends BaseTool {
 
     const changed = super.value = state;
 
-    // Push realtime data into the history graph for fixed_value...
+    // Push realtime data into the history graph if type = 'real_time'...
     // Maybe in future: history is fetched once, and then real time updates add
     // data to the existing history graph, and deletes old data points...
-    // if (this.config.state_values.fixed_value === true) {
     if (this.config.period.type === 'real_time') {
       let histState = state;
       const stateHistory = [{ state: histState }];
@@ -596,12 +589,8 @@ export default class SparklineGraphTool extends BaseTool {
           || config?.area?.show_minmax) {
           const lineMin = this.Graph[i].getPathMin();
           const lineMax = this.Graph[i].getPathMax();
-          // if (!this.lineMin) this.lineMin = [];
-          // if (!this.lineMax) this.lineMax = [];
           this.lineMin[i] = lineMin;
           this.lineMax[i] = lineMax;
-
-          // if (!this.areaMinMax) this.areaMinMax = [];
           this.areaMinMax[i] = this.Graph[i].getAreaMinMax(lineMin, lineMax);
         }
 
@@ -853,7 +842,6 @@ export default class SparklineGraphTool extends BaseTool {
     }
 
     return this._card.config.entities[i].color || intColor || line_color[i] || line_color[0];
-    // return this.config.entities[i].color || intColor || line_color[i] || line_color[0];
   }
 
   getEndDate() {
@@ -1374,7 +1362,6 @@ renderSvgEqualizerMask(equalizer, index) {
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
         </animate>`
       : '';
-      // jj = j;
       return svg`
       <rect class="${classMap(this.classes.equalizer_part)}"
             style="${styleMap(this.styles.equalizer_part)}"
@@ -1423,14 +1410,11 @@ renderSvgEqualizerMask(equalizer, index) {
 
 renderSvgBarsMask(bars, index) {
   if (this.config.show.chart_type !== 'bar') return;
-  // if (this.config.show.chart_type === 'dots') return;
 
   if (!bars) return;
   const fade = this.config.show.fill === 'fade';
   const maskNeg = `url(#fill-grad-mask-neg-${this.id}-${index}})`;
   const maskPos = `url(#fill-grad-mask-pos-${this.id}-${index}})`;
-  // const fillNeg = `url(#fill-grad-neg-${this.id}-${index}`;
-  // const fillPos = `url(#fill-grad-pos-${this.id}-${index}`;
   const fillNeg = this.config.styles.bar_mask_below.fill;
   const fillPos = this.config.styles.bar_mask_above.fill;
 
@@ -1559,7 +1543,6 @@ renderSvgEqualizerBackground(equalizer, index) {
 
 renderSvgBarsBackground(bars, index) {
   if (this.config.show.chart_type !== 'bar') return;
-  // if (this.config.show.chart_type === 'dots') return;
   if (!bars) return;
 
   const fade = this.config.show.fill === 'fadenever';
@@ -1635,7 +1618,6 @@ renderSvgBars(bars, index) {
 }
 
 renderSvgRadialBarcodeBin(bin, path, index) {
-  // const color = this.computeColor(bin.value, 0);
   const color = this.intColor(bin.value, 0);
   return svg`
   <path class="${classMap(this.classes.clock_graph)}"
@@ -1648,25 +1630,11 @@ renderSvgRadialBarcodeBin(bin, path, index) {
 }
 
 renderSvgRadialBarcodeBackgroundBin(bin, path, index) {
-  // const color = this.computeColor(bin.value, 0);
   let color = 'lightgray';
-  // if (bin.value !== undefined) {
-  //   color = this.intColor(bin.value, 0);
-  //   console.log('TEST not undefined, color', color);
-  // }
   return svg`
   <path class="${classMap(this.classes.radial_barcode_background)}"
         style="${styleMap(this.styles.radial_barcode_background)}"
     d=${path}
-  >
-  `;
-
-  return svg`
-  <path class="${classMap(this.classes.radial_barcode_background)}"
-        style="${styleMap(this.styles.radial_barcode_background)}"
-    d=${path}
-    fill=${color}
-    stroke=${color}
   >
   `;
 }
@@ -1691,8 +1659,6 @@ renderSvgRadialBarcodeBackground(radius) {
     />
   `;
 }
-// class="${classMap(this.classes.radial_barcode_background)}"
-// style="${classMap(this.styles.radial_barcode_background)}"
 
 renderSvgRadialBarcodeFace(radius) {
   if (!this.config?.clock?.face) return svg``;
@@ -1774,7 +1740,6 @@ renderSvgRadialBarcode(radialBarcode, index) {
   const radialBarcodePaths = this.Graph[index].getRadialBarcodePaths();
   const radialBarcodeBackgroundPaths = this.Graph[index].getRadialBarcodeBackgroundPaths();
 
-  // console.log('TEST, render', radialBarcode.length, this.radialBarcodeChartBackground[index].length, radialBarcodePaths.length, radialBarcodeBackgroundPaths.length);
   return svg`
     <g class='graph-clock'
       ?tooltip=${this.tooltip.entity === index}
@@ -1784,18 +1749,6 @@ renderSvgRadialBarcode(radialBarcode, index) {
       style="animation-delay: ${this.config.animate ? `${index * 0.5 + 0.5}s` : '0s'}"
       stroke-width=${this.svg.line_width / 2}>
       ${this.radialBarcodeChartBackground[index].map(((bin, i) => this.renderSvgRadialBarcodeBackgroundBin(bin, radialBarcodeBackgroundPaths[i], i)))}
-      ${radialBarcode.map(((bin, i) => this.renderSvgRadialBarcodeBin(bin, radialBarcodePaths[i], i)))}
-      ${this.renderSvgRadialBarcodeFace(this.svg.width / 2 - 2 * 20)}
-    </g>`;
-    return svg`
-    <g class='graph-clock'
-      ?tooltip=${this.tooltip.entity === index}
-      ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== index}
-      ?init=${this.length[index]}
-      anim=${this.config.animate && this.config.show.points !== 'hover'}
-      style="animation-delay: ${this.config.animate ? `${index * 0.5 + 0.5}s` : '0s'}"
-      stroke-width=${this.svg.line_width / 2}>
-      ${this.renderSvgRadialBarcodeBackground(this.svg.width / 2)}
       ${radialBarcode.map(((bin, i) => this.renderSvgRadialBarcodeBin(bin, radialBarcodePaths[i], i)))}
       ${this.renderSvgRadialBarcodeFace(this.svg.width / 2 - 2 * 20)}
     </g>`;

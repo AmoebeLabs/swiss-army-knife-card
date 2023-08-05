@@ -84,12 +84,6 @@ export default class SparklineGraph {
     this.gradeRanks = gradeRanks;
     this.stateMap = [...stateMap];
     this.radialBarcodeSize = Utils.calculateSvgDimension(this.config?.radial_barcode?.size || 5);
-
-    // if (this.config.period.real_time) {
-    //   console.log('constructor, real-time', this.hours, this.points);
-    //   this.hours = 0.1;
-    //   this.points = 1;
-    // }
   }
 
   get max() { return this._max; }
@@ -117,10 +111,8 @@ export default class SparklineGraph {
     if (this.config.period?.calendar?.period === 'day') {
       // HACK to make sure any calculation uses the right amount of hours for today only!!
       // Does not work for shifting to yesterday I think
-      let hours = date.getHours() + date.getMinutes() / 60;
+      let hours = date.getHours() + date.getMinutes() / 60 + date.getSeconds() / 3600;
       this.offsetHours = Math.abs(this.config.period.calendar.offset * 24);
-      // this.hours = hours;
-      // console.log('update, calc hours this time', this.hours);
     }
 
     const histGroups = this._history.reduce((res, item) => this._reducer(res, item), []);
@@ -145,7 +137,6 @@ export default class SparklineGraph {
             hours = date.getHours() + date.getMinutes() / 60;
           } else {
             this.offsetHours = Math.abs(this.config.period.calendar.offset * 24);
-            // console.log('update, offsethours', this.offsetHours);
           }
           requiredNumOfPoints = Math.ceil(hours * this.points);
         }
@@ -317,7 +308,6 @@ export default class SparklineGraph {
       yStack.push(coordY);
       return yStack;
     });
-    // console.log('_calcLevelY, yStack', yStack);
     return yStack;
   }
 
@@ -503,8 +493,6 @@ export default class SparklineGraph {
     let runningAngle = startAngle;
     const clockWise = true;
     const wRatio = ((max - min) / this.radialBarcodeSize);
-    console.log('_calcRadialBarcode, params', isBackground, columnSpacing, rowSpacing);
-    // columnSpacing /= segments;
 
     const coords2 = coords.map((coord) => {
       const value = !isBackground ? coord[V] : this.max;
@@ -513,17 +501,14 @@ export default class SparklineGraph {
       switch (this.config.show?.chart_variant) {
         case 'sunburst':
         case 'sunburst_centered':
-          // ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
           ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
           radius = (this.drawArea.width - this.radialBarcodeSize + ringWidth) / 2;
           break;
         case 'sunburst_outward':
-            // ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
             ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
             radius = this.drawArea.width / 2 - this.radialBarcodeSize + ringWidth;
             break;
         case 'sunburst_inward':
-          // ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
           ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
           radius = this.drawArea.width / 2;
         break;
@@ -550,7 +535,6 @@ export default class SparklineGraph {
       return [newX, newY, value, 0, radiusX, radiusY, largeArcFlag, sweepFlag];
     });
     if (isBackground) {
-      console.log('_calcRadialBarcode', isBackground, coords.length, segments);
       if (coords.length !== segments) {
         let ringWidth;
         let radius;
@@ -558,17 +542,14 @@ export default class SparklineGraph {
         switch (this.config.show?.chart_variant) {
           case 'sunburst':
           case 'sunburst_centered':
-            // ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
             ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
             radius = (this.drawArea.width - this.radialBarcodeSize + ringWidth) / 2;
             break;
           case 'sunburst_outward':
-              // ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
               ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
               radius = this.drawArea.width / 2 - this.radialBarcodeSize + ringWidth;
               break;
           case 'sunburst_inward':
-            // ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / wRatio;
             ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
             radius = this.drawArea.width / 2;
           break;
@@ -597,21 +578,17 @@ export default class SparklineGraph {
           newY.push(start.y, end.y, start2.y, end2.y);
           radiusX.push(this.drawArea.width / 2, this.drawArea.width / 2 - this.radialBarcodeSize);
           radiusY.push(this.drawArea.height / 2, this.drawArea.height / 2 - this.radialBarcodeSize);
-          // console.log('TEST', bg, newX, newY, value, 0, radiusX, radiusY, largeArcFlag, sweepFlag);
           coords2.push([newX, newY, value, 0, radiusX, radiusY, largeArcFlag, sweepFlag]);
         }
       }
     }
-    // console.log('TEST, coords2', coords2);
     return coords2;
   }
 
   getRadialBarcodeBackground(position, total, columnSpacing = 4, rowSpacing = 4) {
     this.backgroundCoords = [];
     this.backgroundCoords = [...this.coords];
-    // this.backgroundCoords.length = this.hours * this.points;
     const radialBarcodeCoords = this._calcRadialBarcode(this.backgroundCoords, true, columnSpacing, rowSpacing);
-    // console.log('getRadialBarcodeBackground', radialBarcodeCoords);
 
     return radialBarcodeCoords.map((coord, i) => ({
       start: { x: coord[X][0], y: coord[Y][0] },
@@ -754,10 +731,6 @@ export default class SparklineGraph {
     const coords = this.coords;
     const xRatio = ((this.drawArea.width + columnSpacing) / Math.ceil(this.hours * this.points)) / total;
     const yRatio = ((max - min) / this.drawArea.height) || 1;
-
-    console.log('getBarCode, args', position, total, columnSpacing, rowSpacing);
-
-    const bucketHeight = (this.drawArea.height - (this.gradeRanks.length * 0)) / this.gradeRanks.length;
 
     switch (this.config.show.chart_variant) {
       case 'audio':
