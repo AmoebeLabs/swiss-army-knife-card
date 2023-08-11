@@ -543,6 +543,7 @@ class SwissArmyKnifeCard extends LitElement {
     this.theme.modeChanged = (hass.themes.darkMode !== this.theme.darkMode);
     if (this.theme.modeChanged) {
       this.theme.darkMode = hass.themes.darkMode;
+      Colors.colorCache = {};
     }
 
     // Process theme if specified and does exist, otherwise ignore
@@ -861,7 +862,7 @@ class SwissArmyKnifeCard extends LitElement {
                 }
                 if (this.dev.debug) console.log('card::setConfig - got toolsetCfg toolid', tool, index, toolT, indexT, tool);
               }
-              cfgobj[toolidx].tools[indexT] = Templates.getJsTemplateOrValueConfig(cfgobj[toolidx].tools[indexT], Merge.mergeDeep(cfgobj[toolidx].tools[indexT]));
+              cfgobj[toolidx].tools[indexT] = Templates.getJsTemplateOrValueConfig(cfgobj[toolidx].tools[indexT], this.config.entities, Merge.mergeDeep(cfgobj[toolidx].tools[indexT]));
               return found;
             });
             if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);

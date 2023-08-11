@@ -91,7 +91,7 @@ export default class EntityStateTool extends BaseTool {
     if (['relative', 'total',
          'datetime', 'datetime-short', 'datetime-short_with-year', 'datetime_seconds', 'datetime-numeric',
          'date', 'date_month', 'date_month_year', 'date-short', 'date-numeric', 'date_weekday', 'date_weekday_day', 'date_weekday-short',
-         'time', 'time-24h', 'time_weekday', 'time_seconds'].includes(entityConfig.format)) {
+         'time', 'time-24h', 'time-24h_date-short', 'time_weekday', 'time_seconds'].includes(entityConfig.format)) {
       const timestamp = new Date(inState);
       if (!(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
         return inState;
@@ -174,7 +174,16 @@ export default class EntityStateTool extends BaseTool {
         case 'time-24h':
           retValue = formatTime24h(timestamp);
           break;
-        case 'time_weekday':
+        case 'time-24h_date-short':
+          // eslint-disable-next-line no-case-declarations
+          const diff2 = selectUnit(timestamp, new Date());
+          if (['second', 'minute', 'hour'].includes(diff2.unit)) {
+            retValue = formatTime24h(timestamp);
+          } else {
+            retValue = formatDateShort(timestamp, locale);
+          }
+          break;
+          case 'time_weekday':
           retValue = formatTimeWeekday(timestamp, locale);
           break;
         case 'time_seconds':
@@ -210,6 +219,7 @@ export default class EntityStateTool extends BaseTool {
 
     // Need entities, not states to get platform, translation_key, etc.!!!!!
     const entity = this._card._hass.entities[stateObj.entity_id];
+    const entity2 = this._card._hass.states[stateObj.entity_id];
 
     const entityConfig = this._card.config.entities[this.defaultEntityIndex()];
     const domain = computeDomain(this._card.entities[this.defaultEntityIndex()].entity_id);
@@ -231,9 +241,9 @@ export default class EntityStateTool extends BaseTool {
             `component.${entity.platform}.entity.${domain}.${entity.translation_key}.state.${inState}`,
           ))
         // Return device class translation
-        || (entity?.attributes?.device_class
+        || (entity2?.attributes?.device_class
             && this._card._hass.localize(
-            `component.${domain}.entity_component.${entity.attributes.device_class}.state.${inState}`,
+            `component.${domain}.entity_component.${entity2.attributes.device_class}.state.${inState}`,
           ))
         // Return default translation
         || this._card._hass.localize(`component.${domain}.entity_component._.state.${inState}`)

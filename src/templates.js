@@ -55,7 +55,7 @@ export default class Templates {
     return (JSON.parse(jsonConfig));
   }
 
-  static getJsTemplateOrValueConfig(argTool, argValue) {
+  static getJsTemplateOrValueConfig(argTool, argEntities, argValue) {
     // Check for 'undefined' or 'null'
     if (!argValue) return argValue;
 
@@ -67,7 +67,7 @@ export default class Templates {
     // so clone argValue if this is the tool configuration...
     if (typeof argValue === 'object') {
       Object.keys(argValue).forEach((key) => {
-        argValue[key] = Templates.getJsTemplateOrValueConfig(argTool, argValue[key]);
+        argValue[key] = Templates.getJsTemplateOrValueConfig(argTool, argEntities, argValue[key]);
       });
       return argValue;
     }
@@ -76,19 +76,21 @@ export default class Templates {
     // The string might be a Javascript template surrounded by [[[<js>]]], or just a string.
     const trimmedValue = argValue.trim();
     if (trimmedValue.substring(0, 4) === '[[[[' && trimmedValue.slice(-4) === ']]]]') {
-      return Templates.evaluateJsTemplateConfig(argTool, trimmedValue.slice(4, -4));
+      return Templates.evaluateJsTemplateConfig(argTool, argEntities, trimmedValue.slice(4, -4));
     } else {
       // Just a plain string, return value.
       return argValue;
     }
   }
 
-  static evaluateJsTemplateConfig(argTool, jsTemplate) {
+  static evaluateJsTemplateConfig(argTool, argEntities, jsTemplate) {
     try {
+      console.log('evaluateJsTemplateConfig, args', argEntities);
       // eslint-disable-next-line no-new-func
-      return new Function('tool_config', `'use strict'; ${jsTemplate}`).call(
+      return new Function('tool_config', 'entities_config', `'use strict'; ${jsTemplate}`).call(
         this,
         argTool,
+        argEntities,
       );
     } catch (e) {
       e.name = 'Sak-evaluateJsTemplateConfig-Error';
@@ -116,6 +118,8 @@ export default class Templates {
     try {
       // eslint-disable-next-line no-new-func
       return new Function('state', 'states', 'entity', 'user', 'hass', 'tool_config', 'entity_config', `'use strict'; ${jsTemplate}`).call(
+      // return new Function('state', 'states', 'entity', 'user', 'hass',
+      //                    'tool_config', 'entity_config', 'states_str', 'attributes_str', `'use strict'; ${jsTemplate}`).call(
         this,
         state,
         argTool._card._hass.states,
@@ -124,6 +128,8 @@ export default class Templates {
         argTool._card._hass,
         argTool.config,
         argTool.config.hasOwnProperty('entity_index') ? argTool._card.config.entities[argTool.config.entity_index] : undefined,
+        // argTool._card.entitiesStr,
+        // argTool._card.attributesStr,
       );
     } catch (e) {
       e.name = 'Sak-evaluateJsTemplate-Error';

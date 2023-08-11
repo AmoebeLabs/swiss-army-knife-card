@@ -12,7 +12,7 @@ const getTime = (date, extra, locale = 'en-US') => date.toLocaleString(locale, {
 const getMilli = (hours) => hours * 60 ** 2 * 10 ** 3;
 const getFirstDefinedItem = (...collection) => collection.find((item) => typeof item !== 'undefined');
 const DEFAULT_COLORS = [
-  'var(--accent-color)',
+  'var(--theme-sys-color-primary)',
   '#3498db',
   '#e74c3c',
   '#9b59b6',
@@ -107,7 +107,12 @@ const interpolateStops = (stops) => {
 
 const computeThresholds = (stops, type) => {
   const valuedStops = interpolateStops(stops);
-  valuedStops.sort((a, b) => b.value - a.value);
+  console.log('computeThresholds, valuedStops', stops, valuedStops);
+  try {
+    valuedStops.sort((a, b) => b.value - a.value);
+  } catch (error) {
+    console.log('computeThresholds, error', error, valuedStops);
+  }
 
   if (type === 'smooth') {
     return valuedStops;
@@ -393,6 +398,8 @@ export default class SparklineGraphTool extends BaseTool {
       this.gradeValues[index] = value.value
     ));
 
+    this.stops = Merge.mergeDeep(...this.config.colorstops);
+    console.log('constructor, colorstops', this.colorstops);
     this.gradeRanks = [];
     this.config.colorstops.map((value, index) => {
       let rankIndex;
@@ -1843,6 +1850,14 @@ renderSvgBarcode(barcode, index) {
 }
 
 renderSvg() {
+  // Testing
+  // When changing dark/light mode or to another theme, gradients must be recalculated
+  // This is done already in the set, but seems to be done here also. Weird??
+  let i = 0;
+  if (this.config.colorstops.length > 0 && !this._card.config.entities[i].color)
+  this.gradient[i] = this.Graph[i].computeGradient(
+    this.config.colorstops, this.config.state_values.logarithmic,
+  );
   this.MergeAnimationClassIfChanged();
   this.MergeAnimationStyleIfChanged();
 
