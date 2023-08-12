@@ -712,13 +712,6 @@ export default class SparklineGraph {
         'A', rInnerX, rInnerY, 0, segment.largeArcFlag, segment.sweepFlag === sweepFlagTest ? '1' : '0', segment.start2.x, segment.start2.y,
         'Z',
       ].join(' ');
-      // const d = [
-      //   'M', segment.start.x, segment.start.y,
-      //   'A', segment.radius.x, segment.radius.y, 0, segment.largeArcFlag, segment.sweepFlag, segment.end.x, segment.end.y,
-      //   'L', segment.end2.x, segment.end2.y,
-      //   'A', segment.radius2.x, segment.radius2.y, 0, segment.largeArcFlag, segment.sweepFlag === '0' ? '1' : '0', segment.start2.x, segment.start2.y,
-      //   'Z',
-      // ].join(' ');
       return d;
     });
     return radialBarcodePaths;
@@ -844,11 +837,6 @@ export default class SparklineGraph {
         }
       }
 
-      // We have the matching index
-      // for (let i = 0; i <= matchStep; i++) {
-      //   newCoord[V][i] = this.gradeRanks[i].length > matchBucket ? this.gradeRanks[i].rangeMin[matchBucket] : this.gradeRanks[i].rangeMin[0];
-      //   newCoord[Y][i] = this.drawArea.height - i * (bucketHeight + spacing);
-      // }
       for (let i = 0; i <= stepRange; i++) {
         if (i <= matchStep) newCoord[V][i] = this.gradeRanks[i].length > matchBucket ? this.gradeRanks[i].rangeMin[matchBucket] : this.gradeRanks[i].rangeMin[0];
         newCoord[Y][i] = this.drawArea.height + this.margin.t - i * (bucketHeight + rowSpacing);

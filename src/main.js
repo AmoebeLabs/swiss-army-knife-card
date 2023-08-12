@@ -195,6 +195,26 @@ class SwissArmyKnifeCard extends LitElement {
       :host {
         cursor: default;
         font-size: ${FONT_SIZE}px;
+        --sak-ref-palette-gray-platinum: #e9e9ea;
+        --sak-ref-palette-gray-french-gray: #d1d1d6;
+        --sak-ref-palette-gray-taupe-gray: #8e8e93;
+        --sak-ref-palette-gray-cool-gray: #919bb4;
+
+        --sak-ref-palette-yellow-sunglow: #F7ce46;
+        --sak-ref-palette-yellow-jonquil: #ffcc01;
+        --sak-ref-palette-yellow-Amber: #f6b90b;
+
+        --sak-ref-palette-orange-xanthous: #F3b530;
+        --sak-ref-palette-orange-princeton-orange: #ff9500;
+        --sak-ref-palette-orange-orange : #F46c36;
+
+        --sak-ref-palette-red-indian-red: #ed5254;
+        --sak-ref-palette-red-japser: #d85140;
+        --sak-ref-palette-red-cinnabar: #ff3b2f;
+
+        --sak-ref-palette-purple-amethyst: #Af52de;
+        --sak-ref-palette-purple-tropical-indigo: #8d82ef;
+        --sak-ref-palette-purple-slate-blue: #5f5dd1;
       }
 
       /* Default settings for the card */
@@ -790,7 +810,7 @@ class SwissArmyKnifeCard extends LitElement {
     const thisMe = this;
     function findTemplate(key, value) {
       // Filtering out properties
-      // console.log("findTemplate, key=", key, "value=", value);
+      // console.log('findTemplate, key=', key, 'value=', value);
       if (value?.template) {
         const template = thisMe.lovelace.config.sak_user_templates.templates[value.template.name];
         if (!template) {

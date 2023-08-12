@@ -157,7 +157,9 @@ export default class SparklineGraphTool extends BaseTool {
       hour24: false,
       font_size: 10,
       line_color: [...DEFAULT_COLORS],
-      colorstops: [],
+      colorstops: {
+        colors: [],
+      },
       colorstops_transition: 'smooth',
       state_map: [],
       cache: true,
@@ -394,14 +396,14 @@ export default class SparklineGraphTool extends BaseTool {
     this.svg.row_spacing = Utils.calculateSvgDimension(this.config[this.config.show.chart_type]?.row_spacing || this.config.bar_spacing || 1);
 
     this.gradeValues = [];
-    this.config.colorstops.map((value, index) => (
+    this.config.colorstops.colors.map((value, index) => (
       this.gradeValues[index] = value.value
     ));
 
-    this.stops = Merge.mergeDeep(...this.config.colorstops);
+    this.stops = Merge.mergeDeep(...this.config.colorstops.colors);
     console.log('constructor, colorstops', this.colorstops);
     this.gradeRanks = [];
-    this.config.colorstops.map((value, index) => {
+    this.config.colorstops.colors.map((value, index) => {
       let rankIndex;
       rankIndex = ((this.config.show?.chart_variant === 'rank_order')
                    && (value.rank !== undefined)) ? value.rank : index;
@@ -416,15 +418,15 @@ export default class SparklineGraphTool extends BaseTool {
       // Assume right order from low to high and that next index is upper range
       //
       let rangeMin = value.value;
-      let rangeMax = this.config.colorstops[index + 1]?.value || Infinity;
+      let rangeMax = this.config.colorstops.colors[index + 1]?.value || Infinity;
       this.gradeRanks[rankIndex].value.push(value.value);
       this.gradeRanks[rankIndex].rangeMin.push(rangeMin);
       this.gradeRanks[rankIndex].rangeMax.push(rangeMax);
       return true;
     });
 
-    this.config.colorstops = computeThresholds(
-      this.config.colorstops,
+    this.config.colorstops.colors = computeThresholds(
+      this.config.colorstops.colors,
       this.config.colorstops_transition,
     );
 
@@ -576,9 +578,9 @@ export default class SparklineGraphTool extends BaseTool {
           this.bar[i] = this.Graph[i].getBars(graphPos, numVisible, this.svg.colomn_spacing); // config.bar_spacing);
           graphPos += 1;
           // Add the next 4 lines as a hack
-          if (config.colorstops.length > 0 && !this._card.config.entities[i].color)
+          if (config.colorstops.colors.length > 0 && !this._card.config.entities[i].color)
             this.gradient[i] = this.Graph[i].computeGradient(
-              config.colorstops, this.config.state_values.logarithmic,
+              config.colorstops.colors, this.config.state_values.logarithmic,
             );
         // +++++ Check for 'area' or 'line' graph type
         } else if (['area', 'line'].includes(config.show.chart_type)) {
@@ -638,9 +640,9 @@ export default class SparklineGraphTool extends BaseTool {
         }
 
         // Add the next 4 lines as a hack
-        if (config.colorstops.length > 0 && !this._card.config.entities[i].color)
+        if (config.colorstops.colors.length > 0 && !this._card.config.entities[i].color)
         this.gradient[i] = this.Graph[i].computeGradient(
-          config.colorstops, this.config.state_values.logarithmic,
+          config.colorstops.colors, this.config.state_values.logarithmic,
         );
 
       this.line = [...this.line];
@@ -816,8 +818,8 @@ export default class SparklineGraphTool extends BaseTool {
     const state = Number(inState) || 0;
     const threshold = {
       color: line_color[i] || line_color[0],
-      ...colorstops.slice(-1)[0],
-      ...colorstops.find((ele) => ele.value < state),
+      ...colorstops.colors.slice(-1)[0],
+      ...colorstops.colors.find((ele) => ele.value < state),
     };
     return this._card.config.entities[i].color || threshold.color;
   }
@@ -827,23 +829,23 @@ export default class SparklineGraphTool extends BaseTool {
     const state = Number(inState) || 0;
 
     let intColor;
-    if (colorstops.length > 0) {
+    if (colorstops.colors.length > 0) {
       // HACK. Keep check for 'bar' !!!
       if (this.config.show.chart_type === 'bar') {
-        const { color } = colorstops.find((ele) => ele.value < state)
-          || colorstops.slice(-1)[0];
+        const { color } = colorstops.colors.find((ele) => ele.value < state)
+          || colorstops.colors.slice(-1)[0];
         intColor = color;
       } else {
-        const index = colorstops.findIndex((ele) => ele.value < state);
-        const c1 = colorstops[index];
-        const c2 = colorstops[index - 1];
+        const index = colorstops.colors.findIndex((ele) => ele.value < state);
+        const c1 = colorstops.colors[index];
+        const c2 = colorstops.colors[index - 1];
         if (c2) {
           const factor = (c2.value - inState) / (c2.value - c1.value);
           intColor = Colors.getGradientValue(c2.color, c1.color, factor);
         } else {
           intColor = index
-            ? colorstops[colorstops.length - 1].color
-            : colorstops[0].color;
+            ? colorstops.colors[colorstops.colors.length - 1].color
+            : colorstops.colors[0].color;
         }
       }
     }
@@ -1011,8 +1013,6 @@ renderSvgAreaMinMaxMask(fill, i) {
 }
 
 renderSvgLineMask(line, i) {
-  // if (this.config.show.chart_type !== 'line') return;
-  // if (['dots', 'equalizer', 'graded', 'radial_barcode'].includes(this.config.show.chart_type)) return;
   if (!line) return;
 
   const path = svg`
@@ -1122,9 +1122,12 @@ renderSvgTrafficLight(trafficLight, i) {
       : 'var(--theme-sys-elevation-surface-neutral4)';
     // Safari needs an rx attribute. Can't handle rx as style, so fix this
     // by adding the attribute if defined in styles section...
-      const rx = hasValue
+    const rx = hasValue
     ? this.styles.graded_foreground?.rx || 0
     : this.styles.graded_background?.rx || 0;
+    const ry = hasValue
+    ? this.styles.graded_foreground?.ry || rx
+    : this.styles.graded_background?.ry || rx;
 
     return svg`
     <rect class="${classMap(classList)}" style="${styleMap(styleList)}"
@@ -1137,6 +1140,7 @@ renderSvgTrafficLight(trafficLight, i) {
       stroke=${color}
       pathLength="10"
       rx=${rx}
+      ry=${ry}
       >
     </rect>`;
   });
@@ -1794,6 +1798,10 @@ renderSvgBarcode(barcode, index) {
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
         </animate>`
       : '';
+    // Safari needs an rx attribute. Can't handle rx as style, so fix this
+    // by adding the attribute if defined in styles section...
+    const rx = this.styles.barcode_graph?.rx || 0;
+    const ry = this.styles.barcode_graph?.ry || rx;
     return svg` 
       <rect class=${classMap(this.classes.barcode_graph)}
             style="${styleMap(this.styles.barcode_graph)}"
@@ -1804,12 +1812,13 @@ renderSvgBarcode(barcode, index) {
         fill=${color}
         stroke=${color}
         stroke-width="${this.svg.line_width ? this.svg.line_width : 0}"
+        rx="${rx}"
+        ry="${ry}"
         @mouseover=${() => this.setTooltip(index, i, barcodePart.value)}
         @mouseout=${() => (this.tooltip = {})}>
         ${this._firstUpdatedCalled ? animation : ''}
       </rect>`;
   });
-  // stroke="lightgray" stroke-dasharray="0.5, 119" stroke-width="${this.svg.graph.height}"
 
   const linesBelow = this.xLines.lines.map((line) => {
     if (line.zpos === 'below') {
@@ -1854,9 +1863,9 @@ renderSvg() {
   // When changing dark/light mode or to another theme, gradients must be recalculated
   // This is done already in the set, but seems to be done here also. Weird??
   let i = 0;
-  if (this.config.colorstops.length > 0 && !this._card.config.entities[i].color)
+  if (this.config.colorstops.colors.length > 0 && !this._card.config.entities[i].color)
   this.gradient[i] = this.Graph[i].computeGradient(
-    this.config.colorstops, this.config.state_values.logarithmic,
+    this.config.colorstops.colors, this.config.state_values.logarithmic,
   );
   this.MergeAnimationClassIfChanged();
   this.MergeAnimationStyleIfChanged();
