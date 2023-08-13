@@ -85,7 +85,6 @@ export default class Templates {
 
   static evaluateJsTemplateConfig(argTool, argEntities, jsTemplate) {
     try {
-      console.log('evaluateJsTemplateConfig, args', argEntities);
       // eslint-disable-next-line no-new-func
       return new Function('tool_config', 'entities_config', `'use strict'; ${jsTemplate}`).call(
         this,

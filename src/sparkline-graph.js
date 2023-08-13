@@ -18,7 +18,7 @@ export const ONE_HOUR = 1000 * 3600;
 
 export default class SparklineGraph {
   constructor(width, height, margin, config,
-              gradeValues = [], gradeRanks = [], stateMap = [],
+              gradeValues = [], gradeRanks = [], stateMap = {},
               ) {
     this.aggregateFuncMap = {
       avg: this._average,
@@ -82,7 +82,7 @@ export default class SparklineGraph {
     this.levelCount = 1;
     this.gradeValues = gradeValues;
     this.gradeRanks = gradeRanks;
-    this.stateMap = [...stateMap];
+    this.stateMap = { ...stateMap };
     this.radialBarcodeSize = Utils.calculateSvgDimension(this.config?.radial_barcode?.size || 5);
   }
 
@@ -611,9 +611,9 @@ export default class SparklineGraph {
       let rInnerY;
       let sweepFlagTest = '0';
 
-      if (['flower', 'flower2', 'rice_grain'].includes(this.config.show?.chart_viz)) {
-        // Outer part. For flower2 this depends on the inward/outward setting
-        if ((this.config.show.chart_viz === 'flower2')
+      if (['flower2', 'flower', 'rice_grain'].includes(this.config.show?.chart_viz)) {
+        // Outer part. For flower this depends on the inward/outward setting
+        if ((this.config.show.chart_viz === 'flower')
          && (this.config.show.chart_variant === 'sunburst_inward')) {
           rOuterX = segment.radius.x;
           rOuterY = segment.radius.y;
@@ -623,7 +623,7 @@ export default class SparklineGraph {
           rOuterX = Math.sqrt(difX1 * difX1 + difY1 * difY1) / 2;
           rOuterY = rOuterX;
         }
-        if ((this.config.show.chart_viz === 'flower2')
+        if ((this.config.show.chart_viz === 'flower')
          && (this.config.show.chart_variant === 'sunburst_outward')) {
           rInnerX = segment.radius2.x;
           rInnerY = segment.radius2.y;
@@ -632,7 +632,7 @@ export default class SparklineGraph {
           const difY2 = Math.abs(segment.start2.y - segment.end2.y);
           rInnerX = Math.sqrt(difX2 * difX2 + difY2 * difY2) / 2;
           rInnerY = rInnerX;
-          sweepFlagTest = ['rice_grain', 'flower2'].includes(this.config.show.chart_viz) ? '1' : '0';
+          sweepFlagTest = ['rice_grain', 'flower'].includes(this.config.show.chart_viz) ? '1' : '0';
         }
       } else {
         rOuterX = segment.radius.x;
@@ -676,9 +676,9 @@ export default class SparklineGraph {
       let rInnerY;
       let sweepFlagTest = '0';
 
-      if (['flower', 'flower2', 'rice_grain'].includes(this.config.show?.chart_viz)) {
+      if (['flower2', 'flower', 'rice_grain'].includes(this.config.show?.chart_viz)) {
         // Outer part. For flower2 this depends on the inward/outward setting
-        if ((this.config.show.chart_viz === 'flower2')
+        if ((this.config.show.chart_viz === 'flower')
          && (this.config.show.chart_variant === 'sunburst_inward')) {
           rOuterX = segment.radius.x;
           rOuterY = segment.radius.y;
@@ -688,7 +688,7 @@ export default class SparklineGraph {
           rOuterX = Math.sqrt(difX1 * difX1 + difY1 * difY1) / 2;
           rOuterY = rOuterX;
         }
-        if ((this.config.show.chart_viz === 'flower2')
+        if ((this.config.show.chart_viz === 'flower')
          && (this.config.show.chart_variant === 'sunburst_outward')) {
           rInnerX = segment.radius2.x;
           rInnerY = segment.radius2.y;
@@ -697,7 +697,7 @@ export default class SparklineGraph {
           const difY2 = Math.abs(segment.start2.y - segment.end2.y);
           rInnerX = Math.sqrt(difX2 * difX2 + difY2 * difY2) / 2;
           rInnerY = rInnerX;
-          sweepFlagTest = ['rice_grain', 'flower2'].includes(this.config.show.chart_viz) ? '1' : '0';
+          sweepFlagTest = ['rice_grain', 'flower'].includes(this.config.show.chart_viz) ? '1' : '0';
         }
       } else {
         rOuterX = segment.radius.x;

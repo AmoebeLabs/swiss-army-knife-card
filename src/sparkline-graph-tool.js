@@ -107,7 +107,6 @@ const interpolateStops = (stops) => {
 
 const computeThresholds = (stops, type) => {
   const valuedStops = interpolateStops(stops);
-  console.log('computeThresholds, valuedStops', stops, valuedStops);
   try {
     valuedStops.sort((a, b) => b.value - a.value);
   } catch (error) {
@@ -161,7 +160,9 @@ export default class SparklineGraphTool extends BaseTool {
         colors: [],
       },
       colorstops_transition: 'smooth',
-      state_map: [],
+      state_map: {
+        map: [],
+      },
       cache: true,
       color: 'var(--primary-color)',
       radial_barcode: {
@@ -401,7 +402,6 @@ export default class SparklineGraphTool extends BaseTool {
     ));
 
     this.stops = Merge.mergeDeep(...this.config.colorstops.colors);
-    console.log('constructor, colorstops', this.colorstops);
     this.gradeRanks = [];
     this.config.colorstops.colors.map((value, index) => {
       let rankIndex;
@@ -436,12 +436,13 @@ export default class SparklineGraphTool extends BaseTool {
     this.svg.graph.height = this.svg.height - this.svg.margin.y * 0;
     this.svg.graph.width = this.svg.width - this.svg.margin.x * 0;
 
-    this.config.state_map.forEach((state, i) => {
+    this.config.state_map.map.forEach((state, i) => {
       // convert string values to objects
-      if (typeof state === 'string') this.config.state_map[i] = { value: state, label: state };
+      if (typeof state === 'string') this.config.state_map.map[i] = { value: state, label: state };
       // make sure label is set
-      this.config.state_map[i].label = this.config.state_map[i].label || this.config.state_map[i].value;
+      this.config.state_map.map[i].label = this.config.state_map.map[i].label || this.config.state_map.map[i].value;
     });
+
     // Other lines test
     this.xLines = {};
     this.xLines.lines = [];
@@ -662,7 +663,7 @@ export default class SparklineGraphTool extends BaseTool {
   }
 
   _convertState(res) {
-    const resultIndex = this.config.state_map.findIndex((s) => s.value === res.state);
+    const resultIndex = this.config.state_map.map.findIndex((s) => s.value === res.state);
     if (resultIndex === -1) {
       return;
     }
@@ -688,9 +689,9 @@ export default class SparklineGraphTool extends BaseTool {
   // - .sourceState = source state
   // if no .sourceState there, nothing translated. No extra memory and stuff
   processStateMap(history) {
-    if (this.config.state_map?.length > 0) {
+    if (this.config.state_map?.map?.length > 0) {
       history[0].forEach((item, index) => {
-        if (this.config.state_map.length > 0)
+        if (this.config.state_map.map.length > 0)
         history[0][index].haState = item.state;
         this._convertState(item);
         history[0][index].state = item.state;
