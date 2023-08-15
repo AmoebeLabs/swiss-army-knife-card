@@ -1,0 +1,27 @@
+sak_colorstops_energy_returned_4000w_v2:
+  template:
+    type: colorstops
+    defaults:
+      - dummy: 0
+  colorstops:
+    colors:
+      - value: 1
+        color: '#20CEFE'    # Vivid Sky Blue
+      - value: 150
+        color: '#01BAEF'    # Process Cyan
+      - value: 300
+        color: '#168CCE'    # Blue (NCS)
+      - value: 500
+        color: '#2B5EAD'    # Denim
+      - value: 1000
+        color: '#36479D'    # Marian Blue
+      - value: 2000
+        color: '#B263BF'    # Amythyst
+      - value: 2500
+        color: '#9249A2'    # Purpureus
+      - value: 3000
+        color: '#722E84'    # Eminence
+      - value: 3500
+        color: '#641978'    # Eminence
+      - value: 4000
+        color: '#540269'    # Indigo

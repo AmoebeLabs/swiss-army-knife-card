@@ -1,0 +1,18 @@
+#
+# Redefine Google Brand colors, and use light and dark mode colors
+#
+sak_color_swatch_google_brand_colors_4:
+  template:
+    type: colorswatch
+  colorswatch:
+    modes:
+      light:
+        brand-google-blue:    'blue'
+        brand-google-red:     'red'
+        brand-google-yellow:  'yellow' 
+        brand-google-green:   'green'
+      dark:        
+        brand-google-blue:    'lightskyblue'
+        brand-google-red:     'salmon'
+        brand-google-yellow:  'gold' 
+        brand-google-green:   'lightgreen'

@@ -1,0 +1,9 @@
+sak_statemap_binary:
+  template:
+    type: state_map
+  variables:
+    dummy: true
+  state_map:
+    map:
+      - value: 'off'
+      - value: 'on'

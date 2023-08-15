@@ -1,0 +1,168 @@
+sak_layout_fce_airvisual2:
+  template:
+    type: layout
+    defaults: 
+      - var_entity_index: 0
+  layout:
+    aspectratio: 3/1                          # Card is 300x100 grid
+    styles:
+      card:
+    toolsets:
+      # ================================================================
+      - toolset: half-circle
+        position:
+          cx: 0                             # Center on cards border 
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 50
+            entity_index: 0
+            show:
+              style: 'colorstops'
+            colorstops:
+              template:
+                name: sak_colorstops_airvisual
+                variables:
+                  - thegap: 2
+            styles:
+              circle:
+                stroke: none
+                fill: var(--theme-sys-elevation-surface-neutral4)
+
+          - type: 'usersvg'
+            id: 2
+            entity_index: 0
+            position:
+              cx: 50
+              cy: 50
+              height: 100
+              width: 100
+            style: 'images'
+            images:
+              - face1: /local/images/airvisual/ic-face-1.svg
+              - face2: /local/images/airvisual/ic-face-2.svg
+              - face3: /local/images/airvisual/ic-face-3.svg
+              - face4: /local/images/airvisual/ic-face-4.svg
+              - face5: /local/images/airvisual/ic-face-5.svg
+              - face6: /local/images/airvisual/ic-face-6.svg
+            animations:
+              - state: '50'
+                operator: <=
+                image: face1
+              - state: '100'
+                operator: <=
+                image: face2
+              - state: '150'
+                operator: <=
+                image: face3
+              - state: '200'
+                operator: <=
+                image: face4
+              - state: '300'
+                operator: <=
+                image: face5
+              - state: '9999'
+                operator: <=
+                image: face6
+
+          # ------------------------------------------------------------ 
+          - type: 'segarc'
+            id: 0
+            position:
+              cx: 50
+              cy: 50
+              start_angle: 25
+              end_angle: 155
+              width: 6
+              radius: 59
+            entity_index: 0
+            scale:
+              min: 0
+              max: 300
+              width: 6
+              offset: 12
+            show:
+              scale: false
+              style: 'colorstops'
+              lastcolor: true
+            segments:
+              colorstops:
+                template:
+                  name: sak_colorstops_airvisual
+                  variables:
+                    - thegap: 2
+            styles:
+              foreground:
+                fill: darkgrey
+              background:
+                fill: var(--theme-sys-elevation-surface-neutral4)
+
+      # ================================================================
+      - toolset: column-bar
+        position:
+          cx: 185                     # 300-70/2 + 70=185
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: bar
+            id: 1
+            entity_index: 0
+            position:
+              orientation: vertical
+              cx: 50
+              cy: 50
+              width: 230              # 300-70=230
+              height: 100
+              margin: 1
+            hours: 24
+            barhours: 1
+            show:
+              style: 'colorstops'
+            colorstops:
+              template:
+                name: sak_colorstops_airvisual
+                variables:
+                  - thefill: true
+            styles:
+              bar:
+                stroke-linecap: square
+                opacity: 0.25
+
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 70
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 70
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: start
+                font-size: 26em
+                font-weight: 500
+                opacity: 0.7
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 37
+            entity_index: 0
+            styles:
+              state:
+                opacity: 1
+                transition: opacity 5s linear
+                text-anchor: start
+                font-size: 30em
+                font-weight: 700
+              uom:
+                opacity: 1
+                transition: opacity 5s linear

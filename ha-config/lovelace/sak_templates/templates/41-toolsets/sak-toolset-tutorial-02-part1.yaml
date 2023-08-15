@@ -1,0 +1,79 @@
+sak_toolset_tutorial_02_part1:
+  template:
+    type: toolset
+    defaults: 
+      - var_entity_index: 0
+      - var_toolset_position_cx: 50
+      - var_toolset_position_cy: 50
+      - var_segarc_scale_min: 0
+      - var_segarc_scale_max: 100
+  toolset:
+    toolset: tutorial-advanced-01
+    position:
+        cx: '[[var_toolset_position_cx]]'
+        cy: '[[var_toolset_position_cy]]'
+    tools:
+      # ------------------------------------------------------------------------
+      - type: icon
+        position:
+          cx: 50
+          cy: 30
+          align: center
+          icon_size: 25
+        entity_index: '[[var_entity_index]]'
+        styles:
+          icon:
+            fill: var(--theme-sys-color-secondary)
+
+      # ------------------------------------------------------------------------
+      - type: state
+        position:
+          cx: 50
+          cy: 55
+        entity_index: '[[var_entity_index]]'
+        show:
+          uom: bottom                               # Show UOM below state value
+        styles:
+          state:
+            text-anchor: middle
+            font-size: 20em
+            font-weight: 700
+            fill: var(--primary-text-color)
+          uom:
+            fill: var(--primary-text-color)
+            font-weight: 700
+            opacity: 0.8
+
+      # ------------------------------------------------------------------------
+      - type: 'segarc'
+        id: 0
+        position:
+          cx: 50
+          cy: 50
+          start_angle: 0                            # Arc clockwise from
+          end_angle: 360                            # 0 to 360 degrees
+          width: 6
+          radius: 40                                # Radius on 100x100 grid
+        entity_index: '[[var_entity_index]]'
+        scale:
+          min: '[[var_segarc_scale_min]]'
+          max: '[[var_segarc_scale_max]]'
+          width: 6
+          offset: 12
+        show:
+          scale: false                              # Disable scale of segarc
+          style: 'colorlist'
+        segments:
+          colorlist:
+            gap: 1                                  # Gap between segments
+            colors:
+              - var(--theme-sys-palette-primary50)  # Use 4 system palette
+              - var(--theme-sys-palette-primary45)  # colors that adhere
+              - var(--theme-sys-palette-primary40)  # to light and dark
+              - var(--theme-sys-palette-primary35)  # theme modes!
+        styles:
+          foreground:
+            fill: darkgrey
+          background:
+            fill: var(--theme-sys-elevation-surface-neutral4)
+            opacity: 1

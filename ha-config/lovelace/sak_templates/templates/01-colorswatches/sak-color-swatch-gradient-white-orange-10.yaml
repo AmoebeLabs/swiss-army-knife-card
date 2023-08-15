@@ -1,0 +1,17 @@
+#
+# A 10 color gradient from white to orange color swatch
+#
+sak_color_swatch_gradient_white_orange_10:
+  template:
+    type: colorswatch
+  colorswatch:
+    sak-cs-gradient-white-orange-01: '#FFF6E3'
+    sak-cs-gradient-white-orange-02: '#FFE9B9'
+    sak-cs-gradient-white-orange-03: '#FFDA8A'
+    sak-cs-gradient-white-orange-04: '#FFCB5B'
+    sak-cs-gradient-white-orange-05: '#FFBF37'
+    sak-cs-gradient-white-orange-06: '#ffb414'
+    sak-cs-gradient-white-orange-07: '#FFAD12'
+    sak-cs-gradient-white-orange-08: '#FFA40E'
+    sak-cs-gradient-white-orange-09: '#FF9C0B'
+    sak-cs-gradient-white-orange-10: '#FF8C06'

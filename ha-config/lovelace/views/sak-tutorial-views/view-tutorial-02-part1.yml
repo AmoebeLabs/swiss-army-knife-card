@@ -139,14 +139,14 @@ cards:
               # ================================================================
               - toolset: colomn-cpu
                 template:
-                  name: toolset_tutorial_02_part1
+                  name: sak_toolset_tutorial_02_part1
                   variables:
                     - var_toolset_position_cx: 260
 
               # ================================================================
               - toolset: colomn-memory
                 template:
-                  name: toolset_tutorial_02_part1
+                  name: sak_toolset_tutorial_02_part1
                   variables:
                     - var_entity_index: 1
                     - var_toolset_position_cx: 355
@@ -154,7 +154,7 @@ cards:
               # ================================================================
               - toolset: colomn-disk
                 template:
-                  name: toolset_tutorial_02_part1
+                  name: sak_toolset_tutorial_02_part1
                   variables:
                     - var_entity_index: 2
                     - var_toolset_position_cx: 450
@@ -162,7 +162,7 @@ cards:
               # ================================================================
               - toolset: colomn-load
                 template:
-                  name: toolset_tutorial_02_part1
+                  name: sak_toolset_tutorial_02_part1
                   variables:
                     - var_entity_index: 3
                     - var_toolset_position_cx: 545

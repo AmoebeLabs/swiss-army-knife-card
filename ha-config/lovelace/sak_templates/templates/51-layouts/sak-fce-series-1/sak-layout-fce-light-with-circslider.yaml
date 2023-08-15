@@ -1,0 +1,208 @@
+sak_layout_fce_light_with_circslider:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_light_toggle_service: light.toggle
+  layout:
+    aspectratio: 3/1
+    toolsets:
+      # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 0
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 50
+            entity_index: 0
+            animations:
+              - state: 'on'
+                styles:
+                  circle:
+                    fill: var(--theme-sys-color-primary)
+                    # animation: flash 2s ease-in-out 5
+              - state: 'off'
+                styles:
+                  circle:
+                    fill: var(--theme-sys-color-secondary-container)
+            # Remove user actions part to just display the state
+            # or disable pointer-events via a class or style
+            # Using a class enables the use of variables that can
+            # disable pointer-events to none!
+            user_actions:
+              tap_action:
+                haptic: light
+                actions:
+                  - action: call-service
+                    service: light.toggle
+            styles:
+              circle:
+                fill: var(--theme-sys-color-secondary-container)
+                stroke: var(--theme-sys-color-secondary)
+                stroke-width: 0em
+
+          # ------------------------------------------------------------ 
+          - type: 'segarc'
+            id: 0
+            position:
+              cx: 50
+              cy: 50
+              start_angle: 25
+              end_angle: 155
+              width: 6
+              radius: 59
+            entity_index: 1
+            scale:
+              min: 0
+              max: 100
+              width: 6
+              offset: 12
+            show:
+              scale: false
+              style: 'colorlist'
+            segments:
+              colorlist:
+                gap: 1
+                colors:
+                  - 'var(--primary-text-color)'
+            animation:
+              duration: 5
+            styles:
+              foreground:
+                fill: darkgrey
+              background:
+                fill: var(--theme-sys-elevation-surface-neutral4)
+                
+
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 75
+              cy: 50
+              align: center
+              icon_size: 30
+            entity_index: 0
+            animations:
+              - state: 'on'
+                styles:
+                  icon:
+                    # animation: spin 3s linear infinite
+                    fill: var(--primary-background-color)
+              - state: 'off'
+                styles:
+                  icon:
+                    # fill: var(--theme-sys-color-on-secondary-container)
+                    fill: var(--theme-sys-color-secondary)
+            styles:
+              icon:
+                fill: var(--theme-sys-color-secondary)
+                # opacity: 0.7
+                pointer-events: none
+
+      # ================================================================
+      - toolset: switch
+        position:
+          cx: 25                           # On 1/3 of card width
+          cy: 75
+          scale: 1.8
+        tools:
+          # ------------------------------------------------------------
+          - type: switch
+            position:
+              cx: 50
+              cy: 50
+              orientation: 'horizontal'
+              track:
+                width: 15
+                height: 5
+                radius: 2.5
+              thumb:
+                width: 3
+                height: 3
+                radius: 2.5
+                offset: 4.5
+            entity_index: 0
+            user_actions:
+              tap_action:
+                haptic: light
+                actions:
+                  - action: call-service
+                    service: '[[sak_layout_light_toggle_service]]'
+            styles:
+              track:
+                --switch-checked-track-color: var(--primary-background-color)
+                --switch-unchecked-track-color: var(--theme-sys-color-secondary)
+                # --switch-checked-button-color: 
+              thumb:
+                --thumb-stroke: 'var(--primary-background-color)'
+                
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 80
+          cy: 25
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 50
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: start
+                font-size: 25em
+                font-weight: 700
+                opacity: 1
+
+      # ================================================================
+      - toolset: circ-slider-test
+        position:
+          cx: 90
+          cy: -315
+        tools:              
+          # ------------------------------------------------------------
+          - type: circslider
+            position:
+              cx: 50
+              cy: 50
+              radius: 395
+              start_angle: -180
+              end_angle: -207.5
+              thumb:
+                width: 30
+                height: 30
+                radius: 15
+            entity_index: 1
+            user_actions:
+              drag_action:
+                update_interval: 200          # Update every 200msec
+                haptic: selection
+                actions:
+                  - action: call-service
+                    service: light.turn_on
+                    parameter: brightness_pct
+              tap_action:
+                haptic: light
+                actions:
+                  - action: call-service
+                    service: light.turn_on
+                    parameter: brightness_pct
+            scale:
+              min: 1
+              max: 100
+              step: 1
+            styles:
+              circslider:
+                stroke: none
+                fill: var(--theme-sys-elevation-surface-neutral4)
+              track:
+                stroke-width: 12em
+                stroke-linecap: round
+              active:
+                stroke-width: 20em
+                stroke-linecap: round

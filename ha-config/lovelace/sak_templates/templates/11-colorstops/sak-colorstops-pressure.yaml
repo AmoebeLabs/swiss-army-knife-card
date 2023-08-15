@@ -1,0 +1,17 @@
+sak_colorstops_pressure:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
+      - theFill: true
+      - theStroke: false
+  colorstops:
+    gap: '[[thegap]]'
+    fill: '[[theFill]]'
+    stroke: '[[theStroke]]'
+    colors:
+      950: 'lightgrey'
+      980: 'lightgrey'
+      990: 'var(--theme-gradient-color-01)'
+      1020: 'var(--theme-gradient-color-05)'
+      1050: 'var(--theme-gradient-color-07)'

@@ -1,0 +1,19 @@
+sak_colorstops_pollen_v2:
+  template:
+    type: colorstops
+    defaults:
+      - dummy: 0
+  colorstops:
+    colors:
+      - value: -1
+        color: '#848484'
+      - value: 0.01
+        color: '#ffe99d'
+      - value: 1.01
+        color: '#fcc449'
+      - value: 2.01
+        color: '#f79f23'
+      - value: 3.01
+        color: '#ef7f01'
+      - value: 4.01
+        color: '#e73f10' 

@@ -5,7 +5,7 @@ default:
   - scale_min: 0
   - scale_max: 100
   - area: 'Home'
-  - colorstops_template: colorstops_humidity
+  - colorstops_template: sak_colorstops_humidity
   - icon: 'mdi:water-percent'
 
 card:
@@ -31,7 +31,7 @@ card:
       # ==============================================================================
       - toolset: humi-dt-tpl
         template:
-          name: toolset_arc180_sparklinebar24
+          name: sak_toolset_arc180_sparklinebar24
           variables:
             - scale_min: '[[scale_min]]'
             - scale_max: '[[scale_max]]'

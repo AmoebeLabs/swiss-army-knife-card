@@ -1,0 +1,13 @@
+sak_statemap_pollen:
+  template:
+    type: state_map
+  variables:
+    dummy: true
+  state_map:
+    map:
+      - value: none
+      - value: very_low
+      - value: low
+      - value: medium
+      - value: high
+      - value: very_high

@@ -1,0 +1,15 @@
+sak_colorstops_energy_2kw:
+  template:
+    type: colorstops
+    defaults:
+      - colorstops_gap: 1
+      - colorstops_fill: true
+      - colorstops_stroke: false
+  colorstops:
+    gap: '[[colorstops_gap]]'
+    fill: '[[colorstops_fill]]'
+    stroke: '[[colorstops_stroke]]'
+    colors:
+      0: var(--brand-google-green)
+      0.33: var(--brand-google-yellow)
+      1.32: var(--brand-google-red)

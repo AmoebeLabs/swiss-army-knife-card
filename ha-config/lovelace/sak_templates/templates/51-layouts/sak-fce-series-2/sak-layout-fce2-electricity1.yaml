@@ -1,0 +1,430 @@
+#
+# Template  : sak-layout-fce2-electricity1.yaml
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Refs:
+#   - https://swiss-army-knife-card-manual.amoebelabs.com/design/example-set-functional-cards/
+#   
+################################################################################
+sak_layout_fce2_electricity1:
+  template:
+    type: layout
+    defaults: 
+      - dummy: 0
+  layout:
+    aspectratio: 3/3                          # Card is 300x300 grid
+    styles:
+      card:
+    toolsets:
+      # ================================================================
+      - toolset: graph-title-and-location
+        position:
+          cx: 15
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: text
+            position:
+              cx: 50
+              cy: 25
+            text: "Today's Electricity"
+            styles:
+              text:
+                text-anchor: start
+                font-size: 15em
+                font-weight: 600
+                opacity: 0.7
+
+      # ================================================================
+      - toolset: electricity-header
+        position:
+          cx: 150
+          cy: 80
+        tools:
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 2
+            position:
+              cx: 50
+              cy: 54
+              width: 270
+              height: 100
+              margin: 
+                l: 0
+                x: 0
+                y: 0
+                r: 0
+                t: 2
+                b: 2
+            entity_index: 0
+            entity_indexes:
+              - entity_index: 0
+            animate: true
+            show:
+              chart_type: equalizer
+            period:
+              calendar:
+                period: day
+                offset: 0
+                duration:
+                  hour: 24
+                bins:
+                  per_hour: 1
+            state_values:
+              aggregate_func: avg
+              value_factor: 1000
+              lower_bound: 50
+            line_width : 1
+            value_buckets: 20
+            x_lines:
+              lines:
+                - name: x_axis
+                  zpos: below 
+                  yshift: 52
+                - name: ticks
+                  zpos: below 
+                  yshift: 53
+            colorstops_transition: smooth
+            colorstops: &electricity_colorstops_watt
+              template:
+                name: sak_colorstops_energy_4000w_v2
+            styles:
+              x_axis:
+                stroke: lightgray
+                stroke-width: 0.2rem
+              ticks:
+                stroke: lightgray
+                stroke-dasharray: 1, 118.5
+                stroke-dashoffset: 0
+                stroke-width: 1rem
+              equalizer_part:
+                transition: fill 2s ease
+                transform-origin: center
+                transform-box: fill-box
+                transform: skewY(20deg)
+
+      # ================================================================
+      - toolset: electricity-total
+        position:
+          cx: 45
+          cy: 200
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: &rectex_pos
+              cx: 50
+              cy: 45
+              width: 27
+              height: 80
+              radius:
+                all: 1
+            styles: &rectex_styles
+              rectex:
+                fill: var(--theme-sys-elevation-surface-neutral9)
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 2
+            position: &graph_pos
+              cx: 50
+              cy: 45
+              width: 20
+              height: 80
+              margin:
+                t: 7.5
+                b: 15
+                x: 0
+                y: 0
+            entity_index: 0
+            entity_indexes:
+              - entity_index: 0
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: false
+            line_width : 1.5
+            bar_spacing: 10
+            colorstops_transition: hard
+            colorstops: &electricity_colorstops_kwh
+              template:
+                name: sak_colorstops_energy_4kw_v2
+            styles: &trafficlight_phase_styles
+              graded_background:
+                transition: fill 2s ease
+                transform-origin: center
+                transform-box: fill-box
+                transform: skewY(20deg)
+              graded_foreground:
+                transition: fill 2s ease
+                transform-origin: center
+                transform-box: fill-box
+                transform: skewY(20deg)
+          # ------------------------------------------------------------
+          - type: rectex
+            position: &rectex2_pos
+              cx: 50
+              cy: &cy_state 110
+              width: 62
+              height: 62
+              radius:
+                all: 25
+            styles:
+              rectex:
+                fill: var(--theme-sys-elevation-surface-neutral9)
+
+          # ------------------------------------------------------------
+          - type: rectex
+            position: &rectex3_pos
+              cx: 50
+              cy: *cy_state
+              width: 55
+              height: 55
+              radius:
+                all: 20
+            styles:
+              rectex:
+                fill: var(--primary-background-color)
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: *cy_state
+            entity_indexes:
+              - entity_index: 0
+            show:
+              uom: bottom
+            styles: &state_styles
+              tool:
+              state:
+                text-anchor: middle
+                font-size: 16em
+                font-weight: 600
+              uom:
+                opacity: 1
+                fill: var(--primary-text-color)
+                font-weight: 400
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: &cy_name 95
+            entity_indexes:
+              - entity_index: 0
+            styles:
+              tool:
+              name: &name_styles
+                text-anchor: middle
+                font-size: 10em
+                font-weight: 500
+                opacity: 0.6
+                fill: var(--primary-text-color)
+
+      # ================================================================
+      - toolset: electricity-l1
+        position:
+          cx: 125
+          cy: 200
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex_pos
+            styles: *rectex_styles
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 2
+            position: *graph_pos
+            entity_index: 1
+            entity_indexes:
+              - entity_index: 1
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            bar_spacing: 10
+            colorstops_transition: hard
+            colorstops: *electricity_colorstops_kwh
+            styles: *trafficlight_phase_styles
+
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex2_pos
+            styles:
+              rectex:
+                fill: var(--theme-sys-elevation-surface-neutral9)
+
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex3_pos
+            styles:
+              rectex:
+                fill: var(--primary-background-color)
+
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: *cy_name
+            entity_indexes:
+              - entity_index: 1
+            styles:
+              tool:
+              name: *name_styles
+
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: *cy_state
+            entity_indexes:
+              - entity_index: 1
+            show:
+              uom: bottom
+            styles: *state_styles
+
+      # ================================================================
+      - toolset: electricity-l2
+        position:
+          cx: 190
+          cy: 200
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex_pos
+            styles: *rectex_styles
+
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 2
+            position: *graph_pos
+            entity_index: 2
+            entity_indexes:
+              - entity_index: 2
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            bar_spacing: 10
+            colorstops_transition: hard
+            colorstops: *electricity_colorstops_kwh
+            styles: *trafficlight_phase_styles
+
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex2_pos
+            styles:
+              rectex:
+                fill: var(--theme-sys-elevation-surface-neutral9)
+
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex3_pos
+            styles:
+              rectex:
+                fill: var(--primary-background-color)
+
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: *cy_name
+            entity_indexes:
+              - entity_index: 2
+            styles:
+              tool:
+              name: *name_styles
+
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: *cy_state
+            entity_indexes:
+              - entity_index: 2
+            show:
+              uom: bottom
+            styles: *state_styles
+
+      # ================================================================
+      - toolset: electricity-l3
+        position:
+          cx: 255
+          cy: 200
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex_pos
+            styles: *rectex_styles
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 2
+            position: *graph_pos
+            entity_index: 3
+            entity_indexes:
+              - entity_index: 3
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            bar_spacing: 10
+            colorstops_transition: hard
+            colorstops: *electricity_colorstops_kwh
+            styles: *trafficlight_phase_styles
+
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex2_pos
+            styles:
+              rectex:
+                fill: var(--theme-sys-elevation-surface-neutral9)
+
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex3_pos
+            styles:
+              rectex:
+                fill: var(--primary-background-color)
+
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: *cy_name
+            entity_indexes:
+              - entity_index: 3
+            styles:
+              tool:
+              name: *name_styles
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: *cy_state
+            entity_indexes:
+              - entity_index: 3
+            show:
+              uom: bottom
+            styles: *state_styles

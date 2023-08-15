@@ -563,15 +563,18 @@ cards:
               attribute: next_rising
               unit: 'uur'
               icon: mdi:weather-sunset-up
+              format: time-24h
             # - entity: sensor.next_sunset
             - entity: sun.sun
               attribute: next_setting
               unit: 'uur'
               icon: mdi:weather-sunset-down
+              format: time-24h
             
               #entity_indexes 11-17
             - entity: weather.zoefdehaas
               attribute: forecast[0].datetime
+              format: date_weekday-short
             - entity: weather.zoefdehaas
               attribute: forecast[0].condition
             - entity: weather.zoefdehaas
@@ -1184,12 +1187,12 @@ cards:
                       cx: 75
                       cy: 20
                     entity_index: 9
-                    derived_entity:
-                      state: |
-                        [[[
-                          if (typeof(entity) === 'undefined') return('?');
-                          return (new Date(state).toLocaleTimeString(undefined,{ hour: '2-digit', minute: '2-digit' }));
-                        ]]]
+                    # derived_entity:
+                    #   state: |
+                    #     [[[
+                    #       if (typeof(entity) === 'undefined') return('?');
+                    #       return (new Date(state).toLocaleTimeString(undefined,{ hour: '2-digit', minute: '2-digit' }));
+                    #     ]]]
                     styles:
                       state:
                         font-size: 10em
@@ -1220,12 +1223,12 @@ cards:
                       cx: 75
                       cy: 20
                     entity_index: 10
-                    derived_entity:
-                      state: |
-                        [[[
-                          if (typeof(entity) === 'undefined') return('?');
-                          return (new Date(state).toLocaleTimeString(undefined,{ hour: '2-digit', minute: '2-digit' }));
-                        ]]]
+                    # derived_entity:
+                    #   state: |
+                    #     [[[
+                    #       if (typeof(entity) === 'undefined') return('?');
+                    #       return (new Date(state).toLocaleTimeString(undefined,{ hour: '2-digit', minute: '2-digit' }));
+                    #     ]]]
                     styles:
                       state:
                         font-size: 10em
@@ -1262,12 +1265,12 @@ cards:
                       cx: 50
                       cy: 5
                     entity_index: 11
-                    derived_entity:
-                      state: >
-                        [[[
-                          if (typeof(entity) === 'undefined') return('?');
-                          return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
-                        ]]]
+                    # derived_entity:
+                    #   state: >
+                    #     [[[
+                    #       if (typeof(entity) === 'undefined') return('?');
+                    #       return (new Date(state).toLocaleDateString(undefined, {weekday: 'short'}));
+                    #     ]]]
                     styles:
                       state:
                         font-size: 7.5em

@@ -1,0 +1,18 @@
+sak_colorstops_airvisual:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
+      - theFill: true
+      - theStroke: false
+  colorstops:
+    gap: '[[thegap]]'
+    fill: '[[theFill]]'
+    stroke: '[[theStroke]]'
+    colors:
+      0: '#A8E05F'
+      51: '#FDD74B'
+      101: '#FE9B57'
+      151: '#FE6A69'
+      201: '#A97ABC'
+      301: '#A87383'

@@ -1,0 +1,2048 @@
+#
+# View			: view-functional-card-examples.yml
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#
+# Refs:
+#   
+################################################################################
+
+title: FCE
+path: fce
+panel: false
+cards:
+  - type: vertical-stack
+    cards:
+      # ========================================================================
+    - type: grid
+      columns: 3
+      square: false
+      cards:
+        # 1.1 ###################################################################
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'CircSlider Test'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+            - entity: light.livingroom_light_cupboard_light
+              attribute: hs_color
+              convert: rgb_csv
+            - entity: light.livingroom_light_cupboard_light
+              attribute: hs_color
+              convert: rgb_hex
+            - entity: light.livingroom_light_duo_right_light
+              attribute: color_temp
+              convert: rgb_hex
+              
+          aspectratio: 1/1                          # Card is 100x100 grid
+          layout:
+            styles:
+              card:
+            toolsets:
+              - toolset: color-test
+                position:
+                  cx: 50
+                  cy: 50
+                tools:
+                  # ------------------------------------------------------------
+                  # Circle as button
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 22.5
+                    entity_index: 2
+                    # entity_indexes:
+                    #   - entity_index: 0
+                    #   - entity_index: 1
+                    animations:
+                      # - state: 'undefined'
+                      #   styles:
+                      #     circle:
+                      #       opacity: 0
+                      - state: '[[[ return state; ]]]'
+                        styles:
+                          circle:
+                            # fill:  '[[[ if (typeof (state) === "undefined") return "#ffffff00";
+                            #            return `rgb(${state})` ]]]'
+                            fill: >-
+                              [[[ if (typeof (state) === 'undefined') return 'none';
+                                  return `rgb(${state})`; ]]]
+                  # ------------------------------------------------------------
+                  # Circle as button
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 90
+                      radius: 10
+                    entity_index: 3
+                    # entity_indexes:
+                    #   - entity_index: 0
+                    #   - entity_index: 1
+                    animations:
+                      - state: '[[[ return state; ]]]'
+                        styles:
+                          circle:
+                            fill:  >-
+                              [[[ if (typeof (state) === 'undefined') return 'none';
+                                   return state; ]]]
+                  # ------------------------------------------------------------
+                  # Circle as button
+                  # Little circle in lower left corner
+                  - type: circle
+                    position:
+                      cx: 20
+                      cy: 90
+                      radius: 10
+                    entity_index: 4
+                    # entity_indexes:
+                    #   - entity_index: 0
+                    #   - entity_index: 1
+                    animations:
+                      - state: '[[[ return state ]]]'
+                        styles:
+                          circle:
+                            # fill:  '[[[ return state ]]]'
+                            transition: fill 1s ease
+                            fill:  >-
+                              [[[ if (typeof (state) === 'undefined') return 'none';
+                                   return state; ]]]
+
+              # ================================================================
+              - toolset: circ-slider-test
+                position:
+                  cx: 50
+                  cy: 50
+                tools:              
+                  # ------------------------------------------------------------
+                  - type: circslider
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 40
+                      start_angle: -90
+                      end_angle: 90
+                      label:
+                        placement: 'position'
+                        cx: 50
+                        cy: 45
+                      thumb:
+                        width: 7
+                        height: 7
+                    entity_index: 1
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    # scale:
+                    #   min: 1
+                    #   max: 100
+                    #   step: 5
+                    scale:
+                      min: 15
+                      max: 25
+                      step: 0.5
+                    show:
+                      uom: 'end'
+                    styles:
+                      circslider:
+                        stroke: none
+                        fill: none
+                      label:
+                        # display: none
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 500
+                        pointer-events: auto
+                      uom:
+                        # display: none
+                        font-weight: 600
+                      active:
+                        stroke: var(--theme-sys-color-primary)
+                        stroke-width: 12em
+                        stroke-linecap: round
+                      track:
+                        # stroke: var(--theme-sys-elevation-surface-neutral4)
+                        fill-opacity: 1
+                        stroke-width: 2em
+                        stroke: var(--theme-sys-elevation-surface-neutral10)
+                        stroke-linecap: round
+                      thumb:
+                        fill: var(--theme-sys-color-primary)
+                        fill-opacity: 0.7
+                        stroke: var(--primary-background-color)
+                        stroke-width: 2em
+                        
+        # 1.2 ###################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'CircSlider Test'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+              
+          aspectratio: 1/1                          # Card is 100x100 grid
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: circ-slider-test
+                position:
+                  cx: 50
+                  cy: 50
+                tools:              
+                  # ------------------------------------------------------------
+                  - type: circslider
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 40
+                      start_angle: -130
+                      end_angle: 130
+                      thumb:
+                        width: 5
+                        height: 15
+                        radius: 1
+                      label:
+                        placement: 'position'
+                        cx: 50.01
+                        cy: 75
+                    entity_index: 1
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                    styles:
+                      circslider:
+                        stroke: none
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                      active:
+                        # stroke: var(--theme-sys-color-primary)
+                        stroke: url(#sak-light-color-temperature-gradient)
+                      label:
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 500
+                        pointer-events: auto
+                      uom:
+                        font-weight: 600
+
+        # 1.3 ###################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Ceiling Light 1.3'
+              icon: mdi:dome-light
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+              
+          aspectratio: 1/1                          # Card is 100x100 grid
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: circ-slider-test
+                position:
+                  cx: 42.5
+                  cy: 42.5
+                palette: 
+                  color_swatch_1:
+                    template:
+                      name: sak_color_swatch_android_watch
+                      variables:
+                        - dummy: 1
+                  color_swatch_2:
+                    template:
+                      name: sak_color_swatch_testing
+                      variables:
+                        - dummy: 1
+
+                tools:              
+                  # ------------------------------------------------------------
+                  # Icon with percentage in it
+                  - type: icon
+                    position:
+                      cx: 85
+                      cy: 50
+                      align: center
+                      icon_size: 40
+                    entity_index: 0
+                    icon: mdi:brightness-5
+                    animations:
+                      - state: 'on'
+                        styles:
+                          icon:
+                            fill: var(--theme-sys-elevation-surface-neutral4)
+                            opacity: 1
+                      - state: 'off'
+                        styles:
+                          icon:
+                            # fill: none
+                            opacity: 0
+                    styles:
+                      icon:
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        opacity: 1
+                        transition: opacity 1s ease
+                  # ------------------------------------------------------------
+                  - type: circslider
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 35
+                      start_angle: -230
+                      end_angle: 50
+                      label:
+                        placement: 'position'
+                        cx: 85
+                        cy: 50
+                    entity_index: 1
+                    show:
+                      uom: none
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                    styles:
+                      circslider:
+                        stroke: none
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                        filter: drop-shadow(1px 4px 6px black)
+                      active:
+                        stroke:  var(--theme-sys-palette-secondary60)
+                        stroke-width: 4em
+                        stroke-linecap: square
+                      track:
+                        stroke:  var(--theme-sys-palette-secondary80)
+                        stroke-width: 3em
+                        stroke-linecap: square
+                      card:
+                        -cs-theme-shadow-darker: auto
+                      thumb:
+                        fill:  var(--theme-sys-palette-secondary50)
+                        stroke: var(--primary-background-color)
+                        stroke-width: 2em
+                        paint-order: stroke
+                      label:
+                        text-anchor: middle
+                        font-size: 10em
+                        font-weight: 500
+                        pointer-events: auto
+                      uom:
+                        font-weight: 600
+                  # ------------------------------------------------------------
+                  # Circle as button
+                  - type: circle
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 22.5
+                    # entity_index: 0
+                    entity_indexes:
+                      - entity_index: 0
+                      - entity_index: 1
+                    animations:
+                      - state: 'on'
+                        styles:
+                          circle:
+                            fill:  var(--theme-sys-palette-secondary40)
+                      - state: 'off'
+                        styles:
+                          circle:
+                            fill:  var(--theme-sys-palette-secondary80)
+                    user_actions:
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.toggle
+                    styles:
+                      circle:
+                        fill: var(--theme-sys-color-secondary-container)
+                        stroke: var(--theme-sys-color-secondary)
+                        stroke-width: 0em
+                        transition: fill 1s ease
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 50
+                      cy: 50
+                      align: center
+                      icon_size: 30
+                    entity_index: 0
+                    animations:
+                      - state: 'on'
+                        styles:
+                          icon:
+                            fill: var(--primary-background-color)
+                      - state: 'off'
+                        styles:
+                          icon:
+                            fill: var(--theme-sys-color-secondary)
+                    styles:
+                      icon:
+                        fill: var(--theme-sys-color-secondary)
+                        pointer-events: none
+                        transition: fill 1s ease
+              # ================================================================
+              - toolset: name
+                position:
+                  cx: 5
+                  cy: 90
+                tools:              
+                  # ------------------------------------------------------------
+                  - type: name
+                    position:
+                      cx: 50
+                      cy: 50
+                    entity_index: 0
+                    styles:
+                      name:
+                        font-size: 10em
+                        text-anchor: start
+                        font-weight: bold
+
+        # 1.4 ###################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'CircSlider Test'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+              
+          aspectratio: 1/1                          # Card is 100x100 grid
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: circ-slider-test
+                position:
+                  cx: 50 
+                  cy: 50
+                tools:              
+                  # ------------------------------------------------------------
+                  - type: circslider
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 40
+                      start_angle: 270
+                      end_angle: 360
+                    entity_index: 1
+                    animations:
+                      - state: '[[[ return state; ]]]'
+                        styles:
+                          thumb:
+                            stroke-width: '[[[ return (2 + ( state / 10)) + "em"; ]]]'
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    # scale:
+                    #   min: 1
+                    #   max: 100
+                    #   step: 1
+                    scale:
+                      min: 24
+                      max: 36
+                      step: 1
+                    styles:
+                      circslider:
+                        stroke: none
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                      thumb:
+                        stroke: var(--theme-sys-color-primary)
+                        fill: white
+                        paint-order: stroke
+                      capture:
+                        stroke-width: 2em
+                        stroke: var(--theme-sys-color-primary)
+                        # fill: var(--theme-sys-color-secondary)
+                        fill: var(--theme-sys-palette-secondary80)
+                        fill-opacity: 1
+
+        # 1.5 ###################################################################
+        
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'CircSlider Test'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+              
+          aspectratio: 1/1                          # Card is 100x100 grid
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: circ-slider-test
+                position:
+                  cx: 50
+                  cy: 50
+                tools:              
+                  # ------------------------------------------------------------
+                  - type: circslider
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 40
+                      start_angle: 0
+                      end_angle: 180
+                      thumb:
+                        radius: 0
+                        height: 8
+                        width: 12
+                    entity_index: 1
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                    styles:
+                      circslider:
+                        stroke: none
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                      thumb:
+                        stroke: var(--theme-sys-elevation-surface-neutral10)
+                        fill: white
+                        stroke-width: 1em
+                      track:
+                        stroke-width: 12em
+                        stroke-linecap: square
+                      active:
+                        # stroke: var(--primary-background-color)
+                        stroke: url(#sak-light-brightness-gradient)
+                      capture:
+                        fill: none
+                        
+        # 1.6 ###################################################################
+        
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'CircSlider Test'
+              icon: mdi:face-man
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+              icon: mdi:fan
+            - entity: input_number.negative_test
+              unit: "W"
+          theme: M3-D04-Magenta
+          palette: 
+            color_swatch_1:
+              template:
+                name: sak_color_swatch_android_watch
+                variables:
+                  - dummy: 1
+            color_swatch_2:
+              template:
+                name: sak_color_swatch_testing
+                variables:
+                  - dummy: 1
+
+          aspectratio: 1/1                          # Card is 100x100 grid
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: circ-slider-test
+                position:
+                  cx: 50
+                  cy: 50
+                tools:              
+                  # ------------------------------------------------------------
+                  - type: state
+                    position:
+                      cx: 15
+                      cy: 50
+                    entity_indexes:
+                      - entity_index: 2
+                      - entity_index: 0
+                    animations:
+                      - state: 'on'
+                        entity_index: 0
+                        # reuse: true
+                        styles:
+                          tool:
+                            opacity: 1
+                          state:
+                            opacity: 1
+                          uom:
+                            opacity: 1
+                      - state: 'off'
+                        # reuse: true
+                        entity_index: 0
+                        styles:
+                          tool:
+                            opacity: 0
+                          state:
+                            opacity: 0
+                          uom:
+                            opacity: 0
+                    styles:
+                      tool:
+                        opacity: 1
+                        transition: opacity 0.5s linear
+                      state:
+                        opacity: 1
+                        text-anchor: middle
+                        font-size: 20em
+                        font-weight: 700
+                        fill: var(--primary-text-color)
+                        transition: opacity 0.5s linear
+                      uom:
+                        opacity: 1
+                        fill: var(--primary-text-color)
+                        font-weight: 700
+                        transition: opacity 0.5s linear
+                  # ------------------------------------------------------------
+                  - type: icon
+                    position:
+                      cx: 85
+                      cy: 50
+                      align: center
+                      icon_size: 40
+                    entity_indexes:
+                      - entity_index: 1
+                      - entity_index: 0
+                    animations:
+                      - state: 'on'
+                        entity_index: 0
+                        reuse: true
+                        # icon: mdi:fan
+                        styles:
+                          icon:
+                            fill: 'red'
+                          tool:
+                            display: initial
+                      - state: 'off'
+                        reuse: true
+                        entity_index: 0
+                        styles:
+                          icon:
+                            fill: 'blue'
+                  # ------------------------------------------------------------
+                  - type: circslider
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 40
+                      start_angle: 0
+                      end_angle: 360
+                      label:
+                        placement: 'position'
+                        cx: 50.01
+                        cy: 50.01
+                    # entity_index: 1
+                    entity_indexes:
+                      - entity_index: 1
+                      - entity_index: 0
+                    animations:
+                      - state: '50'
+                        operator: '>='
+                        reuse: true
+                        styles:
+                          track:
+                            opacity: 0.3
+                            transition: opacity 1s ease
+                      - state: '50'
+                        operator: '<'
+                        reuse: true
+                        styles:
+                          track:
+                            opacity: 1
+                            transition: opacity 1s ease
+
+                      - state: 'on'
+                        entity_index: 0
+                        reuse: true
+                        styles:
+                          track:
+                            stroke: red
+                          tool:
+                            display: initial
+                      - state: 'off'
+                        reuse: true
+                        entity_index: 0
+                        styles:
+                          tool:
+                            display: none
+                    show:
+                      uom: bottom
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                    styles:
+                      circslider:
+                        stroke: none
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                      track:
+                        stroke:  var(--theme-sys-palette-secondary80)
+                      active:
+                        stroke:  var(--theme-sys-palette-secondary60)
+                      thumb:
+                        stroke: var(--primary-background-color)
+                        stroke-width: 2em
+                        fill:  var(--theme-sys-palette-secondary50)
+                        paint-order: stroke
+                      label:
+                        text-anchor: middle
+                        font-size: 25em
+                        font-weight: 500
+                        fill: var(--theme-sys-color-secondary)
+                      uom:
+                        font-weight: 600
+
+      # ========================================================================
+      # ccw========================================================================
+      # ========================================================================
+    - type: grid
+      columns: 3
+      square: false
+      cards:
+        # 2.1 ###################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'CircSlider Test'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+              
+          aspectratio: 1/1                          # Card is 100x100 grid
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: circ-slider-test
+                position:
+                  cx: 50                             # Center on cards border 
+                  cy: 50
+                tools:              
+                  # ------------------------------------------------------------
+                  - type: circslider
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 40
+                      start_angle: 90
+                      end_angle: -90
+                      thumb:
+                        radius: 1
+                    entity_index: 1
+                    user_actions:
+                      drag_action:
+                        update_interval: 0          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+
+        # 2.2 ###################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'CircSlider Test'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+              
+          aspectratio: 1/1                          # Card is 400x100 grid
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: circ-slider-test
+                position:
+                  cx: 50                             # Center on cards border 
+                  cy: 50
+                tools:              
+                  # ------------------------------------------------------------
+                  - type: circslider
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 40
+                      start_angle: -90
+                      end_angle: -180
+                    entity_index: 1
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+
+        # 2.3 ###################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'CircSlider Test'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+              
+          aspectratio: 1/1                          # Card is 400x100 grid
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: circ-slider-test
+                position:
+                  cx: 50                             # Center on cards border 
+                  cy: 50
+                tools:              
+                  # ------------------------------------------------------------
+                  - type: circslider
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 40
+                      start_angle: -180
+                      end_angle: -270
+                    entity_index: 1
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+
+        # 2.4 ###################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'CircSlider Test'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+
+          aspectratio: 1/1                          # Card is 400x100 grid
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: circ-slider-test
+                position:
+                  cx: 50                             # Center on cards border 
+                  cy: 50
+                tools:              
+                  # ------------------------------------------------------------
+                  - type: circslider
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 40
+                      start_angle: -270
+                      end_angle: -360
+                    entity_index: 1
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+
+        # 2.5 ###################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'CircSlider Test'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+
+              
+          aspectratio: 1/1                          # Card is 400x100 grid
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: circ-slider-test
+                position:
+                  cx: 50                             # Center on cards border 
+                  cy: 50
+                tools:              
+                  # ------------------------------------------------------------
+                  - type: circslider
+                    position:
+                      cx: 40
+                      cy: 40
+                      radius: 20
+                      start_angle: -130
+                      end_angle: 130
+                      thumb:
+                        radius: 1
+                    entity_index: 1
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                    styles:
+                      circslider:
+                        stroke: none
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+
+      # ========================================================================
+      # ccw========================================================================
+      # ========================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+
+        # 3.1 ###################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'CircSlider Test'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+              
+          aspectratio: 3/1                          # Card is 400x100 grid
+          layout:
+            styles:
+              card:
+            toolsets:
+              # ================================================================
+              - toolset: circ-slider-test
+                position:
+                  cx: 80                          # Center on cards border 
+                  cy: -315
+                tools:              
+                  # ------------------------------------------------------------
+                  - type: circslider
+                    position:
+                      cx: 50
+                      cy: 50
+                      radius: 395
+                      start_angle: -180
+                      end_angle: -210
+                      thumb:
+                        width: 30
+                        height: 30
+                        radius: 15
+                    entity_index: 1
+                    user_actions:
+                      drag_action:
+                        update_interval: 200          # Update every 200msec
+                        haptic: selection
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                      tap_action:
+                        haptic: light
+                        actions:
+                          - action: call-service
+                            service: light.turn_on
+                            parameter: brightness_pct
+                    scale:
+                      min: 1
+                      max: 100
+                      step: 1
+                    styles:
+                      circslider:
+                        stroke: none
+                        fill: var(--theme-sys-elevation-surface-neutral4)
+                      track:
+                        stroke-width: 12em
+                        stroke-linecap: round
+                      active:
+                        stroke-width: 20em
+                        stroke-linecap: round
+      # ========================================================================
+      # ========================================================================
+      # ========================================================================
+      # ========================================================================
+      # ========================================================================
+    - type: grid
+      columns: 1
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.u_s_air_quality_index
+              name: 'AirVisual #1'
+            - entity: sensor.u_s_air_pollution_level
+            - entity: sensor.u_s_air_quality_index
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_airvisual1
+
+      ##########################################################################
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.u_s_air_quality_index
+              name: 'AirVisual #2'
+          layout:
+            template:
+              name: sak_layout_fce_airvisual2
+
+      # ========================================================================
+      # ========================================================================
+      # ========================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.iphone_van_marco_battery_level
+              name: 'Battery #1-1'
+          layout:
+            template:
+              name: sak_layout_fce_sensor1
+              variables:
+                - sak_layout_sensor_name_above_state: true
+                - sak_layout_sensor_history_disabled: true
+                - sak_layout_sensor_segarc_style: colorlist
+                - sak_layout_sensor_scale_max: 100                
+              # name: sak_layout_fce_battery1a
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.ipad_van_de_bereboot_battery_level
+              # name: 'iPad Battery'
+              name: 'Battery #1-2'
+          layout:
+            template:
+              # name: sak_layout_fce_battery1b
+              name: sak_layout_fce_sensor1
+              variables:
+                - sak_layout_sensor_name_above_state: false
+                - sak_layout_sensor_history_disabled: false
+                - sak_layout_sensor_colorstops_template: sak_colorstops_battery_level
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_scale_max: 100                
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.iphone_van_marco_battery_level
+              name: 'Battery #2'
+            - entity: sensor.iphone_van_marco_battery_level
+              secondary_info: last_changed
+              format: relative
+          palette: 
+            google_brand: 
+              template:
+                name: sak_color_swatch_google_brand_colors_4
+                variables:
+                  - dummy: 1
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_colorstops_template: sak_colorstops_battery_level
+                - sak_layout_sensor_icon_style: colorstops
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_scale_max: 100                
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.ipad_van_de_bereboot_battery_level
+              name: 'Battery #2'
+            - entity: sensor.ipad_van_de_bereboot_battery_level
+              secondary_info: last_changed
+              format: relative
+          palette: 
+            google_brand: 
+              template:
+                name: sak_color_swatch_google_brand_colors_4
+                variables:
+                  - dummy: 1
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_colorstops_template: sak_colorstops_battery_level
+                - sak_layout_sensor_icon_style: colorstops
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_scale_max: 100                
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Pump Pool'
+              icon: mdi:pump
+          layout:
+            template:
+              name: sak_layout_fce_binary
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Pump Pool'
+              icon: mdi:pump
+          layout:
+            template:
+              name: sak_layout_fce_binary
+              variables:
+                - sak_layout_binary_icon_spin: true
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: binary_sensor.livingroom_movement_occupancy
+              name: 'Bin Alert #1'
+              # name: 'Movement'
+            - entity: binary_sensor.livingroom_movement_occupancy
+              secondary_info: last_changed
+              format: relative
+            - entity: sensor.livingroom_movement_battery
+              decimals: 0
+            - entity: sensor.livingroom_movement_linkquality
+              decimals: 0
+          theme: M3-D04-Magenta
+          layout:
+            template:
+              name: sak_layout_fce_binary_alert1
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: binary_sensor.livingroom_movement_occupancy
+              name: 'Bin Alert #2'
+              # name: 'Livingroom #2'
+            - entity: binary_sensor.livingroom_movement_occupancy
+              secondary_info: last_changed
+              format: relative
+            - entity: sensor.livingroom_movement_battery
+              decimals: 0
+          layout:
+            template:
+              name: sak_layout_fce_binary_alert2
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 3
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: binary_sensor.livingroom_movement_occupancy
+              name: 'Bin Alert #3'
+            - entity: binary_sensor.livingroom_movement_occupancy
+              secondary_info: last_changed
+              format: relative
+            - entity: sensor.studym_iaq_battery
+              decimals: 0
+          layout:
+            template:
+              name: sak_layout_fce_binary_alert3
+                    
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: binary_sensor.livingroom_movement_occupancy
+              name: 'Bin Alert #4'
+            - entity: binary_sensor.livingroom_movement_occupancy
+              secondary_info: last_changed
+              format: relative
+            - entity: sensor.studym_iaq_battery
+              decimals: 0
+          layout:
+            template:
+              name: sak_layout_fce_binary_alert4
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 1
+      square: false
+      cards:
+        # 
+        # Indoor Environment: Bath #2
+        # 
+        ########################################################################
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.bathroom_2f_iaq_temperature
+              name: 'Environment'
+              icon: mdi:home-thermometer-outline
+              decimals: 1
+            - entity: sensor.bathroom_2f_iaq_humidity
+              decimals: 0
+            - entity: sensor.bathroom_2f_iaq_pressure
+              decimals: 0
+            - entity: sensor.bathroom_2f_iaq_battery
+              decimals: 0
+            - entity: sensor.bathroom_2f_iaq_linkquality
+              decimals: 0
+            - entity: sensor.bathroom_2f_iaq_temperature
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_environment
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 1
+      square: false
+      cards:
+        - type: custom:swiss-army-knife-card
+          disable_card: true
+          layout:
+            template:
+              name: sak_layout_fce_header
+              variables:
+                - sak_layout_header_content: 'Livingroom'
+                - sak_layout_header_font_color: var(--secondary-text-color)
+                - sak_layout_header_font_size: 5em
+
+        ########################################################################
+
+        - type: custom:swiss-army-knife-card
+          disable_card: true
+          layout:
+            template:
+              name: sak_layout_fce_header
+              variables:
+                - sak_layout_header_content: 'All those beautiful lights'
+                - sak_layout_header_font_color: var(--theme-sys-color-tertiary)
+                - sak_layout_header_font_size: 3em    
+                - sak_layout_header_font_text_transform: none
+                
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: input_boolean.pump_enabled
+              name: 'Input Boolean'
+              # name: 'Pump Pool Enable'
+          layout:
+            template:
+              name: sak_layout_fce_input_boolean
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.1st_floor_hall_light
+              name: 'Light'
+              icon: mdi:dome-light
+          layout:
+            template:
+              name: sak_layout_fce_light
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Light /w Slider2'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit_of_measurement: "%"
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_light_with_slider
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Light /w Slider'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit_of_measurement: "%"
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_light_with_slider2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Light /w Slider'
+            - entity: light.livingroom_light_duo_right_light
+              attribute: brightness
+              unit: "%"
+              # format: brightness
+              convert: brightness_pct
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_light_with_circslider
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 3
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          layout:
+            template:
+              name: sak_layout_fce_navigate
+              variables:
+                # - sak_layout_navigate_icon:
+                - sak_layout_navigate_text: 'Navigate'
+                - sak_layout_navigate_path: 'tut-03-p1'
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: person.zoefdehaas
+              name: 'Person'
+              icon: mdi:face-man
+          layout:
+            template:
+              name: sak_layout_fce_person
+              variables:
+                - sak_layout_fce_person_zone_entities:
+                    - zone.buiten
+                    - zone.marco_werk
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: person.zoefdehaas
+              name: 'Tha Washer'
+              icon: mdi:face-man
+              entity_picture: "/local/images/clip-test.jpg"
+          layout:
+            template:
+              name: sak_layout_fce_person
+              variables:
+                - sak_layout_fce_person_use_entity_picture: true
+                - sak_layout_fce_person_zone_entities:
+                    - zone.buiten
+                    - zone.marco_werk
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: person.zoefdehaas
+              name: 'Ricky'
+              icon: mdi:face-man
+              # entity_picture: "/api/image/serve/795a33867be4693f4f2bd453c2d63c0d/512x512"
+          layout:
+            template:
+              name: sak_layout_fce_person
+              variables:
+                - sak_layout_fce_person_use_entity_picture: true
+                - sak_layout_fce_person_zone_entities:
+                    - zone.buiten
+                    - zone.marco_werk
+
+
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.washingmachine_energy_power
+              name: 'PwrOutl #1'
+            - entity: sensor.washingmachine_energy_power
+              secondary_info: last_changed
+              format: relative
+            - entity: switch.washingmachine_energy
+              name: 'Air'
+          layout:
+            template:
+              name: sak_layout_fce_power_outlet1
+              variables:
+                - sak_layout_power_outlet_segarc_scale_max_watt: 200
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.kitchen_group_energy_power
+              name: 'PwrOutl #2'
+            - entity: sensor.kitchen_group_energy_power
+              secondary_info: last_changed
+              format: relative
+            - entity: switch.washingmachine_energy
+              name: 'Air #2'
+          layout:
+            template:
+              name: sak_layout_fce_power_outlet2
+              variables:
+                - sak_layout_power_outlet_segarc_scale_max_watt: 200
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'PwrOutl #3'
+            - entity: switch.washingmachine_energy
+              name: 'Kitchen Switch'
+            - entity: sensor.washingmachine_energy_power  # Just for the demo!!!!
+              name: 'Kitchen Switch #2'
+          layout:
+            template:
+              name: sak_layout_fce_power_outlet3
+              variables:
+                - sak_layout_power_outlet_segarc_scale_max_watt: 200
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.washingmachine_energy_power
+              name: 'PwrOutl #4'
+            - entity: switch.washingmachine_energy
+              name: 'Kitchen Switch #2'
+          layout:
+            template:
+              name: sak_layout_fce_power_outlet4
+              variables:
+                - sak_layout_power_outlet_segarc_scale_max_watt: 200
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 3
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          layout:
+            template:
+              name: sak_layout_fce_scene
+              variables:
+                - sak_layout_scene_icon: mdi:script
+                - sak_layout_scene_text: 'Scene'
+                - sak_layout_scene_id: 'scene.unknown'
+                - sak_layout_scene_transition: 2.5
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #1-1'
+          layout:
+            template:
+              name: sak_layout_fce_sensor1
+              variables:
+                - sak_layout_sensor_history_disabled: true
+                - sak_layout_sensor_scale_max: 2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #1-2'
+          layout:
+            template:
+              name: sak_layout_fce_sensor1
+              variables:
+                - sak_layout_sensor_name_above_state: false
+                - sak_layout_sensor_scale_max: 2
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #2-1'
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_scale_max: 2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #2-2'
+              convert: multiply(1000)
+              unit: W
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_name_above_state: false
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_scale_max: 2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #2-3'
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_icon_style: colorstops
+                - sak_layout_sensor_scale_max: 2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #2-4'
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_name_above_state: false
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_icon_style: colorstops
+                - sak_layout_sensor_circle_style: colorstops
+                - sak_layout_sensor_scale_max: 2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #2-5'
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_circle_style: colorstops
+                - sak_layout_sensor_segarc_style: colorstops
+                - sak_layout_sensor_scale_max: 2
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              name: 'Sensor #2-6'
+            - entity: sensor.dsmr_reading_electricity_currently_delivered
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_sensor2
+              variables:
+                - sak_layout_sensor_name_above_state: false
+                - sak_layout_sensor_history_disabled: true
+                - sak_layout_sensor_circle_style: default
+                - sak_layout_sensor_icon_style: default
+                - sak_layout_sensor_segarc_style: colorlist
+                - sak_layout_sensor_scale_max: 2
+                
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 1
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            # CPU
+            - entity: sensor.processor_use
+              decimals: 0
+              name: 'Server Stats'
+            # Memory
+            - entity: sensor.memory_use_percent
+              icon: mdi:memory
+              decimals: 0
+            # Disk
+            - entity: sensor.disk_use_percent
+              decimals: 0
+              icon: mdi:harddisk
+            # System Load
+            - entity: sensor.load_1m
+              decimals: 2
+              unit: '1m'
+            # Last changed
+            - entity: sensor.processor_use
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_server_statistics
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Switch #1'
+              icon: mdi:fan
+              # name: 'Fan'
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_switch1
+              variables:
+                - sak_layout_switch_icon_spin: true
+                - sak_layout_switch_service: light.toggle
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Switch #2a'
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_switch2
+              variables:
+                - sak_layout_switch_icon_spin: false
+                # - sak_layout_switch_service: light.toggle
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Switch #2b'
+              icon: mdi:fan
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_switch2
+              variables:
+                - sak_layout_switch_icon_spin: true
+                # - sak_layout_switch_service: light.toggle
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 3
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: light.livingroom_light_duo_right_light
+              name: 'Switch #3'
+              icon: mdi:fan
+            - entity: light.livingroom_light_duo_right_light
+              secondary_info: last_changed
+              format: relative
+          layout:
+            template:
+              name: sak_layout_fce_switch3
+              variables:
+                - sak_layout_switch_icon_spin: true
+              
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 2
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.tomorrow_io_zoefdehaas_tree_pollen_index
+              name: 'Tree Pollen Index'
+          layout:
+            template:
+              name: sak_layout_fce_tomorrow_pollen
+              variables:
+                - sak_layout_tomorrow_pollen_image_path: tomorrow/
+                - sak_layout_tomorrow_pollen_file_prefix: pollen_tree_
+                
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.tomorrow_io_zoefdehaas_grass_pollen_index
+              name: 'Grass Pollen Index'
+          layout:
+            template:
+              name: sak_layout_fce_tomorrow_pollen
+              variables:
+                - sak_layout_tomorrow_pollen_image_path: tomorrow/
+                - sak_layout_tomorrow_pollen_file_prefix: pollen_grass_
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.tomorrow_io_zoefdehaas_weed_pollen_index
+              name: 'Weed Pollen Index'
+          layout:
+            template:
+              name: sak_layout_fce_tomorrow_pollen
+              variables:
+                - sak_layout_tomorrow_pollen_image_path: tomorrow/
+                - sak_layout_tomorrow_pollen_file_prefix: pollen_weed_
+
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 1
+      square: false
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.tomorrow_io_zoefdehaas_tree_pollen_index
+              name: 'Trees'
+            - entity: sensor.tomorrow_io_zoefdehaas_grass_pollen_index
+              name: 'Grass'
+            - entity: sensor.tomorrow_io_zoefdehaas_weed_pollen_index
+              name: 'Weed'
+          layout:
+            template:
+              name: sak_layout_fce_tomorrow_pollen_all
+              variables:
+                - sak_layout_tomorrow_pollen_image_path: tomorrow/
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.tomorrow_io_zoefdehaas_tree_pollen_index
+              name: 'Trees'
+            - entity: sensor.tomorrow_io_zoefdehaas_grass_pollen_index
+              name: 'Grass'
+            - entity: sensor.tomorrow_io_zoefdehaas_weed_pollen_index
+              name: 'Weed'
+            - entity: sensor.u_s_air_quality_index
+              name: 'AQI'
+            - entity: sensor.u_s_air_pollution_level
+          layout:
+            template:
+              name: sak_layout_fce_tomorrow_pollen_all_aqi
+              variables:
+                - sak_layout_tomorrow_pollen_image_path: tomorrow/
+
+        ########################################################################
+
+        - type: 'custom:swiss-army-knife-card'
+          entities:
+            - entity: sensor.tomorrow_io_zoefdehaas_tree_pollen_index
+              name: 'Tres'
+            - entity: sensor.tomorrow_io_zoefdehaas_grass_pollen_index
+              name: 'Grass'
+            - entity: sensor.tomorrow_io_zoefdehaas_weed_pollen_index
+              name: 'Weed'
+            - entity: sensor.u_s_air_quality_index
+              name: 'AQI'
+            - entity: sensor.u_s_air_pollution_level
+          layout:
+            template:
+              name: sak_layout_fce_clippath_test
+              variables:
+                - sak_layout_tomorrow_pollen_image_path: tomorrow/
+      # ================================================================
+      # ================================================================
+      # ================================================================
+    - type: grid
+      columns: 1
+      square: true
+      cards:
+        - type: 'custom:swiss-army-knife-card'
+          aspectratio: 3/1
+          layout:
+            styles:
+              card:
+                border-radius: 25em
+                height: 50px
+                display: none
+            toolsets:
+              - toolset: dummy
+                position:
+                  cx: 0
+                  cy: 0
+                tools:
+                  - type: circle
+                    position:
+                      radius: 0

@@ -1,0 +1,102 @@
+#
+# File      : segarc-icon-state-template.yaml
+# Template  : toolset_segarc_icon_state
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/Home-Assistant-Config
+#
+# Author: Mars @ AmoebeLabs.com
+# 
+# License: CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Swiss Army Knife toolset template definition
+#
+# This toolset defines a:
+# - segmented arc, and in this segmented arc...
+# - an Icon
+# - a State
+#
+###############################################################################
+
+sak_toolset_segarc_icon_state:
+  template:
+    type: toolset
+    defaults: 
+      - entity: 0
+      - show_scale: false
+  toolset:
+    from_template: true
+    toolset: segarc-icon-state
+    position:
+      cx: 25
+      cy: 50
+      scale: 1
+    tools:
+      - type: circle
+        id: 10
+        position:
+          cx: 50
+          cy: 50
+          radius: 27.5
+        styles:
+          circle:
+            fill: var(--primary-background-color)
+            stroke-width: 0
+        
+      - type: segarc
+        id: 0
+        entity_index: '[[entity]]'
+        position:
+          cx: 50
+          cy: 50
+          start_angle: 0
+          end_angle: 360
+          width: 5
+          radius: 25
+        scale:
+          min: 0
+          max: 100
+        show:
+          scale: '[[show_scale]]'
+          style: 'colorlist'
+        segments:
+          colorlist:
+            gap: 1
+            colors:
+              - 'var(--theme-gradient-color-01)'
+        animation:
+          duration: 5
+        styles:
+          foreground:
+            fill: var(--theme-gradient-color-01)
+          background:
+            fill: var(--cs-theme-default-darken-15)
+            filter: url(#is-1)
+
+      - type: icon
+        id: 1
+        entity_index: '[[entity]]'
+        position:
+          cx: 50
+          cy: 42
+          align: center
+          icon_size: 15
+        styles:
+          icon:
+            filter: url(#is-1)
+            fill: lightgray
+            color: lightgray
+
+      - type: state
+        id: 2
+        entity_index: '[[entity]]'
+        position:
+          cx: 50
+          cy: 56
+        styles:
+          state:
+            text-anchor: middle
+            font-size: 10em
+            color: var(--primary-text-color)
+            fill: var(--primary-text-color)

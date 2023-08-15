@@ -1,0 +1,15 @@
+sak_colorstops_humidity:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
+      - theFill: true
+      - theStroke: false
+  colorstops:
+    gap: '[[thegap]]'
+    fill: '[[theFill]]'
+    stroke: '[[theStroke]]'
+    colors:
+      00: 'var(--theme-gradient-color-02)'
+      35: 'DarkSeaGreen'
+      65: 'PowderBlue'

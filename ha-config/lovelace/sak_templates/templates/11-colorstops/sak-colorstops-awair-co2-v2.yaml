@@ -1,0 +1,23 @@
+sak_colorstops_awair_co2_v2:
+  template:
+    type: colorstops
+    defaults:
+      - dummy: 0
+  colorstops:
+    colors:
+      - value: 0
+        color: '#49ce4c'
+        rank: 0
+      - value: 600
+        color: '#fdd125'
+        rank: 1
+      - value: 1000
+        color: '#faaa00'
+        rank: 2
+      - value: 1500
+        color: '#fb8600'
+        rank: 3
+      - value: 2500
+        color: '#e63740'
+        rank: 4
+  

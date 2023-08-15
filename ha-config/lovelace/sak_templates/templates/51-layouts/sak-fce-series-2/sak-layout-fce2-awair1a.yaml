@@ -1,0 +1,609 @@
+#
+# Template  : sak-layout-fce2-awair1a.yaml
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Refs:
+#   - https://swiss-army-knife-card-manual.amoebelabs.com/design/example-set-functional-cards/
+#   
+################################################################################
+sak_layout_fce2_awair1a:
+  template:
+    type: layout
+    defaults: 
+      - dummy: 0
+  layout:
+    aspectratio: 3/3                          # Card is 300x300 grid
+    styles:
+      card:
+    toolsets:
+      # ================================================================
+      - toolset: graph-title-and-location
+        position:
+          cx: 15
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: text
+            position:
+              cx: 50
+              cy: 30
+            text: "Today's AQI"
+            styles:
+              text:
+                text-anchor: start
+                font-size: 15em
+                font-weight: 400
+                opacity: 0.7
+          # ------------------------------------------------------------
+          - type: area
+            position:
+              cx: 50
+              cy: 50
+            entity_indexes:
+              - entity_index: 0
+            styles:
+              tool:
+              area:
+                text-anchor: start
+                font-size: 20em
+                font-weight: 600
+                fill: var(--primary-text-color)
+
+      # ================================================================
+      - toolset: graph-score-arc-state
+        position:
+          cx: 150
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 28
+            entity_index: 0
+            styles:
+              circle:
+                fill: var(--primary-background-color)
+            animations:
+              - state: '60'
+                operator: <
+                styles:
+                  circle:
+                    fill: '#e63740'
+              - state: '80'
+                operator: <
+                styles:
+                  circle:
+                    fill: '#fb8600'
+              - state: '100'
+                operator: <=
+                styles:
+                  circle:
+                    fill: '#49ce4c'
+          # ------------------------------------------------------------
+          - type: 'segarc'
+            entity_index: 0
+            position:
+              cx: 50
+              cy: 50
+              start_angle: 0
+              end_angle: 360
+              width: 3
+              radius: 35
+            scale:
+              min: 0
+              max: 100
+            show:
+              scale: false
+              style: 'colorstops'
+              lastcolor: true
+            segments:
+              colorstops:
+                gap: 0
+                colors:
+                  00: '#e63740'
+                  60: '#fb8600'
+                  80: '#49ce4c'
+            styles:
+              foreground:
+                fill: var(--theme-gradient-color-02)
+              background:
+                fill: var(--primary-background-color)
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 50
+            entity_indexes:
+              - entity_index: 0
+            show:
+              uom: none
+            styles:
+              tool:
+              state:
+                text-anchor: middle
+                font-size: 25em
+                font-weight: 400
+                fill: var(--primary-background-color)
+
+      # ================================================================
+      - toolset: graph-score-area
+        position:
+          cx: 150
+          cy: 120
+        tools:
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 2
+            position:
+              cx: 50
+              cy: 54
+              width: 270
+              height: 50
+              margin:
+                l: 0
+                x: 0
+                y: 0
+                r: 0
+                t: 0
+                b: 10
+            entity_index: 0
+            entity_indexes:
+              - entity_index: 0
+            animate: true
+            show:
+              chart_type: area
+              fill: fade
+            period:
+              rolling_window:
+                duration:
+                  hour: 24
+                bins: 
+                  per_hour: 1
+              _hours_to_show: 24
+              _bins_per_hour: 1
+            area: 
+              fill: fade
+              show_minmax: true
+            state_values:
+              aggregate_func: avg
+            line_width : 1.5
+            x_lines:
+              lines:
+                - name: x_axis
+                  zpos: below 
+                  yshift: 27
+                - name: ticks
+                  zpos: below 
+                  yshift: 28
+            colorstops_transition: hard
+            colorstops:
+              colors:
+                - value: 0
+                  color: '#e63740'
+                  rank: 2
+                - value: 60
+                  color: '#fb8600'
+                  rank: 1
+                - value: 80
+                  color: '#49ce4c'
+                  rank: 0
+            styles:
+              tool:
+                opacity: 0.5
+              x_axis:
+                stroke: lightgray
+                stroke-width: 0.2rem
+              ticks:
+                stroke: lightgray
+                stroke-dasharray: 1, 118.5
+                stroke-dashoffset: 0
+                stroke-width: 1.5rem
+
+      # ================================================================
+      - toolset: graph-temp
+        position:
+          cx: 40
+          cy: 200
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: &rectex_pos
+              cx: 50
+              cy: 50
+              width: 20
+              height: 70
+              radius:
+                all: 10
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 2
+            position: &graph_pos
+              cx: 50
+              cy: 50
+              width: 10
+              height: 60
+            entity_index: 1
+            entity_indexes:
+              - entity_index: 1
+            animate: true
+            show:
+              chart_type: graded
+              chart_variant: rank_order
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            colorstops_transition: hard
+            colorstops: &awair_colorstop_temperature
+              colors:
+                - value: -1000
+                  color: '#e63740'
+                  rank: 4
+                - value:  9
+                  color: '#fb8600'
+                  rank: 3
+                - value: 11
+                  color: '#faaa00'
+                  rank: 2
+                - value: 17
+                  color: '#fdd125'
+                  rank: 1
+                - value: 18
+                  color: '#49ce4c'
+                  rank: 0
+                - value: 25
+                  color: '#fdd125'
+                  rank: 1
+                - value: 26
+                  color: '#faaa00'
+                  rank: 2
+                - value: 31
+                  color: '#fb8600'
+                  rank: 3
+                - value: 33
+                  color: '#e63740'
+                  rank: 4
+            styles: &trafficlight_styles
+              graded_background:
+                transition: fill 2s ease
+                rx: 50%
+              graded_foreground:
+                transition: fill 2s ease
+                rx: 50%
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: &cy_name 100
+            entity_indexes:
+              - entity_index: 1
+            styles:
+              tool:
+              name: &name_styles
+                text-anchor: middle
+                font-size: 10em
+                font-weight: 400
+                fill: var(--primary-text-color)
+                transition: opacity 0.5s linear
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: &cy_state 120
+            entity_indexes:
+              - entity_index: 1
+            show:
+              uom: bottom
+            styles:
+              tool:
+              state: &state_styles
+                text-anchor: middle
+                font-size: 12em
+                font-weight: 600
+                fill: var(--primary-text-color)
+                transition: opacity 0.5s linear
+                alignment-baseline: middle 
+              uom: &uom_settings
+                opacity: 1
+                fill: var(--primary-text-color)
+                font-weight: 400
+                transition: opacity 0.5s linear
+                alignment-baseline: hanging
+
+      # ================================================================
+      - toolset: graph-humi
+        position:
+          cx: 95
+          cy: 200
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex_pos
+          # ------------------------------------------------------------
+          - type: sparkline
+            position: *graph_pos
+            entity_index: 2
+            entity_indexes:
+              - entity_index: 2
+            animate: true
+            show:
+              chart_type: graded
+              chart_variant: rank_order
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            colorstops_transition: hard
+            colorstops:
+              colors:
+                - value: 0
+                  color: '#e63740'
+                  rank: 4
+                - value: 15.50
+                  color: '#fb8600'
+                  rank: 3
+                - value: 20.50
+                  color: '#faaa00'
+                  rank: 2
+                - value: 35.50
+                  color: '#fdd125'
+                  rank: 1
+                - value: 39.50  #40
+                  color: '#49ce4c'
+                  rank: 0
+                - value: 49.50  #50
+                  color: '#fdd125'
+                  rank: 1
+                - value: 59.50  #60
+                  color: '#faaa00'
+                  rank: 2
+                - value: 64.50  #65
+                  color: '#fb8600'
+                  rank: 3
+                - value: 79.50  #80
+                  color: '#e63740'
+                  rank: 4
+            styles: *trafficlight_styles
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: *cy_name
+            entity_indexes:
+              - entity_index: 2
+            styles:
+              tool:
+              name: *name_styles
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: *cy_state
+            entity_indexes:
+              - entity_index: 2
+            show:
+              uom: bottom
+            styles:
+              tool:
+              state: *state_styles
+              uom: *uom_settings
+      # ================================================================
+      - toolset: graph-co2
+        position:
+          cx: 150
+          cy: 200
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex_pos
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 2
+            position: *graph_pos
+            entity_index: 3
+            entity_indexes:
+              - entity_index: 3
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            colorstops_transition: hard
+            colorstops:
+              colors:
+                - value: 0
+                  color: '#49ce4c'
+                  rank: 0
+                - value: 600
+                  color: '#fdd125'
+                  rank: 1
+                - value: 1000
+                  color: '#faaa00'
+                  rank: 2
+                - value: 1500
+                  color: '#fb8600'
+                  rank: 3
+                - value: 2500
+                  color: '#e63740'
+                  rank: 4
+            styles: *trafficlight_styles
+
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: *cy_name
+            entity_indexes:
+              - entity_index: 3
+            styles:
+              tool:
+              name: *name_styles
+
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: *cy_state
+            entity_indexes:
+              - entity_index: 3
+            show:
+              uom: bottom
+            styles:
+              tool:
+              state: *state_styles
+              uom: *uom_settings
+
+      # ================================================================
+      - toolset: graph-voc
+        position:
+          cx: 205
+          cy: 200
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex_pos
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 2
+            position: *graph_pos
+            entity_index: 4
+            entity_indexes:
+              - entity_index: 4
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            colorstops_transition: hard
+            colorstops:
+              colors:
+                - value: 0
+                  color: '#49ce4c'
+                  rank: 0
+                - value: 333
+                  color: '#fdd125'
+                  rank: 1
+                - value: 1000
+                  color: '#faaa00'
+                  rank: 2
+                - value: 3333
+                  color: '#fb8600'
+                  rank: 3
+                - value: 8332
+                  color: '#e63740'
+                  rank: 4
+            styles: *trafficlight_styles
+
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: *cy_name
+            entity_indexes:
+              - entity_index: 4
+            styles:
+              tool:
+              name: *name_styles
+
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: *cy_state
+            entity_indexes:
+              - entity_index: 4
+            show:
+              uom: bottom
+            styles:
+              tool:
+              state: *state_styles
+              uom: *uom_settings
+
+      # ================================================================
+      - toolset: graph-pm25
+        position:
+          cx: 260
+          cy: 200
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex_pos
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 2
+            position: *graph_pos
+            entity_index: 5
+            entity_indexes:
+              - entity_index: 5
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            colorstops_transition: hard
+            colorstops:
+              colors:
+                - value: 0
+                  color: '#49ce4c'
+                  rank: 0
+                - value: 15
+                  color: '#fdd125'
+                  rank: 1
+                - value: 35
+                  color: '#faaa00'
+                  rank: 2
+                - value: 55
+                  color: '#fb8600'
+                  rank: 3
+                - value: 75
+                  color: '#e63740'
+                  rank: 4
+            styles: *trafficlight_styles
+
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: *cy_name
+            entity_indexes:
+              - entity_index: 5
+            styles:
+              tool:
+              name: *name_styles
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: *cy_state
+            entity_indexes:
+              - entity_index: 5
+            show:
+              uom: bottom
+            styles:
+              tool:
+              state: *state_styles
+              uom: *uom_settings

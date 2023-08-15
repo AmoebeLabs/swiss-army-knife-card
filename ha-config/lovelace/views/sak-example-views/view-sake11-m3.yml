@@ -271,7 +271,7 @@ cards:
                     segments:
                       colorstops:
                         template:
-                          name: colorstops_boiler_setpoint_blue2orange
+                          name: sak_colorstops_boiler_setpoint_blue2orange
                           variables:
                             - thegap: -0.5
                     animation:
@@ -448,7 +448,7 @@ cards:
                     segments:
                       colorstops:
                         template:
-                          name: colorstops_boiler_water_blue2orange
+                          name: sak_colorstops_boiler_water_blue2orange
                           variables:
                             - thegap: -0.5
                             - theStroke: true
@@ -518,7 +518,7 @@ cards:
                     segments:
                       colorstops:
                         template:
-                          name: colorstops_boiler_water_blue2orange
+                          name: sak_colorstops_boiler_water_blue2orange
                           variables:
                             - thegap: 1
                     animation:
@@ -585,7 +585,7 @@ cards:
                     segments:
                       colorstops:
                         template:
-                          name: colorstops_boiler_water_blue2orange
+                          name: sak_colorstops_boiler_water_blue2orange
                           variables:
                             - thegap: 1
                     animation:
@@ -709,7 +709,7 @@ cards:
               # ================================================================
               - toolset: totals
                 template:
-                  name: toolset_electricity_delivered_returned
+                  name: sak_toolset_electricity_delivered_returned
                   variables:
                     - entity_delivered: 0
                     - entity_returned: 1
@@ -719,7 +719,7 @@ cards:
               # ================================================================
               - toolset: L1
                 template:
-                  name: toolset_electricity_delivered_returned
+                  name: sak_toolset_electricity_delivered_returned
                   variables:
                     - entity_delivered: 2
                     - entity_returned: 3
@@ -730,7 +730,7 @@ cards:
               # ================================================================
               - toolset: L2
                 template:
-                  name: toolset_electricity_delivered_returned
+                  name: sak_toolset_electricity_delivered_returned
                   variables:
                     - entity_delivered: 4
                     - entity_returned: 5
@@ -741,7 +741,7 @@ cards:
               # ================================================================
               - toolset: L3
                 template:
-                  name: toolset_electricity_delivered_returned
+                  name: sak_toolset_electricity_delivered_returned
                   variables:
                     - entity_delivered: 6
                     - entity_returned: 7

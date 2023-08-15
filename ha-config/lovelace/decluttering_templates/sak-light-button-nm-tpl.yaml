@@ -16,6 +16,8 @@ card:
     - entity: '[[entity]]'
       attribute: brightness
       unit_of_measurement: "%"
+      unit: "%"
+      convert: brightness_pct
 
   aspectratio: 1/1
   dev:
@@ -32,7 +34,7 @@ card:
       # Using Neumorphic light button design
       - toolset: light-button
         template:
-          name: toolset_light_button_nm
+          name: sak_toolset_light_button_nm
         position:
           cx: '[[cx]]'
           cy: '[[cy]]'

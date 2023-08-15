@@ -64,3 +64,9 @@ lovelace:
       title: Swiss Army Knife Tutorials
       icon: mdi:hospital-box
       show_in_sidebar: true
+    sak-fces:
+      mode: yaml
+      filename: sak-functional-card-examples-dashboard.yaml
+      title: Swiss Army Knife FCEs
+      icon: mdi:hospital-box
+      show_in_sidebar: true

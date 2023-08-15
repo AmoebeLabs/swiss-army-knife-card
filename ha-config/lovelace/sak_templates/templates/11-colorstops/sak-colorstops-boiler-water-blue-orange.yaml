@@ -1,0 +1,27 @@
+# https://pinetools.com/gradient-generator
+# Based on colors #0094ff and #ff8c00
+#
+sak_colorstops_boiler_water_blue2orange:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
+      - theFill: true
+      - theStroke: false
+  colorstops:
+    gap: '[[thegap]]'
+    fill: '[[theFill]]'
+    stroke: '[[theStroke]]'
+    colors:
+      0: '#0094ff'
+      5: '#1793e7' 
+      10: '#2e92d0' 
+      15: '#4591b9' 
+      20: '#5c91a2' 
+      25: '#73908b' 
+      30: '#8b8f73' 
+      35: '#a28e5c' 
+      40: '#b98e45' 
+      45: '#d08d2e' 
+      50: '#e78c17'
+      55: '#ff8c00'

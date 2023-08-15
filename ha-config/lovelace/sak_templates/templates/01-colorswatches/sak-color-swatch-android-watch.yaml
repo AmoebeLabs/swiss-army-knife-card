@@ -1,0 +1,16 @@
+# From Pinterest
+# - gainsboro: kind of white / background
+# - slategray: kind of green/gray
+# - darkslategray: almost black for font
+#
+# No light/dark support, just these colors...
+#
+sak_color_swatch_android_watch:
+  template:
+    type: colorswatch
+  colorswatch:
+    sak-cs-aw-gainsboro: '#e7e7e7'
+    sak-cs-aw-slategray: '#5c7886'
+    sak-cs-aw-lightgray: '#e7e7e7'
+    sak-cs-aw-darkorange: '#f79201'
+    sak-cs-aw-darkslategray: '#2e2e2e'

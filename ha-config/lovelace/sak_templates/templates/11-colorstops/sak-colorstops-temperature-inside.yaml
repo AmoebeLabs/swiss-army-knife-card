@@ -1,0 +1,17 @@
+sak_colorstops_temperature_inside:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
+      - theFill: true
+      - theStroke: false
+  colorstops:
+    gap: '[[thegap]]'
+    fill: '[[theFill]]'
+    stroke: '[[theStroke]]'
+    colors:
+      10: 'PowderBlue'
+      17: 'PowderBlue'
+      19: 'DarkSeaGreen'
+      21: 'var(--theme-gradient-color-04)'
+      25: 'var(--theme-gradient-color-07)'

@@ -1,0 +1,45 @@
+# http://web-tech.ga-usa.com/2012/05/creating-a-custom-hot-to-cold-temperature-color-gradient-for-use-with-rrdtool/index.html
+sak_colorstops_temperature_inside_heating:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
+      - theFill: true
+      - theStroke: false
+  colorstops:
+    gap: '[[thegap]]'
+    fill: '[[theFill]]'
+    stroke: '[[theStroke]]'
+    colors:
+      10: '#0000ff'
+      11: '#0012ff' 
+      12: '#0032ff' 
+      13: '#0054ff' 
+      14: '#0074ff' 
+      15: '#0094ff' 
+      16: '#00b4ff' 
+      17: '#00d4ff' 
+      18: '#00fff4' 
+      19: '#00ffa8' 
+      20: '#00ff5c' # (26)
+      21: '#00ff10'
+      22: '#3eff00'
+      23: '#8aff00'
+      24: '#d7ff00'
+      25: '#FFfa00'
+      26: '#FFf000'
+      27: '#FFe600'
+      28: '#FFdc00'
+      29: '#FFd200'
+      30: '#FFc800'
+      31: '#FFbe00'
+      32: '#FFb400'
+      33: '#FFaa00'
+      34: '#FFa000'
+      35: '#FF9600'
+      36: '#FF8c00'
+      37: '#FF8200'
+      38: '#FF7800'
+      39: '#FF6e00'
+      40: '#FF6400'
+

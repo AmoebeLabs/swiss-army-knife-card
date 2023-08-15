@@ -88,6 +88,7 @@ cards:
               icon: mdi:floor-lamp-dual
               attribute: brightness
               unit_of_measurement: "%"
+              # convert: brightness_pct
 
           aspectratio: 1/1
           dev:
@@ -135,7 +136,7 @@ cards:
               # Using Neumorphic ligth button design
               - toolset: light-button
                 template:
-                  name: toolset_light_button_slider_nm
+                  name: sak_toolset_light_button_slider_nm
                 position:
                   cx: 50
                   cy: 50
@@ -167,21 +168,22 @@ cards:
                         cx: 95
                         cy: 81
                     entity_index: 1
-                    derived_entity:
-                      input : '[[[ return state ]]]'
-                      state: >
-                        [[[
-                          if (typeof(entity) === 'undefined') return;
-                          if (typeof(state) === 'undefined') return;
-                          
-                          var bri = Math.round(state / 2.55);
-                          return (bri ? bri : '0');
-                        ]]]
-                      unit: >
-                        [[[
-                          if (typeof(state) === 'undefined') return undefined;
-                          return '%';
-                        ]]]
+                    # derived_entity:
+                    #   input : '[[[ return state ]]]'
+                    #   state: >
+                    #     [[[
+                    #       if (typeof(entity) === 'undefined') return;
+                    #       if (typeof(state) === 'undefined') return;
+                    #       if (state === 'undefined') return;
+
+                    #       var bri = Math.round(state / 2.55);
+                    #       return (bri ? bri : '0');
+                    #     ]]]
+                    #   unit: >
+                    #     [[[
+                    #       if (typeof(state) === 'undefined') return undefined;
+                    #       return '%';
+                    #     ]]]
                     user_actions:
                       drag_action:
                         update_interval: 200          # Update every 200msec
@@ -270,7 +272,7 @@ cards:
               # Using Neumorphic ligth button design
               - toolset: light-button
                 template:
-                  name: toolset_light_button_slider3_nm
+                  name: sak_toolset_light_button_slider3_nm
                 position:
                   cx: 50
                   cy: 50
@@ -308,6 +310,7 @@ cards:
                         [[[
                           if (typeof(entity) === 'undefined') return;
                           if (typeof(state) === 'undefined') return;
+                          if (state === 'undefined') return;
                           
                           var bri = Math.round(state / 2.55);
                           return (bri ? bri : '0');
@@ -413,7 +416,7 @@ cards:
               # Using Neumorphic ligth button design
               - toolset: light-button
                 template:
-                  name: toolset_light_button_slider_nm
+                  name: sak_toolset_light_button_slider_nm
                 position:
                   cx: 50
                   cy: 50

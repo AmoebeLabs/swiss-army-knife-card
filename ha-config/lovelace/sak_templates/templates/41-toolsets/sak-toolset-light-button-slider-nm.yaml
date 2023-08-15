@@ -1,0 +1,147 @@
+#
+# File      : toolset-light-button-slider-nm-template.yaml
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/Home-Assistant-Config
+#
+# Author: Mars @ AmoebeLabs.com
+# 
+# License: CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Swiss Army Knife toolset template definition
+#
+# This toolset defines a lightbutton with slider to control brightness
+# - Button build with circles & icon
+# - slider for controlling brightness
+#
+# Design:
+# - Neumorphic
+#   
+###############################################################################
+sak_toolset_light_button_slider_nm:
+  template:
+    type: toolset
+    defaults: 
+      - entity_light: 0
+      - entity_brightness: 1
+  toolset:
+    toolset: light-button-slider-nm
+    position:
+      cx: 50
+      cy: 50
+      scale: 1
+      rotate: 0
+    tools:
+      # Surface 
+      - type: circle
+        position:
+          cx: 50
+          cy: 40
+          radius: 31
+        styles:
+          circle:
+            pointer-events: none
+            stroke-width: 5
+            fill: var(--primary-background-color)
+
+      # Activation ring
+      - type: circle
+        position:
+          cx: 50
+          cy: 40
+          radius: 28
+        entity_index: '[[entity_light]]'
+        animations:
+          - state: 'on'
+            styles:
+              circle:
+                fill: var(--cs-orange-lighten-20)
+          - state: 'off'
+            styles:
+              circle:
+                fill: var(--primary-text-color)
+                opacity: 0.7
+        styles:
+          circle:
+            stroke-width: 0
+            pointer-events: none
+            transition: 'all .8s ease'
+
+      # Actual "button"
+      - type: circle
+        position:
+          cx: 50
+          cy: 40
+          radius: 27
+        entity_index: '[[entity_light]]'
+        # Note, 2020.11.07
+        # Safari (again) can't handle modifications in the filter url:
+        # - from none to some filter is ok
+        # - from some filter to none is ok
+        # - but from some filter to another filter doesn't change the filter!!!!
+        # Refreshing page works, but that is not the point...
+        # ?!?!?!?!?!?
+        # At some moment it just started working, and then again not. WEIRD!!
+        animations:
+          - state: 'on'
+            styles:
+              circle:
+                filter: url(#filter)
+          - state: 'off'
+            styles:
+              circle:
+                filter: none
+        user_actions:
+          tap_action:
+            haptic: light
+            actions:
+              - action: call-service
+                service: light.toggle
+        styles:
+          circle:
+            stroke-width: 0
+            fill: var(--primary-background-color)
+            transition: 'all .8s ease'
+
+      # Light/Switch icon
+      - type: icon
+        position:
+          cx: 50
+          cy: 40
+          align: center
+          icon_size: 39
+        entity_index: '[[entity_light]]'
+        animations:
+          - state: 'on'
+            styles:
+              icon:
+                color: var(--cs-orange-lighten-20)
+                fill: var(--cs-orange-lighten-20)
+                opacity: 1
+          - state: 'off'
+            styles:
+              icon:
+                color: var(--primary-text-color)
+                fill: var(--primary-text-color)
+                opacity: 0.7
+        styles:
+          icon:
+            pointer-events: none
+            filter: url(#is-1)
+            transition: 'all .8s ease'
+
+      # Name of entity
+      - type: name
+        position:
+          cx: 5
+          cy: 92
+        id: 4
+        entity_index: '[[entity_light]]'
+        styles:
+          name:
+            font-size: 9em
+            font-weight: 700
+            text-anchor: start
+
+

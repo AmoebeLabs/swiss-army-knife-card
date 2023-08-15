@@ -1,0 +1,144 @@
+sak_layout_fce_server_statistics:
+  template:
+    type: layout
+    defaults: 
+      - var_entity_index: 0
+  layout:
+    aspectratio: 6/1                          # Card is 600x100 grid
+    styles:
+      card:
+    toolsets:
+      # ================================================================
+      - toolset: half-circle
+        position:
+          cx: 0                             # Center on cards border 
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 48
+            styles:
+              circle:
+                fill: none
+                stroke: var(--theme-sys-color-secondary)
+                stroke-width: 3em
+                opacity: 0.5
+
+        # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 25
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 30
+            icon: mdi:server-network
+            styles:
+              icon:
+                fill: var(--theme-sys-color-secondary)
+
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 120
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 50
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: middle
+                font-size: 25em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 80
+            entity_index: 4
+            show:
+              uom: none
+            styles:
+              state:
+                text-anchor: middle
+                font-size: 14em
+                font-weight: 500
+                opacity: 0.7
+
+      # ================================================================
+      - toolset: line1
+        position:
+          cx: 200                           # On 1/3 of card width
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: line
+            position:
+              cx: 50
+              cy: 50
+              orientation: vertical
+              length: 50
+            styles:
+              line:
+                fill: var(--primary-text-color)
+                opacity: 0.5
+
+      # ================================================================
+      - toolset: column-cpu
+        template:
+          name: sak_toolset_tutorial_02_part1
+          variables:
+            - var_toolset_position_cx: 260
+
+      # ================================================================
+      - toolset: column-memory
+        # @2023.05.20 NOT WORKING!
+        # Everything is removed from toolset if it is a template
+        # IT is fully replaced by the template, and extra fields such
+        # as palette are ignored. 
+        #
+        # Template engine should only extract template to replace and
+        # use the rest operator to "remember" the other fields...
+        #
+        # Not for this (theme/palette/swatch) release
+        palette:
+          color_testing_palette_memory:
+            template:
+              name: sak_color_swatch_testing
+              variables:
+                - dummy: 1
+        template:
+          name: sak_toolset_tutorial_02_part1
+          variables:
+            - var_entity_index: 1
+            - var_toolset_position_cx: 355
+
+      # ================================================================
+      - toolset: column-disk
+        template:
+          name: sak_toolset_tutorial_02_part1
+          variables:
+            - var_entity_index: 2
+            - var_toolset_position_cx: 450
+
+      # ================================================================
+      - toolset: column-load
+        template:
+          name: sak_toolset_tutorial_02_part1
+          variables:
+            - var_entity_index: 3
+            - var_toolset_position_cx: 545
+            - var_segarc_scale_max: 2
