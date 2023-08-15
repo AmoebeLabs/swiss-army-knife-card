@@ -5,9 +5,9 @@
 #             Created: 2022.06.24                               #
 #                                                               #
 #################################################################
-  
+
 # Decluttering Templates
-decluttering_templates:
+decluttering_templates: 
   !include lovelace/decluttering_templates/decluttering_templates.yaml
 
 # Swiss Army Knife Templates
@@ -25,16 +25,14 @@ sak_user_templates:
 
 title: Swiss Army Knife Tutorials
 views:
-
-  - !include lovelace/views/sak-tutorial-views/view-functional-card-examples.yml
-
   # Swiss Army Knife tutorial views...
-  #
+  # 
   # Each tutorial is manually included, so you can select just a
-  # few for testing and integration...
+  # few for testing and integration..
   - !include lovelace/views/sak-tutorial-views/view-tutorial-01-part1.yml
   - !include lovelace/views/sak-tutorial-views/view-tutorial-01-part2.yml
   - !include lovelace/views/sak-tutorial-views/view-tutorial-01-part4.yml
 
-
   - !include lovelace/views/sak-tutorial-views/view-tutorial-03-part1.yml
+
+  - !include lovelace/views/sak-tutorial-views/view-tutorial-99-part1.yml

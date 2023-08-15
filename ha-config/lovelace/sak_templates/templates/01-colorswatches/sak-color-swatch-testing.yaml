@@ -1,0 +1,24 @@
+#
+# Test redefining some Material 3 theme colors (the theme-sys stuff)
+#
+sak_color_swatch_testing:
+  template:
+    type: colorswatch
+  colorswatch:
+    modes:
+      light:
+        sak-cs-default-text: 'var(--primary-text-color)'
+        sak-cs-default-background: 'var(--primary-background-color)'
+        sak-cs-default-01: 'lightred'
+        sak-cs-default-02: 'lightgreen'
+        sak-cs-default-03: 'lightblue'
+        theme-sys-palette-secondary60: 'yellow'
+        theme-sys-palette-primary50: 'darkblue'
+      dark:
+        sak-cs-default-text: 'var(--primary-text-color)'
+        sak-cs-default-background: 'var(--primary-background-color)'
+        sak-cs-default-01: 'darkred'
+        sak-cs-default-02: 'darkgreen'
+        sak-cs-default-03: 'darkblue'
+        theme-sys-palette-secondary60: 'orange'
+        theme-sys-palette-primary50: 'blue'

@@ -1,0 +1,21 @@
+sak_derived_entity_brightness:
+  template:
+    type: derived_entity
+    defaults:
+      - dummyvar: 'dummy'
+  derived_entity:
+    # dummy: '[[dummyvar]]'
+    input : '[[[ return state ]]]'
+    state: >
+      [[[
+        if (typeof(entity) === 'undefined') return;
+        if (typeof(state) === 'undefined') return;
+        
+        var bri = Math.round(state / 2.55);
+        return (bri ? bri : '0');
+      ]]]
+    unit: >
+      [[[
+        if (typeof(state) === 'undefined') return undefined;
+        return '%';
+      ]]]

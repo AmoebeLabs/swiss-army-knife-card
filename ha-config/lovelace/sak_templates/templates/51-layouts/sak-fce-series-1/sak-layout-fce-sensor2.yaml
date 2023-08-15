@@ -1,0 +1,215 @@
+sak_layout_fce_sensor2:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_sensor_name_above_state: true
+      - sak_layout_sensor_history_disabled: false
+      - sak_layout_sensor_circle_style: default
+      - sak_layout_sensor_icon_style: default
+      - sak_layout_sensor_segarc_style: colorlist
+      - sak_layout_sensor_scale_max: 2
+      - sak_layout_sensor_colorstops_template: sak_colorstops_energy_2kw
+      
+  layout:
+    aspectratio: 3/1
+    toolsets:
+      # ================================================================
+      - toolset: half-circle
+        position:
+          cx: 0                             # Center on cards border 
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 50
+            show:
+              style: '[[sak_layout_sensor_circle_style]]'
+            entity_index: 0
+            colorstops:
+              template:
+                name: '[[sak_layout_sensor_colorstops_template]]'
+            styles:
+              circle:
+                stroke: none
+                opacity: 0.25
+                fill: var(--theme-sys-elevation-surface-neutral4)
+
+          # ------------------------------------------------------------ 
+          - type: 'segarc'
+            id: 0
+            position:
+              cx: 50
+              cy: 50
+              start_angle: 25
+              end_angle: 155
+              width: 6
+              radius: 59
+            entity_index: 0
+            scale:
+              min: 0
+              max: '[[sak_layout_sensor_scale_max]]'
+              width: 6
+              offset: 12
+            show:
+              scale: false
+              style: '[[sak_layout_sensor_segarc_style]]'
+              lastcolor: true
+            segments:
+              colorlist:
+                gap: 1
+                colors:
+                  - var(--theme-sys-color-secondary)
+              colorstops:
+                template:
+                  name: '[[sak_layout_sensor_colorstops_template]]'
+                  variables:
+                    - thegap: 2
+            styles:
+              foreground:
+                fill: darkgrey
+              background:
+                fill: var(--theme-sys-elevation-surface-neutral4)
+
+      # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 25
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 45
+            entity_index: 0
+            show:
+              style: '[[sak_layout_sensor_icon_style]]'
+            colorlist:
+              colors:
+                - var(--theme-sys-color-secondary)
+            colorstops:
+              template:
+                name: '[[sak_layout_sensor_colorstops_template]]'
+            styles:
+              icon:
+                fill: var(--theme-sys-color-secondary)
+                opacity: 0.9
+
+      # ================================================================
+      - toolset: column-bar
+        position:
+          cx: 185                     # 300-70/2 + 70=185
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: bar
+            id: 1
+            disabled: '[[sak_layout_sensor_history_disabled]]'
+            entity_index: 0
+            position:
+              orientation: vertical
+              cx: 50
+              cy: 50
+              width: 230              # 300-70=230
+              height: 100
+              margin: 1
+            hours: 24
+            barhours: 1
+            show:
+              style: 'minmaxgradient'
+            minmaxgradient:
+              fill: true
+              colors:
+                min: var(--theme-sys-palette-secondary85)
+                max: var(--theme-sys-palette-secondary65)
+            styles:
+              bar:
+                stroke-linecap: square
+                opacity: 0.2
+
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 70                # Left part = 75, so 75+(300-75)/2
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            variables:
+              name_above_state: '[[sak_layout_sensor_name_above_state]]'
+            disabled:  '[[[[ return !tool_config.variables.name_above_state; ]]]]'
+            position:
+              cx: 50
+              cy: 33
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: start
+                font-size: 30em
+                font-weight: 700
+          # ------------------------------------------------------------
+          - type: state
+            variables:
+              name_above_state: '[[sak_layout_sensor_name_above_state]]'
+            disabled:  '[[[[ return !tool_config.variables.name_above_state; ]]]]'
+            position:
+              cx: 50
+              cy: 61
+            entity_index: 0
+            styles:
+              state:
+                text-anchor: start
+                font-size: 22em
+                font-weight: 500
+                opacity: 0.7
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 85
+            entity_index: 1
+            show:
+              uom: none
+            styles:
+              state:
+                text-anchor: start
+                font-size: 15em
+                font-weight: 500
+                opacity: 0.7
+
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 70                # Left part = 75, so 75+(300-75)/2
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: state
+            disabled: '[[sak_layout_sensor_name_above_state]]'
+            position:
+              cx: 50
+              cy: 33
+            entity_index: 0
+            styles:
+              state:
+                text-anchor: start
+                font-size: 30em
+                font-weight: 700
+          # ------------------------------------------------------------
+          - type: name
+            disabled: '[[sak_layout_sensor_name_above_state]]'
+            position:
+              cx: 50
+              cy: 61
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: start
+                font-size: 22em
+                font-weight: 500
+                opacity: 0.7

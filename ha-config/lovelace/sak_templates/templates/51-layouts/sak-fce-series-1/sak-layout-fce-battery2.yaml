@@ -1,0 +1,159 @@
+sak_layout_fce_battery2:
+  template:
+    type: layout
+    defaults: 
+      - dummy: 0
+  layout:
+    aspectratio: 3/1
+    toolsets:
+      # ================================================================
+      - toolset: half-circle
+        position:
+          cx: 0                             # Center on cards border 
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 50
+            styles:
+              circle:
+                stroke: none
+                fill: var(--theme-sys-elevation-surface-neutral1)
+
+          # ------------------------------------------------------------ 
+          - type: 'segarc'
+            id: 0
+            position:
+              cx: 50
+              cy: 50
+              start_angle: 25
+              end_angle: 155
+              width: 6
+              radius: 59
+            entity_index: 0
+            scale:
+              min: 0
+              max: 100
+              width: 6
+              offset: 12
+            show:
+              scale: false
+              style: 'colorstops'
+              lastcolor: true
+            segments:
+              colorstops:
+                template:
+                  name: sak_colorstops_battery_level
+                  variables:
+                    - thegap: 2
+            styles:
+              foreground:
+                fill: darkgrey
+              background:
+                fill: var(--theme-sys-elevation-surface-neutral4)
+
+      # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 25
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 45
+            entity_index: 0
+            show:
+              style: 'colorstops'
+            colorstops:
+              template:
+                name: sak_colorstops_battery_level
+                variables:
+                  - thegap: 2
+            styles:
+              icon:
+                fill: var(--theme-sys-color-secondary)
+                opacity: 0.9
+            
+
+      # ================================================================
+      - toolset: column-bar
+        position:
+          cx: 185                     # 300-70/2 + 70=185
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: bar
+            id: 1
+            entity_index: 0
+            position:
+              orientation: vertical
+              cx: 50
+              cy: 50
+              width: 230              # 300-70=230
+              height: 100
+              margin: 1
+            hours: 24
+            barhours: 1
+            show:
+              style: 'minmaxgradient'
+            minmaxgradient:
+              fill: true
+              colors:
+                min: var(--theme-sys-palette-secondary80)
+                max: var(--theme-sys-palette-secondary60)
+            styles:
+              bar:
+                stroke-linecap: square
+                opacity: 0.15
+
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 70                # Left part = 75, so 75+(300-75)/2
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 33
+            entity_index: 0
+            styles:
+              state:
+                text-anchor: start
+                font-size: 30em
+                font-weight: 700
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 61
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: start
+                font-size: 22em
+                font-weight: 500
+                opacity: 0.7
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 85
+            entity_index: 1
+            show:
+              uom: none
+            styles:
+              state:
+                text-anchor: start
+                font-size: 15em
+                font-weight: 500
+                opacity: 0.7
+

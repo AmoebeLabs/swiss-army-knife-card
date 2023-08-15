@@ -1,0 +1,18 @@
+#
+# Color swatch with 11 rainbow colors
+#
+sak_color_swatch_rainbow_11:
+  template:
+    type: colorswatch
+  colorswatch:
+    sak-cs-rainbow-01: 'white'
+    sak-cs-rainbow-02: '#5e4fa2'
+    sak-cs-rainbow-03: '#3288bd'
+    sak-cs-rainbow-04: '#66c2a5'
+    sak-cs-rainbow-05: '#abdda4'
+    sak-cs-rainbow-06: '#e6f598'
+    sak-cs-rainbow-07: '#fee08b'
+    sak-cs-rainbow-08: '#fdae61'
+    sak-cs-rainbow-09: '#f46d43'
+    sak-cs-rainbow-10: '#d53e4f'
+    sak-cs-rainbow-11: '#9e0142'

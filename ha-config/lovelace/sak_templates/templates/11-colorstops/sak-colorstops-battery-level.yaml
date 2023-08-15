@@ -1,0 +1,15 @@
+sak_colorstops_battery_level:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
+      - theFill: true
+      - theStroke: false
+  colorstops:
+    gap: '[[thegap]]'
+    fill: '[[theFill]]'
+    stroke: '[[theStroke]]'
+    colors:
+      00: 'var(--brand-google-red)'
+      20: 'var(--brand-google-yellow)'
+      40: 'var(--brand-google-green)'

@@ -1,0 +1,26 @@
+#
+# Template  : sak-swatch-awair.yaml
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# Awair Element colors
+# No light/dark mode support.
+#
+# -----
+# Refs:
+#   - https://swiss-army-knife-card-manual.amoebelabs.com/
+#   
+################################################################################
+sak_color_swatch_awair:
+  template:
+    type: colorswatch
+  colorswatch:
+    sak-cs-awair-green: '#49ce4c'
+    sak-cs-awair-yellow: '#fdd125'
+    sak-cs-awair-orange: '#faaa00'
+    sak-cs-awair-darkorange: '#fb8600'
+    sak-cs-awair-red: '#e63740'

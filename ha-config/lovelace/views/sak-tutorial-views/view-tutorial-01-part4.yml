@@ -33,12 +33,12 @@ cards:
             toolsets:
               - toolset: first
                 template:
-                  name: toolset_tutorial_01-part3
+                  name: sak_toolset_tutorial_01-part3
                   variables:
                     - var_entity_index: 0
               - toolset: second
                 template:
-                  name: toolset_tutorial_01-part3
+                  name: sak_toolset_tutorial_01-part3
                   variables:
                     - var_entity_index: 1
                     - var_toolset_position_cy: 150

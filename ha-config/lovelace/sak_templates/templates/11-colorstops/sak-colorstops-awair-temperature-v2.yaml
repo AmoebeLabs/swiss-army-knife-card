@@ -1,0 +1,35 @@
+sak_colorstops_awair_temperature_v2:
+  template:
+    type: colorstops
+    defaults:
+      - dummy: 0
+  colorstops:
+    colors:
+      - value: -1000
+        color: '#e63740'    # Red
+        rank: 4
+      - value:  9
+        color: '#fb8600'    # Dark Orange
+        rank: 3
+      - value: 11
+        color: '#faaa00'    # Light Orange
+        rank: 2
+      - value: 17
+        color: '#fdd125'    # Yellow
+        rank: 1
+      - value: 18
+        color: '#49ce4c'    # Green
+        rank: 0
+      - value: 25.001
+        color: '#fdd125'    # Yellow
+        rank: 1
+      - value: 26.001
+        color: '#faaa00'    # Light Orange
+        rank: 2
+      - value: 31.001
+        color: '#fb8600'    # Dark Orange
+        rank: 3
+      - value: 33.001
+        color: '#e63740'    # Red
+        rank: 4
+  

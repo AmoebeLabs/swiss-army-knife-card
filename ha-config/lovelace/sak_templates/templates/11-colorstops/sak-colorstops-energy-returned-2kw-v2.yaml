@@ -1,0 +1,19 @@
+sak_colorstops_energy_returned_2kw_v2:
+  template:
+    type: colorstops
+    defaults:
+      - dummy: 0
+  colorstops:
+    colors:
+      - value: 0.01
+        color: '#01BAEF'
+      - value: 0.150
+        color: '#168CCE'
+      - value: 0.300
+        color: '#2B5EAD'
+      - value: 0.500
+        color: '#40308C'
+      - value: 1.000
+        color: '#4B197B'
+      - value: 2.000
+        color: '#55026A'

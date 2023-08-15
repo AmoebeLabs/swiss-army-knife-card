@@ -29,7 +29,7 @@ card:
       # Using Neumorphic sensor history design
       - toolset: sensor-history
         template:
-          name: toolset_sensor_history
+          name: sak_toolset_sensor_history
           variables: '[[variables]]'
         position:
           cx: '[[cx]]'

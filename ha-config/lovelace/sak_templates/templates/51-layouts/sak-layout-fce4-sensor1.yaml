@@ -1,0 +1,105 @@
+sak_layout_fce4_sensor1:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_sensor_icon_color: var(--theme-sys-color-primary)
+      - sak_layout_sensor_history_disabled: false
+  layout:
+    aspectratio: 1/1
+    toolsets:
+      # ==============================================================================
+      - toolset: homekit-state
+        position:
+          cx: 50
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 12.5
+              cy: 15
+              align: center
+              icon_size: 15
+            entity_index: 0
+            styles:
+              icon:
+                fill: '[[sak_layout_sensor_icon_color]]'
+
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 22.5
+              cy: 15
+            entity_index: 0
+            show:
+              ellipsis: 12
+            styles: 
+              name: 
+                text-anchor: start
+                font-size: 10em
+                opacity: 0.8
+
+          # ------------------------------------------------------------
+          - type: line
+            position:
+              cx: 50
+              cy: 30
+              width: 5
+              length: 80
+              orientation: horizontal
+            styles: 
+              line: 
+                stroke: var(--theme-sys-elevation-surface-neutral10)
+                stroke-width: 2em
+
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 1
+            disabled: '[[sak_layout_sensor_history_disabled]]'
+            entity_index: 0
+            position:
+              cx: 50
+              cy: 70
+              width: 100
+              height: 60
+              margin:
+                x: 0
+                y: 0
+                t: 0
+                b: 20
+            period:
+              calendar:
+                period: day
+                offset: 0
+                duration:
+                  hour: 24
+                bins:
+                  per_hour: 2
+            show:
+              chart_type: area
+              fill: fade
+            colorstops_transition: smooth
+            colorstops:
+              colors:
+                - value: 0
+                  color: var(--theme-sys-palette-secondary85)
+                - value: 3000
+                  color: var(--theme-sys-palette-secondary60)
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 60
+            entity_index: 0
+            show: 
+              uom: bottom
+            styles:
+              state:
+                font-size: 20em
+                text-anchor: middle
+                alignment-baseline: middle
+                font-weight: 700
+              uom:
+                fill: var(--theme-sys-color-primary)
+                alignment-baseline: hanging
+                font-weight: 600

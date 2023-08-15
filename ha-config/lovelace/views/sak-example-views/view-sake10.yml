@@ -73,7 +73,7 @@ cards:
                       style: 'colorstops'
                     colorstops:
                       template:
-                        name: colorstops_temperature_inside_heating
+                        name: sak_colorstops_temperature_inside_heating
                         variables:
                           - theFill: true
                     styles:
@@ -113,7 +113,7 @@ cards:
                     segments:
                       colorstops:
                         template:
-                          name: colorstops_temperature_inside_heating
+                          name: sak_colorstops_temperature_inside_heating
                           variables:
                             - thegap: 0.5
                     styles:
@@ -176,7 +176,7 @@ cards:
                       style: 'colorstops'
                     colorstops:
                       template:
-                        name: colorstops_temperature_inside_heating
+                        name: sak_colorstops_temperature_inside_heating
                         variables:
                           - theFill: true
                     styles:
@@ -232,7 +232,7 @@ cards:
                       style: 'colorstops'
                     colorstops:
                       template:
-                        name: colorstops_humidity
+                        name: sak_colorstops_humidity
                         variables:
                           - theFill: true
                     styles:
@@ -272,7 +272,7 @@ cards:
                     segments:
                       colorstops:
                         template:
-                          name: colorstops_humidity
+                          name: sak_colorstops_humidity
                           variables:
                             - thegap: 0
                     styles:
@@ -335,7 +335,7 @@ cards:
                       style: 'colorstops'
                     colorstops:
                       template:
-                        name: colorstops_humidity
+                        name: sak_colorstops_humidity
                         variables:
                           - theFill: true
                     styles:
@@ -386,7 +386,7 @@ cards:
                       style: 'colorstops'
                     colorstops:
                       template:
-                        name: colorstops_pressure
+                        name: sak_colorstops_pressure
                         variables:
                           - theFill: true
                     styles:
@@ -425,7 +425,7 @@ cards:
                     segments:
                       colorstops:
                         template:
-                          name: colorstops_pressure
+                          name: sak_colorstops_pressure
                           variables:
                             - thegap: 0
                     styles:
@@ -488,7 +488,7 @@ cards:
                       style: 'colorstops'
                     colorstops:
                       template:
-                        name: colorstops_pressure
+                        name: sak_colorstops_pressure
                         variables:
                           - theFill: true
                     styles:
@@ -995,7 +995,7 @@ cards:
                       style: 'colorlist'
                     derived_entity:
                       template:
-                        name: derived_entity_brightness
+                        name: sak_derived_entity_brightness
                         # BUG:
                         # Do need a variable section here and defaults in
                         # template itself. That should not be the case...

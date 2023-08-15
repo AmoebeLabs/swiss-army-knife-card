@@ -1,0 +1,19 @@
+sak_colorstops_lux:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 1
+      - theFill: true
+      - theStroke: false
+  colorstops:
+    gap: '[[thegap]]'
+    fill: '[[theFill]]'
+    stroke: '[[theStroke]]'
+    colors:
+      0: 'grey'
+      50: 'var(--theme-gradient-color-01)'
+      75: 'var(--theme-gradient-color-02)'
+      100: 'var(--theme-gradient-color-03)'
+      125: 'var(--theme-gradient-color-04)'
+      150: 'var(--theme-gradient-color-05)'
+      175: 'var(--theme-gradient-color-06)'

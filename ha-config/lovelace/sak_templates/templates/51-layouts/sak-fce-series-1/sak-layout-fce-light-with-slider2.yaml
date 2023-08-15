@@ -1,0 +1,252 @@
+sak_layout_fce_light_with_slider2:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_light_toggle_service: light.toggle
+  layout:
+    aspectratio: 3/1
+    toolsets:
+      # ================================================================
+      - toolset: column-icon
+        position:
+          cx: 50
+          cy: 60
+        tools:
+          # ------------------------------------------------------------
+          # Background rectex with same height and color as slider track
+          - type: rectex
+            position:
+              cx: 90
+              cy: 50
+              width: 50
+              height: 56
+            styles:
+              rectex:
+                fill: var(--theme-sys-elevation-surface-neutral4)
+                opacity: 1
+          # ------------------------------------------------------------
+          # Background rectex with same height and color as active track
+          - type: rectex
+            position:
+              cx: 70
+              cy: 50
+              width: 50
+              height: 50
+            styles:
+              rectex:
+                fill: var(--theme-sys-color-secondary)
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 30
+            entity_index: 0
+            animations:
+              - state: 'on'
+                styles:
+                  circle:
+                    fill: var(--theme-sys-color-primary)
+                    # animation: flash 2s ease-in-out 5
+              - state: 'off'
+                styles:
+                  circle:
+                    fill: var(--theme-sys-color-secondary-container)
+            # Remove user actions part to just display the state
+            # or disable pointer-events via a class or style
+            # Using a class enables the use of variables that can
+            # disable pointer-events to none!
+            user_actions:
+              tap_action:
+                haptic: light
+                actions:
+                  - action: fire-dom-event
+                    browser_mod:
+                      service: browser_mod.popup
+                      data: 
+                        title: "My test popup"
+                        content:
+                          type: entities 
+                          entities:
+                            - entity: light.1st_floor_hall_light
+                            - entity: light.livingroom_light_duo_right_light
+                  # - action: call-service
+                  #   service: light.toggle
+            styles:
+              circle:
+                fill: var(--theme-sys-color-secondary-container)
+                stroke: var(--theme-sys-color-secondary)
+                stroke-width: 0em
+
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 25
+            entity_index: 0
+            animations:
+              - state: 'on'
+                styles:
+                  icon:
+                    # animation: spin 3s linear infinite
+                    fill: var(--primary-background-color)
+              - state: 'off'
+                styles:
+                  icon:
+                    # fill: var(--theme-sys-color-on-secondary-container)
+                    fill: var(--theme-sys-color-secondary)
+            styles:
+              icon:
+                fill: var(--theme-sys-color-secondary)
+                # opacity: 0.7
+                pointer-events: none
+
+      # ================================================================
+      - toolset: column-name
+        position:
+          cx: 80
+          cy: 25
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 50
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: start
+                font-size: 25em
+                font-weight: 700
+                opacity: 1
+
+      # ================================================================
+      - toolset: slider
+        position:
+          cx: 180
+          cy: 60
+        tools:
+          # ------------------------------------------------------------
+          - type: slider
+            position:
+              cx: 50
+              cy: 50
+              orientation: horizontal
+              capture:
+                width: 200
+                height: 50
+              active:
+                # width: 200
+                height: 50
+                radius: 0
+              track:
+                width: 200
+                height: 56
+                radius: 28
+              thumb:
+                width: 50
+                height: 50
+                radius: 25
+              label:
+                # placement can be none, thumb, position (cx,cy)
+                placement: position
+                cx: -25
+                cy: 50
+            entity_index: 1
+            # Does this work??
+            animations:
+              # - state: >
+                  # [[[
+                    # if (typeof(state) === 'undefined') return state;
+                    # return 'no-match';
+                  # ]]]
+              - state: 'undefined'
+                operator: '=='
+                styles:
+                  thumb:
+                    # animation: spin 3s linear infinite
+                    # fill: var(--primary-background-color)
+                    fill: var(--theme-sys-color-secondary-container)
+              # - state: '50'
+                # operator: '<='
+                # styles:
+                  # track:
+                    # # fill: var(--theme-sys-color-on-secondary-container)
+                    # fill: var(--theme-sys-color-secondary)
+              - state: 'undefined'
+                operator: '!='
+                styles:
+                  track:
+                    dummy: 1
+            derived_entity:
+              input : '[[[ return state ]]]'
+              state: >
+                [[[
+                  if (typeof(entity) === 'undefined') return;
+                  if (typeof(state) === 'undefined') return;
+                  
+                  var bri = Math.round(state / 2.55);
+                  return (bri ? bri : '0');
+                ]]]
+              unit: >
+                [[[
+                  if (typeof(state) === 'undefined') return undefined;
+                  return '%';
+                ]]]
+            show:
+              # uom: none
+              active: true
+            user_actions:
+              drag_action:
+                update_interval: 200          # Update every 200msec
+                haptic: selection
+                actions:
+                  - action: call-service
+                    service: light.turn_on
+                    parameter: brightness_pct
+              tap_action:
+                haptic: light
+                actions:
+                  - action: call-service
+                    service: light.turn_on
+                    parameter: brightness_pct
+            scale:
+              min: 1
+              max: 100
+              step: 1
+            styles:
+              label:
+                text-anchor: middle
+                font-size: 20em
+                font-weight: 500
+                fill: white
+                pointer-events: auto
+              uom:
+                font-weight: 600
+                fill: white
+              capture:
+                pointer-events: all
+                touch-action: none
+              active:
+                fill: var(--theme-sys-color-secondary)
+                fill-opacity: 1
+                pointer-events: none
+              track:
+                # fill: url(#sak-light-brightness-gradient)
+                fill: var(--theme-sys-elevation-surface-neutral4)
+                fill-opacity: 1
+                stroke-width: 0.2em
+                stroke: var(--theme-sys-elevation-surface-neutral10)
+                pointer-events: none
+              thumb:
+                # stroke-width: 1.2em
+                # stroke: var(--primary-background-color)
+                # stroke-opacity: 1
+                # fill: var(--primary-text-color)
+                fill: var(--theme-sys-color-secondary)
+                fill-opacity: 1
+                pointer-events: none
+                transition: all .5s ease

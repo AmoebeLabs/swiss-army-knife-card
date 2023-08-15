@@ -1,0 +1,1144 @@
+#
+# Template  : sak-layout-fce2-electricity4.yaml
+# Project   : Home Assistant / Swiss Army Knife custom card.
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife-card
+#
+# Author    : Mars @ AmoebeLabs.com
+# 
+# License   : CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Refs:
+#   - https://swiss-army-knife-card-manual.amoebelabs.com/design/example-set-functional-cards/
+#   
+################################################################################
+# ## Today actual power
+# # 0..3
+# - entity: sensor.dsmr_reading_electricity_currently_delivered
+#   name: 'Total'
+# - entity: sensor.dsmr_reading_phase_currently_delivered_l1
+#   name: 'L1'
+# - entity: sensor.dsmr_reading_phase_currently_delivered_l2
+#   name: 'L2'
+# - entity: sensor.dsmr_reading_phase_currently_delivered_l3
+#   name: 'L3'
+# ## Returned actual power
+# # 4..7
+# - entity: sensor.dsmr_reading_electricity_currently_returned
+#   name: 'Total'
+# - entity: sensor.dsmr_reading_phase_currently_returned_l1
+#   name: 'L1'
+# - entity: sensor.dsmr_reading_phase_currently_returned_l2
+#   name: 'L2'
+# - entity: sensor.dsmr_reading_phase_currently_returned_l3
+#   name: 'L3'
+
+# ## Today actual energy
+# # 8..10
+# - entity: sensor.dsmr_day_consumption_electricity_merged
+#   name: 'Today'
+#   decimals: 2
+# - entity: sensor.dsmr_current_month_electricity_merged
+#   name: 'This Month'
+#   decimals: 1
+# - entity: sensor.dsmr_current_year_electricity_merged
+#   name: 'This Year'
+#   decimals: 0
+# ## Returned stuff
+# # 11..13
+# - entity: sensor.dsmr_day_consumption_electricity_returned_merged
+#   name: 'PV Today'
+#   decimals: 2
+# - entity: sensor.dsmr_current_month_electricity_returned_merged
+#   name: 'PV This Month'
+#   decimals: 1
+# - entity: sensor.dsmr_current_year_electricity_returned_merged
+#   name: 'PV This Year'
+#   decimals: 0
+
+sak_layout_fce2_electricity4:
+  template:
+    type: layout
+    defaults: 
+      - dummy: 0
+  layout:
+    aspectratio: 3/4.8                          # Card is 300x300 grid
+    styles:
+      card:
+    toolsets:
+      # ================================================================
+      - toolset: electricity-header
+        position:
+          cx: 150
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 2
+            position:
+              cx: 50
+              cy: 50
+              width: 280
+              height: 100
+              margin: 
+                l: 0
+                x: 0
+                y: 0
+                r: 0
+                t: 2
+                b: 20
+            entity_index: 0
+            entity_indexes:
+              - entity_index: 0
+            animate: true
+            show:
+              chart_type: area
+            period:
+              rolling_window:
+                period: day
+                offset: 0
+                duration:
+                  hour: 24
+                bins:
+                  per_hour: 4
+            state_values:
+              aggregate_func: avg
+              value_factor: 1000
+              lower_bound: 50
+              logarithmic: true
+            area: 
+              line_width : 1 
+              show_minmax: true
+            x_lines:
+              lines:
+                - name: x_axis
+                  zpos: below 
+                  yshift: 52
+                - name: ticks
+                  zpos: below 
+                  yshift: 53
+            colorstops_transition: smooth
+            colorstops: &electricity_colorstops_watt
+              template: 
+                name: sak_colorstops_energy_4000w_v2
+            styles:
+              x_axis:
+                stroke: lightgray
+                stroke-width: 0.2rem
+              ticks:
+                stroke: lightgray
+                stroke-dasharray: 1, 118.5
+                stroke-dashoffset: 0
+                stroke-width: 1rem
+      # ================================================================
+      - toolset: graph-title-and-location
+        position:
+          cx: 150
+          cy: 85
+        tools:
+          # ------------------------------------------------------------
+          - type: text
+            position:
+              cx: 50
+              cy: 50
+            text: "Flower Power"
+            styles:
+              text:
+                text-anchor: middle
+                font-size: 15em
+                font-weight: 600
+                opacity: 0.9
+                fill: white
+      # ================================================================
+      - toolset: energy-power-flower
+        position:
+          cx: 150
+          cy: 190
+        tools:
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 1
+            position: &live_pos
+              cx: 50
+              cy: 50
+              width: 150
+              height: 150
+              margin: 0
+            entity_index: 3
+            entity_indexes:
+              - entity_index: 3
+            animate: true
+            show:
+              chart_type: radial_barcode
+              chart_variant: sunburst_outward
+              chart_viz: flower
+            period: &live_period
+              calendar:
+                period: day
+                offset: 0
+                duration:
+                  hour: 24
+                bins:
+                  per_hour: 2
+              group_by: date
+            state_values: &live_state_values
+              logarithmic: true 
+              value_factor: 1000
+              lower_bound: 0
+              # upper_bound: 3000
+              aggregate_func: avg
+            radial_barcode: &live_radial_barcode
+              size: 15
+              line_width : 0.2
+              column_spacing: 0.2
+            colorstops_transition: smooth
+            colorstops: &pv_colorstops_watt
+              template:
+                name: sak_colorstops_energy_returned_4000w_v2
+            styles: &live_styles
+              radial_barcode: 
+                stroke: white
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 1
+            position:
+              <<: *live_pos
+              width: 115
+              height: 115
+            entity_index: 0
+            entity_indexes:
+              - entity_index: 0
+            animate: true
+            show:
+              chart_type: radial_barcode
+              chart_variant: sunburst_inward
+              chart_viz: flower
+            period: *live_period
+            state_values:
+              <<: *live_state_values
+              aggregate_func: avg
+            radial_barcode: *live_radial_barcode
+            colorstops_transition: smooth
+            colorstops: *electricity_colorstops_watt
+            styles: *live_styles
+          # ------------------------------------------------------------
+          - type: circle
+            position: 
+              cx: 50
+              cy: 50
+              radius: 38
+            styles: 
+              circle:
+                stroke: var(--theme-sys-elevation-surface-neutral9)
+                stroke-width: 1em
+                fill: var(--primary-background-color)
+          # ------------------------------------------------------------
+          - type: line
+            position:
+              cx: 50
+              cy: 50
+              length: 70
+              orientation: horizontal
+            styles:
+              line:
+                stroke: var(--theme-sys-elevation-surface-neutral9)
+                stroke-width: 1em
+                fill: var(--primary-background-color)          
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 25
+              align: center
+              icon_size: 15
+            icon: mdi:transmission-tower-export
+            styles:
+              icon:
+                opacity: 0.6
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 40
+            entity_indexes:
+              - entity_index: 0
+            show:
+              uom: end
+            styles:
+              tool:
+              state:
+                text-anchor: middle
+                font-size: 12em
+                font-weight: 600
+              uom:
+                opacity: 1
+                fill: var(--primary-text-color)
+                font-weight: 400
+
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 75
+              align: center
+              icon_size: 15
+            icon: mdi:transmission-tower-import
+            styles:
+              icon:
+                opacity: 0.6
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 60
+            entity_indexes:
+              - entity_index: 1
+            show:
+              uom: end
+            styles:
+              tool:
+              state:
+                text-anchor: middle
+                font-size: 12em
+                font-weight: 600
+              uom:
+                opacity: 1
+                fill: var(--primary-text-color)
+                font-weight: 400
+
+      # ================================================================
+      - toolset: flower-power-left
+        position:
+          cx: 30
+          cy: 190
+        tools:
+          # ------------------------------------------------------------
+          # Left wing...
+          - type: rectex
+            position:
+              cx: 50
+              cy: 50
+              width: 40
+              height: 135
+              radius:
+                all: 2
+            styles:
+              rectex:
+                # stroke: var(--theme-sys-elevation-surface-neutral9)
+                stroke: green
+                stroke-width: 1em
+                fill: none
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: -17.5
+              align: center
+              icon_size: 20
+            icon: mdi:transmission-tower-export
+            styles:
+              icon:
+                fill: var(--primary-text-color)
+                # fill: green
+                fill-opacity: 0.9
+                paint-order: stroke
+                stroke-width: 1em
+                stroke: var(--ha-card-background,var(--card-background-color,#fff))
+          # ------------------------------------------------------------
+          # Left wing...
+          - type: sparkline
+            position:
+              cx: 50
+              cy: 50
+              width: 27.5
+              height: 125
+              margin:
+                t: 7.5
+                b: 0
+                x: 0
+                y: 0
+            entity_index: 0
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            graded: &graded_flower_config
+              row_spacing: 5
+              line_width : 1.5
+            colorstops_transition: hard
+            colorstops: &electricity_colorstops_kwh
+              template: 
+                name: sak_colorstops_energy_4kw_v2
+            styles: &graded_flower_phase_styles
+              graded_background:
+                transition: fill 2s ease
+                rx: 13.75
+                ry: 50%
+              graded_foreground:
+                transition: fill 2s ease
+                rx: 13.75
+                ry: 50%
+
+      - toolset: flower-power-right
+        position:
+          cx: 270
+          cy: 190
+        tools:
+          # ------------------------------------------------------------
+          # Right wing...
+          - type: rectex
+            position:
+              cx: 50
+              cy: 50
+              width: 40
+              height: 135
+              radius:
+                all: 2
+            styles:
+              rectex:
+                # stroke: var(--theme-sys-elevation-surface-neutral9)
+                stroke: &energy_color_blue '#168CCE'
+                stroke-width: 1em
+                fill: none
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: -17.5
+              align: center
+              icon_size: 20
+            icon: mdi:transmission-tower-import
+            styles:
+              icon:
+                fill: var(--primary-text-color)
+                # fill: *energy_color_blue
+                fill-opacity: 0.9
+                paint-order: stroke
+                stroke-width: 1em
+                stroke: var(--ha-card-background,var(--card-background-color,#fff))
+          # ------------------------------------------------------------
+          # Right wing...
+          - type: sparkline
+            position:
+              cx: 50
+              cy: 50
+              width: 27.5
+              height: 125
+              margin:
+                t: 7.5
+                b: 0
+                x: 0
+                y: 0
+            entity_index: 4
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            graded: *graded_flower_config
+            colorstops_transition: hard
+            colorstops: &electricity_returned_colorstops_kwh
+              template: 
+                name: sak_colorstops_energy_returned_4kw_v2
+            styles: *graded_flower_phase_styles
+
+      # ================================================================
+      - toolset: power-block-header
+        position:
+          cx: 150
+          cy: &energy_cy 325
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position:
+              cx: 50
+              cy: 50
+              width: 280
+              height: 90
+              radius:
+                all: 2
+            styles:
+              rectex:
+                # stroke: var(--theme-sys-elevation-surface-neutral9)
+                stroke: url(#sak-green-blue-gradient)
+                stroke-width: 1em
+                fill: none
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 5
+              align: center
+              icon_size: 15
+            entity_index: 0
+            styles:
+              icon:
+                fill: var(--primary-text-color)
+                paint-order: stroke
+                stroke-width: 1em
+                stroke: var(--ha-card-background,var(--card-background-color,#fff))
+
+      # ================================================================
+      # Rows with L1, L2 and L3 power consumption
+      #
+      - toolset: L1-row
+        position:
+          cx: 150
+          cy: 300
+        tools:
+          # ------------------------------------------------------------
+          - type: line
+            position: &power_row_line_pos
+              cx: 50
+              cy: 50
+              length: 80
+              orientation: horizontal
+            styles: &power_row_line_styles
+              line:
+                stroke: var(--theme-sys-elevation-surface-neutral9)
+                # stroke: url(#sak-green-blue-gradient)
+                stroke-width: 1em
+                fill: var(--primary-background-color)          
+          # ------------------------------------------------------------
+          - type: name
+            position: &power_row_pos_name
+              cx: 50
+              cy: 50
+            entity_indexes:
+              - entity_index: 1
+            styles: &power_row_styles_name
+              tool:
+              name:
+                text-anchor: middle
+                font-size: 10em
+                font-weight: 500
+                fill-opacity: 0.6
+                fill: var(--primary-text-color)
+                stroke-width: 1em
+                stroke: var(--ha-card-background,var(--card-background-color,#fff))
+          # ------------------------------------------------------------
+          - type: name
+            position: *power_row_pos_name
+            entity_indexes:
+              - entity_index: 1
+            styles: &power_row_styles_name_extra
+              <<: *power_row_styles_name
+              name:
+                text-anchor: middle
+                font-size: 10em
+                font-weight: 500
+                fill-opacity: 0.6
+                fill: var(--primary-text-color)
+                stroke-width: 0
+          # ------------------------------------------------------------
+          - type: rectangle
+            position: &power_in_row_rectex_pos
+              cx: -40
+              cy: 50
+              width: 80
+              height: 20
+              rx: 10
+              ry: 10
+              radius:
+                all: 50
+            styles: &power_in_row_rectex_styles
+              rectangle:
+                stroke: green #var(--theme-sys-elevation-surface-neutral9)
+                stroke-width: 1em
+                opacity: 0.8
+          # ------------------------------------------------------------
+          - type: state
+            position: &power_in_row_pos_state
+              cx: -40
+              cy: 50
+            entity_indexes:
+              - entity_index: 1
+            show:
+              uom: end
+            styles: &power_row_styles_state
+              tool:
+              state:
+                text-anchor: middle
+                font-size: 12em
+                font-weight: 600
+              uom:
+                opacity: 1
+                fill: var(--primary-text-color)
+                font-weight: 400
+
+          # ------------------------------------------------------------
+          - type: rectangle
+            position: &power_out_row_rectex_pos
+              cx: 140
+              cy: 50
+              width: 80
+              height: 20
+              rx: 10
+              ry: 10
+            styles: &power_out_row_rectex_styles
+              rectangle:
+                stroke: *energy_color_blue
+                stroke-width: 1em
+                opacity: 0.8
+          # ------------------------------------------------------------
+          - type: state
+            position: &power_out_row_pos_state
+              cx: 140
+              cy: 50
+            entity_indexes:
+              - entity_index: 5
+            show:
+              uom: end
+            styles: *power_row_styles_state
+      # ================================================================
+      # Separate toolsets for graded stuff, because of rotation...
+      - toolset: L1-row-in-spark
+        position:
+          cx: 150
+          cy: 310
+          rotate: 90
+        tools:
+          # ------------------------------------------------------------
+          - type: sparkline
+            position: &power_in_graded_pos
+              cx: -40
+              cy: 50
+              width: 5
+              height: 60
+              margin:
+                t: 0
+                b: 0
+                x: 0
+                y: 0
+            entity_index: 1
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            graded: &graded_config
+              row_spacing: 0.2
+              line_width : 0.1
+            colorstops_transition: hard
+            colorstops: *electricity_colorstops_kwh
+            styles: &graded_phase_styles
+              graded_background:
+                # Set background to opacity 0, instead of fill none, as
+                # the latter won't show a nice transition!
+                transition: all 2s ease
+                opacity: 0
+                rx: 5
+                ry: 5
+              graded_foreground:
+                transition: fill 2s ease
+                rx: 5
+                ry: 5
+      # ================================================================
+      - toolset: L1-row-out-spark
+        position:
+          cx: 150
+          cy: 310
+          rotate: 90
+        tools:
+          # ------------------------------------------------------------
+          - type: sparkline
+            position: &power_out_graded_pos
+              cx: 140
+              cy: 50
+              width: 5
+              height: 60
+              margin:
+                t: 0
+                b: 0
+                x: 0
+                y: 0
+            entity_index: 5
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            graded: *graded_config
+            colorstops_transition: hard
+            colorstops: *electricity_returned_colorstops_kwh
+            styles: *graded_phase_styles
+
+      # ================================================================
+      # Rows with L1, L2 and L3 power consumption
+      #
+      - toolset: L2-row
+        position:
+          cx: 150
+          cy: 325
+        tools:
+          # ------------------------------------------------------------
+          - type: line
+            position: *power_row_line_pos
+            styles: *power_row_line_styles
+          # ------------------------------------------------------------
+          - type: name
+            position: *power_row_pos_name
+            entity_indexes:
+              - entity_index: 2
+            styles: *power_row_styles_name
+          # ------------------------------------------------------------
+          - type: name
+            position: *power_row_pos_name
+            entity_indexes:
+              - entity_index: 2
+            styles: *power_row_styles_name_extra
+          # ------------------------------------------------------------
+          - type: rectangle
+            position: *power_in_row_rectex_pos
+            styles: *power_in_row_rectex_styles
+          # ------------------------------------------------------------
+          - type: state
+            position: *power_in_row_pos_state
+            entity_indexes:
+              - entity_index: 2
+            show:
+              uom: end
+            styles: *power_row_styles_state
+          # ------------------------------------------------------------
+          - type: rectangle
+            position: *power_out_row_rectex_pos
+            styles: *power_out_row_rectex_styles
+          # ------------------------------------------------------------
+          - type: state
+            position: *power_out_row_pos_state
+            entity_indexes:
+              - entity_index: 6
+            show:
+              uom: end
+            styles: *power_row_styles_state
+
+      # ================================================================
+      # Separate toolsets for graded stuff, because of rotation...
+      - toolset: L2-row-in-spark
+        position:
+          cx: 150
+          cy: 335
+          rotate: 90
+        tools:
+          # ------------------------------------------------------------
+          - type: sparkline
+            position: *power_in_graded_pos
+            entity_index: 2
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            graded: *graded_config
+            colorstops_transition: hard
+            colorstops: *electricity_colorstops_kwh
+            styles: *graded_phase_styles
+
+      - toolset: L2-row-out-spark
+        position:
+          cx: 150
+          cy: 335
+          rotate: 90
+        tools:
+          # ------------------------------------------------------------
+          - type: sparkline
+            position: *power_out_graded_pos
+            entity_index: 6
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            graded: *graded_config
+            colorstops_transition: hard
+            colorstops: *electricity_returned_colorstops_kwh
+            styles: *graded_phase_styles
+
+      # ================================================================
+      # Rows with L1, L2 and L3 power consumption
+      #
+      - toolset: L3-row
+        position:
+          cx: 150
+          cy: 350
+        tools:
+          # ------------------------------------------------------------
+          - type: line
+            position: *power_row_line_pos
+            styles: *power_row_line_styles
+          # ------------------------------------------------------------
+          - type: name
+            position: *power_row_pos_name
+            entity_indexes:
+              - entity_index: 3
+            styles: *power_row_styles_name
+          # ------------------------------------------------------------
+          - type: name
+            position: *power_row_pos_name
+            entity_indexes:
+              - entity_index: 3
+            styles: *power_row_styles_name_extra
+          # ------------------------------------------------------------
+          - type: rectangle
+            position: *power_in_row_rectex_pos
+            styles: *power_in_row_rectex_styles
+          # ------------------------------------------------------------
+          - type: state
+            position: *power_in_row_pos_state
+            entity_indexes:
+              - entity_index: 3
+            show:
+              uom: end
+            styles: *power_row_styles_state
+          # ------------------------------------------------------------
+          - type: rectangle
+            position: *power_out_row_rectex_pos
+            styles: *power_out_row_rectex_styles
+          # ------------------------------------------------------------
+          - type: state
+            position: *power_out_row_pos_state
+            entity_indexes:
+              - entity_index: 7
+            show:
+              uom: end
+            styles: *power_row_styles_state
+
+      # ================================================================
+      # Separate toolsets for graded stuff, because of rotation...
+      - toolset: L3-row-in-spark
+        position:
+          cx: 150
+          cy: 360
+          rotate: 90
+        tools:
+          # ------------------------------------------------------------
+          - type: sparkline
+            position: *power_in_graded_pos
+            entity_index: 3
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            graded: *graded_config
+            colorstops_transition: hard
+            colorstops: *electricity_colorstops_kwh
+            styles: *graded_phase_styles
+
+      - toolset: L3-row-out-spark
+        position:
+          cx: 150
+          cy: 360
+          rotate: 90
+        tools:
+          # ------------------------------------------------------------
+          - type: sparkline
+            position: *power_out_graded_pos
+            entity_index: 7
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            graded: *graded_config
+            colorstops_transition: hard
+            colorstops: *electricity_returned_colorstops_kwh
+            styles: *graded_phase_styles
+
+      # ================================================================
+      # Bounding Box for energy rows
+      #
+      - toolset: bounding-box-energy-row
+        position:
+          cx: 150
+          cy: &energy_box_cy 425 #325
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position:
+              cx: 50
+              cy: 50
+              width: 280
+              height: 90
+              radius:
+                all: 2
+            styles:
+              rectex:
+                # stroke: var(--theme-sys-elevation-surface-neutral9)
+                stroke: url(#sak-green-blue-gradient)
+                stroke-width: 1em
+                fill: none
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 5
+              align: center
+              icon_size: 15
+            entity_index: 9
+            styles:
+              icon:
+                fill: var(--primary-text-color)
+                paint-order: stroke
+                stroke-width: 1em
+                stroke: var(--ha-card-background,var(--card-background-color,#fff))   
+          # ------------------------------------------------------------
+          # Background for the 'green' side...
+          - type: rectex
+            position:
+              cx: -40
+              cy: 50
+              width: 90
+              height: 80
+              radius:
+                all: 2
+            styles:
+              rectex:
+                stroke: var(--theme-sys-elevation-surface-neutral9)
+                stroke-width: 0em
+                fill: green
+                fill-opacity: 0.1
+          # ------------------------------------------------------------
+          # Background for the 'blue' side...
+          - type: rectex
+            position:
+              cx: 140
+              cy: 50
+              width: 90
+              height: 80
+              radius:
+                all: 2
+            styles:
+              rectex:
+                stroke: var(--theme-sys-elevation-surface-neutral9)
+                stroke-width: 0em
+                fill: *energy_color_blue
+                fill-opacity: 0.1
+      # ================================================================
+      # Rows with day / month / year energy consumption
+      #
+      - toolset: day-row
+        position:
+          cx: 150
+          cy: 400
+        tools:
+          # ------------------------------------------------------------
+          - type: line
+            position: &energy_row_line_pos
+              cx: 50
+              cy: 50
+              length: 80
+              orientation: horizontal
+            styles: &energy_row_line_styles
+              line:
+                stroke: var(--theme-sys-elevation-surface-neutral9)
+                stroke-width: 1em
+                fill: var(--primary-background-color)          
+          # ------------------------------------------------------------
+          - type: name
+            position: &energy_row_pos_name
+              cx: 50
+              cy: 50
+            entity_indexes:
+              - entity_index: 8
+            styles: &energy_row_styles_name
+              tool:
+              name:
+                text-anchor: middle
+                font-size: 10em
+                font-weight: 500
+                fill-opacity: 0.6
+                fill: var(--primary-text-color)
+                # paint-order: stroke
+                # -webkit-paint-order: stroke fill marker
+                stroke-width: 1em
+                stroke: var(--ha-card-background,var(--card-background-color,#fff))
+          # ------------------------------------------------------------
+          - type: name
+            position: *energy_row_pos_name
+            entity_indexes:
+              - entity_index: 8
+            styles: &energy_row_styles_name_extra
+              <<: *energy_row_styles_name
+              name:
+                text-anchor: middle
+                font-size: 10em
+                font-weight: 500
+                fill-opacity: 0.6
+                fill: var(--primary-text-color)
+                stroke-width: 0
+          # ------------------------------------------------------------
+          - type: rectangle
+            position: &energy_in_row_rectex_pos
+              cx: -40
+              cy: 50
+              width: 80
+              height: 20
+              rx: 10
+              ry: 10
+              radius:
+                all: 50
+            styles: &energy_in_row_rectex_styles
+              rectangle:
+                stroke: green #var(--theme-sys-elevation-surface-neutral9)
+                stroke-width: 1em
+                opacity: 0.8
+          # ------------------------------------------------------------
+          - type: state
+            position: &energy_in_row_pos_state
+              cx: -40
+              cy: 50
+            entity_indexes:
+              - entity_index: 8
+            show:
+              uom: end
+            styles: &energy_row_styles_state
+              tool:
+              state:
+                text-anchor: middle
+                font-size: 12em
+                font-weight: 600
+              uom:
+                opacity: 1
+                fill: var(--primary-text-color)
+                font-weight: 400
+          # ------------------------------------------------------------
+          - type: rectangle
+            position: &energy_out_row_rectex_pos
+              cx: 140
+              cy: 50
+              width: 80
+              height: 20
+              rx: 10
+              ry: 10
+            styles: &energy_out_row_rectex_styles
+              rectangle:
+                stroke: *energy_color_blue
+                stroke-width: 1em
+                opacity: 0.8
+          # ------------------------------------------------------------
+          - type: state
+            position: &energy_out_row_pos_state
+              cx: 140
+              cy: 50
+            entity_indexes:
+              - entity_index: 11
+            show:
+              uom: end
+            styles: *energy_row_styles_state
+
+      # ================================================================
+      # Rows with day / month / year energy consumption
+      #
+      - toolset: month-row
+        position:
+          cx: 150
+          cy: 425
+        tools:
+          # ------------------------------------------------------------
+          - type: line
+            position: *energy_row_line_pos
+            styles: *energy_row_line_styles
+          # ------------------------------------------------------------
+          - type: name
+            position: *energy_row_pos_name
+            entity_indexes:
+              - entity_index: 9
+            styles: *energy_row_styles_name
+          # ------------------------------------------------------------
+          - type: name
+            position: *energy_row_pos_name
+            entity_indexes:
+              - entity_index: 9
+            styles: *energy_row_styles_name_extra
+          # ------------------------------------------------------------
+          - type: rectangle
+            position: *energy_in_row_rectex_pos
+            styles: *energy_in_row_rectex_styles
+          # ------------------------------------------------------------
+          - type: state
+            position: *energy_in_row_pos_state
+            entity_indexes:
+              - entity_index: 9
+            show:
+              uom: end
+            styles: *energy_row_styles_state
+          # ------------------------------------------------------------
+          - type: rectangle
+            position: *energy_out_row_rectex_pos
+            styles: *energy_out_row_rectex_styles
+          # ------------------------------------------------------------
+          - type: state
+            position: *energy_out_row_pos_state
+            entity_indexes:
+              - entity_index: 12
+            show:
+              uom: end
+            styles: *energy_row_styles_state
+
+      # ================================================================
+      # Rows with day / month / year energy consumption
+      #
+      - toolset: year-row
+        position:
+          cx: 150
+          cy: 450
+        tools:
+          # ------------------------------------------------------------
+          - type: line
+            position: *energy_row_line_pos
+            styles: *energy_row_line_styles
+          # ------------------------------------------------------------
+          - type: name
+            position: *energy_row_pos_name
+            entity_indexes:
+              - entity_index: 10
+            styles: *energy_row_styles_name
+          # ------------------------------------------------------------
+          - type: name
+            position: *energy_row_pos_name
+            entity_indexes:
+              - entity_index: 10
+            styles: *energy_row_styles_name_extra
+          # ------------------------------------------------------------
+          - type: rectangle
+            position: *energy_in_row_rectex_pos
+            styles: *energy_in_row_rectex_styles
+          # ------------------------------------------------------------
+          - type: state
+            position: *energy_in_row_pos_state
+            entity_indexes:
+              - entity_index: 10
+            show:
+              uom: end
+            styles: *energy_row_styles_state
+          # ------------------------------------------------------------
+          - type: rectangle
+            position: *energy_out_row_rectex_pos
+            styles: *energy_out_row_rectex_styles
+          # ------------------------------------------------------------
+          - type: state
+            position: *energy_out_row_pos_state
+            entity_indexes:
+              - entity_index: 13
+            show:
+              uom: end
+            styles: *energy_row_styles_state
+

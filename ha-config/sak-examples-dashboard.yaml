@@ -44,5 +44,5 @@ views:
   - !include lovelace/views/sak-example-views/view-sake9.yml
   - !include lovelace/views/sak-example-views/view-sake10.yml
   - !include lovelace/views/sak-example-views/view-sake11-m3.yml
-  - !include lovelace/views/sak-example-views/view-sake12-m3.yml
+  - !include lovelace/views/sak-example-views/view-sake12-ani-m3.yml
   - !include lovelace/views/sak-example-views/view-sake99-m3.yml

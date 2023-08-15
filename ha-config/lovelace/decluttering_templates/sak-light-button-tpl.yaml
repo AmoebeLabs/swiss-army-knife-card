@@ -32,7 +32,7 @@ card:
       # ==============================================================================
       - toolset: light-button
         template:
-          name: toolset_light_button
+          name: sak_toolset_light_button
         position:
           cx: '[[cx]]'
           cy: '[[cy]]'

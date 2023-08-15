@@ -212,7 +212,7 @@ cards:
                 # Use pre-defined template for this part.
                 # Template has variables.
                 template:
-                  name: toolset_segarc_icon_state
+                  name: sak_toolset_segarc_icon_state
                   variables:
                     - entity: 0
                     - show_scale: false
@@ -323,7 +323,7 @@ cards:
               # ==============================================================================
               - toolset: disc
                 template:
-                  name: toolset_segarc_icon_state
+                  name: sak_toolset_segarc_icon_state
                   variables:
                     - entity: 1
                     - show_scale: true
@@ -351,7 +351,7 @@ cards:
               # ==============================================================================
               - toolset: cpu
                 template:
-                  name: toolset_segarc_icon_state
+                  name: sak_toolset_segarc_icon_state
                   variables:
                     - entity: 2
                     - show_scale: true
@@ -386,7 +386,7 @@ cards:
               # ==============================================================================
               - toolset: load1m
                 template:
-                  name: toolset_segarc_icon_state
+                  name: sak_toolset_segarc_icon_state
                   variables:
                     - entity: 3
                     - show_scale: false
@@ -415,7 +415,7 @@ cards:
               # ==============================================================================
               - toolset: load5m
                 template:
-                  name: toolset_segarc_icon_state
+                  name: sak_toolset_segarc_icon_state
                   variables:
                     - entity: 4
                     - show_scale: false
@@ -444,7 +444,7 @@ cards:
               # ==============================================================================
               - toolset: load15m
                 template:
-                  name: toolset_segarc_icon_state
+                  name: sak_toolset_segarc_icon_state
                   variables:
                     - entity: 5
                     - show_scale: false
@@ -642,7 +642,7 @@ cards:
                 # Use pre-defined template for this part.
                 # Template has variables.
                 template:
-                  name: toolset_segarc_icon_state
+                  name: sak_toolset_segarc_icon_state
                   variables:
                     - entity: 0
                     - show_scale: false
@@ -755,7 +755,7 @@ cards:
               # ==============================================================================
               - toolset: disc
                 template:
-                  name: toolset_segarc_icon_state
+                  name: sak_toolset_segarc_icon_state
                   variables:
                     - entity: 1
                     - show_scale: true
@@ -783,7 +783,7 @@ cards:
               # ==============================================================================
               - toolset: cpu
                 template:
-                  name: toolset_segarc_icon_state
+                  name: sak_toolset_segarc_icon_state
                   variables:
                     - entity: 2
                     - show_scale: true
@@ -818,7 +818,7 @@ cards:
               # ==============================================================================
               - toolset: load1m
                 template:
-                  name: toolset_segarc_icon_state
+                  name: sak_toolset_segarc_icon_state
                   variables:
                     - entity: 3
                     - show_scale: false
@@ -847,7 +847,7 @@ cards:
               # ==============================================================================
               - toolset: load5m
                 template:
-                  name: toolset_segarc_icon_state
+                  name: sak_toolset_segarc_icon_state
                   variables:
                     - entity: 4
                     - show_scale: false
@@ -876,7 +876,7 @@ cards:
               # ==============================================================================
               - toolset: load15m
                 template:
-                  name: toolset_segarc_icon_state
+                  name: sak_toolset_segarc_icon_state
                   variables:
                     - entity: 5
                     - show_scale: false

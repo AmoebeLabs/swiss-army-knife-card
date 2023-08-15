@@ -1,0 +1,115 @@
+#
+# File      : toolset-sensor-history-template.yaml
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/swiss-army-knife
+#
+# Author: Mars @ AmoebeLabs.com
+# 
+# License: CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Swiss Army Knife toolset template definition
+#   
+###############################################################################
+sak_toolset_sensor_history:
+  template:
+    type: toolset
+    defaults: 
+      - entity: 0
+      - icon_color: var(--cs-orange-lighten-30)
+      - bar_color_min: var(--cs-orange-lighten-10)
+      - bar_color_max: var(--cs-orange-darken-30)
+      - bar_color: grey
+  toolset:
+    toolset: sensor-history
+    position:
+      cx: 50
+      cy: 50
+      scale: 1
+    tools:
+      - type: rectex
+        position:
+          cx: 50
+          cy: 50
+          width: 90
+          height: 90
+          radius:
+            top_left: 0
+            top_right: 50
+            bottom_right: 0
+            bottom_left: 10
+        styles:
+          rectex:
+            stroke: var(--primary-background-color)
+            fill: var(--primary-background-color)
+
+      # state
+      - type: state
+        position:
+          cx: 10
+          cy: 20
+        entity_index: '[[entity]]'
+        styles:
+          state:
+            text-anchor: start
+            font-size: 17.5em
+            font-weight: 700
+
+      # circle for icon
+      - type: circle
+        position:
+          cx: 85
+          cy: 15
+          radius: 10
+        styles:
+          circle:
+            fill: var(--primary-background-color)
+      # icon
+      - type: icon
+        position:
+          cx: 85
+          cy: 15
+          align: center
+          icon_size: 20
+        entity_index: '[[entity]]'
+        styles:
+          icon:
+            fill: '[[icon_color]]'
+            color: '[[icon_color]]'
+            filter: url(#is-1)
+
+      # name
+      - type: name
+        position:
+          cx: 50
+          cy: 45
+        entity_index: '[[entity]]'
+        styles:
+          name:
+            text-anchor: middle
+            font-size: 11em
+            font-weight: 400
+
+      # bar
+      - type: bar
+        id: 2
+        entity_index: '[[entity]]'
+        position:
+          orientation: vertical
+          cx: 50
+          cy: 77.5
+          width: 85
+          height: 30
+          margin: 1
+        hours: 24
+        barhours: 1
+        show:
+          style: 'minmaxgradient'
+        minmaxgradient:
+          colors:
+            min: '[[bar_color_min]]'
+            max: '[[bar_color_max]]'
+        styles:
+          bar:
+            stroke-linecap: round

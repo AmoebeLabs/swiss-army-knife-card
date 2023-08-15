@@ -1,0 +1,390 @@
+sak_layout_fce2_tomorrow_pollen_all_graph_sunburst:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_tomorrow_pollen_image_path: 'tomorrow/'
+      - sak_layout_tomorrow_pollen_background_disabled: true
+      - sak_layout_tomorrow_pollen_background_image: '/local/images/backgrounds/pollen-background-5x4.png'
+      - sak_layout_tomorrow_pollen_icon_color: var(--theme-sys-color-primary)
+  layout:
+    aspectratio: 6/2
+    toolsets:
+      # ================================================================
+      - toolset: background-icon
+        position:
+          cx: 180
+          cy: 100
+        tools:
+          # ------------------------------------------------------------
+          # Background has 5:4 aspectratio
+          # Just show part of the image using adapted clip_path
+          - type: 'usersvg'
+            disabled: '[[sak_layout_tomorrow_pollen_background_disabled]]'
+            position:
+              cx: 50
+              cy: 50
+              height: 200
+              width: 250
+            clip_path:
+              position:
+                cx: 15
+                cy: 50
+                height: 200
+                width: 150
+                radius:
+                  all: 0
+            style: 'images'
+            images:
+              - default: '[[sak_layout_tomorrow_pollen_background_image]]'
+            styles:
+              usersvg:
+                opacity: 0.8
+              mask:
+                fill: url(#sak-sparkline-area-mask-tb-0)
+      # ==============================================================================
+      - toolset: circle-with-icon
+        position:
+          cx: 60
+          cy: 60
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 37.5
+            styles:
+              circle:
+                stroke-width: 6em
+                stroke: '[[sak_layout_tomorrow_pollen_icon_color]]'
+                fill: var(--primary-background-color)
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 45
+            entity_index: 0
+            styles:
+              icon:
+                fill: '[[sak_layout_tomorrow_pollen_icon_color]]'
+
+      # ==============================================================================
+      - toolset: area-name
+        position:
+          cx: 22.5
+          cy: 135
+        tools:
+          # ------------------------------------------------------------
+          - type: area
+            position:
+              cx: 50
+              cy: 50
+            entity_index: 0
+            show:
+              ellipsis: 9
+            styles: 
+              area: 
+                text-anchor: start
+                font-size: 36em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: text
+            position:
+              cx: 50
+              cy: 90
+            text: "Pollen"
+            show:
+              ellipsis: 12
+            styles: 
+              text: 
+                text-anchor: start
+                font-size: 30em
+                font-weight: 400
+                opacity: 0.6
+
+      # ================================================================
+      - toolset: pollen-column-trees
+        position:
+          cx: 260
+          cy: 100
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: -25
+            entity_index: 0
+            styles:
+              name:
+                text-anchor: middle
+                font-size: 26em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: 'usersvg'
+            entity_index: 0
+            position:
+              cx: 50
+              cy: 50
+              height: 70
+              width: 70
+            style: 'images'
+            variables:
+              path: '[[sak_layout_tomorrow_pollen_image_path]]'
+              prefix: 'pollen_tree_'
+            images:
+              - default: >
+                  [[[
+                    return "/local/images/"+ tool_config.variables.path + tool_config.variables.prefix + state + ".svg";
+                  ]]]
+            # styles:
+              # tool:
+                # Just rotate. Don't set center, that you can inherit in this case...
+                # transform: rotate(90deg)
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 1
+            position:
+              cx: 50
+              cy: 50
+              width: 120
+              height: 120
+              margin:
+                x: 0
+                y: 0
+            entity_index: 0
+            entity_indexes:
+              - entity_index: 0
+            animate: true
+            show:
+              chart_type: radial_barcode
+              chart_variant: sunburst
+              chart_viz: rice_grain
+            period:
+              calendar:
+                period: day
+                offset: 0
+                duration:
+                  hour: 24
+                bins: 
+                  per_hour: 2
+              group_by: date
+            state_values:
+              aggregate_func: max
+              lower_bound: -1
+              upper_bound: 5
+            radial_barcode: &radial_barcode_config
+              size: 15
+              column_spacing: 0.1
+              line_width : 0.1
+              face:
+                show_day_night: false
+                show_hour_marks: false 
+                show_hour_numbers: none # absolute # or relative
+                hour_marks_radius: 23
+                hour_marks_count: 12   # one mark for each hour
+                hour_numbers_radius: 18
+            state_map:
+              template: 
+                name: sak_statemap_pollen
+            colorstops_transition: hard
+            colorstops:
+              template: 
+                name: sak_colorstops_pollen_v2
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 125
+            entity_index: 0
+            show:
+              uom: none
+              ellipsis: 9
+            styles:
+              state:
+                text-anchor: middle
+                font-size: 22em
+                font-weight: 500
+                opacity: 0.7
+      # ================================================================
+      - toolset: pollen-column-grass
+        position:
+          cx: 395
+          cy: 100
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: -25
+            entity_index: 1
+            styles:
+              name:
+                text-anchor: middle
+                font-size: 26em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: 'usersvg'
+            entity_index: 1
+            position:
+              cx: 50
+              cy: 50
+              height: 70
+              width: 70
+            style: 'images'
+            variables:
+              path: '[[sak_layout_tomorrow_pollen_image_path]]'
+              prefix: 'pollen_grass_'
+            images:
+              - default: >
+                  [[[
+                    return "/local/images/"+ tool_config.variables.path + tool_config.variables.prefix + state + ".svg";
+                  ]]]
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 1
+            position:
+              cx: 50
+              cy: 50
+              width: 120
+              height: 120
+              margin:
+                x: 0
+                y: 0
+            entity_index: 1
+            entity_indexes:
+              - entity_index: 1
+            animate: true
+            show:
+              chart_type: radial_barcode
+              chart_variant: sunburst
+              chart_viz: rice_grain
+            period:
+              calendar:
+                period: day
+                offset: 0
+                duration:
+                  hour: 24
+                bins: 
+                  per_hour: 2
+              group_by: date
+            state_values:
+              aggregate_func: max
+              lower_bound: -1
+              upper_bound: 5
+            radial_barcode: *radial_barcode_config
+            state_map:
+              template:
+                name: sak_statemap_pollen
+            colorstops_transition: hard
+            colorstops:
+              template: 
+                name: sak_colorstops_pollen_v2
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 125
+            entity_index: 1
+            show:
+              uom: none
+            styles:
+              state:
+                text-anchor: middle
+                font-size: 22em
+                font-weight: 500
+                opacity: 0.7
+
+      # ================================================================
+      - toolset: pollen-column-weed
+        position:
+          cx: 530
+          cy: 100
+        tools:
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: -25
+            entity_index: 2
+            styles:
+              name:
+                text-anchor: middle
+                font-size: 26em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: 'usersvg'
+            entity_index: 2
+            position:
+              cx: 50
+              cy: 50
+              height: 70
+              width: 70
+            style: 'images'
+            variables:
+              path: '[[sak_layout_tomorrow_pollen_image_path]]'
+              prefix: 'pollen_weed_'
+            images:
+              - default: >
+                  [[[
+                    return "/local/images/"+ tool_config.variables.path + tool_config.variables.prefix + state + ".svg";
+                  ]]]
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 1
+            position:
+              cx: 50
+              cy: 50
+              width: 120
+              height: 120
+              margin:
+                x: 0
+                y: 0
+            entity_index: 2
+            entity_indexes:
+              - entity_index: 2
+            animate: true
+            show:
+              chart_type: radial_barcode
+              chart_variant: sunburst
+              chart_viz: rice_grain
+            period:
+              calendar:
+                period: day
+                offset: 0
+                duration:
+                  hour: 24
+                bins: 
+                  per_hour: 2
+              group_by: date
+            state_values:
+              aggregate_func: max
+              lower_bound: -1
+              upper_bound: 5
+            radial_barcode: *radial_barcode_config
+            state_map:
+              template: 
+                name: sak_statemap_pollen
+            colorstops_transition: hard
+            colorstops:
+              template: 
+                name: sak_colorstops_pollen_v2
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 125
+            entity_index: 2
+            show:
+              uom: none
+            styles:
+              state:
+                text-anchor: middle
+                font-size: 22em
+                font-weight: 500
+                opacity: 0.7

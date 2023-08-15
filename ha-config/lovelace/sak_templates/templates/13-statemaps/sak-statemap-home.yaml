@@ -1,0 +1,9 @@
+sak_statemap_person:
+  template:
+    type: state_map
+  variables:
+    dummy: true
+  state_map:
+    map:
+      - value: 'home'
+      - value: 'not_home'

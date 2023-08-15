@@ -1,0 +1,212 @@
+sak_layout_fce2_sensor1:
+  template:
+    type: layout
+    defaults: 
+      - sak_layout_sensor_icon_color: var(--theme-sys-color-primary)
+      - sak_layout_sensor_icon_color_on: var(--theme-sys-color-error)
+      - sak_layout_sensor_icon_animation: flash # none, flash, spin
+      - sak_layout_sensor_history_color_on: var(--theme-sys-color-error)
+      - sak_layout_sensor_history_area_disabled: false
+      - sak_layout_sensor_history_ring_disabled: true
+      - sak_layout_battery_colorstops_template: sak_colorstops_battery_level
+      - sak_layout_sensor_icon_style: colorstops
+
+  layout:
+    aspectratio: 1/1
+    toolsets:
+      # ==============================================================================
+      - toolset: state-history
+        position:
+          cx: 50
+          cy: 50
+        tools:
+          # ------------------------------------------------------------
+          - type: sparkline
+            id: 1
+            disabled: '[[sak_layout_sensor_history_area_disabled]]'
+            entity_index: 0
+            position:
+              cx: 50
+              cy: 70
+              width: 100
+              height: 60
+              margin:
+                x: 0
+                y: 0
+                t: 0
+                b: 20
+            period:
+              calendar:
+                period: day
+                offset: 0
+                duration:
+                  hour: 24
+                bins:
+                  per_hour: 2
+            show:
+              chart_type: area
+              fill: fade
+            colorstops_transition: smooth
+            colorstops:
+              colors:
+                - value: 0
+                  color: var(--theme-sys-palette-secondary85)
+                - value: 3000
+                  color: var(--theme-sys-palette-secondary60)
+          # ------------------------------------------------------------
+          - type: rectex
+            variables:
+              sak_layout_sensor_history_area_disabled: '[[sak_layout_sensor_history_area_disabled]]'
+            disabled: '[[[[ return !tool_config.variables.sak_layout_sensor_history_area_disabled; ]]]]'
+            position:
+              cx: 50
+              cy: 80
+              width: 80
+              height: 20
+              radius:
+                left: 5
+                right: 5
+            styles:
+              rectex:
+                stroke: var(--theme-sys-color-primary)
+                stroke-width: 1em
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 80
+            entity_index: 0
+            show: 
+              uom: end
+            styles:
+              state:
+                font-size: 15em
+                text-anchor: middle
+                # alignment-baseline: middle
+                font-weight: 700
+              uom:
+                # fill: var(--theme-sys-color-primary)
+                # alignment-baseline: hanging
+                font-weight: 600
+
+      # ==============================================================================
+      - toolset: circle-with-icon
+        position:
+          cx: 20
+          cy: 20
+        tools:
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 12.5
+            styles:
+              circle:
+                stroke-width: 2em
+                stroke: '[[sak_layout_sensor_icon_color]]'
+                fill: var(--primary-background-color)
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 15
+            entity_index: 0
+            styles:
+              icon:
+                fill: '[[sak_layout_sensor_icon_color]]'
+      # ================================================================
+      - toolset: colomn-battery
+        position:
+          cx: 87.5
+          cy: 12.5
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            # Must specify both battery and linkquality. Test if second
+            # entity (battery) is specified. If not, disable
+            disabled: >-
+              [[[[ if (entities_config[1] === undefined) return true;
+                   return false;
+              ]]]]
+            position: &icon_pos
+              cx: 50
+              cy: 50
+              align: right
+              icon_size: 10
+            entity_index: 1
+            styles: &icon_styles
+              icon:
+                fill: var(--primary-text-color)
+                opacity: 1
+            show:
+              style: '[[sak_layout_sensor_icon_style]]'
+            colorlist:
+              colors:
+                - var(--theme-sys-color-secondary)
+            colorstops:
+              template:
+                name: '[[sak_layout_battery_colorstops_template]]'
+
+      # ================================================================
+      - toolset: colomn-linkquality
+        position:
+          cx: 77.5
+          cy: 12.5
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            # Must specify both battery and linkquality. Test if third
+            # entity (linkquality) is specified. If not, disable
+            disabled: >-
+              [[[[ if (entities_config[2] === undefined) return true;
+                   return false;
+              ]]]]
+            position: *icon_pos
+            entity_index: 2
+            styles: *icon_styles
+            show:
+              style: '[[sak_layout_sensor_icon_style]]'
+            colorlist:
+              colors:
+                - var(--theme-sys-color-secondary)
+            colorstops:
+              template:
+                name: '[[sak_layout_battery_colorstops_template]]'
+      # ==============================================================================
+      - toolset: area-name
+        position:
+          cx: 7.5
+          cy: 45
+        tools:
+          # ------------------------------------------------------------
+          - type: area
+            position:
+              cx: 50
+              cy: 50
+            entity_index: 0
+            show:
+              ellipsis: 12
+            styles: 
+              area: 
+                text-anchor: start
+                font-size: 12em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 62.5
+            entity_index: 0
+            show:
+              ellipsis: 20
+            styles: 
+              name: 
+                text-anchor: start
+                font-size: 10em
+                font-weight: 400
+                opacity: 0.6
+

@@ -1,0 +1,125 @@
+#
+# File      : toolset-arc180-sparklinebar24-template.yamll
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/Home-Assistant-Config
+#
+# Author: Mars @ AmoebeLabs.com
+# 
+# License: CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Swiss Army Knife toolset template definition
+#
+# This toolset defines a:
+# - segmented arc of 180 degrees from left to right
+# - the state
+# - an icon
+# - a vertical barchart with history over the last 24 hours
+#
+# All tools are using the same entity!
+#
+###############################################################################
+sak_toolset_arc180_sparklinebar24:
+  template:
+    type: toolset
+    defaults: 
+      - entity: 0
+      - show_scale: true
+      - cx: 50
+      - cy: 50
+  toolset:
+    toolset: arc180-sparklinebar24
+    position:
+      cx: '[[cx]]'
+      cy: '[[cy]]'
+    tools:
+      - type: 'name'
+        id: 1
+        entity_index: '[[entity]]'
+        position:
+          cx: 50
+          cy: 65
+        styles:
+          name:
+            font-size: 9em
+            text-anchor: middle
+
+      - type: 'segarc'
+        id: 2
+        entity_index: '[[entity]]'
+        position:
+          cx: 50
+          cy: 50
+          start_angle: -90
+          end_angle: 90
+          width: 10
+          radius: 45
+          radius_x: 45
+          radius_y: 45
+        # (BUG)
+        # Scale settings are not merged using templates. Why??
+        # keep getting the default values set by the segarc...
+        # a separate segarc works with these settings in scale.width etc.
+        scale:
+          min: '[[scale_min]]'
+          max: '[[scale_max]]'
+          width: 5
+          offset: -10
+        show:
+          scale: '[[show_scale]]'
+          style: 'colorstops'
+        segments:
+          colorstops:
+            template:
+              name: '[[colorstops_template]]'
+              variables:
+                - thegap: 0
+        styles:
+          foreground:
+            fill: var(--theme-gradient-color-01)
+          background:
+            fill: var(--cs-theme-default-darken-15)
+            filter: url(#is-1)
+
+      - type: 'state'
+        id: 3
+        entity_index: '[[entity]]'
+        position:
+          cx: 50
+          cy: 40
+        styles:
+          state:
+            text-anchor: middle
+            font-size: 18em
+            fill: var(--primary-text-color)
+
+      - type: 'icon'
+        id: 4
+        entity_index: '[[entity]]'
+        position:
+          cx: 10
+          cy: 10
+          align: center
+          icon_size: 15
+        styles:
+          icon:
+            color: var(--primary-text-color)
+            fill: var(--primary-text-color)
+
+      - type: 'bar'
+        id: 5
+        entity_index: '[[entity]]'
+        position:
+          orientation: vertical
+          cx: 50
+          cy: 85
+          width: 90
+          height: 25
+        hours: 24
+        barhours: 1
+        styles:
+          bar:
+            stroke: var(--primary-text-color)
+            opacity: 0.8
+            stroke-linecap: butt

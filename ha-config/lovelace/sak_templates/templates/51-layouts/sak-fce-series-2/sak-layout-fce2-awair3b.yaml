@@ -1,0 +1,340 @@
+sak_layout_fce2_awair3b:
+  template:
+    type: layout
+    defaults: 
+      dummy: true
+
+  layout:
+    aspectratio: 1/1
+    toolsets:
+      # ==============================================================================
+      - toolset: circle-with-icon
+        position:
+          cx: 20
+          cy: 20
+        tools:
+          # ------------------------------------------------------------
+          - type: 'segarc'
+            entity_index: 0
+            position:
+              cx: 50
+              cy: 50
+              start_angle: 0
+              end_angle: 360
+              width: 2
+              radius: 12.5
+            scale:
+              min: 0
+              max: 100
+            show:
+              scale: false
+              style: 'colorstops'
+              lastcolor: true
+              # colorlast: true
+            segments:
+              colorstops:
+                gap: 0
+                colors:
+                  00: '#e63740'
+                  59.5: '#fb8600'
+                  79.5: '#49ce4c'
+            styles:
+              foreground:
+                fill: var(--theme-gradient-color-02)
+              background:
+                fill: var(--primary-background-color)
+          # ------------------------------------------------------------
+          - type: circle
+            position:
+              cx: 50
+              cy: 50
+              radius: 9
+            entity_index: 0
+            animations:
+              - state: '59.5'
+                operator: <
+                styles:
+                  circle:
+                    fill: '#e63740'
+              - state: '79.5'
+                operator: <
+                styles:
+                  circle:
+                    fill: '#fb8600'
+              - state: '100'
+                operator: <=
+                styles:
+                  circle:
+                    fill: '#49ce4c'
+            styles:
+              circle:
+                stroke-width: 2em
+          # ------------------------------------------------------------
+          - type: icon
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 15
+            entity_index: 0
+            styles:
+              icon:
+                fill: var(--primary-background-color)
+      # ==============================================================================
+      - toolset: area-name
+        position:
+          cx: 7.5
+          cy: 45
+        tools:
+          # ------------------------------------------------------------
+          - type: area
+            position:
+              cx: 50
+              cy: 50
+            entity_index: 0
+            show:
+              ellipsis: 12
+            styles: 
+              area: 
+                text-anchor: start
+                font-size: 12em
+                font-weight: 700
+                opacity: 1
+          # ------------------------------------------------------------
+          - type: name
+            position:
+              cx: 50
+              cy: 62.5
+            entity_index: 0
+            show:
+              ellipsis: 16
+            styles: 
+              name: 
+                text-anchor: start
+                font-size: 10em
+                font-weight: 400
+                opacity: 0.6
+
+      # ==============================================================================
+      - toolset: state-rectex
+        position:
+          cx: 75
+          cy: 15
+        tools:
+          # ------------------------------------------------------------
+          - type: state
+            position:
+              cx: 50
+              cy: 50
+            entity_index: 0
+            show: 
+              uom: end
+            styles:
+              state:
+                font-size: 15em
+                text-anchor: middle
+                font-weight: 700
+              uom:
+                font-weight: 600
+
+      # ===============================================================
+      - toolset: graph-sensor-temp
+        position:
+          cx: 15
+          cy: &sensor_cy 75.5
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: &rectex_pos
+              cx: 50
+              cy: 50
+              width: 0 #20
+              height: 0 #70
+              radius:
+                all: 10
+          # ------------------------------------------------------------
+          - type: icon
+            position: &icon_sensor_pos
+              cx: 50 #43
+              cy: 66 #59
+              align: center
+              icon_size: 7.5
+            entity_index: 1
+            styles: &icon_sensor_styles
+              icon:
+                fill: var(--primary-text-color)
+                opacity: 0.5
+          # ------------------------------------------------------------
+          - type: sparkline
+            position: &graph_pos
+              cx: 50
+              cy: 50
+              width: 4
+              height: 20
+            entity_index: 1
+            entity_indexes:
+              - entity_index: 1
+            animate: true
+            show:
+              chart_type: graded
+              chart_variant: rank_order
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            colorstops_transition: hard
+            colorstops:
+              template:
+                name: sak_colorstops_awair_temperature_v2
+            styles: &trafficlight_styles
+              graded_background:
+                transition: fill 2s ease
+                rx: 50%
+                ry: 50%
+              graded_foreground:
+                transition: fill 2s ease
+                rx: 50%
+                ry: 50%
+
+      # ===============================================================
+      - toolset: graph-sensor-humi
+        position:
+          cx: 32.5
+          cy: *sensor_cy
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex_pos
+          # ------------------------------------------------------------
+          - type: icon
+            position: *icon_sensor_pos
+            entity_index: 2
+            styles: *icon_sensor_styles
+          # ------------------------------------------------------------
+          - type: sparkline
+            position: *graph_pos
+            entity_index: 2
+            entity_indexes:
+              - entity_index: 2
+            animate: true
+            show:
+              chart_type: graded
+              chart_variant: rank_order
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            colorstops_transition: hard
+            colorstops:
+              template:
+                name: sak_colorstops_awair_humidity_v2
+            styles: *trafficlight_styles
+
+      # ===============================================================
+      - toolset: graph-sensor-co2
+        position:
+          cx: 50
+          cy: *sensor_cy
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex_pos
+          # ------------------------------------------------------------
+          - type: icon
+            position: *icon_sensor_pos
+            entity_index: 3
+            styles: *icon_sensor_styles
+          # ------------------------------------------------------------
+          - type: sparkline
+            position: *graph_pos
+            entity_index: 3
+            entity_indexes:
+              - entity_index: 3
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            colorstops_transition: hard
+            colorstops:
+              template:
+                name: sak_colorstops_awair_co2_v2
+            styles: *trafficlight_styles
+
+      # ===============================================================
+      - toolset: graph-sensor-voc
+        position:
+          cx: 67.5
+          cy: *sensor_cy
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex_pos
+          # ------------------------------------------------------------
+          - type: icon
+            position: *icon_sensor_pos
+            entity_index: 4
+            styles: *icon_sensor_styles
+          # ------------------------------------------------------------
+          - type: sparkline
+            position: *graph_pos
+            entity_index: 4
+            entity_indexes:
+              - entity_index: 4
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            colorstops_transition: hard
+            colorstops:
+              template:
+                name: sak_colorstops_awair_voc_v2
+            styles: *trafficlight_styles
+  
+        # ===============================================================
+      - toolset: graph-sensor-pm25
+        position:
+          cx: 85
+          cy: *sensor_cy
+        tools:
+          # ------------------------------------------------------------
+          - type: rectex
+            position: *rectex_pos
+          # ------------------------------------------------------------
+          - type: icon
+            position: *icon_sensor_pos
+            entity_index: 5
+            styles: *icon_sensor_styles
+          # ------------------------------------------------------------
+          - type: sparkline
+            position: *graph_pos
+            entity_index: 5
+            entity_indexes:
+              - entity_index: 5
+            animate: true
+            show:
+              chart_type: graded
+            period:
+              real_time: true
+            state_values:
+              aggregate_func: last
+            square: true
+            line_width : 1.5
+            colorstops_transition: hard
+            colorstops:
+              template:
+                name: sak_colorstops_awair_pm25_v2
+            styles: *trafficlight_styles

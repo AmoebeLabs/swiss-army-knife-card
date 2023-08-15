@@ -1,0 +1,196 @@
+#
+# File      : toolset-light-button-template.yaml
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/Home-Assistant-Config
+#
+# Author: Mars @ AmoebeLabs.com
+# 
+# License: CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Swiss Army Knife toolset template definition
+#
+# This toolset defines a lightbutton with slider to control brightness
+# - Button build with circles & icon
+# - slider for controlling brightness
+#
+# Design:
+# - Neumorphic
+#   
+###############################################################################
+sak_toolset_light_button:
+  template:
+    type: toolset
+    defaults: 
+      - entity_light: 0
+      - entity_brightness: 1
+  toolset:
+    toolset: light-button
+    position:
+      cx: 50
+      cy: 50
+    tools:
+      # Static circle
+      - type: circle
+        id: 1
+        position:
+          cx: 50
+          cy: 30
+          radius: 25
+        entity_index: '[[entity_light]]'
+        # If on, hide this circle
+        animations:
+          - state: 'on'
+            styles:
+              circle:
+                opacity: 0
+        styles:
+          circle:
+            fill-opacity: 0.1
+            fill: black
+            stroke-width: 5
+            stroke: var(--theme-gradient-color-01)
+            stroke-opacity: 0.9
+
+      #Animated circle
+      - type: circle
+        id: 2
+        position:
+          cx: 50
+          cy: 30
+          radius: 25
+        entity_index: '[[entity_light]]'
+        animations:
+          - state: 'on'
+            styles:
+              circle:
+                opacity: 1
+                stroke-opacity: 1
+                stroke-width: 5
+                stroke: var(--theme-gradient-color-01)
+                fill: var(--theme-gradient-color-06)
+                fill-opacity: 0.9
+                animation: jello 1s ease-in-out both
+                # animation: pulse 1s ease-in-out both
+                # animation: tada 1s ease-in-out both
+                # animation: rubberBand 1s ease-in-out both
+          - state: 'off'
+            reuse: true
+            styles:
+              circle:
+                opacity: 1
+                animation: zoomOut 1s ease-out both
+                transform-origin: inherit
+        styles:
+          circle:
+            opacity: 0
+        
+      - type: icon
+        position:
+          cx: 50
+          cy: 30
+          align: center
+          icon_size: 36
+        id: 3
+        entity_index: '[[entity_light]]'
+        animations:
+          - state: 'on'
+            styles:
+              icon:
+                fill: var(--theme-gradient-color-01)
+                color: var(--theme-gradient-color-01)
+                fill-opacity: 0.9
+          - state: 'off'
+            styles:
+              icon:
+                fill: var(--theme-gradient-color-01)
+                color: var(--theme-gradient-color-01)
+                fill-opacity: 0.7
+        styles:
+          icon:
+            pointer-events: none
+
+      - type: name
+        position:
+          cx: 5
+          cy: 75
+        id: 4
+        entity_index: '[[entity_light]]'
+        styles:
+          name:
+            font-size: 9em
+            font-weight: 700
+            text-anchor: start
+      - type: area
+        entity_index: 0
+        id: 5
+        position:
+          cx: 5
+          cy: 85
+        styles:
+          area:
+            font-size: 6em
+            text-anchor: start
+      - type: state
+        position:
+          cx: 5
+          cy: 95
+        id: 6
+        entity_index: '[[entity_light]]'
+        animations:
+          - state: 'on'
+            styles:
+              state:
+                fill: var(--theme-gradient-color-08)
+                opacity: 0.9
+          - state: 'off'
+            reuse: true
+            styles:
+              state:
+                fill: var(--theme-gradient-color-01)
+                opacity: 0.7
+        styles:
+          state:
+            font-size: 9em
+            text-anchor: start
+      - type: state
+        position:
+          cx: 95
+          cy: 95
+        id: 7
+        derived_entity:
+          state: >
+            [[[
+              if (typeof(entity) === 'undefined') return;
+              
+              if ('brightness' in entity.attributes)
+              {
+                if (entity.attributes
+                && (entity.attributes.brightness <= 255)) {
+                  var bri = Math.round(entity.attributes.brightness / 2.55);
+                  // return (bri ? bri : '0') + '%';
+                  return (bri ? bri : '0');
+                }
+              }
+            ]]]
+          unit: '%'
+        entity_index: '[[entity_brightness]]'
+        animations:
+          - state: 'on'
+            entity_index: '[[entity_light]]'
+            styles:
+              state:
+                fill: var(--theme-gradient-color-08)
+                opacity: 0.9
+          - state: 'off'
+            entity_index: '[[entity_light]]'
+            reuse: true
+            styles:
+              state:
+                fill: var(--theme-gradient-color-01)
+                opacity: 0.7
+        styles:
+          state:
+            font-size: 9em
+            text-anchor: end

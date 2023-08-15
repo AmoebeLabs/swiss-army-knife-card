@@ -1,0 +1,155 @@
+#
+# File      : toolset-electricity-delivered-returned-template.yaml
+# Project   : Home Assistant
+# Repository: https://github.com/AmoebeLabs/Home-Assistant-Config
+#
+# Author: Mars @ AmoebeLabs.com
+# 
+# License: CC BY-SA, https://creativecommons.org/licenses/by/4.0/
+#
+# -----
+# Description:
+#   Swiss Army Knife toolset template definition
+#   
+###############################################################################
+sak_toolset_electricity_delivered_returned:
+  template:
+    type: toolset
+    defaults: 
+      - entity_delivered: 0         # entity for delivered electricity
+      - entity_returned: 1          # entity for returned elecitricity
+      - cx: 50                      # Center x position for toolset
+      - cy: 50                      # Center y position for toolset
+      - scale: 1                    # Scaling
+      - opacity: 1                  # Opacity for state & name display
+  toolset:
+    toolset: electricity-delivered-returned
+    position:
+      cx: '[[cx]]'
+      cy: '[[cy]]'
+      scale: '[[scale]]'
+    tools:
+      # ------------------------------------------------------------
+      # Currently Delivered
+      - type: segarc
+        id: 0
+        entity_index: '[[entity_delivered]]'
+        position:
+          cx: 50
+          cy: 25
+          start_angle: 180
+          end_angle: -90
+          width: 3
+          radius: 18
+        scale:
+          min: 0                    # From 0 kW
+          max: 2.5                  # to 2.5 kW
+          width: 2
+          offset: 1.75
+        show:
+          scale: true
+          style: 'colorstops'
+          lastcolor: false
+        segments:
+          colorstops:
+            gap: 1
+            colors:
+              0: '#fee08b'
+              0.5: '#fdae61'
+              1: '#f46d43'
+              1.5: '#d53e4f'
+              2: '#9e0142'
+        animation:
+          duration: 5
+        styles:
+          foreground:
+            fill: var(--primary-text-color)
+          background:
+            fill: var(--theme-sys-elevation-surface-neutral4, --theme-default-darken-15)
+
+      # ------------------------------------------------------------
+      - type: 'state'
+        id: 1
+        entity_index: '[[entity_delivered]]'
+        position:
+          cx: 50
+          cy: 25
+        show:
+          uom: top
+        styles:
+          state:
+            text-anchor: middle
+            font-size: 9em
+            fill: var(--primary-text-color)
+            opacity: '[[opacity]]'
+            font-weight: bold
+
+      # ------------------------------------------------------------
+      # Currently Returned
+      - type: segarc
+        id: 2
+        entity_index: '[[entity_returned]]'
+        position:
+          cx: 50
+          cy: 66
+          start_angle: 0
+          end_angle: -270
+          width: 3
+          radius: 18
+        scale:
+          min: 0
+          max: 2.5
+          width: 2
+          offset: 1.75
+        show:
+          scale: true
+          style: 'colorstops'
+          lastcolor: false
+        segments:
+          colorstops:
+            gap: 1
+            colors:
+              0: '#c6e5a2'
+              0.5: '#abdda4'
+              1: '#66c2a5'
+              1.5: '#3288bd'
+              2: '#5e4fa2'
+        animation:
+          duration: 5
+        styles:
+          foreground:
+            fill: var(--primary-text-color)
+          background:
+            fill: var(--theme-sys-elevation-surface-neutral4, --theme-default-darken-15)
+
+      # ------------------------------------------------------------
+      - type: 'state'
+        id: 3
+        entity_index: '[[entity_returned]]'
+        position:
+          cx: 50
+          cy: 66
+        show:
+          uom: bottom
+        styles:
+          state:
+            text-anchor: middle
+            font-size: 9em
+            fill: var(--primary-text-color)
+            opacity: '[[opacity]]'
+            font-weight: bolder
+
+      # ------------------------------------------------------------
+      - type: 'name'
+        id: 4
+        entity_index: '[[entity_delivered]]'
+        position:
+          cx: 50
+          cy: 93
+        styles:
+          name:
+            text-anchor: middle
+            font-size: 9em
+            fill: var(--primary-text-color)
+            opacity: '[[opacity]]'
+            font-weight: bold

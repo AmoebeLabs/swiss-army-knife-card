@@ -1,0 +1,49 @@
+sak_toolset_tutorial_01-part3:
+  template:
+    type: toolset
+    defaults: 
+      - var_entity_index: 0
+      - var_toolset_position_cx: 50
+      - var_toolset_position_cy: 50
+  toolset:
+    toolset: tutorial-01-part3
+    position:
+      cx: '[[var_toolset_position_cx]]'
+      cy: '[[var_toolset_position_cy]]'
+    tools:
+      - type: circle
+        position:
+          cx: 50
+          cy: 50
+          radius: 45
+        styles:
+          circle:
+            stroke-width: 2em
+            stroke: red
+            stroke-opacity: 0.5
+            fill: bisque
+            fill-opacity: 0.5
+      - type: icon
+        position:
+          cx: 50
+          cy: 25
+          align: center
+          icon_size: 25
+        entity_index: '[[var_entity_index]]'
+      - type: state
+        position:
+          cx: 50
+          cy: 70
+        entity_index: '[[var_entity_index]]'
+        styles:
+          state:
+            font-size: 15em
+      - type: name
+        position:
+          cx: 50
+          cy: 50
+        entity_index: '[[var_entity_index]]'
+        styles:
+          name:
+            font-size: 15em
+            font-weight: 900
