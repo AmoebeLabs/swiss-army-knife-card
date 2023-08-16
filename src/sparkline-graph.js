@@ -72,10 +72,10 @@ export default class SparklineGraph {
     this.hours = this.config.period?.calendar?.duration?.hour
                   || this.config.period?.rolling_window?.duration?.hour
                   || 24;
-    this.aggregateFuncName = this.config.state_values.aggregate_func;
+    this.aggregateFuncName = this.config.sparkline.state_values.aggregate_func;
     this._calcPoint = this.aggregateFuncMap[this.aggregateFuncName] || this._average;
-    this._smoothing = this.config.state_values?.smoothing;
-    this._logarithmic = this.config.state_values?.logarithmic;
+    this._smoothing = this.config.sparkline.state_values?.smoothing;
+    this._logarithmic = this.config.sparkline.state_values?.logarithmic;
     this._groupBy = this.config.period.groupBy;
     this._endTime = 0;
     this.valuesPerBucket = 0;
@@ -83,7 +83,7 @@ export default class SparklineGraph {
     this.gradeValues = gradeValues;
     this.gradeRanks = gradeRanks;
     this.stateMap = { ...stateMap };
-    this.radialBarcodeSize = Utils.calculateSvgDimension(this.config?.radial_barcode?.size || 5);
+    this.radialBarcodeSize = Utils.calculateSvgDimension(this.config.sparkline?.radial_barcode?.size || 5);
   }
 
   get max() { return this._max; }
@@ -159,9 +159,9 @@ export default class SparklineGraph {
     this.max = Math.max(...this.coords.map((item) => Number(item[V])));
 
     // Check for line and area for minmax calculations
-    if (['line', 'area'].includes(this.config.show.chart_type)
-      && (this.config.line?.show_minmax === true
-          || this.config.area?.show_minmax === true)) {
+    if (['line', 'area'].includes(this.config.sparkline.show.chart_type)
+      && (this.config.sparkline.line?.show_minmax === true
+          || this.config.sparkline.area?.show_minmax === true)) {
       // Just testing...
       // https://stackoverflow.com/questions/43576241/using-reduce-to-find-min-and-max-values
       const histGroupsMinMax = this._history.reduce((res, item) => this._reducerMinMax(res, item), []);
@@ -498,7 +498,7 @@ export default class SparklineGraph {
       const value = !isBackground ? coord[V] : this.max;
       let ringWidth;
       let radius;
-      switch (this.config.show?.chart_variant) {
+      switch (this.config.sparkline.show?.chart_variant) {
         case 'sunburst':
         case 'sunburst_centered':
           ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
@@ -539,7 +539,7 @@ export default class SparklineGraph {
         let ringWidth;
         let radius;
         const value = this.max;
-        switch (this.config.show?.chart_variant) {
+        switch (this.config.sparkline.show?.chart_variant) {
           case 'sunburst':
           case 'sunburst_centered':
             ringWidth = ((this._logarithmic ? Math.log10(Math.max(1, value)) : value) - min) / wRatio;
@@ -611,10 +611,10 @@ export default class SparklineGraph {
       let rInnerY;
       let sweepFlagTest = '0';
 
-      if (['flower2', 'flower', 'rice_grain'].includes(this.config.show?.chart_viz)) {
+      if (['flower2', 'flower', 'rice_grain'].includes(this.config.sparkline.show?.chart_viz)) {
         // Outer part. For flower this depends on the inward/outward setting
-        if ((this.config.show.chart_viz === 'flower')
-         && (this.config.show.chart_variant === 'sunburst_inward')) {
+        if ((this.config.sparkline.show.chart_viz === 'flower')
+         && (this.config.sparkline.show.chart_variant === 'sunburst_inward')) {
           rOuterX = segment.radius.x;
           rOuterY = segment.radius.y;
         } else {
@@ -623,8 +623,8 @@ export default class SparklineGraph {
           rOuterX = Math.sqrt(difX1 * difX1 + difY1 * difY1) / 2;
           rOuterY = rOuterX;
         }
-        if ((this.config.show.chart_viz === 'flower')
-         && (this.config.show.chart_variant === 'sunburst_outward')) {
+        if ((this.config.sparkline.show.chart_viz === 'flower')
+         && (this.config.sparkline.show.chart_variant === 'sunburst_outward')) {
           rInnerX = segment.radius2.x;
           rInnerY = segment.radius2.y;
         } else {
@@ -632,7 +632,7 @@ export default class SparklineGraph {
           const difY2 = Math.abs(segment.start2.y - segment.end2.y);
           rInnerX = Math.sqrt(difX2 * difX2 + difY2 * difY2) / 2;
           rInnerY = rInnerX;
-          sweepFlagTest = ['rice_grain', 'flower'].includes(this.config.show.chart_viz) ? '1' : '0';
+          sweepFlagTest = ['rice_grain', 'flower'].includes(this.config.sparkline.show.chart_viz) ? '1' : '0';
         }
       } else {
         rOuterX = segment.radius.x;
@@ -676,10 +676,10 @@ export default class SparklineGraph {
       let rInnerY;
       let sweepFlagTest = '0';
 
-      if (['flower2', 'flower', 'rice_grain'].includes(this.config.show?.chart_viz)) {
+      if (['flower2', 'flower', 'rice_grain'].includes(this.config.sparkline.show?.chart_viz)) {
         // Outer part. For flower2 this depends on the inward/outward setting
-        if ((this.config.show.chart_viz === 'flower')
-         && (this.config.show.chart_variant === 'sunburst_inward')) {
+        if ((this.config.sparkline.show.chart_viz === 'flower')
+         && (this.config.sparkline.show.chart_variant === 'sunburst_inward')) {
           rOuterX = segment.radius.x;
           rOuterY = segment.radius.y;
         } else {
@@ -688,8 +688,8 @@ export default class SparklineGraph {
           rOuterX = Math.sqrt(difX1 * difX1 + difY1 * difY1) / 2;
           rOuterY = rOuterX;
         }
-        if ((this.config.show.chart_viz === 'flower')
-         && (this.config.show.chart_variant === 'sunburst_outward')) {
+        if ((this.config.sparkline.show.chart_viz === 'flower')
+         && (this.config.sparkline.show.chart_variant === 'sunburst_outward')) {
           rInnerX = segment.radius2.x;
           rInnerY = segment.radius2.y;
         } else {
@@ -697,7 +697,7 @@ export default class SparklineGraph {
           const difY2 = Math.abs(segment.start2.y - segment.end2.y);
           rInnerX = Math.sqrt(difX2 * difX2 + difY2 * difY2) / 2;
           rInnerY = rInnerX;
-          sweepFlagTest = ['rice_grain', 'flower'].includes(this.config.show.chart_viz) ? '1' : '0';
+          sweepFlagTest = ['rice_grain', 'flower'].includes(this.config.sparkline.show.chart_viz) ? '1' : '0';
         }
       } else {
         rOuterX = segment.radius.x;
@@ -725,7 +725,7 @@ export default class SparklineGraph {
     const xRatio = ((this.drawArea.width + columnSpacing) / Math.ceil(this.hours * this.points)) / total;
     const yRatio = ((max - min) / this.drawArea.height) || 1;
 
-    switch (this.config.show.chart_variant) {
+    switch (this.config.sparkline.show.chart_variant) {
       case 'audio':
         return coords.map((coord, i) => ({
           x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,

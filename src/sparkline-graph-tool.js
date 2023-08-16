@@ -145,94 +145,102 @@ export default class SparklineGraphTool extends BaseTool {
         real_time: false,
         group_by: 'interval',
       },
-      state_values: {
-        logarithmic: false,
-        value_factor: 0,
-        aggregate_func: 'avg',
-        smoothing: true,
+      sparkline: {
+        state_values: {
+          logarithmic: false,
+          value_factor: 0,
+          aggregate_func: 'avg',
+          smoothing: true,
+        },
+        equalizer: {
+          value_buckets: 10,
+          square: false,
+        },
+        graded: {
+          square: false,
+        },
+        animate: true,
+        hour24: false,
+        font_size: 10,
+        line_color: [...DEFAULT_COLORS],
+        colorstops: {
+          colors: [],
+        },
+        colorstops_transition: 'smooth',
+        state_map: {
+          map: [],
+        },
+        cache: true,
+        color: 'var(--primary-color)',
+        radial_barcode: {
+          size: 5,
+          line_width: 0,
+          face: {
+            hour_marks_count: 24,
+          },
+        },
+        classes: {
+          tool: {
+            'sak-sparkline': true,
+            hover: true,
+          },
+          bar: {
+          },
+          line: {
+            'sak-sparkline__line': true,
+            hover: true,
+          },
+          graded_background: {
+          },
+          graded_foreground: {
+          },
+          radial_barcode_background: {
+            'sak-sparkline__radial_barcode__background': true,
+          },
+          radial_barcode_face_day_night: {
+            'sak-sparkline__radial_barcode-face_day-night': true,
+          },
+          radial_barcode_face_hour_marks: {
+            'sak-sparkline__radial_barcode-face_hour-marks': true,
+          },
+          radial_barcode_face_hour_numbers: {
+            'sak-sparkline__radial_barcode-face_hour-numbers': true,
+          },
+        },
+        styles: {
+          tool: {
+          },
+          line: {
+          },
+          bar: {
+          },
+          graded_background: {
+          },
+          graded_foreground: {
+          },
+          radial_barcode_background: {
+          },
+          radial_barcode_face_day_night: {
+          },
+          radial_barcode_face_hour_marks: {
+          },
+          radial_barcode_face_hour_numbers: {
+          },
+          area_mask_above: {
+            fill: 'url(#sak-sparkline-area-mask-tb-1)',
+          },
+          area_mask_below: {
+            fill: 'url(#sak-sparkline-area-mask-bt-1)',
+          },
+          bar_mask_above: {
+            fill: 'url(#sak-sparkline-bar-mask-tb-80)',
+          },
+          bar_mask_below: {
+            fill: 'url(#sak-sparkline-bar-mask-bt-80)',
+          },
+        },
+        show: { style: 'fixedcolor' },
       },
-      value_buckets: 10,
-      animate: true,
-      hour24: false,
-      font_size: 10,
-      line_color: [...DEFAULT_COLORS],
-      colorstops: {
-        colors: [],
-      },
-      colorstops_transition: 'smooth',
-      state_map: {
-        map: [],
-      },
-      cache: true,
-      color: 'var(--primary-color)',
-      radial_barcode: {
-        size: 5,
-        line_width: 0,
-        face: {
-          hour_marks_count: 24,
-        },
-      },
-      classes: {
-        tool: {
-          'sak-sparkline': true,
-          hover: true,
-        },
-        bar: {
-        },
-        line: {
-          'sak-sparkline__line': true,
-          hover: true,
-        },
-        graded_background: {
-        },
-        graded_foreground: {
-        },
-        radial_barcode_background: {
-          'sak-sparkline__radial_barcode__background': true,
-        },
-        radial_barcode_face_day_night: {
-          'sak-sparkline__radial_barcode-face_day-night': true,
-        },
-        radial_barcode_face_hour_marks: {
-          'sak-sparkline__radial_barcode-face_hour-marks': true,
-        },
-        radial_barcode_face_hour_numbers: {
-          'sak-sparkline__radial_barcode-face_hour-numbers': true,
-        },
-      },
-      styles: {
-        tool: {
-        },
-        line: {
-        },
-        bar: {
-        },
-        graded_background: {
-        },
-        graded_foreground: {
-        },
-        radial_barcode_background: {
-        },
-        radial_barcode_face_day_night: {
-        },
-        radial_barcode_face_hour_marks: {
-        },
-        radial_barcode_face_hour_numbers: {
-        },
-        area_mask_above: {
-          fill: 'url(#sak-sparkline-area-mask-tb-1)',
-        },
-        area_mask_below: {
-          fill: 'url(#sak-sparkline-area-mask-bt-1)',
-        },
-        bar_mask_above: {
-          fill: 'url(#sak-sparkline-bar-mask-tb-80)',
-        },
-        bar_mask_below: {
-          fill: 'url(#sak-sparkline-bar-mask-bt-80)',
-        },
-      },
-      show: { style: 'fixedcolor' },
     };
 
     const DEFAULT_CALENDER_CONFIG = {
@@ -300,13 +308,13 @@ export default class SparklineGraphTool extends BaseTool {
 
     // Clock face stuff
     this.svg.clockface = {};
-    if (this.config?.radial_barcode?.face) {
-      if (this.config.radial_barcode.face?.show_day_night === true)
-        this.svg.clockface.dayNightRadius = Utils.calculateSvgDimension(this.config.radial_barcode.face.day_night_radius);
-      if (this.config.radial_barcode.face?.show_hour_marks === true)
-        this.svg.clockface.hourMarksRadius = Utils.calculateSvgDimension(this.config.radial_barcode.face.hour_marks_radius);
-      if (['absolute', 'relative'].includes(this.config.radial_barcode.face?.show_hour_numbers))
-        this.svg.clockface.hourNumbersRadius = Utils.calculateSvgDimension(this.config.radial_barcode.face.hour_numbers_radius);
+    if (this.config.sparkline?.radial_barcode?.face) {
+      if (this.config.sparkline.radial_barcode.face?.show_day_night === true)
+        this.svg.clockface.dayNightRadius = Utils.calculateSvgDimension(this.config.sparkline.radial_barcode.face.day_night_radius);
+      if (this.config.sparkline.radial_barcode.face?.show_hour_marks === true)
+        this.svg.clockface.hourMarksRadius = Utils.calculateSvgDimension(this.config.sparkline.radial_barcode.face.hour_marks_radius);
+      if (['absolute', 'relative'].includes(this.config.sparkline.radial_barcode.face?.show_hour_numbers))
+        this.svg.clockface.hourNumbersRadius = Utils.calculateSvgDimension(this.config.sparkline.radial_barcode.face.hour_numbers_radius);
     }
     this._data = [];
     this._bars = [];
@@ -392,20 +400,20 @@ export default class SparklineGraphTool extends BaseTool {
     this.config.width = this.svg.width;
     this.config.height = this.svg.height;
 
-    this.svg.line_width = Utils.calculateSvgDimension(this.config[this.config.show.chart_type]?.line_width || this.config.line_width || 0);
-    this.svg.column_spacing = Utils.calculateSvgDimension(this.config[this.config.show.chart_type]?.column_spacing || this.config.bar_spacing || 1);
-    this.svg.row_spacing = Utils.calculateSvgDimension(this.config[this.config.show.chart_type]?.row_spacing || this.config.bar_spacing || 1);
+    this.svg.line_width = Utils.calculateSvgDimension(this.config.sparkline[this.config.sparkline.show.chart_type]?.line_width || this.config.line_width || 0);
+    this.svg.column_spacing = Utils.calculateSvgDimension(this.config.sparkline[this.config.sparkline.show.chart_type]?.column_spacing || this.config.bar_spacing || 1);
+    this.svg.row_spacing = Utils.calculateSvgDimension(this.config.sparkline[this.config.sparkline.show.chart_type]?.row_spacing || this.config.bar_spacing || 1);
 
     this.gradeValues = [];
-    this.config.colorstops.colors.map((value, index) => (
+    this.config.sparkline.colorstops.colors.map((value, index) => (
       this.gradeValues[index] = value.value
     ));
 
-    this.stops = Merge.mergeDeep(...this.config.colorstops.colors);
+    this.stops = Merge.mergeDeep(...this.config.sparkline.colorstops.colors);
     this.gradeRanks = [];
-    this.config.colorstops.colors.map((value, index) => {
+    this.config.sparkline.colorstops.colors.map((value, index) => {
       let rankIndex;
-      rankIndex = ((this.config.show?.chart_variant === 'rank_order')
+      rankIndex = ((this.config.sparkline.show?.chart_variant === 'rank_order')
                    && (value.rank !== undefined)) ? value.rank : index;
       if (!this.gradeRanks[rankIndex]) {
         this.gradeRanks[rankIndex] = {};
@@ -418,16 +426,16 @@ export default class SparklineGraphTool extends BaseTool {
       // Assume right order from low to high and that next index is upper range
       //
       let rangeMin = value.value;
-      let rangeMax = this.config.colorstops.colors[index + 1]?.value || Infinity;
+      let rangeMax = this.config.sparkline.colorstops.colors[index + 1]?.value || Infinity;
       this.gradeRanks[rankIndex].value.push(value.value);
       this.gradeRanks[rankIndex].rangeMin.push(rangeMin);
       this.gradeRanks[rankIndex].rangeMax.push(rangeMax);
       return true;
     });
 
-    this.config.colorstops.colors = computeThresholds(
-      this.config.colorstops.colors,
-      this.config.colorstops_transition,
+    this.config.sparkline.colorstops.colors = computeThresholds(
+      this.config.sparkline.colorstops.colors,
+      this.config.sparkline.colorstops_transition,
     );
 
     this.radialBarcodeChartWidth = Utils.calculateSvgDimension(this.config?.radial_barcode?.size || 5);
@@ -436,19 +444,19 @@ export default class SparklineGraphTool extends BaseTool {
     this.svg.graph.height = this.svg.height - this.svg.margin.y * 0;
     this.svg.graph.width = this.svg.width - this.svg.margin.x * 0;
 
-    this.config.state_map.map.forEach((state, i) => {
+    this.config.sparkline.state_map.map.forEach((state, i) => {
       // convert string values to objects
-      if (typeof state === 'string') this.config.state_map.map[i] = { value: state, label: state };
+      if (typeof state === 'string') this.config.sparkline.state_map.map[i] = { value: state, label: state };
       // make sure label is set
-      this.config.state_map.map[i].label = this.config.state_map.map[i].label || this.config.state_map.map[i].value;
+      this.config.sparkline.state_map.map[i].label = this.config.sparkline.state_map.map[i].label || this.config.sparkline.state_map.map[i].value;
     });
 
     // Other lines test
     this.xLines = {};
     this.xLines.lines = [];
-    if (typeof this.config.x_lines?.lines === 'object') {
+    if (typeof this.config.sparkline.x_lines?.lines === 'object') {
       let j = 0;
-      let helpers = this.config.x_lines.lines;
+      let helpers = this.config.sparkline.x_lines.lines;
       helpers.forEach((helperLine) => {
         this.xLines.lines[j] = {
           id: helperLine.name,
@@ -458,8 +466,8 @@ export default class SparklineGraphTool extends BaseTool {
         j += 1;
       });
     }
-    if (typeof this.config.x_lines?.numbers === 'object') {
-      this.xLines.numbers = { ...this.config.x_lines.numbers };
+    if (typeof this.config.sparkline.x_lines?.numbers === 'object') {
+      this.xLines.numbers = { ...this.config.sparkline.x_lines.numbers };
     }
 
     let { config } = this;
@@ -487,8 +495,8 @@ export default class SparklineGraphTool extends BaseTool {
     // From MGC
     // if (this.config.points_per_hour)
     //   this.config.period.bins_per_hour = this.config.points_per_hour;
-    this.config.state_values.smoothing = getFirstDefinedItem(
-      this.config.state_values.smoothing,
+    this.config.sparkline.state_values.smoothing = getFirstDefinedItem(
+      this.config.sparkline.state_values.smoothing,
       !this._card.config.entities[this.defaultEntityIndex()].entity.startsWith('binary_sensor.'),
       // !entity.entity.startsWith('binary_sensor.'), // turn off for binary sensor by default
     );
@@ -501,7 +509,7 @@ export default class SparklineGraphTool extends BaseTool {
       this.config,
       this.gradeValues,
       this.gradeRanks,
-      this.config.state_map,
+      this.config.sparkline.state_map,
     );
     this._firstDataReceived = false;
   }
@@ -561,7 +569,7 @@ export default class SparklineGraphTool extends BaseTool {
     this.updateBounds();
 
     let { config } = this;
-    if (config.show.chart_type) {
+    if (config.sparkline.show.chart_type) {
       let graphPos = 0;
       let entity = this._card.config.entities[this.defaultEntityIndex()];
       const i = 0;
@@ -575,28 +583,28 @@ export default class SparklineGraphTool extends BaseTool {
         const numVisible = this.visibleEntities.length;
 
         // +++++ Check for 'bar' graph type
-        if (config.show.chart_type === 'bar') {
+        if (config.sparkline.show.chart_type === 'bar') {
           this.bar[i] = this.Graph[i].getBars(graphPos, numVisible, this.svg.colomn_spacing); // config.bar_spacing);
           graphPos += 1;
           // Add the next 4 lines as a hack
-          if (config.colorstops.colors.length > 0 && !this._card.config.entities[i].color)
+          if (config.sparkline.colorstops.colors.length > 0 && !this._card.config.entities[i].color)
             this.gradient[i] = this.Graph[i].computeGradient(
-              config.colorstops.colors, this.config.state_values.logarithmic,
+              config.sparkline.colorstops.colors, this.config.sparkline.state_values.logarithmic,
             );
         // +++++ Check for 'area' or 'line' graph type
-        } else if (['area', 'line'].includes(config.show.chart_type)) {
+        } else if (['area', 'line'].includes(config.sparkline.show.chart_type)) {
           const line = this.Graph[i].getPath();
           if (this._card.config.entities[i].show_line !== false) this.line[i] = line;
         }
 
         // +++++ Check for 'area' graph type
-        if (config.show.chart_type === 'area') {
+        if (config.sparkline.show.chart_type === 'area') {
           this.area[i] = this.Graph[i].getArea(this.line[i]);
         }
 
         // +++++ Line might have set the minmax flag...
-        if (config?.line?.show_minmax
-          || config?.area?.show_minmax) {
+        if (config.sparkline?.line?.show_minmax
+          || config.sparkline?.area?.show_minmax) {
           const lineMin = this.Graph[i].getPathMin();
           const lineMax = this.Graph[i].getPathMax();
           this.lineMin[i] = lineMin;
@@ -605,27 +613,29 @@ export default class SparklineGraphTool extends BaseTool {
         }
 
         // +++++ Check for 'dots' graph type or if dots are enabled for area or line graph
-        if ((config.show.chart_type === 'dots')
-          || (config?.area?.show_dots === true)
-          || (config?.line?.show_dots === true)) {
+        if ((config.sparkline.show.chart_type === 'dots')
+          || (config.sparkline?.area?.show_dots === true)
+          || (config.sparkline?.line?.show_dots === true)) {
           this.points[i] = this.Graph[i].getPoints();
 
         // +++++ Check for 'equilizer' graph type
-        } else if (this.config.show.chart_type === 'equalizer') {
-          this.Graph[i].levelCount = this.config.value_buckets;
-          this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.value_buckets;
+        // #TODO:
+        // Must use this.config.sparkline.state_values.value_buckets !!!!!!!!!!!!!!!!!!!!!!!!!!
+        } else if (this.config.sparkline.show.chart_type === 'equalizer') {
+          this.Graph[i].levelCount = this.config.sparkline.equalizer.value_buckets;
+          this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.sparkline.equalizer.value_buckets;
           this.equalizer[i] = this.Graph[i].getEqualizer(0, this.visibleEntities.length,
                                             this.svg.column_spacing, this.svg.row_spacing);
 
         // +++++ Check for 'graded' graph type
-        } else if (this.config.show.chart_type === 'graded') {
-          this.Graph[i].levelCount = this.config.value_buckets;
-          this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.value_buckets;
+        } else if (this.config.sparkline.show.chart_type === 'graded') {
+          this.Graph[i].levelCount = this.config.sparkline.equalizer.value_buckets;
+          this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.sparkline.equalizer.value_buckets;
           this.graded[i] = this.Graph[i].getGrades(0, this.visibleEntities.length,
             this.svg.column_spacing, this.svg.row_spacing);
 
         // +++++ Check for 'radial_barcode' graph type
-        } else if (this.config.show.chart_type === 'radial_barcode') {
+        } else if (this.config.sparkline.show.chart_type === 'radial_barcode') {
           this.radialBarcodeChartBackground[i] = this.Graph[i].getRadialBarcodeBackground(0, this.visibleEntities.length,
                                                         this.svg.column_spacing, this.svg.row_spacing);
           this.radialBarcodeChart[i] = this.Graph[i].getRadialBarcode(0, this.visibleEntities.length,
@@ -634,16 +644,16 @@ export default class SparklineGraphTool extends BaseTool {
           this.Graph[i].radialBarcode = this.radialBarcodeChart[i];
 
         // +++++ Check for 'barcode' graph type
-        } else if (this.config.show.chart_type === 'barcode') {
+        } else if (this.config.sparkline.show.chart_type === 'barcode') {
           this.barcodeChart[i] = this.Graph[i].getBarcode(0, this.visibleEntities.length,
                                                          this.svg.column_spacing, this.svg.row_spacing);
           this.Graph[i].barcodeChart = this.barcodeChart[i];
         }
 
         // Add the next 4 lines as a hack
-        if (config.colorstops.colors.length > 0 && !this._card.config.entities[i].color)
+        if (config.sparkline.colorstops.colors.length > 0 && !this._card.config.entities[i].color)
         this.gradient[i] = this.Graph[i].computeGradient(
-          config.colorstops.colors, this.config.state_values.logarithmic,
+          config.sparkline.colorstops.colors, this.config.sparkline.state_values.logarithmic,
         );
 
       this.line = [...this.line];
@@ -663,7 +673,7 @@ export default class SparklineGraphTool extends BaseTool {
   }
 
   _convertState(res) {
-    const resultIndex = this.config.state_map.map.findIndex((s) => s.value === res.state);
+    const resultIndex = this.config.sparkline.state_map.map.findIndex((s) => s.value === res.state);
     if (resultIndex === -1) {
       return;
     }
@@ -689,15 +699,15 @@ export default class SparklineGraphTool extends BaseTool {
   // - .sourceState = source state
   // if no .sourceState there, nothing translated. No extra memory and stuff
   processStateMap(history) {
-    if (this.config.state_map?.map?.length > 0) {
+    if (this.config.sparkline.state_map?.map?.length > 0) {
       history[0].forEach((item, index) => {
-        if (this.config.state_map.map.length > 0)
+        if (this.config.sparkline.state_map.map.length > 0)
         history[0][index].haState = item.state;
         this._convertState(item);
         history[0][index].state = item.state;
       });
     }
-    if (this.config.state_values?.use_value === 'bin') {
+    if (this.config.sparkline.state_values?.use_value === 'bin') {
       history[0].forEach((item, index) => {
         let matchStep = -1;
         let matchBucket = 0;
@@ -723,10 +733,10 @@ export default class SparklineGraphTool extends BaseTool {
         history[0][index].state = newValue;
       });
     }
-    if (this.config.state_values.value_factor !== 0) {
+    if (this.config.sparkline.state_values.value_factor !== 0) {
       history[0].forEach((item, index) => {
         history[0][index].haState = item.state;
-        history[0][index].state = item.state * this.config.state_values.value_factor;
+        history[0][index].state = item.state * this.config.sparkline.state_values.value_factor;
       });
     }
   }
@@ -799,23 +809,23 @@ export default class SparklineGraphTool extends BaseTool {
   updateBounds({ config } = this) {
     this.bound = this.getBoundaries(
       this.primaryYaxisSeries,
-      config.state_values.lower_bound,
-      config.state_values.upper_bound,
+      config.sparkline.state_values.lower_bound,
+      config.sparkline.state_values.upper_bound,
       this.bound,
-      config.state_values.min_bound_range,
+      config.sparkline.state_values.min_bound_range,
     );
 
     this.boundSecondary = this.getBoundaries(
       this.secondaryYaxisSeries,
-      config.state_values.lower_bound_secondary,
-      config.state_values.upper_bound_secondary,
+      config.sparkline.state_values.lower_bound_secondary,
+      config.sparkline.state_values.upper_bound_secondary,
       this.boundSecondary,
-      config.state_values.min_bound_range_secondary,
+      config.sparkline.state_values.min_bound_range_secondary,
     );
   }
 
   computeColor(inState, i) {
-    const { colorstops, line_color } = this.config;
+    const { colorstops, line_color } = this.config.sparkline;
     const state = Number(inState) || 0;
     const threshold = {
       color: line_color[i] || line_color[0],
@@ -826,13 +836,13 @@ export default class SparklineGraphTool extends BaseTool {
   }
 
   intColor(inState, i) {
-    const { colorstops, line_color } = this.config;
+    const { colorstops, line_color } = this.config.sparkline;
     const state = Number(inState) || 0;
 
     let intColor;
     if (colorstops.colors.length > 0) {
       // HACK. Keep check for 'bar' !!!
-      if (this.config.show.chart_type === 'bar') {
+      if (this.config.sparkline.show.chart_type === 'bar') {
         const { color } = colorstops.colors.find((ele) => ele.value < state)
           || colorstops.colors.slice(-1)[0];
         intColor = color;
@@ -912,9 +922,9 @@ export default class SparklineGraphTool extends BaseTool {
   }
 
   renderSvgAreaMask(fill, i) {
-  if (this.config.show.chart_type !== 'area') return;
+  if (this.config.sparkline.show.chart_type !== 'area') return;
   if (!fill) return;
-  const fade = this.config.show.fill === 'fade';
+  const fade = this.config.sparkline.show.fill === 'fade';
   const init = this.length[i] || this._card.config.entities[i].show_line === false;
   // Check for zero crossing...
   const y_zero = (this.Graph[i]._min >= 0) ? 0
@@ -926,7 +936,7 @@ export default class SparklineGraphTool extends BaseTool {
         <stop stop-color='white' offset='100%' stop-opacity='0.1'/>
       </linearGradient>
       <mask id=${`fill-grad-mask-pos-${this.id}-${i}`}>
-        <rect width="100%" height="${100 - y_zero}%" fill=${this.config.styles.area_mask_above.fill}
+        <rect width="100%" height="${100 - y_zero}%" fill=${this.config.sparkline.styles.area_mask_above.fill}
          />
       </mask>
       <linearGradient id=${`fill-grad-neg-${this.id}-${i}`} x1="0%" y1="100%" x2="0%" y2="0%">
@@ -934,25 +944,25 @@ export default class SparklineGraphTool extends BaseTool {
         <stop stop-color='white' offset='100%' stop-opacity='0.1'/>
       </linearGradient>
       <mask id=${`fill-grad-mask-neg-${this.id}-${i}`}>
-        <rect width="100%" y=${100 - y_zero}% height="${y_zero}%" fill=${this.config.styles.area_mask_below.fill}
+        <rect width="100%" y=${100 - y_zero}% height="${y_zero}%" fill=${this.config.sparkline.styles.area_mask_below.fill}
          />
       </mask>
     </defs>
 
     <mask id=${`fill-${this.id}-${i}`}>
       <path class='fill'
-        type=${this.config.show.fill}
-        .id=${i} anim=${this.config.animate} ?init=${init}
-        style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
+        type=${this.config.sparkline.show.fill}
+        .id=${i} anim=${this.config.sparkline.animate} ?init=${init}
+        style="animation-delay: ${this.config.sparkline.animate ? `${i * 0.5}s` : '0s'}"
         fill='white'
         mask=${fade ? `url(#fill-grad-mask-pos-${this.id}-${i})` : ''}
         d=${this.area[i]}
       />
       ${this.Graph[i]._min < 0
         ? svg`<path class='fill'
-            type=${this.config.show.fill}
-            .id=${i} anim=${this.config.animate} ?init=${init}
-            style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
+            type=${this.config.sparkline.show.fill}
+            .id=${i} anim=${this.config.sparkline.animate} ?init=${init}
+            style="animation-delay: ${this.config.sparkline.animate ? `${i * 0.5}s` : '0s'}"
             fill='white'
             mask=${fade ? `url(#fill-grad-mask-neg-${this.id}-${i})` : ''}
             d=${this.area[i]}
@@ -963,9 +973,9 @@ export default class SparklineGraphTool extends BaseTool {
 }
 
 renderSvgAreaMinMaxMask(fill, i) {
-  if (!['area', 'line'].includes(this.config.show.chart_type)) return;
+  if (!['area', 'line'].includes(this.config.sparkline.show.chart_type)) return;
   if (!fill) return;
-  const fade = this.config.show.fill === 'fade';
+  const fade = this.config.sparkline.show.fill === 'fade';
   const init = this.length[i] || this._card.config.entities[i].show_line === false;
   // Check for zero crossing...
   const y_zero = (this.Graph[i]._min >= 0) ? 0
@@ -977,7 +987,7 @@ renderSvgAreaMinMaxMask(fill, i) {
         <stop stop-color='white' offset='100%' stop-opacity='0.1'/>
       </linearGradient>
       <mask id=${`fill-grad-mask-pos-${this.id}-${i}`}>
-        <rect width="100%" height="${100 - y_zero}%" fill=${this.config.styles.area_mask_above.fill}
+        <rect width="100%" height="${100 - y_zero}%" fill=${this.config.sparkline.styles.area_mask_above.fill}
          />
       </mask>
       <linearGradient id=${`fill-grad-neg-${this.id}-${i}`} x1="0%" y1="100%" x2="0%" y2="0%">
@@ -985,25 +995,25 @@ renderSvgAreaMinMaxMask(fill, i) {
         <stop stop-color='white' offset='100%' stop-opacity='0.1'/>
       </linearGradient>
       <mask id=${`fill-grad-mask-neg-${this.id}-${i}`}>
-        <rect width="100%" y=${100 - y_zero}% height="${y_zero}%" fill=${this.config.styles.area_mask_below.fill}
+        <rect width="100%" y=${100 - y_zero}% height="${y_zero}%" fill=${this.config.sparkline.styles.area_mask_below.fill}
          />
       </mask>
     </defs>
 
     <mask id=${`fillMinMax-${this.id}-${i}`}>
       <path class='fill'
-        type=${this.config.show.fill}
-        .id=${i} anim=${this.config.animate} ?init=${init}
-        style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
+        type=${this.config.sparkline.show.fill}
+        .id=${i} anim=${this.config.sparkline.animate} ?init=${init}
+        style="animation-delay: ${this.config.sparkline.animate ? `${i * 0.5}s` : '0s'}"
         fill='#555555'
         mask=${fade ? `url(#fill-grad-mask-pos-${this.id}-${i})` : ''}
         d=${this.areaMinMax[i]}
       />
       ${this.Graph[i]._min < 0
         ? svg`<path class='fill'
-            type=${this.config.show.fill}
-            .id=${i} anim=${this.config.animate} ?init=${init}
-            style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
+            type=${this.config.sparkline.show.fill}
+            .id=${i} anim=${this.config.sparkline.animate} ?init=${init}
+            style="animation-delay: ${this.config.sparkline.animate ? `${i * 0.5}s` : '0s'}"
             fill='#444444'
             mask=${fade ? `url(#fill-grad-mask-neg-${this.id}-${i})` : ''}
             d=${this.areaMinMax[i]}
@@ -1020,8 +1030,8 @@ renderSvgLineMask(line, i) {
     <path
       class='line'
       .id=${i}
-      anim=${this.config.animate} ?init=${this.length[i]}
-      style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
+      anim=${this.config.sparkline.animate} ?init=${this.length[i]}
+      style="animation-delay: ${this.config.sparkline.animate ? `${i * 0.5}s` : '0s'}"
       fill='none'
       stroke-dasharray=${this.length[i] || 'none'} stroke-dashoffset=${this.length[i] || 'none'}
       stroke=${'white'}
@@ -1037,15 +1047,15 @@ renderSvgLineMask(line, i) {
 }
 
 renderSvgLineMinMaxMask(line, i) {
-  if (this.config.show.chart_type !== 'line') return;
+  if (this.config.sparkline.show.chart_type !== 'line') return;
   if (!line) return;
 
   const path = svg`
     <path
       class='lineMinMax'
       .id=${i}
-      anim=${this.config.animate} ?init=${this.length[i]}
-      style="animation-delay: ${this.config.animate ? `${i * 0.5}s` : '0s'}"
+      anim=${this.config.sparkline.animate} ?init=${this.length[i]}
+      style="animation-delay: ${this.config.sparkline.animate ? `${i * 0.5}s` : '0s'}"
       fill='none'
       stroke-dasharray=${this.length[i] || 'none'} stroke-dashoffset=${this.length[i] || 'none'}
       stroke=${'white'}
@@ -1084,8 +1094,8 @@ renderSvgPoints(points, i) {
       ?tooltip=${this.tooltip.entity === i}
       ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== i}
       ?init=${this.length[i]}
-      anim=${this.config.animate && this.config.show.points !== 'hover'}
-      style="animation-delay: ${this.config.animate ? `${i * 0.5 + 0.5}s` : '0s'}"
+      anim=${this.config.sparkline.animate && this.config.sparkline.show.points !== 'hover'}
+      style="animation-delay: ${this.config.sparkline.animate ? `${i * 0.5 + 0.5}s` : '0s'}"
       fill=${color}
       stroke=${color}
       stroke-width=${this.svg.line_width / 2}
@@ -1096,7 +1106,7 @@ renderSvgPoints(points, i) {
 
 renderSvgTrafficLight(trafficLight, i) {
   let size;
-  if (this.config.square === true) {
+  if (this.config.sparkline.graded.square === true) {
     // Redistribute height
     size = Math.min(trafficLight.width, trafficLight.height);
     if (size < trafficLight.height) {
@@ -1106,6 +1116,12 @@ renderSvgTrafficLight(trafficLight, i) {
         trafficLight.y[j] = this.svg.graph.height + this.svg.margin.y - (j * (size + spaceBetween));
       }
       trafficLight.height = size;
+      trafficLight.width = size;
+    } else {
+      // #TODO:
+      // Redistribute width too !!! trafficLight.x[j] is not right anymore, as the previous width
+      // was used to calculate the start x position to draw the rectangle...
+      // Problem found with awair3c fce2!!!
       trafficLight.width = size;
     }
   }
@@ -1183,8 +1199,8 @@ renderSvgGraded(trafficLights, i) {
       ?tooltip=${this.tooltip.entity === i}
       ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== i}
       ?init=${this.length[i]}
-      anim=${this.config.animate && this.config.show.points !== 'hover'}
-      style="animation-delay: ${this.config.animate ? `${i * 0.5 + 0.5}s` : '0s'}"
+      anim=${this.config.sparkline.animate && this.config.sparkline.show.points !== 'hover'}
+      style="animation-delay: ${this.config.sparkline.animate ? `${i * 0.5 + 0.5}s` : '0s'}"
       fill=${color}
       stroke=${color}
       stroke-width=${this.svg.line_width / 2}
@@ -1258,7 +1274,7 @@ renderSvgLineBackground(line, i) {
 
 renderSvgLineMinMaxBackground(line, i) {
   // Hack
-  if (this.config.show.chart_type !== 'line') return;
+  if (this.config.sparkline.show.chart_type !== 'line') return;
   if (!line) return;
   const fill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -1276,7 +1292,7 @@ renderSvgLineMinMaxBackground(line, i) {
 // Currently called the 'fill', but actually it should be named area, after
 // sparkline area graph according to the mighty internet.
 renderSvgAreaBackground(fill, i) {
-  if (this.config.show.chart_type !== 'area') return;
+  if (this.config.sparkline.show.chart_type !== 'area') return;
   if (!fill) return;
   const svgFill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -1320,7 +1336,7 @@ renderSvgAreaBackground(fill, i) {
 }
 
 renderSvgAreaMinMaxBackground(fill, i) {
-  if (!['area', 'line'].includes(this.config.show.chart_type)) return;
+  if (!['area', 'line'].includes(this.config.sparkline.show.chart_type)) return;
   if (!fill) return;
   const svgFill = this.gradient[i]
     ? `url(#grad-${this.id}-${i})`
@@ -1335,21 +1351,21 @@ renderSvgAreaMinMaxBackground(fill, i) {
 }
 
 renderSvgEqualizerMask(equalizer, index) {
-  if (this.config.show.chart_type !== 'equalizer') return;
+  if (this.config.sparkline.show.chart_type !== 'equalizer') return;
 
   if (!equalizer) return;
-  const fade = this.config.show.fill === 'fade';
+  const fade = this.config.sparkline.show.fill === 'fade';
   const maskNeg = `url(#fill-grad-mask-neg-${this.id}-${index}})`;
   const maskPos = `url(#fill-grad-mask-pos-${this.id}-${index}})`;
-  const fillNeg = this.config.styles.bar_mask_below.fill;
-  const fillPos = this.config.styles.bar_mask_above.fill;
+  const fillNeg = this.config.sparkline.styles.bar_mask_below.fill;
+  const fillPos = this.config.sparkline.styles.bar_mask_above.fill;
 
   let size;
-  if (this.config.square === true) {
+  if (this.config.sparkline.equalizer.square === true) {
     // Redistribute height
     size = Math.min(equalizer[0].width, equalizer[0].height);
     if (size < equalizer[0].height) {
-      let spaceBetween = (this.svg.height - (this.config.value_buckets * size)) / (this.config.value_buckets - 1);
+      let spaceBetween = (this.svg.height - (this.config.sparkline.equalizer.value_buckets * size)) / (this.config.sparkline.equalizer.value_buckets - 1);
 
       let newEq = equalizer.map((equalizerPart, i) => {
         let eq = { ...equalizerPart };
@@ -1366,7 +1382,7 @@ renderSvgEqualizerMask(equalizer, index) {
   const paths = equalizer.map((equalizerPart, i) => {
     const equalizerPartRect = equalizerPart.value.map((single, j) => {
       const piet = [];
-      const animation = this.config.animate
+      const animation = this.config.sparkline.animate
       ? svg`
         <animate attributeName='y'
           from=${this.svg.height} to=${equalizerPart.y[j] - 1 * equalizerPart.height - this.svg.line_width}
@@ -1421,17 +1437,17 @@ renderSvgEqualizerMask(equalizer, index) {
 }
 
 renderSvgBarsMask(bars, index) {
-  if (this.config.show.chart_type !== 'bar') return;
+  if (this.config.sparkline.show.chart_type !== 'bar') return;
 
   if (!bars) return;
-  const fade = this.config.show.fill === 'fade';
+  const fade = this.config.sparkline.show.fill === 'fade';
   const maskNeg = `url(#fill-grad-mask-neg-${this.id}-${index}})`;
   const maskPos = `url(#fill-grad-mask-pos-${this.id}-${index}})`;
-  const fillNeg = this.config.styles.bar_mask_below.fill;
-  const fillPos = this.config.styles.bar_mask_above.fill;
+  const fillNeg = this.config.sparkline.styles.bar_mask_below.fill;
+  const fillPos = this.config.sparkline.styles.bar_mask_above.fill;
 
   const paths = bars.map((bar, i) => {
-    const animation = this.config.animate
+    const animation = this.config.sparkline.animate
       ? svg`
         <animate attributeName='y' from=${this.svg.height} to=${bar.y} dur='2s' fill='remove'
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
@@ -1474,10 +1490,10 @@ renderSvgBarsMask(bars, index) {
 }
 
 renderSvgEqualizerBackground(equalizer, index) {
-  if (this.config.show.chart_type !== 'equalizer') return;
+  if (this.config.sparkline.show.chart_type !== 'equalizer') return;
   if (!equalizer) return;
 
-  const fade = this.config.show.fill === 'fadenever';
+  const fade = this.config.sparkline.show.fill === 'fadenever';
   if (fade) {
   // Is in fact the rendering of the AreaMask... In this case the barsmask.
   // This is incomplete. Need rendering of the background itself too
@@ -1554,10 +1570,10 @@ renderSvgEqualizerBackground(equalizer, index) {
 }
 
 renderSvgBarsBackground(bars, index) {
-  if (this.config.show.chart_type !== 'bar') return;
+  if (this.config.sparkline.show.chart_type !== 'bar') return;
   if (!bars) return;
 
-  const fade = this.config.show.fill === 'fadenever';
+  const fade = this.config.sparkline.show.fill === 'fadenever';
   if (fade) {
   // Is in fact the rendering of the AreaMask... In this case the barsmask.
   // This is incomplete. Need rendering of the background itself too
@@ -1611,7 +1627,7 @@ renderSvgBarsBackground(bars, index) {
 renderSvgBars(bars, index) {
   if (!bars) return;
   const items = bars.map((bar, i) => {
-    const animation = this.config.animate
+    const animation = this.config.sparkline.animate
       ? svg`
         <animate attributeName='y' from=${this.svg.height} to=${bar.y} dur='2s' fill='remove'
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
@@ -1626,7 +1642,7 @@ renderSvgBars(bars, index) {
         ${this._firstUpdatedCalled ? animation : ''}
       </rect>`;
   });
-  return svg`<g class='bars' ?anim=${this.config.animate}>${items}</g>`;
+  return svg`<g class='bars' ?anim=${this.config.sparkline.animate}>${items}</g>`;
 }
 
 renderSvgRadialBarcodeBin(bin, path, index) {
@@ -1757,8 +1773,8 @@ renderSvgRadialBarcode(radialBarcode, index) {
       ?tooltip=${this.tooltip.entity === index}
       ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== index}
       ?init=${this.length[index]}
-      anim=${this.config.animate && this.config.show.points !== 'hover'}
-      style="animation-delay: ${this.config.animate ? `${index * 0.5 + 0.5}s` : '0s'}"
+      anim=${this.config.sparkline.animate && this.config.sparkline.show.points !== 'hover'}
+      style="animation-delay: ${this.config.sparkline.animate ? `${index * 0.5 + 0.5}s` : '0s'}"
       stroke-width=${this.svg.line_width / 2}>
       ${this.radialBarcodeChartBackground[index].map(((bin, i) => this.renderSvgRadialBarcodeBackgroundBin(bin, radialBarcodeBackgroundPaths[i], i)))}
       ${radialBarcode.map(((bin, i) => this.renderSvgRadialBarcodeBin(bin, radialBarcodePaths[i], i)))}
@@ -1774,7 +1790,7 @@ renderSvgBarcode(barcode, index) {
     // should be used, ie reverse lookup. Not the start/end values of the stop itself, but the
     // bucket value!!
     let color;
-    if (this.config.state_values?.use_value === 'bin') {
+    if (this.config.sparkline.state_values?.use_value === 'bin') {
       // If aggrerate func = avg, one might get fractions! Floor those!!
       // However, fraction is still calculated on height, so you can see that it was not in the same
       // bucket all the time. Should also color that one with intColor?? Ie show smoothing ??
@@ -1793,7 +1809,7 @@ renderSvgBarcode(barcode, index) {
       color = this.intColor(barcodePart.value, 0);
     }
 
-    const animation = this.config.animate
+    const animation = this.config.sparkline.animate
       ? svg`
         <animate attributeName='x' from=${this.svg.margin.x} to=${barcodePart.x} dur='3s' fill='remove'
           calcMode='spline' keyTimes='0; 1' keySplines='0.215 0.61 0.355 1'>
@@ -1860,13 +1876,10 @@ renderSvgBarcode(barcode, index) {
 }
 
 renderSvg() {
-  // Testing
-  // When changing dark/light mode or to another theme, gradients must be recalculated
-  // This is done already in the set, but seems to be done here also. Weird??
   let i = 0;
-  if (this.config.colorstops.colors.length > 0 && !this._card.config.entities[i].color)
+  if (this.config.sparkline.colorstops.colors.length > 0 && !this._card.config.entities[i].color)
   this.gradient[i] = this.Graph[i].computeGradient(
-    this.config.colorstops.colors, this.config.state_values.logarithmic,
+    this.config.sparkline.colorstops.colors, this.config.sparkline.state_values.logarithmic,
   );
   this.MergeAnimationClassIfChanged();
   this.MergeAnimationStyleIfChanged();
@@ -1902,7 +1915,7 @@ renderSvg() {
 }
 
   updated(changedProperties) {
-    if (this.config.animate && changedProperties.has('line')) {
+    if (this.config.sparkline.animate && changedProperties.has('line')) {
       if (this.length.length < this.entity.length) {
         this._card.shadowRoot.querySelectorAll('svg path.line').forEach((ele) => {
           this.length[ele.id] = ele.getTotalLength();

@@ -414,10 +414,11 @@ export default class BaseTool {
   MergeAnimationStyleIfChanged(argDefaultStyles) {
     if (this.animationStyleHasChanged) {
       this.animationStyleHasChanged = false;
+      let styles = this.config?.styles || this.config[this.config.type]?.styles;
       if (argDefaultStyles) {
-        this.styles = Merge.mergeDeep(argDefaultStyles, this.config.styles, this.animationStyle);
+        this.styles = Merge.mergeDeep(argDefaultStyles, styles, this.animationStyle);
       } else {
-        this.styles = Merge.mergeDeep(this.config.styles, this.animationStyle);
+        this.styles = Merge.mergeDeep(styles, this.animationStyle);
       }
 
       if (this.styles.card) {
@@ -442,10 +443,11 @@ export default class BaseTool {
 
     if (this.animationClassHasChanged) {
       this.animationClassHasChanged = false;
+      let classes = this.config?.classes || this.config[this.config.type]?.classes;
       if (argDefaultClasses) {
-        this.classes = Merge.mergeDeep(argDefaultClasses, this.config.classes, this.animationClass);
+        this.classes = Merge.mergeDeep(argDefaultClasses, classes, this.animationClass);
       } else {
-        this.classes = Merge.mergeDeep(this.config.classes, this.animationClass);
+        this.classes = Merge.mergeDeep(classes, this.animationClass);
       }
     }
   }
