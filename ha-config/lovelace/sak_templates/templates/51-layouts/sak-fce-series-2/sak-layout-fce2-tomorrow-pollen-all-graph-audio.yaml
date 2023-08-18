@@ -154,10 +154,6 @@ sak_layout_fce2_tomorrow_pollen_all_graph_audio:
             entity_index: 0
             entity_indexes:
               - entity_index: 0
-            animate: true
-            show:
-              chart_type: barcode
-              chart_variant: audio
             period: &barcode_period
               calendar:
                 period: day
@@ -167,32 +163,37 @@ sak_layout_fce2_tomorrow_pollen_all_graph_audio:
                 bins: 
                   per_hour: 2
               group_by: date
-            state_values: &barcode_state_values
-              aggregate_func: max
-              lower_bound: -1
-              upper_bound: 5
-            square: true
-            barcode: &barcode_config
-              line_width : 0.1
-              column_spacing: 0.1
-            x_lines: &barcode_x_lines
-              lines:
-                - name: center
-                  zpos: below 
-                  yshift: 0
-            state_map: &barcode_state_map
-              template: 
-                name: sak_statemap_pollen
-            colorstops_transition: hard
-            colorstops: &barcode_colorstops
-              template: 
-                name: sak_colorstops_pollen_v2
-            styles: &barcode_styles
-              center:
-                stroke: lightgray
-                stroke-width: 0.1rem
-                stroke-dasharray: 5 2.5
-                stroke-dashoffset: 0.2
+            sparkline:
+              animate: true
+              show:
+                chart_type: barcode
+                chart_variant: audio
+              state_values: &barcode_state_values
+                aggregate_func: max
+                lower_bound: -1
+                upper_bound: 5
+              square: true
+              barcode: &barcode_config
+                line_width : 0.1
+                column_spacing: 0.1
+              x_lines: &barcode_x_lines
+                lines:
+                  - name: center
+                    zpos: below 
+                    yshift: 0
+              state_map: &barcode_state_map
+                template: 
+                  name: sak_statemap_pollen
+              colorstops_transition: hard
+              colorstops: &barcode_colorstops
+                template: 
+                  name: sak_colorstops_pollen_v2
+              styles: &barcode_styles
+                center:
+                  stroke: lightgray
+                  stroke-width: 0.1rem
+                  stroke-dasharray: 5 2.5
+                  stroke-dashoffset: 0.2
           # ------------------------------------------------------------
           - type: state
             position:
@@ -257,19 +258,20 @@ sak_layout_fce2_tomorrow_pollen_all_graph_audio:
             entity_index: 1
             entity_indexes:
               - entity_index: 1
-            animate: true
-            show:
-              chart_type: barcode
-              chart_variant: audio
             period: *barcode_period
-            state_values: *barcode_state_values
-            x_lines: *barcode_x_lines
-            barcode: *barcode_config
-            square: true
-            state_map: *barcode_state_map
-            colorstops_transition: hard
-            colorstops: *barcode_colorstops
-            styles: *barcode_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: barcode
+                chart_variant: audio
+              state_values: *barcode_state_values
+              x_lines: *barcode_x_lines
+              barcode: *barcode_config
+              square: true
+              state_map: *barcode_state_map
+              colorstops_transition: hard
+              colorstops: *barcode_colorstops
+              styles: *barcode_styles
           # ------------------------------------------------------------
           - type: state
             position:
@@ -334,19 +336,20 @@ sak_layout_fce2_tomorrow_pollen_all_graph_audio:
             entity_index: 2
             entity_indexes:
               - entity_index: 2
-            animate: true
-            show:
-              chart_type: barcode
-              chart_variant: audio
             period: *barcode_period
-            state_values: *barcode_state_values
-            x_lines: *barcode_x_lines
-            barcode: *barcode_config
-            square: true
-            state_map: *barcode_state_map
-            colorstops_transition: hard
-            colorstops: *barcode_colorstops
-            styles: *barcode_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: barcode
+                chart_variant: audio
+              state_values: *barcode_state_values
+              x_lines: *barcode_x_lines
+              barcode: *barcode_config
+              square: true
+              state_map: *barcode_state_map
+              colorstops_transition: hard
+              colorstops: *barcode_colorstops
+              styles: *barcode_styles
 
           # ------------------------------------------------------------
           - type: state

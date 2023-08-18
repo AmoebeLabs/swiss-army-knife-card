@@ -2,11 +2,30 @@ sak_layout_fce2_awair3c:
   template:
     type: layout
     defaults: 
-      dummy: true
+      - sak_layout_awair_background_icon_disabled: false
 
   layout:
     aspectratio: 1/1
     toolsets:
+      # ==============================================================================
+      - toolset: background-icon
+        position:
+          cx: 100
+          cy: 37.5
+        tools:
+          # ------------------------------------------------------------
+          - type: icon
+            # When disabled, SAK will not use this tool
+            disabled: '[[sak_layout_awair_background_icon_disabled]]'
+            position:
+              cx: 50
+              cy: 50
+              align: center
+              icon_size: 50
+            entity_index: 0
+            styles:
+              icon:
+                fill: var(--theme-sys-elevation-surface-neutral3)
       # ==============================================================================
       - toolset: circle-with-icon
         position:
@@ -174,29 +193,31 @@ sak_layout_fce2_awair3c:
             entity_index: 1
             entity_indexes:
               - entity_index: 1
-            animate: true
-            show:
-              chart_type: graded
-              chart_variant: rank_order
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            square: true
-            line_width : 1.5
-            colorstops_transition: hard
-            colorstops:
-              template:
-                name: sak_colorstops_awair_temperature_v2
-            styles: &trafficlight_styles
-              graded_background:
-                transition: fill 2s ease
-                rx: 5%
-                ry: 50%
-              graded_foreground:
-                transition: fill 2s ease
-                rx: 5%
-                ry: 50%
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+                chart_variant: rank_order
+              state_values:
+                aggregate_func: last
+              graded:
+                # square: true
+                line_width : 1.5
+              colorstops_transition: hard
+              colorstops:
+                template:
+                  name: sak_colorstops_awair_temperature_v2
+              styles: &trafficlight_styles
+                graded_background:
+                  transition: fill 2s ease
+                  rx: 5%
+                  ry: 50%
+                graded_foreground:
+                  transition: fill 2s ease
+                  rx: 5%
+                  ry: 50%
 
       # ===============================================================
       - toolset: graph-sensor-humi
@@ -218,21 +239,23 @@ sak_layout_fce2_awair3c:
             entity_index: 2
             entity_indexes:
               - entity_index: 2
-            animate: true
-            show:
-              chart_type: graded
-              chart_variant: rank_order
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            square: true
-            line_width : 1.5
-            colorstops_transition: hard
-            colorstops:
-              template:
-                name: sak_colorstops_awair_humidity_v2
-            styles: *trafficlight_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+                chart_variant: rank_order
+              state_values:
+                aggregate_func: last
+              graded:
+                line_width : 1.5
+                # square: true
+              colorstops_transition: hard
+              colorstops:
+                template:
+                  name: sak_colorstops_awair_humidity_v2
+              styles: *trafficlight_styles
 
       # ===============================================================
       - toolset: graph-sensor-co2
@@ -255,20 +278,22 @@ sak_layout_fce2_awair3c:
             entity_index: 3
             entity_indexes:
               - entity_index: 3
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            square: true
-            line_width : 1.5
-            colorstops_transition: hard
-            colorstops:
-              template:
-                name: sak_colorstops_awair_co2_v2
-            styles: *trafficlight_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded:
+                # square: true
+                line_width : 1.5
+              colorstops_transition: hard
+              colorstops:
+                template:
+                  name: sak_colorstops_awair_co2_v2
+              styles: *trafficlight_styles
 
       # ===============================================================
       - toolset: graph-sensor-voc
@@ -291,20 +316,22 @@ sak_layout_fce2_awair3c:
             entity_index: 4
             entity_indexes:
               - entity_index: 4
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            square: true
-            line_width : 1.5
-            colorstops_transition: hard
-            colorstops:
-              template:
-                name: sak_colorstops_awair_voc_v2
-            styles: *trafficlight_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded:
+                # square: true
+                line_width : 1.5
+              colorstops_transition: hard
+              colorstops:
+                template:
+                  name: sak_colorstops_awair_voc_v2
+              styles: *trafficlight_styles
   
         # ===============================================================
       - toolset: graph-sensor-pm25
@@ -327,17 +354,19 @@ sak_layout_fce2_awair3c:
             entity_index: 5
             entity_indexes:
               - entity_index: 5
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            square: true
-            line_width : 1.5
-            colorstops_transition: hard
-            colorstops:
-              template:
-                name: sak_colorstops_awair_pm25_v2
-            styles: *trafficlight_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded:
+                # square: true
+                line_width : 1.5
+              colorstops_transition: hard
+              colorstops:
+                template:
+                  name: sak_colorstops_awair_pm25_v2
+              styles: *trafficlight_styles

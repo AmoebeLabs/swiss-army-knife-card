@@ -65,9 +65,6 @@ sak_layout_fce2_electricity2:
             entity_index: 0
             entity_indexes:
               - entity_index: 0
-            animate: true
-            show:
-              chart_type: equalizer
             period:
               calendar:
                 period: day   # hour
@@ -76,38 +73,43 @@ sak_layout_fce2_electricity2:
                   hour: 24    # Add or not???
                 bins:
                   per_hour: 1
-            state_values:
-              aggregate_func: avg
-              value_factor: 1000
-              lower_bound: 50
-            line_width : 1 
-            value_buckets: 20
-            x_lines:
-              lines:
-                - name: x_axis
-                  zpos: below 
-                  yshift: 52
-                - name: ticks
-                  zpos: below 
-                  yshift: 53
-            colorstops_transition: smooth
-            colorstops: &electricity_colorstops_watt
-              template:
-                name: sak_colorstops_energy_4000w_v2
-            styles:
-              x_axis:
-                stroke: lightgray
-                stroke-width: 0.2rem
-              ticks:
-                stroke: lightgray
-                stroke-dasharray: 1, 118.5
-                stroke-dashoffset: 0
-                stroke-width: 1rem
-              equalizer_part:
-                transition: fill 2s ease
-                transform-origin: center
-                transform-box: fill-box
-                transform: skewY(20deg)
+            sparkline:
+              animate: true
+              show:
+                chart_type: equalizer
+              state_values:
+                aggregate_func: avg
+                value_factor: 1000
+                lower_bound: 50
+              equalizer:
+                line_width : 1 
+                value_buckets: 20
+              x_lines:
+                lines:
+                  - name: x_axis
+                    zpos: below 
+                    yshift: 52
+                  - name: ticks
+                    zpos: below 
+                    yshift: 53
+              colorstops_transition: smooth
+              colorstops: &electricity_colorstops_watt
+                template:
+                  name: sak_colorstops_energy_4000w_v2
+              styles:
+                x_axis:
+                  stroke: lightgray
+                  stroke-width: 0.2rem
+                ticks:
+                  stroke: lightgray
+                  stroke-dasharray: 1, 118.5
+                  stroke-dashoffset: 0
+                  stroke-width: 1rem
+                equalizer_part:
+                  transition: fill 2s ease
+                  transform-origin: center
+                  transform-box: fill-box
+                  transform: skewY(20deg)
               
 
       # ================================================================
@@ -132,31 +134,32 @@ sak_layout_fce2_electricity2:
             entity_index: 0
             entity_indexes:
               - entity_index: 0
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            graded: &graded_config
-              row_spacing: 1
-              line_width : 0.5
-            colorstops_transition: hard
-            colorstops: &electricity_colorstops_kwh
-              template:
-                name: sak_colorstops_energy_4kw_v2
-            styles: &trafficlight_phase_styles
-              graded_background:
-                transition: fill 2s ease
-                transform-origin: center
-                transform-box: fill-box
-                transform: skewY(20deg)
-              graded_foreground:
-                transition: fill 2s ease
-                transform-origin: center
-                transform-box: fill-box
-                transform: skewY(20deg)
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded: &graded_config
+                row_spacing: 1
+                line_width : 0.5
+              colorstops_transition: hard
+              colorstops: &electricity_colorstops_kwh
+                template:
+                  name: sak_colorstops_energy_4kw_v2
+              styles: &trafficlight_phase_styles
+                graded_background:
+                  transition: fill 2s ease
+                  transform-origin: center
+                  transform-box: fill-box
+                  transform: skewY(20deg)
+                graded_foreground:
+                  transition: fill 2s ease
+                  transform-origin: center
+                  transform-box: fill-box
+                  transform: skewY(20deg)
 
           # ------------------------------------------------------------
           - type: sparkline
@@ -170,10 +173,6 @@ sak_layout_fce2_electricity2:
             entity_index: 0
             entity_indexes:
               - entity_index: 0
-            animate: true
-            show:
-              chart_type: radial_barcode
-              chart_variant: sunburst
             period:
               calendar:
                 period: day   # hour
@@ -182,21 +181,26 @@ sak_layout_fce2_electricity2:
                   hour: 24    # Add or not???
                 bins:
                   per_hour: 4
-            state_values:
-              logarithmic: true 
-              value_factor: 1000
-              lower_bound: 0
-            radial_barcode:
-              size: 5
-              line_width : 1.5
-              column_spacing: 0
-            colorstops_transition: smooth
-            colorstops: *electricity_colorstops_watt
-            styles: &clock_styles
-              clock_background:
-                fill: var(--theme-sys-elevation-surface-variant4);
-                stroke-width: 1;
-                opacity: 0.4;
+            sparkline:
+              animate: true
+              show:
+                chart_type: radial_barcode
+                chart_variant: sunburst
+              state_values:
+                logarithmic: true 
+                value_factor: 1000
+                lower_bound: 0
+              radial_barcode:
+                size: 5
+                line_width : 1.5
+                column_spacing: 0
+              colorstops_transition: smooth
+              colorstops: *electricity_colorstops_watt
+              styles: &clock_styles
+                clock_background:
+                  fill: var(--theme-sys-elevation-surface-variant4);
+                  stroke-width: 1;
+                  opacity: 0.4;
 
           # ------------------------------------------------------------
           - type: icon
@@ -254,17 +258,18 @@ sak_layout_fce2_electricity2:
             entity_index: 1
             entity_indexes:
               - entity_index: 1
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            graded: *graded_config
-            colorstops_transition: hard
-            colorstops: *electricity_colorstops_kwh
-            styles: *trafficlight_phase_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded: *graded_config
+              colorstops_transition: hard
+              colorstops: *electricity_colorstops_kwh
+              styles: *trafficlight_phase_styles
 
           # ------------------------------------------------------------
           - type: sparkline
@@ -273,10 +278,6 @@ sak_layout_fce2_electricity2:
             entity_index: 1
             entity_indexes:
               - entity_index: 1
-            animate: true
-            show:
-              chart_type: radial_barcode
-              chart_variant: sunburst
             period: &phase_period
               calendar:
                 period: day
@@ -285,16 +286,21 @@ sak_layout_fce2_electricity2:
                   hour: 24
                 bins:
                   per_hour: 4
-            state_values: &phase_state_values
-              logarithmic: true 
-              value_factor: 1000
-              lower_bound: 0
-            radial_barcode:
-              size: 5
-              line_width : 1.5
-            colorstops_transition: smooth
-            colorstops: *electricity_colorstops_watt
-            styles: *clock_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: radial_barcode
+                chart_variant: sunburst
+              state_values: &phase_state_values
+                logarithmic: true 
+                value_factor: 1000
+                lower_bound: 0
+              radial_barcode:
+                size: 5
+                line_width : 1.5
+              colorstops_transition: smooth
+              colorstops: *electricity_colorstops_watt
+              styles: *clock_styles
 
           # ------------------------------------------------------------
           - type: icon
@@ -330,17 +336,18 @@ sak_layout_fce2_electricity2:
             entity_index: 2
             entity_indexes:
               - entity_index: 2
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            graded: *graded_config
-            colorstops_transition: hard
-            colorstops: *electricity_colorstops_kwh
-            styles: *trafficlight_phase_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded: *graded_config
+              colorstops_transition: hard
+              colorstops: *electricity_colorstops_kwh
+              styles: *trafficlight_phase_styles
 
           # ------------------------------------------------------------
           - type: sparkline
@@ -349,18 +356,19 @@ sak_layout_fce2_electricity2:
             entity_index: 2
             entity_indexes:
               - entity_index: 2
-            animate: true
-            show:
-              chart_type: radial_barcode
-              chart_variant: sunburst
             period: *phase_period
-            state_values: *phase_state_values
-            radial_barcode:
-              size: 5
-              line_width : 1.5
-            colorstops_transition: smooth
-            colorstops: *electricity_colorstops_watt
-            styles: *clock_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: radial_barcode
+                chart_variant: sunburst
+              state_values: *phase_state_values
+              radial_barcode:
+                size: 5
+                line_width : 1.5
+              colorstops_transition: smooth
+              colorstops: *electricity_colorstops_watt
+              styles: *clock_styles
 
           # ------------------------------------------------------------
           - type: icon
@@ -396,17 +404,18 @@ sak_layout_fce2_electricity2:
             entity_index: 3
             entity_indexes:
               - entity_index: 3
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            graded: *graded_config
-            colorstops_transition: hard
-            colorstops: *electricity_colorstops_kwh
-            styles: *trafficlight_phase_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded: *graded_config
+              colorstops_transition: hard
+              colorstops: *electricity_colorstops_kwh
+              styles: *trafficlight_phase_styles
 
           # ------------------------------------------------------------
           - type: sparkline
@@ -415,18 +424,19 @@ sak_layout_fce2_electricity2:
             entity_index: 3
             entity_indexes:
               - entity_index: 3
-            animate: true
-            show:
-              chart_type: radial_barcode
-              chart_variant: sunburst
             period: *phase_period
-            state_values: *phase_state_values
-            radial_barcode:
-              size: 5
-              line_width : 1.5
-            colorstops_transition: smooth
-            colorstops: *electricity_colorstops_watt
-            styles: *clock_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: radial_barcode
+                chart_variant: sunburst
+              state_values: *phase_state_values
+              radial_barcode:
+                size: 5
+                line_width : 1.5
+              colorstops_transition: smooth
+              colorstops: *electricity_colorstops_watt
+              styles: *clock_styles
 
           # ------------------------------------------------------------
           - type: icon

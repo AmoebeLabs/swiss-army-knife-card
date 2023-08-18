@@ -158,11 +158,6 @@ sak_layout_fce2_tomorrow_pollen_all_graph_sunburst:
             entity_index: 0
             entity_indexes:
               - entity_index: 0
-            animate: true
-            show:
-              chart_type: radial_barcode
-              chart_variant: sunburst
-              chart_viz: rice_grain
             period:
               calendar:
                 period: day
@@ -172,28 +167,34 @@ sak_layout_fce2_tomorrow_pollen_all_graph_sunburst:
                 bins: 
                   per_hour: 2
               group_by: date
-            state_values:
-              aggregate_func: max
-              lower_bound: -1
-              upper_bound: 5
-            radial_barcode: &radial_barcode_config
-              size: 15
-              column_spacing: 0.1
-              line_width : 0.1
-              face:
-                show_day_night: false
-                show_hour_marks: false 
-                show_hour_numbers: none # absolute # or relative
-                hour_marks_radius: 23
-                hour_marks_count: 12   # one mark for each hour
-                hour_numbers_radius: 18
-            state_map:
-              template: 
-                name: sak_statemap_pollen
-            colorstops_transition: hard
-            colorstops:
-              template: 
-                name: sak_colorstops_pollen_v2
+            sparkline:
+              animate: true
+              show:
+                chart_type: radial_barcode
+                chart_variant: sunburst
+                chart_viz: rice_grain
+              state_values:
+                aggregate_func: max
+                lower_bound: -1
+                upper_bound: 5
+              radial_barcode: &radial_barcode_config
+                size: 15
+                column_spacing: 0.1
+                line_width : 0.1
+                face:
+                  show_day_night: false
+                  show_hour_marks: false 
+                  show_hour_numbers: none # absolute # or relative
+                  hour_marks_radius: 23
+                  hour_marks_count: 12   # one mark for each hour
+                  hour_numbers_radius: 18
+              state_map:
+                template: 
+                  name: sak_statemap_pollen
+              colorstops_transition: hard
+              colorstops:
+                template: 
+                  name: sak_colorstops_pollen_v2
           # ------------------------------------------------------------
           - type: state
             position:
@@ -258,11 +259,6 @@ sak_layout_fce2_tomorrow_pollen_all_graph_sunburst:
             entity_index: 1
             entity_indexes:
               - entity_index: 1
-            animate: true
-            show:
-              chart_type: radial_barcode
-              chart_variant: sunburst
-              chart_viz: rice_grain
             period:
               calendar:
                 period: day
@@ -272,18 +268,24 @@ sak_layout_fce2_tomorrow_pollen_all_graph_sunburst:
                 bins: 
                   per_hour: 2
               group_by: date
-            state_values:
-              aggregate_func: max
-              lower_bound: -1
-              upper_bound: 5
-            radial_barcode: *radial_barcode_config
-            state_map:
-              template:
-                name: sak_statemap_pollen
-            colorstops_transition: hard
-            colorstops:
-              template: 
-                name: sak_colorstops_pollen_v2
+            sparkline:
+              animate: true
+              show:
+                chart_type: radial_barcode
+                chart_variant: sunburst
+                chart_viz: rice_grain
+              state_values:
+                aggregate_func: max
+                lower_bound: -1
+                upper_bound: 5
+              radial_barcode: *radial_barcode_config
+              state_map:
+                template:
+                  name: sak_statemap_pollen
+              colorstops_transition: hard
+              colorstops:
+                template: 
+                  name: sak_colorstops_pollen_v2
           # ------------------------------------------------------------
           - type: state
             position:
@@ -348,11 +350,6 @@ sak_layout_fce2_tomorrow_pollen_all_graph_sunburst:
             entity_index: 2
             entity_indexes:
               - entity_index: 2
-            animate: true
-            show:
-              chart_type: radial_barcode
-              chart_variant: sunburst
-              chart_viz: rice_grain
             period:
               calendar:
                 period: day
@@ -362,18 +359,24 @@ sak_layout_fce2_tomorrow_pollen_all_graph_sunburst:
                 bins: 
                   per_hour: 2
               group_by: date
-            state_values:
-              aggregate_func: max
-              lower_bound: -1
-              upper_bound: 5
-            radial_barcode: *radial_barcode_config
-            state_map:
-              template: 
-                name: sak_statemap_pollen
-            colorstops_transition: hard
-            colorstops:
-              template: 
-                name: sak_colorstops_pollen_v2
+            sparkline:
+              animate: true
+              show:
+                chart_type: radial_barcode
+                chart_variant: sunburst
+                chart_viz: rice_grain
+              state_values:
+                aggregate_func: max
+                lower_bound: -1
+                upper_bound: 5
+              radial_barcode: *radial_barcode_config
+              state_map:
+                template: 
+                  name: sak_statemap_pollen
+              colorstops_transition: hard
+              colorstops:
+                template: 
+                  name: sak_colorstops_pollen_v2
           # ------------------------------------------------------------
           - type: state
             position:

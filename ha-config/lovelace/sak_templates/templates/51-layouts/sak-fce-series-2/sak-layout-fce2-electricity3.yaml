@@ -90,9 +90,6 @@ sak_layout_fce2_electricity3:
             entity_index: 0
             entity_indexes:
               - entity_index: 0
-            animate: true
-            show:
-              chart_type: area
             period:
               rolling_window:
                 period: day
@@ -101,35 +98,39 @@ sak_layout_fce2_electricity3:
                   hour: 24
                 bins:
                   per_hour: 4
-            state_values:
-              aggregate_func: avg
-              value_factor: 1000
-              lower_bound: 50
-              logarithmic: true
-            area: 
-              line_width : 1 
-              show_minmax: true
-            x_lines:
-              lines:
-                - name: x_axis
-                  zpos: below 
-                  yshift: 52
-                - name: ticks
-                  zpos: below 
-                  yshift: 53
-            colorstops_transition: smooth
-            colorstops: &electricity_colorstops_watt
-              template: 
-                name: sak_colorstops_energy_4000w_v2
-            styles:
-              x_axis:
-                stroke: lightgray
-                stroke-width: 0.2rem
-              ticks:
-                stroke: lightgray
-                stroke-dasharray: 1, 118.5
-                stroke-dashoffset: 0
-                stroke-width: 1rem
+            sparkline:
+              animate: true
+              show:
+                chart_type: area
+              state_values:
+                aggregate_func: avg
+                value_factor: 1000
+                lower_bound: 50
+                logarithmic: true
+              area: 
+                line_width : 1 
+                show_minmax: true
+              x_lines:
+                lines:
+                  - name: x_axis
+                    zpos: below 
+                    yshift: 52
+                  - name: ticks
+                    zpos: below 
+                    yshift: 53
+              colorstops_transition: smooth
+              colorstops: &electricity_colorstops_watt
+                template: 
+                  name: sak_colorstops_energy_4000w_v2
+              styles:
+                x_axis:
+                  stroke: lightgray
+                  stroke-width: 0.2rem
+                ticks:
+                  stroke: lightgray
+                  stroke-dasharray: 1, 118.5
+                  stroke-dashoffset: 0
+                  stroke-width: 1rem
       # ================================================================
       - toolset: graph-title-and-location
         position:
@@ -583,29 +584,30 @@ sak_layout_fce2_electricity3:
                 x: 0
                 y: 0
             entity_index: 1
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            graded: &graded_config
-              row_spacing: 2
-              line_width : 0.5
-            colorstops_transition: hard
-            colorstops: &electricity_colorstops_kwh
-              template: 
-                name: sak_colorstops_energy_4kw_v2
-            styles: &graded_phase_styles
-              graded_background:
-                transition: fill 2s ease
-                rx: 5
-                ry: 50%
-              graded_foreground:
-                transition: fill 2s ease
-                rx: 5
-                ry: 50%
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded: &graded_config
+                row_spacing: 2
+                line_width : 0.5
+              colorstops_transition: hard
+              colorstops: &electricity_colorstops_kwh
+                template: 
+                  name: sak_colorstops_energy_4kw_v2
+              styles: &graded_phase_styles
+                graded_background:
+                  transition: fill 2s ease
+                  rx: 5
+                  ry: 50%
+                graded_foreground:
+                  transition: fill 2s ease
+                  rx: 5
+                  ry: 50%
           # ------------------------------------------------------------
           # Left wing...
           - type: rectex
@@ -649,19 +651,20 @@ sak_layout_fce2_electricity3:
                 x: 0
                 y: 0
             entity_index: 4
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            graded: *graded_config
-            colorstops_transition: hard
-            colorstops: &electricity_returned_colorstops_kwh
-              template: 
-                name: sak_colorstops_energy_returned_4kw_v2
-            styles: *graded_phase_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded: *graded_config
+              colorstops_transition: hard
+              colorstops: &electricity_returned_colorstops_kwh
+                template: 
+                  name: sak_colorstops_energy_returned_4kw_v2
+              styles: *graded_phase_styles
 
       # ================================================================
       - toolset: L2
@@ -737,16 +740,17 @@ sak_layout_fce2_electricity3:
             position: *graded_pos
             entity_index: 2
             animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            graded: *graded_config
-            colorstops_transition: hard
-            colorstops: *electricity_colorstops_kwh
-            styles: *graded_phase_styles
+            sparkline:
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded: *graded_config
+              colorstops_transition: hard
+              colorstops: *electricity_colorstops_kwh
+              styles: *graded_phase_styles
           # ------------------------------------------------------------
           # Left wing...
           - type: rectex
@@ -866,17 +870,18 @@ sak_layout_fce2_electricity3:
           - type: sparkline
             position: *graded_pos
             entity_index: 3
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            graded: *graded_config
-            colorstops_transition: hard
-            colorstops: *electricity_colorstops_kwh
-            styles: *graded_phase_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded: *graded_config
+              colorstops_transition: hard
+              colorstops: *electricity_colorstops_kwh
+              styles: *graded_phase_styles
           # ------------------------------------------------------------
           # Left wing...
           - type: rectex
@@ -911,17 +916,18 @@ sak_layout_fce2_electricity3:
           - type: sparkline
             position: *graded_pos_left
             entity_index: 6
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            graded: *graded_config
-            colorstops_transition: hard
-            colorstops: *electricity_returned_colorstops_kwh
-            styles: *graded_phase_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded: *graded_config
+              colorstops_transition: hard
+              colorstops: *electricity_returned_colorstops_kwh
+              styles: *graded_phase_styles
 
       # ================================================================
       - toolset: energy-flower
@@ -973,17 +979,18 @@ sak_layout_fce2_electricity3:
                 x: 0
                 y: 0
             entity_index: 4
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            graded: *graded_config
-            colorstops_transition: hard
-            colorstops: *electricity_returned_colorstops_kwh
-            styles: *graded_phase_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded: *graded_config
+              colorstops_transition: hard
+              colorstops: *electricity_returned_colorstops_kwh
+              styles: *graded_phase_styles
 
           # ------------------------------------------------------------
           # Right wing...
@@ -1028,17 +1035,18 @@ sak_layout_fce2_electricity3:
                 x: 0
                 y: 0
             entity_index: 0
-            animate: true
-            show:
-              chart_type: graded
             period:
               real_time: true
-            state_values:
-              aggregate_func: last
-            graded: *graded_config
-            colorstops_transition: hard
-            colorstops: *electricity_colorstops_kwh
-            styles: *graded_phase_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: graded
+              state_values:
+                aggregate_func: last
+              graded: *graded_config
+              colorstops_transition: hard
+              colorstops: *electricity_colorstops_kwh
+              styles: *graded_phase_styles
 
       # ================================================================
       - toolset: energy-flower
@@ -1058,11 +1066,6 @@ sak_layout_fce2_electricity3:
             entity_index: 0
             entity_indexes:
               - entity_index: 0
-            animate: true
-            show:
-              chart_type: radial_barcode
-              chart_variant: sunburst_outward
-              chart_viz: flower
             period: &live_period
               calendar:
                 period: day
@@ -1072,21 +1075,27 @@ sak_layout_fce2_electricity3:
                 bins:
                   per_hour: 2
               group_by: date
-            state_values: &live_state_values
-              logarithmic: true 
-              value_factor: 1000
-              lower_bound: 0
-              # upper_bound: 3000
-              aggregate_func: avg
-            radial_barcode: &live_radial_barcode
-              size: 15
-              line_width : 0.2
-              column_spacing: 0.2
-            colorstops_transition: smooth
-            colorstops: *electricity_colorstops_watt
-            styles: &live_styles
-              radial_barcode: 
-                stroke: white
+            sparkline:
+              animate: true
+              show:
+                chart_type: radial_barcode
+                chart_variant: sunburst_outward
+                chart_viz: flower
+              state_values: &live_state_values
+                logarithmic: true 
+                value_factor: 1000
+                lower_bound: 0
+                # upper_bound: 3000
+                aggregate_func: avg
+              radial_barcode: &live_radial_barcode
+                size: 15
+                line_width : 0.2
+                column_spacing: 0.2
+              colorstops_transition: smooth
+              colorstops: *electricity_colorstops_watt
+              styles: &live_styles
+                radial_barcode: 
+                  stroke: white
           # ------------------------------------------------------------
           - type: sparkline
             id: 1
@@ -1097,21 +1106,22 @@ sak_layout_fce2_electricity3:
             entity_index: 3
             entity_indexes:
               - entity_index: 3
-            animate: true
-            show:
-              chart_type: radial_barcode
-              chart_variant: sunburst_inward
-              chart_viz: flower
             period: *live_period
-            state_values:
-              <<: *live_state_values
-              aggregate_func: avg
-            radial_barcode: *live_radial_barcode
-            colorstops_transition: smooth
-            colorstops: &pv_colorstops_watt
-              template:
-                name: sak_colorstops_energy_returned_4000w_v2
-            styles: *live_styles
+            sparkline:
+              animate: true
+              show:
+                chart_type: radial_barcode
+                chart_variant: sunburst_inward
+                chart_viz: flower
+              state_values:
+                <<: *live_state_values
+                aggregate_func: avg
+              radial_barcode: *live_radial_barcode
+              colorstops_transition: smooth
+              colorstops: &pv_colorstops_watt
+                template:
+                  name: sak_colorstops_energy_returned_4000w_v2
+              styles: *live_styles
           # ------------------------------------------------------------
           - type: circle
             position: 

@@ -1,0 +1,19 @@
+
+sak_colorstops_awair_co2_v1:
+  template:
+    type: colorstops
+    defaults:
+      - thegap: 0
+      - theFill: true
+      - theStroke: false
+  colorstops:
+    gap: '[[thegap]]'
+    fill: '[[theFill]]'
+    stroke: '[[theStroke]]'
+    colors:
+      0: '#49ce4c'
+      600: '#fdd125'
+      1000: '#faaa00'
+      1500: '#fb8600'
+      2500: '#e63740'
+  

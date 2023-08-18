@@ -44,11 +44,6 @@ sak_layout_fce2_sensor3:
             entity_index: 0
             entity_indexes:
               - entity_index: 0
-            animate: true
-            show:
-              chart_type: radial_barcode
-              chart_variant: sunburst_outward
-              chart_viz: flower
             period:
               calendar:
                 period: day
@@ -58,32 +53,38 @@ sak_layout_fce2_sensor3:
                 bins:
                   per_hour: 1
               # group_by: date
-            radial_barcode:
-              size: 4
-              line_width : 0.01
-              column_spacing: 0.5
-            # colorstops_transition: smooth
-            # colorstops:
-            #   - value: 0
-            #     color: 'darkgreen'
-            #   - value: 150
-            #     color: 'green'
-            #   - value: 300
-            #     color: '#FFE37F'  # Yasmine
-            #   - value: 500
-            #     color: '#FCC449'  # Saffron
-            #   - value: 1000
-            #     color: '#F79F23'  # Orange Peel
-            #   - value: 1500
-            #     color: '#EF7F01'  # Tangerine
-            #   - value: 2000
-            #     color: '#E73F10'  # Cinnabar
-            #   - value: 2500
-            #     color: '#BB1B1B'  # Cornell Red
-            #   - value: 3000
-            #     color: '#980C0C'  # Pennu Red
-            #   - value: 4000
-            #     color: '#7B0002'  # Barn Red
+            sparkline:
+              animate: true
+              show:
+                chart_type: radial_barcode
+                chart_variant: sunburst_outward
+                chart_viz: flower
+              radial_barcode:
+                size: 4
+                line_width : 0.01
+                column_spacing: 0.5
+              # colorstops_transition: smooth
+              # colorstops:
+              #   - value: 0
+              #     color: 'darkgreen'
+              #   - value: 150
+              #     color: 'green'
+              #   - value: 300
+              #     color: '#FFE37F'  # Yasmine
+              #   - value: 500
+              #     color: '#FCC449'  # Saffron
+              #   - value: 1000
+              #     color: '#F79F23'  # Orange Peel
+              #   - value: 1500
+              #     color: '#EF7F01'  # Tangerine
+              #   - value: 2000
+              #     color: '#E73F10'  # Cinnabar
+              #   - value: 2500
+              #     color: '#BB1B1B'  # Cornell Red
+              #   - value: 3000
+              #     color: '#980C0C'  # Pennu Red
+              #   - value: 4000
+              #     color: '#7B0002'  # Barn Red
 
           # ------------------------------------------------------------
           - type: icon

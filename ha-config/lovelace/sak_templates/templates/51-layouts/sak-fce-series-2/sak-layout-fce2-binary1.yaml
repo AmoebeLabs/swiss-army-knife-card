@@ -292,53 +292,36 @@ sak_layout_fce2_binary1:
                   hour: 24
                 bins:
                   per_hour: 1
-            show:
-              chart_type: barcode
-              # chart_variant: audio_bottom
-            state_map:
-              template:
-                name: sak_statemap_binary
-            # State value settings
-            # - set agg to max to see the binary changes
-            # - set lower_bound to -1 to offset 'off' state
-            #   the barcode will start wider now, instead of at minimum width
-            # - set upper_bound to 1 ('on') to fix upper scale
-            state_values:
-              aggregate_func: max
-              lower_bound: -1
-              upper_bound: 1
-            barcode:
-              column_spacing: 3
-              line_width: 0.1
-            colorstops_transition: hard
-            colorstops:
-              colors:
-                - value: 0
-                  color: var(--theme-sys-elevation-surface-neutral10)
-                - value: 1
-                  color: '[[sak_layout_binary_history_color_on]]'
-            styles: 
-              tool: 
-                opacity: 1
-              barcode_graph:
-                rx: 5
-                ry: 5
-          # ------------------------------------------------------------
-          # - type: state
-          #   position:
-          #     cx: 50
-          #     cy: 60
-          #   entity_index: 0
-          #   show: 
-          #     uom: bottom
-          #     ellipsis: 10
-          #   styles:
-          #     state:
-          #       font-size: 15em
-          #       text-anchor: middle
-          #       alignment-baseline: middle
-          #       font-weight: 700
-          #     uom:
-          #       fill: var(--theme-sys-color-primary)
-          #       alignment-baseline: hanging
-          #       font-weight: 600
+            sparkline:
+              show:
+                chart_type: barcode
+                # chart_variant: stalagmites
+              state_map:
+                template:
+                  name: sak_statemap_binary
+              # State value settings
+              # - set agg to max to see the binary changes
+              # - set lower_bound to -1 to offset 'off' state
+              #   the barcode will start wider now, instead of at minimum width
+              # - set upper_bound to 1 ('on') to fix upper scale
+              state_values:
+                aggregate_func: max
+                lower_bound: -1
+                upper_bound: 1
+              barcode:
+                column_spacing: 3
+                line_width: 0.1
+              colorstops_transition: hard
+              colorstops:
+                colors:
+                  - value: 0
+                    color: var(--theme-sys-elevation-surface-neutral10)
+                  - value: 1
+                    color: '[[sak_layout_binary_history_color_on]]'
+              styles: 
+                tool: 
+                  opacity: 1
+                barcode_graph:
+                  rx: 5
+                  ry: 5
+

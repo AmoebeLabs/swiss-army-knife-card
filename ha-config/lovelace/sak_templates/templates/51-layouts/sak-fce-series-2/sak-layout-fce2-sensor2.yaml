@@ -44,11 +44,6 @@ sak_layout_fce2_sensor2:
             entity_index: 0
             entity_indexes:
               - entity_index: 0
-            animate: true
-            show:
-              chart_type: radial_barcode
-              chart_variant: sunburst_outward
-              chart_viz: flower
             period:
               calendar:
                 period: day
@@ -58,13 +53,19 @@ sak_layout_fce2_sensor2:
                 bins:
                   per_hour: 2
               group_by: date
-            state_values:
-              aggregate_func: avg
-            radial_barcode:
-              size: 8
-              line_width : 0.01
-              column_spacing: 0.2
-            colorstops_transition: smooth
+            sparkline:
+              animate: true
+              show:
+                chart_type: radial_barcode
+                chart_variant: sunburst_outward
+                chart_viz: flower
+              state_values:
+                aggregate_func: avg
+              radial_barcode:
+                size: 8
+                line_width : 0.01
+                column_spacing: 0.2
+              colorstops_transition: smooth
 
           # ------------------------------------------------------------
           - type: icon

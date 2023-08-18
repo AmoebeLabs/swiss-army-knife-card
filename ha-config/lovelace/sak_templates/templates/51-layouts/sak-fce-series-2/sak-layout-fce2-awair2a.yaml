@@ -1,8 +1,16 @@
-sak_layout_fce2_awair3a:
+sak_layout_fce2_awair2a:
   template:
     type: layout
     defaults: 
+        # Chart types barcode, dots, line, area, bar or graded work nicely
+        # The equalizer not!
+      - sak_layout_awair_chart_type: graded
+        # Check documentation for chart variant per chart type
+      - sak_layout_awair_chart_variant: rank_order
       - sak_layout_awair_background_icon_disabled: false
+      - sak_layout_awair_sensor_colorstop_v1: sak_colorstops_awair_temperature_v1
+      - sak_layout_awair_sensor_colorstop_v2: sak_colorstops_awair_temperature_v2
+      - sak_layout_awair_sensor_scale_max: 100
 
   layout:
     aspectratio: 1/1
@@ -44,7 +52,7 @@ sak_layout_fce2_awair3a:
               radius: 12.5
             scale:
               min: 0
-              max: 100
+              max: '[[sak_layout_awair_sensor_scale_max]]'
             show:
               scale: false
               style: 'colorstops'
@@ -52,7 +60,7 @@ sak_layout_fce2_awair3a:
             segments:
               colorstops:
                 template: 
-                  name: sak_colorstops_awair_score_v1
+                  name: '[[sak_layout_awair_sensor_colorstop_v1]]'
             styles:
               foreground:
                 fill: var(--theme-gradient-color-02)
@@ -67,11 +75,12 @@ sak_layout_fce2_awair3a:
             entity_index: 0
             colorstops:
               template: 
-                name: sak_colorstops_awair_score_v1
+                name: '[[sak_layout_awair_sensor_colorstop_v1]]'
             show:
               style: colorstops
             styles:
               circle:
+                transition: fill 2s ease
                 stroke-width: 2em
           # ------------------------------------------------------------
           - type: icon
@@ -122,7 +131,7 @@ sak_layout_fce2_awair3a:
       # ==============================================================================
       - toolset: score-state
         position:
-          cx: 75
+          cx: 92.8
           cy: 15
         tools:
           # ------------------------------------------------------------
@@ -136,45 +145,73 @@ sak_layout_fce2_awair3a:
             styles:
               state:
                 font-size: 15em
-                text-anchor: middle
+                text-anchor: end
                 font-weight: 700
               uom:
                 font-weight: 600
 
       # ===============================================================
-      - toolset: graph-sensor-temp
+      - toolset: graph-sensor
         position:
-          cx: 15
-          cy: &sensor_cy 80
+          cx: 50
+          cy: &sensor_cy 78
         tools:
           # ------------------------------------------------------------
           - type: sparkline
-            id: 2
             position: &graph_pos
               cx: 50
               cy: 50
-              width: 6
-              height: 30
-            entity_index: 1
+              width: 85
+              height: 25
+            entity_index: 0
             entity_indexes:
-              - entity_index: 1
+              - entity_index: 0
             period:
-              real_time: true
+              calendar:
+                period: day
+                offset: 0
+                duration:
+                  hour: 24
+                bins:
+                  per_hour: 1
             sparkline:
               animate: true
               show:
-                chart_type: graded
-                chart_variant: rank_order
+                chart_type: '[[sak_layout_awair_chart_type]]'
+                chart_variant: '[[sak_layout_awair_chart_variant]]'
+                fill: fade
               state_values:
-                aggregate_func: last
+                aggregate_func: avg
+              area:
+                line_width : 1.5
+              bar:
+                line_width : 0.1
+                colum_spacing: 1
+              dots:
+                line_width: 2
+              equalizer:
+                value_buckets: 5
               graded:
                 square: true
                 line_width : 1.5
+              line:
+                line_width : 1.5
+              x_lines:
+                lines:
+                  - name: x_axis
+                    zpos: below 
+                    yshift: 15
+                  - name: ticks
+                    zpos: below 
+                    yshift: 16
               colorstops_transition: hard
               colorstops:
                 template:
-                  name: sak_colorstops_awair_temperature_v2
+                  name: '[[sak_layout_awair_sensor_colorstop_v2]]'
               styles: &graded_rank_order_styles
+                barcode_graph:
+                  rx: 50%
+                  ry: 5%
                 graded_background:
                   transition: fill 2s ease
                   rx: 50%
@@ -183,124 +220,11 @@ sak_layout_fce2_awair3a:
                   transition: fill 2s ease
                   rx: 50%
                   ry: 50%
-
-      # ===============================================================
-      - toolset: graph-sensor-humi
-        position:
-          cx: 32.5
-          cy: *sensor_cy
-        tools:
-          # ------------------------------------------------------------
-          - type: sparkline
-            position: *graph_pos
-            entity_index: 2
-            entity_indexes:
-              - entity_index: 2
-            period:
-              real_time: true
-            sparkline:
-              animate: true
-              show:
-                chart_type: graded
-                chart_variant: rank_order
-              state_values:
-                aggregate_func: last
-              graded:
-                square: true
-                line_width : 1.5
-              colorstops_transition: hard
-              colorstops:
-                template:
-                  name: sak_colorstops_awair_humidity_v2
-              styles: *graded_rank_order_styles
-
-      # ===============================================================
-      - toolset: graph-sensor-co2
-        position:
-          cx: 50
-          cy: *sensor_cy
-        tools:
-          # ------------------------------------------------------------
-          - type: sparkline
-            id: 2
-            position: *graph_pos
-            entity_index: 3
-            entity_indexes:
-              - entity_index: 3
-            period:
-              real_time: true
-            sparkline:
-              animate: true
-              show:
-                chart_type: graded
-                chart_variant: rank_order
-              state_values:
-                aggregate_func: last
-              graded:
-                square: true
-                line_width : 1.5
-              colorstops_transition: hard
-              colorstops:
-                template:
-                  name: sak_colorstops_awair_co2_v2
-              styles: *graded_rank_order_styles
-
-      # ===============================================================
-      - toolset: graph-sensor-voc
-        position:
-          cx: 67.5
-          cy: *sensor_cy
-        tools:
-          # ------------------------------------------------------------
-          - type: sparkline
-            id: 2
-            position: *graph_pos
-            entity_index: 4
-            entity_indexes:
-              - entity_index: 4
-            period:
-              real_time: true
-            sparkline:
-              animate: true
-              show:
-                chart_type: graded
-              state_values:
-                aggregate_func: last
-              graded:
-                square: true
-                line_width : 1.5
-              colorstops_transition: hard
-              colorstops:
-                template:
-                  name: sak_colorstops_awair_voc_v2
-              styles: *graded_rank_order_styles
-  
-        # ===============================================================
-      - toolset: graph-sensor-pm25
-        position:
-          cx: 85
-          cy: *sensor_cy
-        tools:
-          # ------------------------------------------------------------
-          - type: sparkline
-            id: 2
-            position: *graph_pos
-            entity_index: 5
-            entity_indexes:
-              - entity_index: 5
-            period:
-              real_time: true
-            sparkline:
-              animate: true
-              show:
-                chart_type: graded
-              state_values:
-                aggregate_func: last
-              graded:
-                square: true
-                line_width : 1.5
-              colorstops_transition: hard
-              colorstops:
-                template:
-                  name: sak_colorstops_awair_pm25_v2
-              styles: *graded_rank_order_styles
+                x_axis:
+                  stroke: var(--theme-sys-elevation-surface-neutral6)
+                  stroke-width: 0.2rem
+                ticks:
+                  stroke: var(--theme-sys-elevation-surface-neutral6)
+                  stroke-dasharray: 2, 117.5
+                  stroke-dashoffset: 0
+                  stroke-width: 0.75rem

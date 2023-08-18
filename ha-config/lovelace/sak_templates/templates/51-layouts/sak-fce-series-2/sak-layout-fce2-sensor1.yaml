@@ -43,16 +43,17 @@ sak_layout_fce2_sensor1:
                   hour: 24
                 bins:
                   per_hour: 2
-            show:
-              chart_type: area
-              fill: fade
-            colorstops_transition: smooth
-            colorstops:
-              colors:
-                - value: 0
-                  color: var(--theme-sys-palette-secondary85)
-                - value: 3000
-                  color: var(--theme-sys-palette-secondary60)
+            sparkline:
+              show:
+                chart_type: area
+                fill: fade
+              colorstops_transition: smooth
+              colorstops:
+                colors:
+                  - value: 0
+                    color: var(--theme-sys-palette-secondary85)
+                  - value: 3000
+                    color: var(--theme-sys-palette-secondary60)
           # ------------------------------------------------------------
           - type: rectex
             variables:
