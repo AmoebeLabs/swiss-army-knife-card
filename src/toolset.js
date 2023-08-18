@@ -12,6 +12,7 @@ import EntityAreaTool from './entity-area-tool';
 import EntityIconTool from './entity-icon-tool';
 import EntityNameTool from './entity-name-tool';
 import EntityStateTool from './entity-state-tool';
+import SparklineGraphTool from './sparkline-graph-tool';
 import HorseshoeTool from './horseshoe-tool';
 import LineTool from './line-tool';
 import RangeSliderTool from './range-slider-tool';
@@ -96,6 +97,7 @@ export default class Toolset {
       bar: SparklineBarChartTool,
       circle: CircleTool,
       ellipse: EllipseTool,
+      sparkline: SparklineGraphTool,
       horseshoe: HorseshoeTool,
       icon: EntityIconTool,
       line: LineTool,
@@ -126,6 +128,8 @@ export default class Toolset {
         const newTool = new toolsNew[toolConfig.type](this, newConfig, newPos);
         // eslint-disable-next-line no-bitwise
         this._card.entityHistory.needed |= (toolConfig.type === 'bar');
+        // eslint-disable-next-line no-bitwise
+        this._card.entityHistory.needed |= (toolConfig.type === 'sparkline');
         this.tools.push({ type: toolConfig.type, index: toolConfig.id, tool: newTool });
       }
       return true;
@@ -271,7 +275,8 @@ export default class Toolset {
     if (this.dev.debug) console.log('*****Event - renderToolset', this.toolsetId, new Date().getTime());
 
     const svgItems = this.tools.map((item) => svg`
-          ${item.tool.render()}
+        <!-- Toolset Render Tools -->
+        ${item.tool.render()}
       `);
     return svg`${svgItems}`;
   }
@@ -318,13 +323,16 @@ export default class Toolset {
       //   Without this setting, objects are cut-off or become invisible while scaled!
 
       return svg`
-        <g id="toolset-${this.toolsetId}" class="toolset__group-outer"
+        <!-- Toolset Render Outer Group Safari ${this.config.toolset} -->
+        <g data-toolset-name="${this.config.toolset}"
+           id="toolset-${this.toolsetId}" class="toolset__group-outer"
            transform="rotate(${this.transform.rotate.x}, ${this.svg.cx}, ${this.svg.cy})
                       scale(${this.transform.scale.x}, ${this.transform.scale.y})
                       "
            style="transform-origin:center; transform-box:fill-box;">
           <svg style="overflow:visible;">
-            <g class="toolset__group" transform="translate(${this.svg.cx / this.transform.scale.x}, ${this.svg.cy / this.transform.scale.y})"
+            <g data-toolset-name="${this.config.toolset}"
+            class="toolset__group" transform="translate(${this.svg.cx / this.transform.scale.x}, ${this.svg.cy / this.transform.scale.y})"
             style="${styleMap(this._card.themeIsDarkMode()
               ? this.palette.dark
               : this.palette.light)}"
@@ -345,11 +353,15 @@ export default class Toolset {
       // Note: rotate is done around the center of the bounding box. This might NOT be the toolsets center (cx,cy) position!
       //
       return svg`
-        <g id="toolset-${this.toolsetId}" class="toolset__group-outer"
+        <!-- Toolset Render Outer Group Other -->
+        <g data-toolset-name="${this.config.toolset}"
+           id="toolset-${this.toolsetId}" class="toolset__group-outer"
            transform="rotate(${this.transform.rotate.x}) scale(${this.transform.scale.x}, ${this.transform.scale.y})"
            style="transform-origin:center; transform-box:fill-box;">
           <svg style="overflow:visible;">
-            <g class="toolset__group" transform="translate(${this.svg.cx}, ${this.svg.cy})"
+            <!-- Toolset Render Inner Group Other -->
+            <g data-toolset-name="${this.config.toolset}"
+            class="toolset__group" transform="translate(${this.svg.cx}, ${this.svg.cy})"
             style="${styleMap(this._card.themeIsDarkMode()
               ? this.palette.dark
               : this.palette.light)}"

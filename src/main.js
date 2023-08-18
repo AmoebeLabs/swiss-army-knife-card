@@ -195,6 +195,26 @@ class SwissArmyKnifeCard extends LitElement {
       :host {
         cursor: default;
         font-size: ${FONT_SIZE}px;
+        --sak-ref-palette-gray-platinum: #e9e9ea;
+        --sak-ref-palette-gray-french-gray: #d1d1d6;
+        --sak-ref-palette-gray-taupe-gray: #8e8e93;
+        --sak-ref-palette-gray-cool-gray: #919bb4;
+
+        --sak-ref-palette-yellow-sunglow: #F7ce46;
+        --sak-ref-palette-yellow-jonquil: #ffcc01;
+        --sak-ref-palette-yellow-Amber: #f6b90b;
+
+        --sak-ref-palette-orange-xanthous: #F3b530;
+        --sak-ref-palette-orange-princeton-orange: #ff9500;
+        --sak-ref-palette-orange-orange : #F46c36;
+
+        --sak-ref-palette-red-indian-red: #ed5254;
+        --sak-ref-palette-red-japser: #d85140;
+        --sak-ref-palette-red-cinnabar: #ff3b2f;
+
+        --sak-ref-palette-purple-amethyst: #Af52de;
+        --sak-ref-palette-purple-tropical-indigo: #8d82ef;
+        --sak-ref-palette-purple-slate-blue: #5f5dd1;
       }
 
       /* Default settings for the card */
@@ -543,6 +563,7 @@ class SwissArmyKnifeCard extends LitElement {
     this.theme.modeChanged = (hass.themes.darkMode !== this.theme.darkMode);
     if (this.theme.modeChanged) {
       this.theme.darkMode = hass.themes.darkMode;
+      Colors.colorCache = {};
     }
 
     // Process theme if specified and does exist, otherwise ignore
@@ -789,7 +810,7 @@ class SwissArmyKnifeCard extends LitElement {
     const thisMe = this;
     function findTemplate(key, value) {
       // Filtering out properties
-      // console.log("findTemplate, key=", key, "value=", value);
+      // console.log('findTemplate, key=', key, 'value=', value);
       if (value?.template) {
         const template = thisMe.lovelace.config.sak_user_templates.templates[value.template.name];
         if (!template) {
@@ -861,7 +882,7 @@ class SwissArmyKnifeCard extends LitElement {
                 }
                 if (this.dev.debug) console.log('card::setConfig - got toolsetCfg toolid', tool, index, toolT, indexT, tool);
               }
-              cfgobj[toolidx].tools[indexT] = Templates.getJsTemplateOrValueConfig(cfgobj[toolidx].tools[indexT], Merge.mergeDeep(cfgobj[toolidx].tools[indexT]));
+              cfgobj[toolidx].tools[indexT] = Templates.getJsTemplateOrValueConfig(cfgobj[toolidx].tools[indexT], this.config.entities, Merge.mergeDeep(cfgobj[toolidx].tools[indexT]));
               return found;
             });
             if (!found) toolAdd = toolAdd.concat(toolsetCfg.tools[index]);
@@ -1149,7 +1170,7 @@ class SwissArmyKnifeCard extends LitElement {
       clearInterval(this.interval);
       this.interval = setInterval(
         () => this.updateOnInterval(),
-        this._hass ? this.entityHistory.update_interval * 1000 : 1000,
+        this._hass ? this.entityHistory.update_interval * 1000 : 100,
       );
     }
     if (this.dev.debug) console.log('ConnectedCallback', this.cardId);
@@ -1295,15 +1316,15 @@ class SwissArmyKnifeCard extends LitElement {
     if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
     return svg`
-              <g id="toolsets" class="toolsets__group"
-              >
-                ${this.toolsets.map((toolset) => toolset.render())}
-              </g>
+      <g id="toolsets" class="toolsets__group"
+      >
+        ${this.toolsets.map((toolset) => toolset.render())}
+      </g>
 
-            <defs>
-              ${this._renderSakSvgDefinitions()}
-              ${this._renderUserSvgDefinitions()}
-            </defs>
+      <defs>
+        ${this._renderSakSvgDefinitions()}
+        ${this._renderUserSvgDefinitions()}
+      </defs>
     `;
   }
 
@@ -1368,6 +1389,7 @@ class SwissArmyKnifeCard extends LitElement {
     const toolsetsSvg = this._RenderToolsets();
 
     svgItems.push(svg`
+      <!-- SAK Card SVG Render -->
       <svg id="rootsvg" xmlns="http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
        class="${cardFilter}"
        style="${styleMap(this.themeIsDarkMode()
@@ -1668,10 +1690,13 @@ _buildStateString(inState, entityConfig) {
       if (this.dev.debug) console.log('UpdateOnInterval - NO hass, returning');
       return;
     }
-    if (this.stateChanged && !this.entityHistory.updating) {
+    // console.log('updateOnInterval', new Date(Date.now()).toString());
+    // eslint-disable-next-line no-constant-condition
+    if (true) { // (this.stateChanged && !this.entityHistory.updating) {
       // 2020.10.24
       // Leave true, as multiple entities can be fetched. fetch every 5 minutes...
       // this.stateChanged = false;
+      // console.log('updateOnInterval - updateData', new Date(Date.now()).toString());
       this.updateData();
       // console.log("*RC* updateOnInterval -> updateData", this.entityHistory);
     }
@@ -1686,7 +1711,7 @@ _buildStateString(inState, entityConfig) {
       window.clearInterval(this.interval);
       this.interval = setInterval(
         () => this.updateOnInterval(),
-        // 5 * 1000);
+        // 30 * 1000,
         this.entityHistory.update_interval * 1000,
       );
       // console.log("*RC* updateOnInterval -> start timer", this.entityHistory, this.interval);
@@ -1700,8 +1725,6 @@ _buildStateString(inState, entityConfig) {
     if (end) url += `&end_time=${end.toISOString()}`;
     if (skipInitialState) url += '&skip_initial_state';
     url += '&minimal_response';
-
-    // console.log('fetchRecent - call is', entityId, start, end, skipInitialState, url);
     return this._hass.callApi('GET', url);
   }
 
@@ -1722,14 +1745,32 @@ _buildStateString(inState, entityConfig) {
     // add to list...
     this.toolsets.map((toolset, k) => {
       toolset.tools.map((item, i) => {
-        if (item.type === 'bar') {
+        if ((item.type === 'bar')
+        || (item.type === 'sparkline')) {
+          if (item.tool.config?.period?.type === 'real_time') return true;
           const end = new Date();
           const start = new Date();
-          start.setHours(end.getHours() - item.tool.config.hours);
+          if (item.tool.config.period?.calendar?.period === 'day') {
+            start.setHours(0, 0, 0, 0);
+            start.setHours(start.getHours() + item.tool.config.period.calendar.offset * 24);
+            // For now assume 24 hours always, so if offset != 0, set end...
+            if (item.tool.config.period.calendar.offset !== 0) end.setHours(0, 0, 0, 0);
+          } else {
+            start.setHours(end.getHours()
+              - (item.tool.config.period?.rolling_window?.duration?.hour || item.tool.config.hours));
+          }
           const attr = this.config.entities[item.tool.config.entity_index].attribute ? this.config.entities[item.tool.config.entity_index].attribute : null;
 
           entityList[j] = ({
-            tsidx: k, entityIndex: item.tool.config.entity_index, entityId: this.entities[item.tool.config.entity_index].entity_id, attrId: attr, start, end, type: 'bar', idx: i,
+            tsidx: k,
+            entityIndex: item.tool.config.entity_index,
+            entityId: this.entities[item.tool.config.entity_index].entity_id,
+            attrId: attr,
+            start,
+            end,
+            type: item.type,
+            idx: i,
+            // tsidx: k, entityIndex: item.tool.config.entity_index, entityId: this.entities[item.tool.config.entity_index].entity_id, attrId: attr, start, end, type: 'bar', idx: i,
           });
           j += 1;
         }
@@ -1753,6 +1794,7 @@ _buildStateString(inState, entityConfig) {
     } finally {
       this.entityHistory.updating = false;
     }
+    this.entityHistory.updating = false;
   }
 
   async updateEntity(entity, index, initStart, end) {
@@ -1762,9 +1804,16 @@ _buildStateString(inState, entityConfig) {
 
     // Get history for this entity and/or attribute.
     let newStateHistory = await this.fetchRecent(entity.entityId, start, end, skipInitialState);
+    // console.log('update, updateEntity, newStateHistory', entity.entityId, start, end, newStateHistory);
 
     // Now we have some history, check if it has valid data and filter out either the entity state or
     // the entity attribute. Ain't that nice!
+
+    // Hack for state mapping...
+    if (entity.type === 'sparkline') {
+      // console.log('pushing stateHistory into Graph!!!!', stateHistory);
+      this.toolsets[entity.tsidx].tools[entity.idx].tool.processStateMap(newStateHistory);
+    }
 
     let theState;
 
@@ -1783,7 +1832,15 @@ _buildStateString(inState, entityConfig) {
 
     stateHistory = [...stateHistory, ...newStateHistory];
 
-    this.uppdate(entity, stateHistory);
+    // console.log('Got new stateHistory', entity);
+    if (entity.type === 'sparkline') {
+      // console.log('pushing stateHistory into Graph!!!!', stateHistory);
+      this.toolsets[entity.tsidx].tools[entity.idx].tool.data = entity.entityIndex;
+      this.toolsets[entity.tsidx].tools[entity.idx].tool.series = [...stateHistory];
+      this.requestUpdate();
+    } else {
+      this.uppdate(entity, stateHistory);
+    }
   }
 
   uppdate(entity, hist) {
@@ -1804,7 +1861,8 @@ _buildStateString(inState, entityConfig) {
     let hours = 24;
     let barhours = 2;
 
-    if (entity.type === 'bar') {
+    if ((entity.type === 'bar')
+    || (entity.type === 'sparkline')) {
       if (this.dev.debug) console.log('entity.type == bar', entity);
 
       hours = this.toolsets[entity.tsidx].tools[entity.idx].tool.config.hours;
@@ -1852,7 +1910,8 @@ _buildStateString(inState, entityConfig) {
     theData = coords.map((item) => getAvg(item, 'state'));
 
     // now push data into object...
-    if (entity.type === 'bar') {
+    if (['bar'].includes(entity.type)) {
+    // if (entity.type === 'bar') {
       this.toolsets[entity.tsidx].tools[entity.idx].tool.series = [...theData];
     }
 

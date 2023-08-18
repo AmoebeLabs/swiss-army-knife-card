@@ -125,9 +125,9 @@ export default class EntityIconTool extends BaseTool {
   */
 
   _renderIcon() {
-    this.MergeAnimationClassIfChanged();
-    this.MergeAnimationStyleIfChanged();
-    this.MergeColorFromState(this.styles.icon);
+    // this.MergeAnimationClassIfChanged();
+    // this.MergeAnimationStyleIfChanged();
+    // this.MergeColorFromState(this.styles.icon);
 
     const icon = this._buildIcon(
       this._card.entities[this.defaultEntityIndex()],
@@ -271,6 +271,9 @@ export default class EntityIconTool extends BaseTool {
   */
 
   render() {
+    this.MergeAnimationClassIfChanged();
+    this.MergeAnimationStyleIfChanged();
+    this.MergeColorFromState(this.styles.icon);
     return svg`
       <g "" id="icongrp-${this.toolId}" class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)} >

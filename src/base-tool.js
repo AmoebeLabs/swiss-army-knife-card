@@ -273,14 +273,14 @@ export default class BaseTool {
     switch (operator) {
       case '==':
         if (typeof (state) === 'undefined') {
-          isMatch = (typeof item.state === 'undefined') || (item.state.toLowerCase() === 'undefined');
+          isMatch = (typeof item.state === 'undefined') || (item.state?.toLowerCase() === 'undefined');
         } else {
           isMatch = state.toLowerCase() === item.state.toLowerCase();
         }
         break;
       case '!=':
         if (typeof (state) === 'undefined') {
-          isMatch = (typeof item.state !== 'undefined') || (item.state.toLowerCase() !== 'undefined');
+          isMatch = (typeof item.state !== 'undefined') || (item.state?.toLowerCase() !== 'undefined');
         } else {
           isMatch = state.toLowerCase() !== item.state.toLowerCase();
         }
@@ -365,12 +365,30 @@ export default class BaseTool {
       // eslint-disable-next-line no-loop-func, no-unused-vars
       if (this.config.animations) Object.keys(this.config.animations.map((aniKey, aniValue) => {
         const statesIndex = this.getIndexInEntityIndexes(this.getEntityIndexFromAnimation(aniKey));
-        isMatch = this.stateIsMatch(aniKey, states[statesIndex]);
+        // Comment here...
+        // isMatch = this.stateIsMatch(aniKey, states[statesIndex]);
 
+        // NOTE @2023.08.07
+        // Running template again seems to fix the issue that these are NOT evaluated once
+        // there are more than one entity used in animations, ie entity_indexes!
+        // With this addition, this seems to work again...
+        //
+        // Nope, not completely...
+        // No idea yet what's going wrong at the end...
+        //
+        // Again, second part (styles) is overwritten, while first test, state is still ok in the
+        // configuration. So somewhere the getJsTemplate does not use a merge to maintain
+        // the configuration...
+        const tempConfig = JSON.parse(JSON.stringify(aniKey));
+
+        // let item = Templates.getJsTemplateOrValue(this, states[index], Merge.mergeDeep(aniKey));
+        let item = Templates.getJsTemplateOrValue(this, states[index], Merge.mergeDeep(tempConfig));
+        isMatch = this.stateIsMatch(item, states[statesIndex]);
+        if (aniKey.debug) console.log('set values, item, aniKey', item, states, isMatch, this.config.animations);
         //        console.log("set values, animations", aniKey, aniValue, statesIndex, isMatch, states);
 
         if (isMatch) {
-          this.mergeAnimationData(aniKey);
+          this.mergeAnimationData(item);
           return true;
         } else {
           return false;
@@ -396,10 +414,11 @@ export default class BaseTool {
   MergeAnimationStyleIfChanged(argDefaultStyles) {
     if (this.animationStyleHasChanged) {
       this.animationStyleHasChanged = false;
+      let styles = this.config?.styles || this.config[this.config.type]?.styles;
       if (argDefaultStyles) {
-        this.styles = Merge.mergeDeep(argDefaultStyles, this.config.styles, this.animationStyle);
+        this.styles = Merge.mergeDeep(argDefaultStyles, styles, this.animationStyle);
       } else {
-        this.styles = Merge.mergeDeep(this.config.styles, this.animationStyle);
+        this.styles = Merge.mergeDeep(styles, this.animationStyle);
       }
 
       if (this.styles.card) {
@@ -424,10 +443,11 @@ export default class BaseTool {
 
     if (this.animationClassHasChanged) {
       this.animationClassHasChanged = false;
+      let classes = this.config?.classes || this.config[this.config.type]?.classes;
       if (argDefaultClasses) {
-        this.classes = Merge.mergeDeep(argDefaultClasses, this.config.classes, this.animationClass);
+        this.classes = Merge.mergeDeep(argDefaultClasses, classes, this.animationClass);
       } else {
-        this.classes = Merge.mergeDeep(this.config.classes, this.animationClass);
+        this.classes = Merge.mergeDeep(classes, this.animationClass);
       }
     }
   }
@@ -444,8 +464,10 @@ export default class BaseTool {
     if (this.config.hasOwnProperty('entity_index')) {
       const color = this.getColorFromState(this._stateValue);
       if (color !== '') {
-        argStyleMap.fill = this.config[this.config.show.style].fill ? color : '';
-        argStyleMap.stroke = this.config[this.config.show.style].stroke ? color : '';
+        if (this.config?.show?.style && argStyleMap) {
+          argStyleMap.fill = this.config[this.config.show.style].fill ? color : '';
+          argStyleMap.stroke = this.config[this.config.show.style].stroke ? color : '';
+        }
       }
     }
   }
