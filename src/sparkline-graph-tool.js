@@ -138,7 +138,7 @@ export default class SparklineGraphTool extends BaseTool {
         cy: 50,
         height: 25,
         width: 25,
-        margin: 0.5,
+        margin: 0,
       },
       period: {
         type: 'unknown',
@@ -288,13 +288,13 @@ export default class SparklineGraphTool extends BaseTool {
     this.svg.margin = {};
     if (typeof this.config.position.margin === 'object') {
       this.svg.margin.t = Utils.calculateSvgDimension(this.config.position.margin?.t)
-          || Utils.calculateSvgDimension(this.config.position.margin?.y);
+          || Utils.calculateSvgDimension(this.config.position.margin?.y) || 0;
       this.svg.margin.b = Utils.calculateSvgDimension(this.config.position.margin?.b)
-          || Utils.calculateSvgDimension(this.config.position.margin?.y);
+          || Utils.calculateSvgDimension(this.config.position.margin?.y) || 0;
       this.svg.margin.r = Utils.calculateSvgDimension(this.config.position.margin?.r)
-          || Utils.calculateSvgDimension(this.config.position.margin?.x);
+          || Utils.calculateSvgDimension(this.config.position.margin?.x) || 0;
       this.svg.margin.l = Utils.calculateSvgDimension(this.config.position.margin?.l)
-          || Utils.calculateSvgDimension(this.config.position.margin?.x);
+          || Utils.calculateSvgDimension(this.config.position.margin?.x) || 0;
       this.svg.margin.x = this.svg.margin.l;
       this.svg.margin.y = this.svg.margin.t;
     } else {
@@ -618,9 +618,7 @@ export default class SparklineGraphTool extends BaseTool {
           || (config.sparkline?.line?.show_dots === true)) {
           this.points[i] = this.Graph[i].getPoints();
 
-        // +++++ Check for 'equilizer' graph type
-        // #TODO:
-        // Must use this.config.sparkline.state_values.value_buckets !!!!!!!!!!!!!!!!!!!!!!!!!!
+        // +++++ Check for 'equalizer' graph type
         } else if (this.config.sparkline.show.chart_type === 'equalizer') {
           this.Graph[i].levelCount = this.config.sparkline.equalizer.value_buckets;
           this.Graph[i].valuesPerBucket = (this.Graph[i].max - this.Graph[i].min) / this.config.sparkline.equalizer.value_buckets;
@@ -1819,11 +1817,17 @@ renderSvgBarcode(barcode, index) {
     // by adding the attribute if defined in styles section...
     const rx = this.styles.barcode_graph?.rx || 0;
     const ry = this.styles.barcode_graph?.ry || rx;
+
+    // Correct y if barcodePart.height < 1, as this value gets a min of 1
+    const realHeight = barcodePart.height - this.svg.margin.t - this.svg.margin.b - this.svg.line_width;
+    const yCorr = realHeight < 1 ? -(1 - realHeight) : 0;
+
     return svg` 
-      <rect class=${classMap(this.classes.barcode_graph)}
+      <!-- Barcode Part -->
+      <rect class="${classMap(this.classes.barcode_graph)}"
             style="${styleMap(this.styles.barcode_graph)}"
         x=${barcodePart.x}
-        y=${barcodePart.y + this.svg.margin.t + (barcodePart.value > 0 ? +this.svg.line_width / 2 : -this.svg.line_width / 2)}
+        y=${barcodePart.y + yCorr + this.svg.margin.t - this.svg.margin.b + (this.svg.line_width / 2)}
         height=${Math.max(1, barcodePart.height - this.svg.margin.t - this.svg.margin.b - this.svg.line_width)}
         width=${Math.max(barcodePart.width, 1)}
         fill=${color}
@@ -1840,6 +1844,7 @@ renderSvgBarcode(barcode, index) {
   const linesBelow = this.xLines.lines.map((line) => {
     if (line.zpos === 'below') {
       return [svg`
+        <!-- Line Below -->
         <line class=${classMap(this.classes[line.id])} style="${styleMap(this.styles[line.id])}"
         x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + line.yshift}"
         x2="${this.svg.graph.width + this.svg.margin.x}" y2="${this.svg.margin.y + this.svg.graph.height / 2 + line.yshift}"
@@ -1852,6 +1857,7 @@ renderSvgBarcode(barcode, index) {
   const linesAbove = this.xLines.lines.map((line) => {
     if (line.zpos === 'above') {
       return [svg`
+        <!-- Line Above-->
         <line class="${classMap(this.classes[line.id])}"
               style="${styleMap(this.styles[line.id])}"
         x1="${this.svg.margin.x}" y1="${this.svg.margin.y + this.svg.graph.height / 2 + line.yshift}"
@@ -1863,10 +1869,11 @@ renderSvgBarcode(barcode, index) {
     } else return [''];
   });
   return svg`
+    <!-- Sparkline Barcode Render -->
     <g id="linesBelow">
       ${linesBelow}
     </g>
-    <g id="rects">
+    <g id="BarcodeParts">
       ${paths}
     </g>
     <g id="linesAbove">
@@ -1885,13 +1892,15 @@ renderSvg() {
   this.MergeAnimationStyleIfChanged();
 
   return svg`
-  <svg width="${this.svg.width}" height="${this.svg.height}" overflow="visible"
-    x="${this.svg.x}" y="${this.svg.y}"
+    <svg width="${this.svg.width}" height="${this.svg.height}" overflow="visible"
+      x="${this.svg.x}" y="${this.svg.y}"
     >
-    <g>
+      <g>
+        <!-- Sparkline Tool Gradient Defs -->
         <defs>
           ${this.renderSvgGradient(this.gradient)}
         </defs>
+        <!-- Sparkline Tool Graph Area -->
         <svg viewbox="0 0 ${this.svg.width} ${this.svg.height}"
          overflow="visible"
         >
@@ -1912,7 +1921,7 @@ renderSvg() {
         </svg>
       </g>
     </svg>`;
-}
+  }
 
   updated(changedProperties) {
     if (this.config.sparkline.animate && changedProperties.has('line')) {
@@ -1936,7 +1945,9 @@ renderSvg() {
     */
   render() {
     return svg`
-        <g id="graph-${this.toolId}"
+        <!-- Sparkline Tool Render -->
+        <g
+          id="sparkline-${this.toolId}"
           class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
           @click=${(e) => this.handleTapEvent(e, this.config)}>
           ${this.renderSvg()}

@@ -735,7 +735,7 @@ export default class SparklineGraph {
           value: coord[V],
         }));
         break;
-      case 'audio_top':
+      case 'stalactites':
         return coords.map((coord, i) => ({
           x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
           y: 0,
@@ -744,7 +744,7 @@ export default class SparklineGraph {
           value: coord[V],
         }));
         break;
-      case 'audio_bottom':
+      case 'stalagmites':
         return coords.map((coord, i) => ({
           x: (xRatio * i * total) + (xRatio * position) + this.drawArea.x,
           y: this.drawArea.height / 1 - (((this._logarithmic ? Math.log10(Math.max(1, coord[V])) : coord[V]) - min) / yRatio),

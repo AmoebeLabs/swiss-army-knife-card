@@ -1316,15 +1316,15 @@ class SwissArmyKnifeCard extends LitElement {
     if (this.dev.debug) console.log('all the tools in renderTools', this.tools);
 
     return svg`
-              <g id="toolsets" class="toolsets__group"
-              >
-                ${this.toolsets.map((toolset) => toolset.render())}
-              </g>
+      <g id="toolsets" class="toolsets__group"
+      >
+        ${this.toolsets.map((toolset) => toolset.render())}
+      </g>
 
-            <defs>
-              ${this._renderSakSvgDefinitions()}
-              ${this._renderUserSvgDefinitions()}
-            </defs>
+      <defs>
+        ${this._renderSakSvgDefinitions()}
+        ${this._renderUserSvgDefinitions()}
+      </defs>
     `;
   }
 
@@ -1389,6 +1389,7 @@ class SwissArmyKnifeCard extends LitElement {
     const toolsetsSvg = this._RenderToolsets();
 
     svgItems.push(svg`
+      <!-- SAK Card SVG Render -->
       <svg id="rootsvg" xmlns="http://www/w3.org/2000/svg" xmlns:xlink="http://www/w3.org/1999/xlink"
        class="${cardFilter}"
        style="${styleMap(this.themeIsDarkMode()
