@@ -1,6 +1,6 @@
 {
   "name": "swiss-army-knife",
-  "version": "2.5.1-dev.1",
+  "version": "2.5.1-dev.2",
   "description": "Swiss Army Knife for Lovelace",
   "main": "src/main.js",
   "type": "module",
