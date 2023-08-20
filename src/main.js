@@ -1238,6 +1238,37 @@ class SwissArmyKnifeCard extends LitElement {
   }
 
   /** *****************************************************************************
+  * card::willUpdate()
+  *
+  * Summary.
+  *
+  */
+  willUpdate(changedProperties) {
+    if (this.toolsets) {
+      this.toolsets.map(async (item) => {
+        item.willUpdate(changedProperties);
+        return true;
+      });
+    }
+  }
+
+  /** *****************************************************************************
+  * card::willUpdate()
+  *
+  * Summary.
+  *
+  */
+  shouldUpdate(changedProperties) {
+    if (this.toolsets) {
+      this.toolsets.map(async (item) => {
+        item.shouldUpdate(changedProperties);
+        return true;
+      });
+    }
+    return true;
+  }
+
+  /** *****************************************************************************
   * card::render()
   *
   * Summary.

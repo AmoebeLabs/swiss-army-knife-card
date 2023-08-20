@@ -26,6 +26,9 @@ import TextTool from './text-tool';
 import UserSvgTool from './user-svg-tool';
 import Colors from './colors';
 
+// Experimental, WIP
+import ProgressPathTool from './progress-path-tool';
+
 /** ***************************************************************************
   * Toolset class
   *
@@ -111,6 +114,7 @@ export default class Toolset {
       switch: SwitchTool,
       text: TextTool,
       usersvg: UserSvgTool,
+      progpath: ProgressPathTool,
     };
 
     this.config.tools.map((toolConfig) => {
@@ -258,6 +262,46 @@ export default class Toolset {
       this.tools.map((item) => {
         if (typeof item.tool.updated === 'function') {
           item.tool.updated(changedProperties);
+          return true;
+        }
+        return false;
+      });
+    }
+  }
+
+  /** *****************************************************************************
+  * Toolset::willUpdate()
+  *
+  * Summary.
+  *
+  */
+  willUpdate(changedProperties) {
+    if (this.dev.debug) console.log('*****Event - willUpdate', this.toolsetId, new Date().getTime());
+
+    if (this.tools) {
+      this.tools.map((item) => {
+        if (typeof item.tool.willUpdate === 'function') {
+          item.tool.willUpdate(changedProperties);
+          return true;
+        }
+        return false;
+      });
+    }
+  }
+
+  /** *****************************************************************************
+  * Toolset::shouldUpdate()
+  *
+  * Summary.
+  *
+  */
+  shouldUpdate(changedProperties) {
+    if (this.dev.debug) console.log('*****Event - shouldUpdate', this.toolsetId, new Date().getTime());
+
+    if (this.tools) {
+      this.tools.map((item) => {
+        if (typeof item.tool.shouldUpdate === 'function') {
+          item.tool.shouldUpdate(changedProperties);
           return true;
         }
         return false;
