@@ -346,16 +346,16 @@ export default class ProgressPathTool extends BaseTool {
     const stopSide = this.config.progpath.rectangle.stop.side;
 
     switch (startSide) {
-      case 't':
+      case 'top':
         d = `M${this.svg.width / 2 + this.rectangle.start.position}, ${this.svg.height / 2 - height / 2}`;
         break;
-      case 'r':
+      case 'right':
         d = `M${this.svg.width / 2 + width / 2}, ${this.svg.height / 2 + this.rectangle.start.position}`;
         break;
-      case 'b':
+      case 'bottom':
         d = `M${this.svg.width / 2 + this.rectangle.start.position}, ${this.svg.height / 2 + height / 2}`;
         break;
-      case 'l':
+      case 'left':
         d = `M${this.svg.width / 2 - width / 2}, ${this.svg.height / 2 - this.rectangle.start.position}`;
         break;
       default:
@@ -363,28 +363,28 @@ export default class ProgressPathTool extends BaseTool {
     }
 
     const sidesToDo = [];
-    sidesToDo.t = [];
-    sidesToDo.t.r = 'tr';
-    sidesToDo.t.b = 'trb';
-    sidesToDo.t.l = 'trbl';
-    sidesToDo.t.t = 'trblt';
-    sidesToDo.r = [];
-    sidesToDo.r.b = 'rb';
-    sidesToDo.r.l = 'rbl';
-    sidesToDo.r.t = 'rblt';
-    sidesToDo.r.r = 'rbltr';
+    sidesToDo.top = [];
+    sidesToDo.top.right = 'tr';
+    sidesToDo.top.bottom = 'trb';
+    sidesToDo.top.left = 'trbl';
+    sidesToDo.top.top = 'trblt';
+    sidesToDo.right = [];
+    sidesToDo.right.bottom = 'rb';
+    sidesToDo.right.left = 'rbl';
+    sidesToDo.right.top = 'rblt';
+    sidesToDo.right.right = 'rbltr';
 
-    sidesToDo.b = [];
-    sidesToDo.b.l = 'bl';
-    sidesToDo.b.t = 'blt';
-    sidesToDo.b.r = 'bltr';
-    sidesToDo.b.b = 'bltrb';
+    sidesToDo.bottom = [];
+    sidesToDo.bottom.left = 'bl';
+    sidesToDo.bottom.top = 'blt';
+    sidesToDo.bottom.right = 'bltr';
+    sidesToDo.bottom.bottom = 'bltrb';
 
-    sidesToDo.l = [];
-    sidesToDo.l.t = 'lt';
-    sidesToDo.l.r = 'ltr';
-    sidesToDo.l.b = 'ltrb';
-    sidesToDo.l.l = 'ltrbl';
+    sidesToDo.left = [];
+    sidesToDo.left.top = 'lt';
+    sidesToDo.left.right = 'ltr';
+    sidesToDo.left.bottom = 'ltrb';
+    sidesToDo.left.left = 'ltrbl';
 
     let sideCount = sidesToDo[startSide][stopSide].length;
     for (let i = 0; i < sideCount; i++) {
