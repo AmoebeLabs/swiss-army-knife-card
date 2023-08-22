@@ -19,21 +19,58 @@ export default class ProgressPathTool extends BaseTool {
       position: {
         cx: 50,
         cy: 50,
-        radius: 50,
+        width: 80,
+        height: 80,
+      },
+      progpath: {
+        show: {
+          path_type: 'rectangle',
+          progress: true,
+          scale: 'dashes', // or scale: dashes / colorstop / none / both? (colorstop + dashes)
+          marker: 'navigation',
+          colorstop: 'none',
+        },
+        background: {
+          width: 8,
+        },
+        marker: {
+          size: 10,
+          offset: 0,
+        },
+        scale: {
+          width: 8,
+        },
+        progress: {
+          width: 8,
+        },
       },
       classes: {
         tool: {
           'sak-path-progress': true,
           hover: true,
         },
-        circle: {
+        progpath: {
           'sak-path-progress__progress': true,
+        },
+        dashes_scale: {
+        },
+        progress: {
+        },
+        marker: {
         },
       },
       styles: {
         tool: {
         },
-        circle: {
+        progpath: {
+        },
+        dashes_scale: {
+        },
+        progress: {
+          fill: 'none',
+          stroke: 'var(--primary-color)',
+        },
+        marker: {
         },
       },
     };
@@ -42,17 +79,30 @@ export default class ProgressPathTool extends BaseTool {
     this.EnableHoverForInteraction();
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius);
+    this.svg.path = svg``;
 
+    this.svg.background = { width: Utils.calculateSvgDimension(this.config.progpath.background.width) };
+    this.svg.marker = { offset: Utils.calculateSvgDimension(this.config.progpath.marker.offset) / 400 * 24 };
     this.classes.tool = {};
-    this.classes.ProgressPath = {};
+    this.classes.progress = {};
+    this.classes.dashes_scale = {};
+    this.classes.marker = {};
 
     this.styles.tool = {};
-    this.styles.ProgressPath = {};
+    this.styles.progress = {};
+    this.styles.dashes_scale = {};
+    this.styles.marker = {};
+    // eslint-disable-next-line dot-notation
+    // this.styles.dashes_scale['poep'] = 'pap';
+    // console.log('init, dashes', this.styles);
 
     this.ticking = false;
 
     this.length = 100;
     this.myValue = 50;
+
+    this.haveElements = false;
+    this.elements = {};
   }
 
   /** *****************************************************************************
@@ -67,8 +117,8 @@ export default class ProgressPathTool extends BaseTool {
   }
 
   getPerpendicularAngle(percentage, percentagePlus) {
-    const { x, y } = this.path.getPointAtLength(percentage);
-    const { x: x2, y: y2 } = this.path.getPointAtLength(percentagePlus);
+    const { x, y } = this.elements.path.getPointAtLength(percentage);
+    const { x: x2, y: y2 } = this.elements.path.getPointAtLength(percentagePlus);
     const angle = Math.atan2(y - y2, x - x2);
     return {
       x,
@@ -96,18 +146,18 @@ export default class ProgressPathTool extends BaseTool {
       const ppa = this.getPerpendicularAngle(currentTime / duration * this.length,
                                  currentTime / duration * (this.length + 1));
 
-      this.target.setAttribute('transform', `translate(${ppa.x} ${ppa.y}) rotate(${ppa.angle})`);
-      this.target2.setAttribute('transform', `translate(${ppa.x2} ${ppa.y2})`);
+      this.elements.marker.setAttribute('transform', `translate(${ppa.x} ${ppa.y}) rotate(${ppa.angle})`);
+      this.elements.target2.setAttribute('transform', `translate(${ppa.x2} ${ppa.y2})`);
 
       if (currentTime > duration) {
         start = null;
-        this.monster.classList.toggle('destroy');
+        this.elements.monster.classList.toggle('destroy');
 
         return setTimeout(
           () => {
             this.ticking = false;
             window.requestAnimationFrame(animate);
-            this.monster.classList.toggle('destroy');
+            this.elements.monster.classList.toggle('destroy');
           },
           500);
         }
@@ -149,8 +199,10 @@ export default class ProgressPathTool extends BaseTool {
         (100 - curValue) / 100 * (this.length + 1));
       // const ppa = this.getPerpendicularAngle(progress1 * this.length,
       //                                        progress1 * (this.length + 1));
-      this.target.setAttribute('transform', `translate(${ppa.x} ${ppa.y}) rotate(${ppa.angle})`);
-      if (false) this.progressPath.setAttribute('stroke-dashoffset', (curValue));
+      if ((this.config.progpath.show?.marker) && (this.config.progpath.show.marker !== 'none'))
+        this.elements.marker.setAttribute('transform', `translate(${ppa.x} ${ppa.y}) rotate(${ppa.angle})`);
+      if ((this.config.progpath.show?.progress) && (this.config.progpath.show.progress === true))
+        this.elements.progress.setAttribute('stroke-dashoffset', (curValue));
 
       if (progress < 1) {
         window.requestAnimationFrame(animateProgress);
@@ -159,57 +211,34 @@ export default class ProgressPathTool extends BaseTool {
       }
     };
 
-    const animate = (timestamp) => {
-      if (!start) {
-        start = timestamp;
-      }
-      this.ticking = true;
-
-      const currentTime = timestamp - start;
-      let someProgress = (currentTime / duration) * this.progressDiff;
-      let percent = this.progressPctPrev + someProgress;
-      progress1 = easeOut(currentTime / duration);
-      const ppa = this.getPerpendicularAngle(percent * this.length,
-                                             percent * (this.length + 1));
-      // const ppa = this.getPerpendicularAngle(progress1 * this.length,
-      //                                        progress1 * (this.length + 1));
-      this.target.setAttribute('transform', `translate(${ppa.x} ${ppa.y}) rotate(${ppa.angle})`);
-
-      if (currentTime > duration) {
-        start = null;
-        this.ticking = false;
-        console.log('animate, stopping...');
-      } else {
-        console.log('animate, calling animate frame');
-        window.requestAnimationFrame(animate);
-      }
-    };
     console.log('renderPointer, calling animate frame');
     window.requestAnimationFrame(animateProgress);
   }
 
   firstUpdated(changedProperties) {
     const myWindow = this._card.shadowRoot;
+    this.haveElements = true;
 
-    this.path = myWindow.getElementById('motion-path');
-    this.length = this.path.getTotalLength();
+    this.elements.path = myWindow.getElementById('motion-path');
+    this.length = this.elements.path.getTotalLength();
 
     if (this.config.progpath.show.path_type === 'pacman') {
-      this.target = myWindow.getElementById('target');
-      this.target2 = myWindow.getElementById('target2');
+      this.elements.marker = myWindow.getElementById('marker');
+      this.elements.target2 = myWindow.getElementById('target2');
 
-      this.monster = myWindow.getElementById('monster');
-      this.pacman = myWindow.getElementById('pacman');
+      this.elements.monster = myWindow.getElementById('monster');
+      this.elements.pacman = myWindow.getElementById('pacman');
       this.renderPacman(Date.now());
     }
     if (this.config.progpath.show.path_type === 'rectangle') {
-      this.target = myWindow.getElementById('target');
-      this.target2 = myWindow.getElementById('target2');
-      this.progressPath = myWindow.getElementById('progress-path');
+      this.elements.marker = myWindow.getElementById('marker');
+      // this.target2 = myWindow.getElementById('target2');
+      this.elements.progress = myWindow.getElementById('progress-path');
 
-      this.pacman = myWindow.getElementById('pacman');
-      console.log('updated, targets', this.target, this.target2, this.monster, this.pacman);
+      // this.pacman = myWindow.getElementById('pacman');
+      console.log('updated, targets', this.elements);
       this.renderPointer(Date.now());
+      this._card.requestUpdate();
     }
   }
 
@@ -229,14 +258,16 @@ export default class ProgressPathTool extends BaseTool {
     //   shift up and down the svg... no need to change the height!!
     //   Anything outside the center (12, 12 for standard 24x24 icon) will shift:
     //   - larger value will shift outward, smaller value inward...
-
+    const viewBoxY = this.svg.marker.offset;
     let marker;
-    switch (this.config.progpath.marker) {
+    switch (this.config.progpath.show.marker) {
       case 'drag-vertical':
         marker = svg`
           <!-- Marker - drag-vertical -->
-          <g id=pacman9 class="sak-marker__marker--drag-vertical" transform="scale(3 3)">
-            <svg viewBox="12 12 24 24" height="24" width="24" overflow="visible">
+          <g id=marker class="sak-marker__marker--drag-vertical" transform="scale(3 3)">
+            <svg viewBox="12 ${12 + viewBoxY} 24 24" overflow="visible"
+            height="${this.config.progpath.marker.size}em" width="${this.config.progpath.marker.size}em"
+            >
               <path fill="currentColor" d="M11 21H9V3H11V21M15 3H13V21H15V3Z">
               </path>
             </svg>      
@@ -247,8 +278,10 @@ export default class ProgressPathTool extends BaseTool {
       case 'pan-vertical':
         marker = svg`
           <!-- Marker - pan-vertical -->
-          <g id=pacman8 class="sak-marker__marker--pan-vertical" transform="scale(3 3)">
-            <svg viewBox="12 12 24 24" height="24" width="24" overflow="visible">
+          <g id=marker class="sak-marker__marker--pan-vertical" transform="scale(3 3)">
+            <svg viewBox="12 ${12 + viewBoxY} 24 24" overflow="visible"
+            height="${this.config.progpath.marker.size}em" width="${this.config.progpath.marker.size}em"
+            >
               <path fill="currentColor" d="M12,2.5L8,7H16L12,2.5M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M8,17L12,21.5L16,17H8Z">
               </path>
             </svg>      
@@ -257,26 +290,50 @@ export default class ProgressPathTool extends BaseTool {
         break;
 
       case 'dots-vertical':
+        // The svg ViewBox="x y w h" should be calculated:
+        // the y is used to shift the marker inward (< 12) or outward (>12)
+        //
+        // If svg height/width are used to set the requested size, there is no need for scaling anymore,
+        // hence the use id= is not required. A direct return of the group would work.
+        // Reason: the animation sets a transform, and thus overwrites the scale stuff...
+        //
+        // De extra groep met h/w maakt alles ca 10x zo groot. Dan moet je weer scalen en een transform
+        // origin en transform-box zetten om dit te laten werken.
         marker = svg`
           <!-- Marker - dots-vertical -->
-          <g id=pacman7 class="sak-marker__marker--dots-vertical" transform="scale(3 3)">
-            <svg viewBox="12 12 24 24" height="24" width="24" overflow="visible">
-              <path fill="currentColor"
-                d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,
-                1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z">
-              </path>
-            </svg>      
-          </g>      
+          <defs>
+            <g id=marker_dots-vertical class="sak-marker__marker--dots-vertical" transform="scale(1 1)">
+              <svg viewBox="12 ${12 + viewBoxY} 24 24" overflow="visible"
+              height="${this.config.progpath.marker.size}em" width="${this.config.progpath.marker.size}em"
+              >
+                <path fill="currentColor"
+                  d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,
+                  1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z">
+                </path>
+              </svg>      
+            </g>      
+          </defs>
+          <g 
+            >
+            <use id=marker href=#marker_dots-vertical>
+          </g>
           `;
         break;
 
-      case 'circle-outline':
+      case 'circle':
+        console.log('circle marker', this.styles);
         marker = svg`
-          <!-- Marker - circle-outline -->
-          <g id=pacman6 class="sak-marker__marker--circle-outline" transform="scale(3 3)">
-            <svg viewBox="12 12 24 24" height="24" width="24" overflow="visible">
-              <path fill="currentColor" d="M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z">
-              </path>
+          <!-- Marker - circle -->
+          <g id=marker class="sak-marker__marker--circle"
+            style="${styleMap(this.styles.marker)}"          
+            >
+            <svg viewBox="12 ${12 + viewBoxY} 24 24" overflow="visible"
+            height="${this.config.progpath.marker.size}em" width="${this.config.progpath.marker.size}em"
+            >
+            <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
+              style="${styleMap(this.styles.marker)}"
+              >
+            </path>
             </svg>      
           </g>
           `;
@@ -285,8 +342,8 @@ export default class ProgressPathTool extends BaseTool {
       case 'chevron-up':
         marker = svg`
           <!-- Marker - chevron-up -->
-          <g id=pacman4 class="sak-marker__marker--chevron-up" transform="scale(3 3)">
-            <svg viewBox="12 12 24 24" height="40" width="24" overflow="visible">
+          <g id=marker class="sak-marker__marker--chevron-up" transform="scale(3 3)">
+            <svg viewBox="12 ${12 + viewBoxY} 24 24" height="40" width="24" overflow="visible">
               <path fill="currentColor" d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z">
               </path>
             </svg>
@@ -297,8 +354,11 @@ export default class ProgressPathTool extends BaseTool {
       case 'navigation':
         marker = svg`
           <!-- Marker - navigation -->
-          <g id=pacman class="sak-marker__marker--navigation" transform="scale(2 2)">
-            <svg viewBox="12 12 24 24" height="48" width="24" overflow="visible">
+          <g id=marker class="sak-marker__marker--navigation" transform="scale(2 2)"
+            style="${styleMap(this.styles.marker)}"
+          >
+            <svg viewBox="12 ${0 + viewBoxY} 24 24" overflow="visible"
+              height="${this.config.progpath.marker.size}em" width="${this.config.progpath.marker.size}em">
               <path fill="currentColor" d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z">
               </path>
             </svg>      
@@ -309,8 +369,8 @@ export default class ProgressPathTool extends BaseTool {
       case 'menu-up':
         marker = svg`
           <!-- Marker - menu-up -->
-          <g id=pacman4 class="sak-marker__marker--menu-up" transform="scale(3 3)">
-            <svg viewBox="12 12 24 24" height="40" width="24" overflow="visible">
+          <g id=marker class="sak-marker__marker--menu-up" transform="scale(3 3)">
+            <svg viewBox="12 ${12 + viewBoxY} 24 24" height="40" width="24" overflow="visible">
               <path fill="currentColor" d="M7,15L12,10L17,15H7Z">
               </path>
             </svg>
@@ -321,8 +381,8 @@ export default class ProgressPathTool extends BaseTool {
       case 'arrow-up-bold-outline':
         marker = svg`
           <!-- Marker - arrow-up-bold-outline -->
-          <g id=pacman3 class="sak-marker__marker--arrow-up-bold-outline" transform="scale(3 3)">
-            <svg viewBox="12 12 24 24" height="54" width="24" overflow="visible">
+          <g id=marker class="sak-marker__marker--arrow-up-bold-outline" transform="scale(3 3)">
+            <svg viewBox="12 ${0 + viewBoxY} 24 24" height="24" width="24" overflow="visible">
               <path d="M16,13V21H8V13H2L12,3L22,13H16M7,11H10V19H14V11H17L12,6L7,11Z">
               </path>
             </svg>
@@ -330,6 +390,7 @@ export default class ProgressPathTool extends BaseTool {
           `;
         break;
       default:
+        marker = svg``;
         break;
     }
     return marker;
@@ -344,6 +405,12 @@ export default class ProgressPathTool extends BaseTool {
     let d;
     const startSide = this.config.progpath.rectangle.start.side;
     const stopSide = this.config.progpath.rectangle.stop.side;
+
+    const sameSide = (startSide === stopSide)
+        && (this.rectangle.start.position > this.rectangle.stop.position);
+    // const startPos = sameSide ? this.rectangle.stop.position : this.rectangle.start.position;
+    const startPos = this.rectangle.start.position;
+    console.log('compute, same, start', sameSide, startPos, startSide, stopSide);
 
     switch (startSide) {
       case 'top':
@@ -361,37 +428,61 @@ export default class ProgressPathTool extends BaseTool {
       default:
         break;
     }
+    switch (startSide) {
+      case 'top':
+        d = `M${this.svg.width / 2 + startPos}, ${this.svg.height / 2 - height / 2}`;
+        break;
+      case 'right':
+        d = `M${this.svg.width / 2 + width / 2}, ${this.svg.height / 2 + startPos}`;
+        break;
+      case 'bottom':
+        d = `M${this.svg.width / 2 + startPos}, ${this.svg.height / 2 + height / 2}`;
+        break;
+      case 'left':
+        d = `M${this.svg.width / 2 - width / 2}, ${this.svg.height / 2 - startPos}`;
+        break;
+      default:
+        break;
+    }
 
+    // If start.position smaller than stop.position on SAME side, then only
+    // use that side. So a kind of small rectangle, just one side...
+    // set stop side to 'same', so table can use this!
     const sidesToDo = [];
     sidesToDo.top = [];
     sidesToDo.top.right = 'tr';
     sidesToDo.top.bottom = 'trb';
     sidesToDo.top.left = 'trbl';
-    sidesToDo.top.top = 'trblt';
+    sidesToDo.top.top = sameSide ? 't' : 'trblt';
     sidesToDo.right = [];
     sidesToDo.right.bottom = 'rb';
     sidesToDo.right.left = 'rbl';
     sidesToDo.right.top = 'rblt';
-    sidesToDo.right.right = 'rbltr';
+    sidesToDo.right.right = sameSide ? 'r' : 'rbltr';
 
     sidesToDo.bottom = [];
     sidesToDo.bottom.left = 'bl';
     sidesToDo.bottom.top = 'blt';
     sidesToDo.bottom.right = 'bltr';
-    sidesToDo.bottom.bottom = 'bltrb';
+    sidesToDo.bottom.bottom = sameSide ? 'b' : 'bltrb';
 
     sidesToDo.left = [];
     sidesToDo.left.top = 'lt';
     sidesToDo.left.right = 'ltr';
     sidesToDo.left.bottom = 'ltrb';
-    sidesToDo.left.left = 'ltrbl';
+    sidesToDo.left.left = sameSide ? 'l' : 'ltrbl';
 
     let sideCount = sidesToDo[startSide][stopSide].length;
     for (let i = 0; i < sideCount; i++) {
       let currentSide = sidesToDo[startSide][stopSide][i];
       switch (currentSide) {
         case 't':
-          if (i === sideCount - 1) {
+          if (sideCount === 1) {
+            top = this.rectangle.stop.position - this.rectangle.start.position;
+            d += `
+              h${top}
+              `;
+          } else if (i === sideCount - 1) {
             top = width / 2 + this.rectangle.stop.position - tl;
             d += `
               h${top}
@@ -407,7 +498,12 @@ export default class ProgressPathTool extends BaseTool {
           }
           break;
         case 'r':
-          if (i === sideCount - 1) {
+          if (sideCount === 1) {
+            right = this.rectangle.stop.position - this.rectangle.start.position;
+            d += `
+              h${right}
+              `;
+          } else if (i === sideCount - 1) {
             right = height / 2 - this.rectangle.stop.position - tr;
             d += `
               v${right}
@@ -423,7 +519,12 @@ export default class ProgressPathTool extends BaseTool {
           }
           break;
         case 'b':
-          if (i === sideCount - 1) {
+          if (sideCount === 1) {
+            bottom = this.rectangle.stop.position - this.rectangle.start.position;
+            d += `
+              h${bottom}
+              `;
+          } else if (i === sideCount - 1) {
             bottom = width / 2 - this.rectangle.stop.position - br;
             d += `
               h-${bottom}
@@ -439,7 +540,12 @@ export default class ProgressPathTool extends BaseTool {
           }
           break;
         case 'l':
-          if (i === sideCount - 1) {
+          if (sideCount === 1) {
+            left = this.rectangle.stop.position - this.rectangle.start.position;
+            d += `
+              h${left}
+              `;
+          } else if (i === sideCount - 1) {
             left = height / 2 + this.rectangle.stop.position - bl;
             d += `
               v-${left}
@@ -460,6 +566,17 @@ export default class ProgressPathTool extends BaseTool {
     }
     return d;
   };
+
+  renderBackgroundPath() {
+    if (!this.haveElements) return;
+    if (this.config.progpath.show.background === true) {
+      return svg`
+        <path id="background-path" d="${this.svg.path}" fill="none"
+        stroke="var(--theme-sys-elevation-surface-neutral1)"
+        stroke-width="${this.svg.background.width}"/>
+      `;
+    } else return svg``;
+  }
 
   /** *****************************************************************************
   * ProgressPath::_renderProgressPath()
@@ -500,19 +617,11 @@ export default class ProgressPathTool extends BaseTool {
         `;
         return d;
       };
-      const mypath = this._computeRectangularPath(this.svg.width, this.svg.height,
+      this.svg.path = this._computeRectangularPath(this.svg.width, this.svg.height,
                           this.rectangle.radius.tl,
                           this.rectangle.radius.tr,
                           this.rectangle.radius.br,
                           this.rectangle.radius.bl);
-
-      // const myPointerPath = computeRectangularPath(
-      //   this.svg.width,
-      //   this.svg.height,
-      //   this.rectangle.radius.tl,
-      //   this.rectangle.radius.tr,
-      //   this.rectangle.radius.br,
-      //   this.rectangle.radius.bl);
 
       return svg`
       <svg width="${this.svg.width}" height="${this.svg.height}" overflow="visible"
@@ -524,14 +633,20 @@ export default class ProgressPathTool extends BaseTool {
           fill: none;
           stroke: var(--theme-sys-elevation-surface-neutral9);
           stroke-width: 0em;
-          stroke-dasharray: 2 10;
+          stroke-dasharray: 4 20;
+        }
+        #dashes-path {
+          fill: none;
+          stroke: var(--theme-sys-elevation-surface-neutral9);
+          stroke-width: 6em;
+          stroke-dasharray: 4 20;
         }
         
-        #pacman path {
-          fill: var(--theme-sys-elevation-surface-neutral9);
-          stroke: white;
+        #markerr pathh {
+          fill: var(--primary-text-color);
+          stroke: var(--primary-background-color);
           paint-order: stroke;
-          stroke-width: 0.5em;
+          stroke-width: 0.6em;
         }
 
         #pacman2 path {
@@ -613,37 +728,128 @@ export default class ProgressPathTool extends BaseTool {
             <circle cx=".65" cy=".1" r=".25"/>
           </g>
         </defs>
-        <path id="background-path" d="${mypath}" fill="none"
-              stroke="var(--theme-sys-elevation-surface-neutral1)" stroke-width="10em"/>
-        <path id="motion-path" d="${mypath} pathLength="100"/>
-        <path id="progress-path" d="${mypath}" pathLength="100"
-          stroke-dasharray="100 100"
-          stroke-dashoffset="100"
-          fill="none" stroke="var(--primary-color)" stroke-width="10em"/>
+        <path id="motion-path" d="${this.svg.path} pathLength="100"/>
+        ${this.renderBackgroundPath()}
+        ${this.renderScale()}
+        ${this.renderProgressPath()}
 
-        <path id="red-path" d="${mypath}" pathLength="100"
-          stroke-dasharray="19.75 100"
-          stroke-dashoffset="-80.25"
-          fill="none" stroke="red" stroke-width="10em"/>
-        <path id="yellow-path" d="${mypath}" pathLength="100"
-          stroke-dasharray="19.5 100"
-          stroke-dashoffset="-60.25"
-          fill="none" stroke="yellow" stroke-width="10em"/>
-        <path id="green-path" d="${mypath}" pathLength="100"
-          stroke-dasharray="59.75 100"
-          stroke-dashoffset="-0"
-          fill="none" stroke="green" stroke-width="10em"/>
-
-        <path id="pointer-path" d="${mypath} pathLength="100"
+        <path id="pointer-path" d="${this.svg.path} pathLength="100"
           fill="none" stroke="black" stroke-width="0em"/>
 
-        <use id=target href="#pacman8"/>
+          <!--  <use id=target href="#pacman8"/> -->
+        ${this._renderMarker()}
         ${this.renderPointer()}
       </svg>
       `;
     }
   }
+//   <path id="red-path" d="${this.svg.path}" pathLength="100"
+//   stroke-dasharray="19.75 100"
+//   stroke-dashoffset="-80.25"
+//   fill="none" stroke="red" stroke-width="0em"/>
+// <path id="yellow-path" d="${this.svg.path}" pathLength="100"
+//   stroke-dasharray="19.5 100"
+//   stroke-dashoffset="-60.25"
+//   fill="none" stroke="yellow" stroke-width="0em"/>
+// <path id="green-path" d="${this.svg.path}" pathLength="100"
+//   stroke-dasharray="59.75 100"
+//   stroke-dashoffset="-0"
+//   fill="none" stroke="green" stroke-width="0em"/>
+
   // style="transition:stroke-dashoffset 5s ease-out;
+
+  renderProgressPath() {
+    // if (!this.haveElements) return;
+
+    if (this.config.progpath.show.progress) {
+      // Make sure that dasharray settings are what we need: overwrite them
+      this.styles.progress['stroke-dasharray'] = '100 100';
+      // this.styles.progress['stroke-dashoffset'] = '100';
+      this.styles.progress['stroke-width'] = `${this.config.progpath.progress.width}em`;
+
+      return svg`
+        <path id="progress-path" d="${this.svg.path}" pathLength="100"
+          class="${classMap(this.classes.progress)}" style="${styleMap(this.styles.progress)}"
+        />
+      `;
+    } else return svg``;
+  }
+
+  renderScale() {
+    if (!this.haveElements) return;
+
+    if ((this.config.progpath.show.scale === 'colorstops') && (this.config.progpath.colorstops)) {
+      const gap = Utils.calculateSvgDimension(this.config.progpath.colorstops.gap || 0);
+      let scale = { ...this.config.progpath.colorstops.scales.default };
+      scale.range = scale.max - scale.min;
+      let scaleParts = [...this.config.progpath.colorstops.colors];
+      let min = scaleParts.findIndex((part) => scale.min < part.value);
+      let max = scaleParts.findIndex((part) => part.value >= scale.max);
+
+      if (min !== -1) {
+        // Should remove entries below
+        let removedParts = scaleParts.splice(0, min - 1);
+        scaleParts[0].value = scale.min;
+      }
+      if (max === -1) {
+        // Add myself to end of list
+        scaleParts[scaleParts.length] = { value: scale.max };
+      } else {
+        let removedParts = scaleParts.splice(max, scaleParts.length - max);
+        scaleParts[scaleParts.length] = {
+          value: scale.max,
+          color: removedParts[0].color,
+        };
+      }
+      scaleParts.forEach((value, index, array) => value.range = index < array.length - 1 ? array[index + 1].value - value.value : 0);
+      console.log('renderScale', scale, scaleParts, min, max);
+
+      let paths = scaleParts.map((value, index) => {
+        const fake = 1;
+        if (value.range === 0) return svg``;
+        return svg`
+          <path d="${this.svg.path}"
+          stroke-dasharray="${value.range / scale.range * this.length - (index === 0 ? 0 : gap / 2)} ${this.length}"
+          stroke-dashoffset="-${(value.value - scale.min) / scale.range * this.length + ((index === 0 ? 0 : gap / 2))}"
+          fill="none" stroke="${value.color}"
+          stroke-width="${this.config.progpath.scale.width}em"/>          
+        `;
+
+        return svg`
+          <path d="${this.svg.path}" pathLength="100"
+          stroke-dasharray="${value.range} 100"
+          stroke-dashoffset="-${value.value}"
+          fill="none" stroke="${value.color}" stroke-width="5em"/>          
+        `;
+      });
+      console.log('renderScale', scale, scaleParts, min, max, paths);
+      return svg`
+        <g>
+          ${paths};
+        </g>
+        `;
+    } else if (this.config.progpath.show.scale === 'dashes') {
+      console.log('setting stroke', this.styles);
+      this.styles.dashes_scale['stroke-width'] = `${this.config.progpath.scale.width}em`;
+      return svg`
+        <path id="dashes-path" d="${this.svg.path} pathLength="100"
+        class="${classMap(this.classes.dashes_scale)}" style="${styleMap(this.styles.dashes_scale)}"
+        />
+      `;
+
+      return svg`
+        <path id="dashes-path" d="${this.svg.path} pathLength="100"
+          class="${classMap(this.classes.dashes_scale)}" style="${styleMap(this.styles.dashes_scale)}
+        />
+      `;
+    } else return svg``;
+    // return svg`
+    //   <path id="green-path" d="${this.svg.path}" pathLength="100"
+    //   stroke-dasharray="59.75 100"
+    //   stroke-dashoffset="-0"
+    //   fill="none" stroke="green" stroke-width="0em"/>
+    // `;
+  }
 
   willUpdate(changedProperties) {
     console.log('willUpdate...');
@@ -655,8 +861,8 @@ export default class ProgressPathTool extends BaseTool {
     // calculations prior to rendering this tool...
     this.MergeAnimationClassIfChanged();
     this.MergeAnimationStyleIfChanged();
-    this.MergeColorFromState(this.styles.ProgressPath);
-
+    // this.MergeColorFromState(this.styles.progress);
+    // this.renderScale();
     return true;
   }
 
@@ -670,8 +876,19 @@ export default class ProgressPathTool extends BaseTool {
 
   render() {
     console.log('render...');
-    this.myValuePrev = this.myValue;
-    this.myValue = Math.random() * 100;
+    if (this._card.dev.real) {
+      // For now, scale to 0..100 range!
+      console.log('rendering with real values...', this._stateValue, this._stateValuePrev);
+      let max = this.config.progpath.colorstops.scales.default.max;
+      this.myValuePrev = 100 - Math.max(Math.min(100, this._stateValuePrev / max * 100), 0);
+      this.myValue = 100 - Math.max(Math.min(200, this._stateValue / max * 100), 0);
+
+      // this.myValuePrev = Number(this._stateValuePrev) || 0;
+      // this.myValue = Number(this._stateValue);
+    } else {
+      this.myValuePrev = this.myValue;
+      this.myValue = Math.random() * 100;
+    }
     return svg`
       <g "" id="ProgressPath-${this.toolId}"
         class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
