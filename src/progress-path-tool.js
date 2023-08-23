@@ -5,6 +5,120 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 import Merge from './merge';
 import Utils from './utils';
 import BaseTool from './base-tool';
+import Colors from './colors';
+
+const DEFAULT_COLORS = [
+  'var(--theme-sys-color-primary)',
+  '#3498db',
+  '#e74c3c',
+  '#9b59b6',
+  '#f1c40f',
+  '#2ecc71',
+  '#1abc9c',
+  '#34495e',
+  '#e67e22',
+  '#7f8c8d',
+  '#27ae60',
+  '#2980b9',
+  '#8e44ad',
+];
+
+/**
+ * Starting from the given index, increment the index until an array element with a
+ * "value" property is found
+ *
+ * @param {Array} stops
+ * @param {number} startIndex
+ * @returns {number}
+ */
+const findFirstValuedIndex = (stops, startIndex) => {
+  for (let i = startIndex, l = stops.length; i < l; i += 1) {
+    if (stops[i].value != null) {
+      return i;
+    }
+  }
+  throw new Error(
+    'Error in threshold interpolation: could not find right-nearest valued stop. '
+    + 'Do the first and last thresholds have a set "value"?',
+  );
+};
+
+/**
+ * Interpolates the "value" of each stop. Each stop can be a color string or an object of type
+ * ```
+ * {
+ *   color: string
+ *   value?: number | null
+ * }
+ * ```
+ * And the values will be interpolated by the nearest valued stops.
+ *
+ * For example, given values `[ 0, null, null, 4, null, 3]`,
+ * the interpolation will output `[ 0, 1.3333, 2.6667, 4, 3.5, 3 ]`
+ *
+ * Note that values will be interpolated ascending and descending.
+ * All that's necessary is that the first and the last elements have values.
+ *
+ * @param {Array} stops
+ * @returns {Array<{ color: string, value: number }>}
+ */
+const interpolateStops = (stops) => {
+  if (!stops || !stops.length) {
+    return stops;
+  }
+  if (stops[0].value == null || stops[stops.length - 1].value == null) {
+    throw new Error('The first and last thresholds must have a set "value".\n See xyz manual');
+  }
+
+  let leftValuedIndex = 0;
+  let rightValuedIndex = null;
+
+  return stops.map((stop, stopIndex) => {
+    if (stop.value != null) {
+      leftValuedIndex = stopIndex;
+      return { ...stop };
+    }
+
+    if (rightValuedIndex == null) {
+      rightValuedIndex = findFirstValuedIndex(stops, stopIndex);
+    } else if (stopIndex > rightValuedIndex) {
+      leftValuedIndex = rightValuedIndex;
+      rightValuedIndex = findFirstValuedIndex(stops, stopIndex);
+    }
+
+    // y = mx + b
+    // m = dY/dX
+    // x = index in question
+    // b = left value
+
+    const leftValue = stops[leftValuedIndex].value;
+    const rightValue = stops[rightValuedIndex].value;
+    const m = (rightValue - leftValue) / (rightValuedIndex - leftValuedIndex);
+    return {
+      color: typeof stop === 'string' ? stop : stop.color,
+      value: m * stopIndex + leftValue,
+    };
+  });
+};
+
+const computeThresholds = (stops, type) => {
+  const valuedStops = interpolateStops(stops);
+  try {
+    valuedStops.sort((a, b) => b.value - a.value);
+  } catch (error) {
+    console.log('computeThresholds, error', error, valuedStops);
+  }
+
+  if (type === 'smooth') {
+    return valuedStops;
+  } else {
+    const rect = [].concat(...valuedStops.map((stop, i) => ([stop, {
+      value: stop.value - 0.0001,
+      color: valuedStops[i + 1] ? valuedStops[i + 1].color : stop.color,
+    }])));
+    return rect;
+  }
+};
 
 /** ****************************************************************************
   * ProgressPath class
@@ -28,7 +142,7 @@ export default class ProgressPathTool extends BaseTool {
           progress: true,
           scale: 'dashes', // or scale: dashes / colorstop / none / both? (colorstop + dashes)
           marker: 'navigation',
-          colorstop: 'none',
+          colorstops: 'none',
         },
         background: {
           width: 8,
@@ -42,6 +156,10 @@ export default class ProgressPathTool extends BaseTool {
         },
         progress: {
           width: 8,
+        },
+        line_color: [...DEFAULT_COLORS],
+        colorstops: {
+          colors: [],
         },
       },
       classes: {
@@ -103,6 +221,13 @@ export default class ProgressPathTool extends BaseTool {
 
     this.haveElements = false;
     this.elements = {};
+    this.colorstops = {};
+    this.colorstops.colors = [];
+    this.colorstops.colors = computeThresholds(
+      this.config.progpath.colorstops.colors,
+      'smooth',
+    );
+    // console.log('colorstops', this.colorstops);
   }
 
   /** *****************************************************************************
@@ -114,6 +239,51 @@ export default class ProgressPathTool extends BaseTool {
   */
   set value(state) {
     super.value = state;
+  }
+
+  computeColor(inState, i) {
+    const { line_color } = this.config.progpath;
+    // const { colorstops } = this.colorstops;
+    const colorstops = { ...this.colorstops };
+    const state = Number(inState) || 0;
+    if (colorstops.colors.length === 0) return line_color[i] || line_color[0];
+    const threshold = {
+      color: line_color[i] || line_color[0],
+      ...colorstops.colors.slice(-1)[0],
+      ...colorstops.colors.find((ele) => ele.value < state),
+    };
+    return this._card.config.entities[i].color || threshold.color;
+  }
+
+  intColor(inState, i) {
+    const { line_color } = this.config.progpath;
+    // const { colorstops } = this.colorstops;
+    const colorstops = { ...this.colorstops };
+    const state = Number(inState) || 0;
+
+    let intColor;
+    if (colorstops.colors.length > 0) {
+      // HACK. Keep check for 'bar' !!!
+      if (this.config.progpath.show?.chart_type === 'bar') {
+        const { color } = colorstops.colors.find((ele) => ele.value < state)
+          || colorstops.colors.slice(-1)[0];
+        intColor = color;
+      } else {
+        const index = colorstops.colors.findIndex((ele) => ele.value < state);
+        const c1 = colorstops.colors[index];
+        const c2 = colorstops.colors[index - 1];
+        if (c2) {
+          const factor = (c2.value - inState) / (c2.value - c1.value);
+          intColor = Colors.getGradientValue(c2.color, c1.color, factor);
+        } else {
+          intColor = index
+            ? colorstops.colors[colorstops.colors.length - 1].color
+            : colorstops.colors[0].color;
+        }
+      }
+    }
+
+    return this._card.config.entities[i].color || intColor || line_color[i] || line_color[0];
   }
 
   getPerpendicularAngle(percentage, percentagePlus) {
@@ -171,11 +341,11 @@ export default class ProgressPathTool extends BaseTool {
     // eslint-disable-next-line no-plusplus
     const easeOut = (progress) => --progress ** 5 + 1;
 
-    console.log('renderPointer IN/OUT');
+    // console.log('renderPointer IN/OUT');
     this.progressPctPrev = this.progressPct || 0;
     this.progressPct = this.myValue / 100;
     this.progressDiff = this.progressPct - this.progressPctPrev;
-    console.log('renderPointer progress', this.myValue, this.progressPctPrev, this.progressPct, this.progressDiff);
+    // console.log('renderPointer progress', this.myValue, this.progressPctPrev, this.progressPct, this.progressDiff);
 
     const duration = 5000;
     let start;
@@ -195,14 +365,27 @@ export default class ProgressPathTool extends BaseTool {
       const valueRange = this.myValue - this.myValuePrev;
       let curValue = this.myValuePrev + (progress * valueRange);
 
+      const stateRange = Number(this._stateValue) - Number(this._stateValuePrev);
+      const curState = Number(this._stateValuePrev) + (progress * stateRange);
+
       const ppa = this.getPerpendicularAngle((100 - curValue) / 100 * (this.length),
         (100 - curValue) / 100 * (this.length + 1));
       // const ppa = this.getPerpendicularAngle(progress1 * this.length,
       //                                        progress1 * (this.length + 1));
-      if ((this.config.progpath.show?.marker) && (this.config.progpath.show.marker !== 'none'))
+      if ((this.config.progpath.show?.marker) && (this.config.progpath.show.marker !== 'none')) {
         this.elements.marker.setAttribute('transform', `translate(${ppa.x} ${ppa.y}) rotate(${ppa.angle})`);
+        const color = this.computeColor(curState, 0);
+        if (color) {
+          this.elements.marker.style.fill = `${this.intColor(curState, 0)}`;
+          this.styles.marker.fill = this.intColor(curState, 0);
+        } else {
+          console.log('illegal color', color);
+        }
+      }
       if ((this.config.progpath.show?.progress) && (this.config.progpath.show.progress === true))
         this.elements.progress.setAttribute('stroke-dashoffset', (curValue));
+      if ((this.config.progpath.show?.mask) && (this.config.progpath.show.mask === true))
+      this.elements.maskPath.setAttribute('stroke-dasharray', `${100 - curValue} 100`);
 
       if (progress < 1) {
         window.requestAnimationFrame(animateProgress);
@@ -211,7 +394,7 @@ export default class ProgressPathTool extends BaseTool {
       }
     };
 
-    console.log('renderPointer, calling animate frame');
+    // console.log('renderPointer, calling animate frame');
     window.requestAnimationFrame(animateProgress);
   }
 
@@ -234,9 +417,14 @@ export default class ProgressPathTool extends BaseTool {
       this.elements.marker = myWindow.getElementById('marker');
       // this.target2 = myWindow.getElementById('target2');
       this.elements.progress = myWindow.getElementById('progress-path');
+      this.elements.progressMask = myWindow.getElementById('progress-maskpath');
+      // this.elements.maskPath = this.elements.progressMask.querySelector("#88maskPath");
+      this.elements.maskPath = myWindow.getElementById('88maskPath');
+
+      this.elements.pathGroup = myWindow.getElementById('path-group');
 
       // this.pacman = myWindow.getElementById('pacman');
-      console.log('updated, targets', this.elements);
+      // console.log('updated, targets', this.elements);
       this.renderPointer(Date.now());
       this._card.requestUpdate();
     }
@@ -259,6 +447,8 @@ export default class ProgressPathTool extends BaseTool {
     //   Anything outside the center (12, 12 for standard 24x24 icon) will shift:
     //   - larger value will shift outward, smaller value inward...
     const viewBoxY = this.svg.marker.offset;
+    const color = this.intColor(this._stateValue, 0);
+    // this.styles.marker.fill = `${color}`;
     let marker;
     switch (this.config.progpath.show.marker) {
       case 'drag-vertical':
@@ -359,7 +549,7 @@ export default class ProgressPathTool extends BaseTool {
           >
             <svg viewBox="12 ${0 + viewBoxY} 24 24" overflow="visible"
               height="${this.config.progpath.marker.size}em" width="${this.config.progpath.marker.size}em">
-              <path fill="currentColor" d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z">
+              <path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z">
               </path>
             </svg>      
           </g>
@@ -410,7 +600,7 @@ export default class ProgressPathTool extends BaseTool {
         && (this.rectangle.start.position > this.rectangle.stop.position);
     // const startPos = sameSide ? this.rectangle.stop.position : this.rectangle.start.position;
     const startPos = this.rectangle.start.position;
-    console.log('compute, same, start', sameSide, startPos, startSide, stopSide);
+    // console.log('compute, same, start', sameSide, startPos, startSide, stopSide);
 
     switch (startSide) {
       case 'top':
@@ -571,6 +761,7 @@ export default class ProgressPathTool extends BaseTool {
     if (!this.haveElements) return;
     if (this.config.progpath.show.background === true) {
       return svg`
+        <!-- BackgroundPath Render -->
         <path id="background-path" d="${this.svg.path}" fill="none"
         stroke="var(--theme-sys-elevation-surface-neutral1)"
         stroke-width="${this.svg.background.width}"/>
@@ -727,13 +918,26 @@ export default class ProgressPathTool extends BaseTool {
             <circle cx=".8" r=".5"/>
             <circle cx=".65" cy=".1" r=".25"/>
           </g>
+          <!-- Progress Mask Render -->
+          <mask id="progress-maskpath" maskUnits="userSpaceOnUse">
+          <path id="88maskPath" d="${this.svg.path}" pathLength="100"
+          stroke-dasharray="50 100"
+          stroke-dashoffset="0"
+          stroke-width="10em"
+          stroke="white"
+          fill="black" <!-- "#666" -->
+          paint-order="stroke"
+          />
+        </mask>
+
         </defs>
-        <path id="motion-path" d="${this.svg.path} pathLength="100"/>
+
+        <path id="motion-path" d="${this.svg.path}" pathLength="100"/>
         ${this.renderBackgroundPath()}
         ${this.renderScale()}
         ${this.renderProgressPath()}
 
-        <path id="pointer-path" d="${this.svg.path} pathLength="100"
+        <path id="pointer-path" d="${this.svg.path}" pathLength="100"
           fill="none" stroke="black" stroke-width="0em"/>
 
           <!--  <use id=target href="#pacman8"/> -->
@@ -763,11 +967,12 @@ export default class ProgressPathTool extends BaseTool {
 
     if (this.config.progpath.show.progress) {
       // Make sure that dasharray settings are what we need: overwrite them
+      // Do NOT set the dashoffset, as it overwrites the animation setting!
       this.styles.progress['stroke-dasharray'] = '100 100';
-      // this.styles.progress['stroke-dashoffset'] = '100';
       this.styles.progress['stroke-width'] = `${this.config.progpath.progress.width}em`;
 
       return svg`
+        <!-- ProgressPath Render -->
         <path id="progress-path" d="${this.svg.path}" pathLength="100"
           class="${classMap(this.classes.progress)}" style="${styleMap(this.styles.progress)}"
         />
@@ -802,12 +1007,13 @@ export default class ProgressPathTool extends BaseTool {
         };
       }
       scaleParts.forEach((value, index, array) => value.range = index < array.length - 1 ? array[index + 1].value - value.value : 0);
-      console.log('renderScale', scale, scaleParts, min, max);
+      // console.log('renderScale', scale, scaleParts, min, max);
 
       let paths = scaleParts.map((value, index) => {
         const fake = 1;
         if (value.range === 0) return svg``;
         return svg`
+          <!-- Scale Part Render -->
           <path d="${this.svg.path}"
           stroke-dasharray="${value.range / scale.range * this.length - (index === 0 ? 0 : gap / 2)} ${this.length}"
           stroke-dashoffset="-${(value.value - scale.min) / scale.range * this.length + ((index === 0 ? 0 : gap / 2))}"
@@ -822,24 +1028,34 @@ export default class ProgressPathTool extends BaseTool {
           fill="none" stroke="${value.color}" stroke-width="5em"/>          
         `;
       });
-      console.log('renderScale', scale, scaleParts, min, max, paths);
+      // console.log('renderScale', scale, scaleParts, min, max, paths);
       return svg`
-        <g>
+        <defs>
+        <clipPath id="progress-clippathh" clipUnits="userSpaceOnUse">
+          <path d="${this.svg.path}" pathLength="100"
+          stroke-dasharry="50 100"
+          stroke-width="8"
+          />
+        </clipPath>
+      </defs>
+      <!-- Scale Parts Group Render -->
+      <g id="path-group" mask="url(#progress-maskpath)">
           ${paths};
         </g>
         `;
     } else if (this.config.progpath.show.scale === 'dashes') {
-      console.log('setting stroke', this.styles);
+      // console.log('setting stroke', this.styles);
       this.styles.dashes_scale['stroke-width'] = `${this.config.progpath.scale.width}em`;
       return svg`
-        <path id="dashes-path" d="${this.svg.path} pathLength="100"
+        <!-- Scale Dashes Render -->
+        <path id="dashes-path" d="${this.svg.path}"
         class="${classMap(this.classes.dashes_scale)}" style="${styleMap(this.styles.dashes_scale)}"
         />
       `;
 
       return svg`
-        <path id="dashes-path" d="${this.svg.path} pathLength="100"
-          class="${classMap(this.classes.dashes_scale)}" style="${styleMap(this.styles.dashes_scale)}
+        <path id="dashes-path" d="${this.svg.path}" pathLength="100"
+          class="${classMap(this.classes.dashes_scale)}" style="${styleMap(this.styles.dashes_scale)}"
         />
       `;
     } else return svg``;
@@ -856,7 +1072,7 @@ export default class ProgressPathTool extends BaseTool {
   }
 
   shouldUpdate(changedProperties) {
-    console.log('shouldUpdate...');
+    // console.log('shouldUpdate...');
     // There is no willUpdate in this LIT version, so abuse shouldUpdate for
     // calculations prior to rendering this tool...
     this.MergeAnimationClassIfChanged();
@@ -875,7 +1091,7 @@ export default class ProgressPathTool extends BaseTool {
   */
 
   render() {
-    console.log('render...');
+    // console.log('render...');
     if (this._card.dev.real) {
       // For now, scale to 0..100 range!
       console.log('rendering with real values...', this._stateValue, this._stateValuePrev);
