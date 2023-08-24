@@ -150,6 +150,10 @@ export default class ProgressPathTool extends BaseTool {
         marker: {
           size: 10,
           offset: 0,
+          color: {
+            animate: false,
+            smooth: false,
+          },
         },
         scale: {
           width: 8,
@@ -340,6 +344,14 @@ export default class ProgressPathTool extends BaseTool {
   renderPointer(timestamp) {
     // eslint-disable-next-line no-plusplus
     const easeOut = (progress) => --progress ** 5 + 1;
+    const easeOutElastic = (x) => {
+      let a;
+        return x === 0
+      ? 0
+      : x === 1
+      ? 1
+      : 2 ** (-10 * x) * Math.sin((x * 10 - 0.75) * (2 * Math.PI) / 3) + 1;
+      };
 
     // console.log('renderPointer IN/OUT');
     this.progressPctPrev = this.progressPct || 0;
@@ -374,16 +386,34 @@ export default class ProgressPathTool extends BaseTool {
       //                                        progress1 * (this.length + 1));
       if ((this.config.progpath.show?.marker) && (this.config.progpath.show.marker !== 'none')) {
         this.elements.marker.setAttribute('transform', `translate(${ppa.x} ${ppa.y}) rotate(${ppa.angle})`);
-        const color = this.computeColor(curState, 0);
+        if (this.config.progpath.marker?.color?.animate !== 'none') {
+          const color = this.config.progpath.marker.color.smooth
+                          ? this.intColor(curState, 0)
+                          : this.computeColor(curState, 0);
+          if (color) {
+            if (['both', 'interior'].includes(this.config.progpath.marker.color?.animate)) {
+              this.elements.markerPath.style.fill = `${color}`;
+              this.styles.marker.fill = color;
+            }
+            if (['both', 'outline'].includes(this.config.progpath.marker.color?.animate)) {
+              this.elements.markerPath.style.stroke = `${color}`;
+              this.styles.marker.stroke = color;
+            }
+          } else {
+            console.log('illegal color', color);
+          }
+        }
+      }
+      if ((this.config.progpath.show?.progress) && (this.config.progpath.show.progress === true)) {
+        this.elements.progress.setAttribute('stroke-dashoffset', (curValue));
+        const color = this.intColor(curState, 0);
         if (color) {
-          this.elements.marker.style.fill = `${this.intColor(curState, 0)}`;
-          this.styles.marker.fill = this.intColor(curState, 0);
+          this.elements.progress.style.stroke = `${color}`;
+          this.styles.progress.stroke = color;
         } else {
           console.log('illegal color', color);
         }
       }
-      if ((this.config.progpath.show?.progress) && (this.config.progpath.show.progress === true))
-        this.elements.progress.setAttribute('stroke-dashoffset', (curValue));
       if ((this.config.progpath.show?.mask) && (this.config.progpath.show.mask === true))
       this.elements.maskPath.setAttribute('stroke-dasharray', `${100 - curValue} 100`);
 
@@ -415,6 +445,7 @@ export default class ProgressPathTool extends BaseTool {
     }
     if (this.config.progpath.show.path_type === 'rectangle') {
       this.elements.marker = myWindow.getElementById('marker');
+      this.elements.markerPath = myWindow.getElementById('markerPath');
       // this.target2 = myWindow.getElementById('target2');
       this.elements.progress = myWindow.getElementById('progress-path');
       this.elements.progressMask = myWindow.getElementById('progress-maskpath');
@@ -431,12 +462,12 @@ export default class ProgressPathTool extends BaseTool {
   }
 
   /** *****************************************************************************
-  * ProgressPath::_renderMarker()
+  * ProgressPath::_getMarkerSvg()
   *
   * Summary.
   *
   */
-  _renderMarker() {
+  _getMarkerSvg() {
     // Need some variables for:
     // - type of marker
     // - size of marker
@@ -458,7 +489,7 @@ export default class ProgressPathTool extends BaseTool {
             <svg viewBox="12 ${12 + viewBoxY} 24 24" overflow="visible"
             height="${this.config.progpath.marker.size}em" width="${this.config.progpath.marker.size}em"
             >
-              <path fill="currentColor" d="M11 21H9V3H11V21M15 3H13V21H15V3Z">
+              <path d="M11 21H9V3H11V21M15 3H13V21H15V3Z">
               </path>
             </svg>      
           </g>
@@ -468,11 +499,13 @@ export default class ProgressPathTool extends BaseTool {
       case 'pan-vertical':
         marker = svg`
           <!-- Marker - pan-vertical -->
-          <g id=marker class="sak-marker__marker--pan-vertical" transform="scale(3 3)">
+          <g id=marker class="sak-marker__marker--pan-vertical"
+          style="${styleMap(this.styles.marker)}"          
+          >
             <svg viewBox="12 ${12 + viewBoxY} 24 24" overflow="visible"
             height="${this.config.progpath.marker.size}em" width="${this.config.progpath.marker.size}em"
             >
-              <path fill="currentColor" d="M12,2.5L8,7H16L12,2.5M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M8,17L12,21.5L16,17H8Z">
+              <path  transform="scaleX(0.5)" d="M12,2.5L8,7H16L12,2.5M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M8,17L12,21.5L16,17H8Z">
               </path>
             </svg>      
             </g>
@@ -496,7 +529,7 @@ export default class ProgressPathTool extends BaseTool {
               <svg viewBox="12 ${12 + viewBoxY} 24 24" overflow="visible"
               height="${this.config.progpath.marker.size}em" width="${this.config.progpath.marker.size}em"
               >
-                <path fill="currentColor"
+                <path 
                   d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,
                   1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z">
                 </path>
@@ -515,12 +548,11 @@ export default class ProgressPathTool extends BaseTool {
         marker = svg`
           <!-- Marker - circle -->
           <g id=marker class="sak-marker__marker--circle"
-            style="${styleMap(this.styles.marker)}"          
             >
             <svg viewBox="12 ${12 + viewBoxY} 24 24" overflow="visible"
             height="${this.config.progpath.marker.size}em" width="${this.config.progpath.marker.size}em"
             >
-            <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
+            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
               style="${styleMap(this.styles.marker)}"
               >
             </path>
@@ -534,7 +566,9 @@ export default class ProgressPathTool extends BaseTool {
           <!-- Marker - chevron-up -->
           <g id=marker class="sak-marker__marker--chevron-up" transform="scale(3 3)">
             <svg viewBox="12 ${12 + viewBoxY} 24 24" height="40" width="24" overflow="visible">
-              <path fill="currentColor" d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z">
+              <path d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z"
+              style="${styleMap(this.styles.marker)}"
+              >
               </path>
             </svg>
           </g>
@@ -545,11 +579,12 @@ export default class ProgressPathTool extends BaseTool {
         marker = svg`
           <!-- Marker - navigation -->
           <g id=marker class="sak-marker__marker--navigation" transform="scale(2 2)"
-            style="${styleMap(this.styles.marker)}"
           >
             <svg viewBox="12 ${0 + viewBoxY} 24 24" overflow="visible"
               height="${this.config.progpath.marker.size}em" width="${this.config.progpath.marker.size}em">
-              <path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z">
+              <path id=markerPath d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"
+              style="${styleMap(this.styles.marker)}"
+              >
               </path>
             </svg>      
           </g>
@@ -561,7 +596,8 @@ export default class ProgressPathTool extends BaseTool {
           <!-- Marker - menu-up -->
           <g id=marker class="sak-marker__marker--menu-up" transform="scale(3 3)">
             <svg viewBox="12 ${12 + viewBoxY} 24 24" height="40" width="24" overflow="visible">
-              <path fill="currentColor" d="M7,15L12,10L17,15H7Z">
+              <path d="M7,15L12,10L17,15H7Z"
+              >
               </path>
             </svg>
           </g>
@@ -763,10 +799,51 @@ export default class ProgressPathTool extends BaseTool {
       return svg`
         <!-- BackgroundPath Render -->
         <path id="background-path" d="${this.svg.path}" fill="none"
-        stroke="var(--theme-sys-elevation-surface-neutral1)"
+        stroke="var(--theme-sys-elevation-surface-neutral3)"
         stroke-width="${this.svg.background.width}"/>
       `;
     } else return svg``;
+  }
+
+  // Nice spiral stuff
+  // Usefull ??? No idea ;-)
+  // short spirals and/or nice ones:
+  // - 3333
+  // - 4444
+  // - 6667
+  // - 8889
+  renderSpiral() {
+    let svgCircles = [];
+    let j = 0;
+    const widthVariation = 100;
+    const heightVariation = 300;
+    const start = 0;
+    const list = [3333, 4444, 6667, 8889];
+    for (let ii = start; ii < start + 4; ii++) {
+      let i = list[ii];
+      j += 1;
+      // Default is 180. Is a half turn 12.5 ?? So approx 190 in this case?
+      for (let it = 12; it < 190; it++) {
+        let x = (j * 200) + 120 + widthVariation * Math.cos((5) * it * 0.02827);
+        let y = 320 + heightVariation * Math.sin((1 + i) * it * 0.02827);
+        let svgCircle = svg`
+          <circle cx=${x} cy=${y} r=${Math.max(5, Math.min(50, it * 0.1))}
+            fill="${this.intColor(it / (190 - 12) * this._stateValue, 0)}"
+            stroke="black"
+            stroke-width="0"
+            style="transition:fill 5s ease;"
+            />`;
+        svgCircles.push(svgCircle);
+      }
+    }
+    // fill="rgb(0, ${it * 1.4}, 0)"
+
+    return svg`
+      <svg x="10px" y="10px" overflow="visible" viewBox="550 150 640 240"
+        width="${this.svg.width / 1.5}" height="${240 / 640 * this.svg.width}" >
+        ${svgCircles};
+      </svg>
+      `;
   }
 
   /** *****************************************************************************
@@ -814,6 +891,8 @@ export default class ProgressPathTool extends BaseTool {
                           this.rectangle.radius.br,
                           this.rectangle.radius.bl);
 
+      this.svg.path = 'M736.08,389.48C690.17,577.19,508.06,702.61,313,674,147.31,649.7,32.7,495.69,57,330,76.44,197.45,199.65,105.76,332.2,125.2c106,15.55,179.39,114.12,163.84,220.16A155.25,155.25,0,0,1,319.91,476.43a124.2,124.2,0,0,1-104.86-140.9,99.37,99.37,0,0,1,112.73-83.89,79.49,79.49,0,0,1,67.11,90.18,63.6,63.6,0,0,1-72.15,53.69A50.88,50.88,0,0,1,282,361.56';
+
       return svg`
       <svg width="${this.svg.width}" height="${this.svg.height}" overflow="visible"
         x="${this.svg.x}" y="${this.svg.y}" viewbox="0 0 ${this.svg.width} ${this.svg.height}"
@@ -831,6 +910,7 @@ export default class ProgressPathTool extends BaseTool {
           stroke: var(--theme-sys-elevation-surface-neutral9);
           stroke-width: 6em;
           stroke-dasharray: 4 20;
+          stroke-dashoffset: 4;
         }
         
         #markerr pathh {
@@ -936,17 +1016,16 @@ export default class ProgressPathTool extends BaseTool {
         ${this.renderBackgroundPath()}
         ${this.renderScale()}
         ${this.renderProgressPath()}
-
-        <path id="pointer-path" d="${this.svg.path}" pathLength="100"
-          fill="none" stroke="black" stroke-width="0em"/>
-
-          <!--  <use id=target href="#pacman8"/> -->
-        ${this._renderMarker()}
+        <!--  <use id=target href="#pacman8"/> -->
+        ${this._getMarkerSvg()}
         ${this.renderPointer()}
       </svg>
       `;
     }
   }
+  // <path id="pointer-path" d="${this.svg.path}" pathLength="100"
+  // fill="none" stroke="black" stroke-width="0em"/>
+
 //   <path id="red-path" d="${this.svg.path}" pathLength="100"
 //   stroke-dasharray="19.75 100"
 //   stroke-dashoffset="-80.25"
@@ -1020,13 +1099,6 @@ export default class ProgressPathTool extends BaseTool {
           fill="none" stroke="${value.color}"
           stroke-width="${this.config.progpath.scale.width}em"/>          
         `;
-
-        return svg`
-          <path d="${this.svg.path}" pathLength="100"
-          stroke-dasharray="${value.range} 100"
-          stroke-dashoffset="-${value.value}"
-          fill="none" stroke="${value.color}" stroke-width="5em"/>          
-        `;
       });
       // console.log('renderScale', scale, scaleParts, min, max, paths);
       return svg`
@@ -1050,12 +1122,6 @@ export default class ProgressPathTool extends BaseTool {
         <!-- Scale Dashes Render -->
         <path id="dashes-path" d="${this.svg.path}"
         class="${classMap(this.classes.dashes_scale)}" style="${styleMap(this.styles.dashes_scale)}"
-        />
-      `;
-
-      return svg`
-        <path id="dashes-path" d="${this.svg.path}" pathLength="100"
-          class="${classMap(this.classes.dashes_scale)}" style="${styleMap(this.styles.dashes_scale)}"
         />
       `;
     } else return svg``;
@@ -1110,6 +1176,7 @@ export default class ProgressPathTool extends BaseTool {
         class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this._renderProgressPath()}
+        ${this.renderSpiral()}
       </g>
     `;
   }
