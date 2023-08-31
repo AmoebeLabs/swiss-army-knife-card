@@ -15049,7 +15049,7 @@ class ProgressPathTool extends BaseTool {
             </marker>
           <marker id="roundClippp" viewBox="-00 -00 100 100" markerWidth="1"
             orient="auto" refX="50" refY="50">
-            <path d="M0,50 a1,1 1 0,0 100,0" fill="white"/>
+            <path d="M0,50 a50,50 0 0,1 0,100" fill="white"/>
           </marker>
           <marker
             id="arrowClippp"
@@ -15077,7 +15077,7 @@ class ProgressPathTool extends BaseTool {
         </defs>
 
         <path id="motion-path" d="${this.svg.path}" pathLength="100"/>
-        <path id="scale-path" d="${this.svg.scalePath}" pathLength="100" fill="none"/>
+        <path id="scale-path" d="${this.svg.scalePath}" fill="none"/>
         ${this.renderBackgroundPath()}
         ${this.renderScale()}
         ${this.renderTrack()}
@@ -15158,6 +15158,82 @@ class ProgressPathTool extends BaseTool {
       }
       scaleParts.forEach((value, index, array) => value.range = index < array.length - 1 ? array[index + 1].value - value.value : 0);
 
+      let value = scaleParts[0];
+      Utils.calculateSvgDimension(this.config.progpath.scale.width);
+      // Was gap * 2.75 or whatever
+      let maskBegin = svg`
+          <defs>
+          <clipPath id="cut-off-bottom">
+            <rect x="0" y="0" width="100" height="50" />
+          </clipPath>
+          <clipPath id="half5">
+            <rect x="-0.1" y="-1" width="1.1" height="2" />
+          </clipPath>
+          <marker id="half-circle" viewbox="0 0 100 100" markerWidth="1"
+            orient="auto-start-reverse" refX="50"refY="50"
+            <circle cx="50" cy="50" r="50" fill="white" clip-path="url(#cut-off-bottom)" />
+          </marker>
+          <marker id="round5" viewBox="-1 -1 2 2" markerWidth="1" orient="auto-start-reverse">
+              <circle r="1" fill="white" clip-path="url(#half5)"/>
+          </marker>
+          <marker id="cccircle" viewbox="0 0 100 100" markerWidth="50"
+            orient="auto" refX="50"refY="50"
+            <circle cx="50" cy="50" r="100" fill="white"/>
+          </marker>
+          <marker id="roundMask" viewBox="-00 -00 100 100" markerWidth="1"
+            orient="auto-start-reverse" refX="50" refY="50">
+            <path d="M 0 100 A 50 50 0 0 0 100 0" fill="white"/>
+          </marker>
+          <mask id="myclip" maskUnits="userSpaceOnUse">
+            <path id="99maskPath" d="${this.svg.scalePath}"
+            stroke-dasharray="${((value.range / scale.range * this.scaleLength))} ${this.scaleLength}"
+            stroke-dashoffset="-${(value.value - scale.min) / scale.range * this.scaleLength}"
+            fill="black" stroke="white"
+            stroke-width="${this.config.progpath.scale.width}em"
+            stroke-linecap="none"
+            marker-start="url(#round5)"
+          />
+          </mask>
+          </defs>
+          `;
+      value = scaleParts[scaleParts.length - 2];
+      Utils.calculateSvgDimension(this.config.progpath.scale.width);
+      // Was gap * 2.75 or whatever
+      let maskEnd = svg`
+          <defs>
+          <clipPath id="cut-off-bottom">
+            <rect x="0" y="0" width="100" height="50" />
+          </clipPath>
+          <clipPath id="half5">
+            <rect x="-0.1" y="-1" width="1.1" height="2" />
+          </clipPath>
+          <marker id="half-circle" viewbox="0 0 100 100" markerWidth="1"
+            orient="auto-start-reverse" refX="50"refY="50"
+            <circle cx="50" cy="50" r="50" fill="white" clip-path="url(#cut-off-bottom)" />
+          </marker>
+          <marker id="round5" viewBox="-1 -1 2 2" markerWidth="1" orient="auto-start-reverse">
+              <circle r="1" fill="white" clip-path="url(#half5)"/>
+          </marker>
+          <marker id="cccircle" viewbox="0 0 100 100" markerWidth="50"
+            orient="auto" refX="50"refY="50"
+            <circle cx="50" cy="50" r="100" fill="white"/>
+          </marker>
+          <marker id="roundMask" viewBox="-00 -00 100 100" markerWidth="1"
+            orient="auto-start-reverse" refX="50" refY="50">
+            <path d="M 0 100 A 50 50 0 0 0 100 0" fill="white"/>
+          </marker>
+          </mask>
+          <mask id="mycliplast" maskUnits="userSpaceOnUse">
+            <path id="99maskPath" d="${this.svg.scalePath}"
+            stroke-dasharray="${((value.range / scale.range * this.scaleLength))} ${this.scaleLength}"
+            stroke-dashoffset="-${(value.value - scale.min) / scale.range * this.scaleLength + (gap / 2)}"
+            fill="black" stroke="white"
+            stroke-width="${this.config.progpath.scale.width}em"
+            stroke-linecap="none"
+            marker-end="url(#round5)"
+          />
+          </defs>
+          `;
       let paths = scaleParts.map((value, index, array) => {
         const firstOrLast = ((index === 0) || (index === array.length - 1) || (array[Math.min(array.length - 1, index + 1)].range === 0));
         console.log('scaleParts mapping', value, index);
@@ -15170,7 +15246,8 @@ class ProgressPathTool extends BaseTool {
           fill="none" stroke="${value.color}"
           stroke-width="${this.config.progpath.scale.width}em"
           stroke-linecap="${firstOrLast ? 'round' : 'none'}"
-          marker-start="${index === 0 ? 'url(#roundd)' : 'none'}"
+          marker-start="${index === 0 ? 'url(#rrroundd)' : 'none'}"
+          mask="${index === 0 ? 'url(#myclip)' : firstOrLast ? 'url(#mycliplast)' : 'none'}"
           />          
         `;
       });
@@ -15198,13 +15275,15 @@ class ProgressPathTool extends BaseTool {
 
       return svg`
         <defs>
-        <marker id="rounddd" viewBox="-1 -1 2 2" markerWidth="1" orient="auto">
+        <marker id="roundddd" viewBox="-1 -1 2 2" markerWidth="1" orient="auto">
           <circle r="1" fill="black" stroke-width="0"/>
         </marker>
 
         </defs>
       <!-- Scale Parts Group Render -->
       <g id="scale-group" fill="none">
+          ${maskBegin}
+          ${maskEnd}
           ${paths};
         </g>
         `;
