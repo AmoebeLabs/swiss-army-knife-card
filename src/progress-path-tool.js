@@ -23,6 +23,51 @@ const DEFAULT_COLORS = [
   '#8e44ad',
 ];
 
+const DIRECTION = {
+  CW: 'cw',
+  CCW: 'ccw',
+};
+
+const PROGRESS_TYPE = {
+  CIRCLE: 'circle',
+  LINE: 'line',
+  RECTANGLE: 'rectangle',
+};
+
+const TRACK_TYPE = {
+  NONE: 'none',
+  COLORSTOPS: 'colorstops',
+  DASHES: 'dashes',
+};
+
+const SCALE_TYPE = {
+  NONE: 'none',
+  COLORSTOPS: 'colorstops',
+  DASHES: 'dashes',
+};
+
+const ANIMATE_COLOR = {
+  BOTH: 'both',
+  INTERIOR: 'interior',
+  OUTLINE: 'outline',
+};
+
+const ATTACH_TO = {
+  CIRCUMFERENCE: 'circumference',
+  CENTER: 'center',
+};
+
+const LINECAP_TYPE = {
+  BUTT: 'butt',
+  ROUND: 'round',
+  ROUND_BEGIN_END: 'round_begin_end',
+};
+
+const COLORSTOPS_TYPE = {
+  HARD: 'hard',
+  SMOOTH: 'smooth',
+};
+
 /**
  * Starting from the given index, increment the index until an array element with a
  * "value" property is found
@@ -109,7 +154,7 @@ const computeThresholds = (stops, type) => {
     console.log('computeThresholds, error', error, valuedStops);
   }
 
-  if (type === 'smooth') {
+  if (type === COLORSTOPS_TYPE.SMOOTH) {
     return valuedStops;
   } else {
     const rect = [].concat(...valuedStops.map((stop, i) => ([stop, {
@@ -138,18 +183,21 @@ export default class ProgressPathTool extends BaseTool {
       },
       progpath: {
         show: {
-          path_type: 'rectangle',
+          path_type: PROGRESS_TYPE.RECTANGLE,
           progress: true,
           track: 'dashes', // or scale: dashes / colorstop / none / both? (colorstop + dashes)
           marker: 'navigation',
           colorstops: 'none',
           scale: false,
+          viz: {
+            linecap: LINECAP_TYPE.BUTT,
+          },
         },
         background: {
           width: 8,
         },
         circle: {
-          direction: 'cw',
+          direction: DIRECTION.CW,
         },
         marker: {
           size: 10,
@@ -158,7 +206,7 @@ export default class ProgressPathTool extends BaseTool {
             animate: false,
             smooth: false,
           },
-          attach_to: 'circumference',
+          attach_to: ATTACH_TO.CIRCUMFERENCE,
           flip: false,
         },
         scale: {
@@ -194,6 +242,12 @@ export default class ProgressPathTool extends BaseTool {
         },
         marker: {
         },
+        line: {
+        },
+        circle: {
+        },
+        rectangle: {
+        },
       },
       styles: {
         tool: {
@@ -212,14 +266,19 @@ export default class ProgressPathTool extends BaseTool {
         },
         marker: {
         },
+        line: {
+        },
+        circle: {
+        },
+        rectangle: {
+        },
       },
     };
     super(argToolset, Merge.mergeDeep(DEFAULT_PATH_PROGRESS_CONFIG, argConfig), argPos);
     this.EnableHoverForInteraction();
 
     this.svg.radius = Utils.calculateSvgDimension(argConfig.position.radius);
-    this.svg.path = svg``;
-    this.svg.scalePath = svg``;
+    // this.elements.path.svg = svg``;
 
     this.svg.background = { width: Utils.calculateSvgDimension(this.config.progpath.background.width) };
     this.svg.marker = { offset: Utils.calculateSvgDimension(this.config.progpath.marker.offset) / 400 * 24 };
@@ -238,6 +297,11 @@ export default class ProgressPathTool extends BaseTool {
     this.svg.cx = this.svg.width / 2;
     this.svg.cy = this.svg.height / 2;
 
+    this.haveElements = false;
+    this.elements = {};
+    this.elements.path = { length: 100, svg: '' };
+    this.elements.scale = { length: 100, svg: '' };
+
     this.configureBackground();
     // Configure possible path types
     this.configurePathTypeRectangle();
@@ -254,29 +318,25 @@ export default class ProgressPathTool extends BaseTool {
 
     this.ticking = false;
 
-    this.length = 100;
-    this.scaleLength = 100;
     this.myValue = 50;
 
-    this.haveElements = false;
-    this.elements = {};
     this.colorstops = {};
     this.colorstops.colors = [];
     this.colorstops.colors = computeThresholds(
       this.config.progpath.colorstops.colors,
-      'smooth',
+      COLORSTOPS_TYPE.SMOOTH,
     );
     this.spiral = [];
   }
 
   configureScale() {
     this.scale = {};
-    if (['circle', 'line'].includes(this.config.progpath.show.path_type)) {
-      if (this.config.progpath.show.scale !== 'none') {
-        if ((this.config.progpath.show.scale === 'colorstops') && (this.config.progpath.colorstops)) {
+    if ([PROGRESS_TYPE.CIRCLE, PROGRESS_TYPE.LINE].includes(this.config.progpath.show.path_type)) {
+      if (this.config.progpath.show.scale !== SCALE_TYPE.NONE) {
+        if ((this.config.progpath.show.scale === SCALE_TYPE.COLORSTOPS) && (this.config.progpath.colorstops)) {
           this.scale.gap = Utils.calculateSvgDimension(this.config.progpath.colorstops.gap || 0);
         } else this.scale.gap = 0;
-        if (this.config.progpath.show.path_type === 'circle') {
+        if (this.config.progpath.show.path_type === PROGRESS_TYPE.CIRCLE) {
           this.scale = { ...this.scale, ...this.circle };
           this.scale.radiusX += Utils.calculateSvgDimension(this.config.progpath.scale.offset);
           this.scale.radiusY += Utils.calculateSvgDimension(this.config.progpath.scale.offset);
@@ -284,28 +344,32 @@ export default class ProgressPathTool extends BaseTool {
           this.scale.gap *= this.scale.radiusX / this.circle.radiusX;
 
           // Configuration has been translated from the circle. Now get scale
-          this.svg.scalePath = this._computeCirclePath(this.scale);
+          this.elements.scale.svg = this._computeCirclePath(this.scale);
         }
-        if (this.config.progpath.show.path_type === 'line') {
+        if (this.config.progpath.show.path_type === PROGRESS_TYPE.LINE) {
           this.scale = { ...this.scale, ...this.line };
           this.scale.cy -= Utils.calculateSvgDimension(this.config.progpath.scale.offset);
-          this.svg.scalePath = this._computeLinePath(this.scale);
+          this.elements.scale.svg = this._computeLinePath(this.scale);
         }
       }
     }
   }
 
   configureBackground() {
-    this.styles.background['stroke-width'] = this.svg.background.width;
+    // this.styles.background['stroke-width'] = this.svg.background.width;
     // eslint-disable-next-line dot-notation
-    this.styles.background['stroke'] = 'var(--theme-sys-elevation-surface-neutral3)';
+    this.config.styles.background['stroke'] = 'var(--theme-sys-elevation-surface-neutral3)';
     // eslint-disable-next-line dot-notation
-    this.styles.background['fill'] = 'none';
-    console.log('configureBackground', this.styles.background, this.classes.background);
+    this.config.styles.background['fill'] = 'none';
+    // console.log('configureBackground', this.styles.background, this.classes.background);
+    this.config.styles.background['stroke-width'] = this.svg.background.width;
+    if ([LINECAP_TYPE.ROUND, LINECAP_TYPE.ROUND_BEGIN_END].includes(this.config.progpath.show.viz.linecap)) {
+      this.config.styles.background['stroke-linecap'] = 'round';
+    }
   }
 
   configurePathTypeRectangle() {
-    if (this.config.progpath.show.path_type === 'rectangle') {
+    if (this.config.progpath.show.path_type === PROGRESS_TYPE.RECTANGLE) {
       this.rectangle = {};
       this.rectangle.start = {};
       this.rectangle.start.position = Utils.calculateSvgDimension(this.config.progpath.rectangle.start?.position) / 1 || 0;
@@ -318,26 +382,30 @@ export default class ProgressPathTool extends BaseTool {
       this.rectangle.radius.br = Utils.calculateSvgDimension(this.config.progpath.rectangle.radius?.br || 0) / 1;
 
       // Configuration has been translated. Now compute the rectangle path from that configuration
-      this.svg.path = this._computeRectanglePath(
+      this.elements.path.svg = this._computeRectanglePath(
         this.svg.width,
         this.svg.height,
         this.rectangle.radius.tl,
         this.rectangle.radius.tr,
         this.rectangle.radius.br,
         this.rectangle.radius.bl);
+
+      if ([LINECAP_TYPE.ROUND].includes(this.config.progpath.show.viz.linecap)) {
+          this.config.styles.rectangle['stroke-linecap'] = 'round';
+      }
     }
     this.track = { ...this.rectangle };
   }
 
   configurePathTypeCircle() {
-    if (this.config.progpath.show.path_type === 'circle') {
+    if (this.config.progpath.show.path_type === PROGRESS_TYPE.CIRCLE) {
       this.circle = {};
       // this.circle.radius = {};
       this.svg.cx = this.svg.width / 2;
       this.svg.cy = this.svg.height / 2;
       this.circle.radiusX = this.svg.width / 2;
       this.circle.radiusY = this.svg.height / 2;
-      this.circle.isCW = this.config.progpath.circle.direction === 'cw';
+      this.circle.isCW = this.config.progpath.circle.direction === DIRECTION.CW;
       this.circle.direction = this.config.progpath.circle.direction;
       this.circle.startAngle = this.config.progpath.circle.start_angle;
       this.circle.stopAngle = this.config.progpath.circle.stop_angle;
@@ -347,7 +415,11 @@ export default class ProgressPathTool extends BaseTool {
       this.track = { ...this.circle };
 
       // Configuration has been translated. Now compute the rectangle path from that configuration
-      this.svg.path = this._computeCirclePath(this.circle);
+      this.elements.path.svg = this._computeCirclePath(this.circle);
+
+      if ([LINECAP_TYPE.ROUND].includes(this.config.progpath.show.viz.linecap)) {
+        this.config.styles.circle['stroke-linecap'] = 'round';
+      }
     }
   }
 
@@ -356,12 +428,12 @@ export default class ProgressPathTool extends BaseTool {
       this.user = {};
 
       // Configuration has been translated. Now compute the cirle/oval path from that configuration
-      this.svg.path = this._computeUserPath();
+      this.elements.path.svg = this._computeUserPath();
     }
   }
 
   configurePathTypeLine() {
-    if (this.config.progpath.show.path_type === 'line') {
+    if (this.config.progpath.show.path_type === PROGRESS_TYPE.LINE) {
       this.line = {};
       this.line.cx = this.svg.width / 2;
       this.line.cy = this.svg.height / 2;
@@ -371,7 +443,11 @@ export default class ProgressPathTool extends BaseTool {
       this.track = { ...this.line };
 
       // Configuration has been translated. Now compute the lineair path from that configuration
-      this.svg.path = this._computeLinePath(this.line);
+      this.elements.path.svg = this._computeLinePath(this.line);
+
+      if ([LINECAP_TYPE.ROUND].includes(this.config.progpath.show.viz.linecap)) {
+        this.config.styles.line['stroke-linecap'] = 'round';
+      }
     }
   }
 
@@ -381,7 +457,7 @@ export default class ProgressPathTool extends BaseTool {
       this.track = { ...this.bar };
 
       // Configuration has been translated. Now compute the lineair path from that configuration
-      this.svg.path = this._computeBarPath(this.config.progpath.bar);
+      this.elements.path.svg = this._computeBarPath(this.config.progpath.bar);
     }
   }
 
@@ -536,16 +612,16 @@ export default class ProgressPathTool extends BaseTool {
   * If flip is reversed, than everything works for ccw circles...
   */
 
-  getPerpendicularAngleAtLength(percentage, percentagePlus, direction = 'cw', flip = false) {
-    const { x, y } = this.elements.path.getPointAtLength(percentage);
-    const { x: x2, y: y2 } = this.elements.path.getPointAtLength(percentagePlus);
+  getPerpendicularAngleAtLength(percentage, percentagePlus, direction = DIRECTION.CW, flip = false) {
+    const { x, y } = this.elements.path.id.getPointAtLength(percentage);
+    const { x: x2, y: y2 } = this.elements.path.id.getPointAtLength(percentagePlus);
     const angle = Math.atan2(y - y2, x - x2);
     return {
       x,
       y,
       x2,
       y2,
-      angle: (direction === 'cw' ? 0 : 180) + (flip ? 0 : 180) + ((angle) * 180 / Math.PI),
+      angle: (direction === DIRECTION.CW ? 0 : 180) + (flip ? 0 : 180) + ((angle) * 180 / Math.PI),
     };
   }
 
@@ -561,11 +637,9 @@ export default class ProgressPathTool extends BaseTool {
       : 2 ** (-10 * x) * Math.sin((x * 10 - 0.75) * (2 * Math.PI) / 3) + 1;
       };
 
-    // console.log('renderAnimateProgress IN/OUT');
     this.progressPctPrev = this.progressPct || 0;
     this.progressPct = this.myValue / 100;
     this.progressDiff = this.progressPct - this.progressPctPrev;
-    // console.log('renderAnimateProgress progress', this.myValue, this.progressPctPrev, this.progressPct, this.progressDiff);
 
     const duration = 5000;
     let start;
@@ -585,10 +659,10 @@ export default class ProgressPathTool extends BaseTool {
       const stateRange = Number(this._stateValue) - Number(this._stateValuePrev);
       const curState = Number(this._stateValuePrev) + (progress * stateRange);
 
-      const ppa = this.getPerpendicularAngleAtLength((100 - curValue) / 100 * (this.length),
-        (100 - curValue) / 100 * (this.length + 1), this.direction, this.flip);
+      const ppa = this.getPerpendicularAngleAtLength((100 - curValue) / 100 * (this.elements.path.length),
+        (100 - curValue) / 100 * (this.elements.path.length + 1), this.direction, this.flip);
       if ((show?.marker) && (show.marker !== 'none')) {
-        if (this.config.progpath.marker.attach_to === 'center') {
+        if (this.config.progpath.marker.attach_to === ATTACH_TO.CENTER) {
           this.elements.marker.setAttribute('transform', `translate(${this.svg.cx} ${this.svg.cy}) rotate(${ppa.angle})`);
         } else {
           this.elements.marker.setAttribute('transform', `translate(${ppa.x} ${ppa.y}) rotate(${ppa.angle})`);
@@ -599,11 +673,11 @@ export default class ProgressPathTool extends BaseTool {
                           : this.computeColor(curState, 0);
           if (color !== prevColor) {
             if (color) {
-              if (['both', 'interior'].includes(this.config.progpath.marker.color.animate)) {
+              if ([ANIMATE_COLOR.BOTH, ANIMATE_COLOR.INTERIOR].includes(this.config.progpath.marker.color.animate)) {
                 this.elements.markerPath.style.fill = color;
                 this.styles.marker.fill = color;
               }
-              if (['both', 'outline'].includes(this.config.progpath.marker.color.animate)) {
+              if ([ANIMATE_COLOR.BOTH, ANIMATE_COLOR.OUTLINE].includes(this.config.progpath.marker.color.animate)) {
                 this.elements.markerPath.style.stroke = color;
                 this.styles.marker.stroke = color;
               }
@@ -644,13 +718,12 @@ export default class ProgressPathTool extends BaseTool {
   firstUpdated(changedProperties) {
     const myWindow = this._card.shadowRoot;
     this.haveElements = true;
+    this.elements.path.id = myWindow.getElementById('motion-path-'.concat(this.toolId));
+    this.elements.path.length = this.elements.path.id.getTotalLength();
+    this.elements.scale.id = myWindow.getElementById('scale-path-'.concat(this.toolId));
+    this.elements.scale.length = this.elements.scale.id.getTotalLength();
 
-    this.elements.path = myWindow.getElementById('motion-path');
-    this.length = this.elements.path.getTotalLength();
-    this.elements.scale = myWindow.getElementById('scale-path');
-    this.scaleLength = this.elements.scale.getTotalLength();
-
-    if (['rectangle', 'line', 'circle'].includes(this.config.progpath.show.path_type)) {
+    if ([PROGRESS_TYPE.RECTANGLE, PROGRESS_TYPE.LINE, PROGRESS_TYPE.CIRCLE].includes(this.config.progpath.show.path_type)) {
       this.elements.marker = myWindow.getElementById('marker');
       this.elements.markerPath = myWindow.getElementById('markerPath');
       this.elements.progress = myWindow.getElementById('progress-path');
@@ -763,17 +836,10 @@ export default class ProgressPathTool extends BaseTool {
     let top;
     let right;
     let bottom;
-    let bottom2;
     let left;
     let d;
     const startSide = this.config.progpath.rectangle.start.side;
     const stopSide = this.config.progpath.rectangle.stop.side;
-
-    const sameSide = (startSide === stopSide)
-        && (this.rectangle.start.position > this.rectangle.stop.position);
-    // const startPos = sameSide ? this.rectangle.stop.position : this.rectangle.start.position;
-    // const startPos = this.rectangle.start.position;
-    // console.log('compute, same, start', sameSide, startPos, startSide, stopSide);
 
     switch (startSide) {
       case 'top':
@@ -791,52 +857,29 @@ export default class ProgressPathTool extends BaseTool {
       default:
         break;
     }
-    // switch (startSide) {
-    //   case 'top':
-    //     d = `M${this.svg.width / 2 + startPos}, ${this.svg.height / 2 - height / 2}`;
-    //     break;
-    //   case 'right':
-    //     d = `M${this.svg.width / 2 + width / 2}, ${this.svg.height / 2 + startPos}`;
-    //     break;
-    //   case 'bottom':
-    //     d = `M${this.svg.width / 2 + startPos}, ${this.svg.height / 2 + height / 2}`;
-    //     break;
-    //   case 'left':
-    //     d = `M${this.svg.width / 2 - width / 2}, ${this.svg.height / 2 - startPos}`;
-    //     break;
-    //   default:
-    //     break;
-    // }
 
-    // If start.position smaller than stop.position on SAME side, then only
-    // use that side. So a kind of small rectangle, just one side...
-    // set stop side to 'same', so table can use this!
     const sidesToDo = [];
     sidesToDo.top = [];
     sidesToDo.top.right = 'tr';
     sidesToDo.top.bottom = 'trb';
     sidesToDo.top.left = 'trbl';
-    // sidesToDo.top.top = sameSide ? 't' : 'trblt';
     sidesToDo.top.top = 'trblt';
     sidesToDo.right = [];
     sidesToDo.right.bottom = 'rb';
     sidesToDo.right.left = 'rbl';
     sidesToDo.right.top = 'rblt';
-    // sidesToDo.right.right = sameSide ? 'r' : 'rbltr';
     sidesToDo.right.right = 'rbltr';
 
     sidesToDo.bottom = [];
     sidesToDo.bottom.left = 'bl';
     sidesToDo.bottom.top = 'blt';
     sidesToDo.bottom.right = 'bltr';
-    // sidesToDo.bottom.bottom = sameSide ? 'b' : 'bltrb';
     sidesToDo.bottom.bottom = 'bltrb';
 
     sidesToDo.left = [];
     sidesToDo.left.top = 'lt';
     sidesToDo.left.right = 'ltr';
     sidesToDo.left.bottom = 'ltrb';
-    // sidesToDo.left.left = sameSide ? 'l' : 'ltrbl';
     sidesToDo.left.left = 'ltrbl';
 
     let sideCount = sidesToDo[startSide][stopSide].length;
@@ -844,12 +887,6 @@ export default class ProgressPathTool extends BaseTool {
       let currentSide = sidesToDo[startSide][stopSide][i];
       switch (currentSide) {
         case 't':
-          // if (sideCount === 1) {
-          //   top = this.rectangle.stop.position - this.rectangle.start.position;
-          //   d += `
-          //     h${top}
-          //     `;
-          // } else
           if (i === sideCount - 1) {
             top = width / 2 + this.rectangle.stop.position - tl;
             d += `
@@ -866,12 +903,6 @@ export default class ProgressPathTool extends BaseTool {
           }
           break;
         case 'r':
-          // if (sideCount === 1) {
-          //   right = this.rectangle.stop.position - this.rectangle.start.position;
-          //   d += `
-          //     h${right}
-          //     `;
-          // } else
           if (i === sideCount - 1) {
             right = height / 2 - this.rectangle.stop.position - tr;
             d += `
@@ -888,12 +919,6 @@ export default class ProgressPathTool extends BaseTool {
           }
           break;
         case 'b':
-          // if (sideCount === 1) {
-          //   bottom = this.rectangle.stop.position - this.rectangle.start.position;
-          //   d += `
-          //     h${bottom}
-          //     `;
-          // } else
           if (i === sideCount - 1) {
             bottom = width / 2 - this.rectangle.stop.position - br;
             d += `
@@ -910,12 +935,6 @@ export default class ProgressPathTool extends BaseTool {
           }
           break;
         case 'l':
-          // if (sideCount === 1) {
-          //   left = this.rectangle.stop.position - this.rectangle.start.position;
-          //   d += `
-          //     h${left}
-          //     `;
-          // } else
           if (i === sideCount - 1) {
             left = height / 2 + this.rectangle.stop.position - bl;
             d += `
@@ -943,8 +962,8 @@ export default class ProgressPathTool extends BaseTool {
     if (this.config.progpath.show.background === true) {
       return svg`
         <!-- BackgroundPath Render -->
-        <path id="background-path" d="${this.svg.path}"
-          stroke-width="${this.svg.background.width}"
+        <path id="background-path" d="${this.elements.path.svg}"
+          class="${classMap(this.classes.background)}"
           style="${styleMap(this.styles.background)}"
         />
       `;
@@ -962,7 +981,8 @@ export default class ProgressPathTool extends BaseTool {
       this.spiral[it] = {};
       this.spiral[it].x = (1 * 200) + 120 + widthVariation * Math.cos((5) * it * 0.02827);
       this.spiral[it].y = 320 + heightVariation * Math.sin((1 + number) * it * 0.02827);
-      this.spiral[it].r = Math.max(5, Math.min(50, it * 0.1));
+      this.spiral[it].r = Math.max(5, Math.min(10, it * 0.1));
+      // this.spiral[it].r = 20;
     }
   }
 
@@ -980,21 +1000,16 @@ export default class ProgressPathTool extends BaseTool {
   // are the culprit for the Safari SVG engine, as even with a static color, the
   // battery drain (and backside of iPhone getting warm) is there!
   renderSpiral() {
-    // return svg``;
     if (this.spiral.length === 0) this.calculateSpiral(4444);
-    // return svg``;
     let svgCircles = [];
-    let j = 0;
-    const widthVariation = 100;
-    const heightVariation = 300;
-    const start = 0;
     const list = [3333, 4444, 6667, 8889];
 
     for (let it = 12; it < 190; it++) {
       let circle = this.spiral[it];
+      let color = this.intColor(it / (190 - 12) * Number(this._stateValue), 0);
       let svgCircle = svg`
         <circle cx=${circle.x} cy=${circle.y} r=${circle.r}
-          fill="green"
+          fill="${color}"
           stroke-width="0"
           />`;
       svgCircles.push(svgCircle);
@@ -1002,6 +1017,7 @@ export default class ProgressPathTool extends BaseTool {
 
     // fill="rgb(0, ${it * 1.4}, 0)"
     // style="transition:fill 5s ease;"
+    // fill=this.computeColor(curState, 0)
 
     return svg`
       <svg x="10px" y="10px" overflow="visible" viewBox="550 150 640 240"
@@ -1012,55 +1028,64 @@ export default class ProgressPathTool extends BaseTool {
   }
 
  /* *****************************************************************************
-  * ProgressPath::_renderProgressPath()
+  * ProgressPath::renderProgressTool()
   *
   * Summary.
   *
   */
 
-  _renderProgressPath() {
-    if (['line', 'rectangle', 'circle'].includes(this.config.progpath.show.path_type)) {
-      // this.svg.path = 'M736.08,389.48C690.17,577.19,508.06,702.61,313,674,147.31,649.7,32.7,495.69,57,330,76.44,197.45,199.65,105.76,332.2,125.2c106,15.55,179.39,114.12,163.84,220.16A155.25,155.25,0,0,1,319.91,476.43a124.2,124.2,0,0,1-104.86-140.9,99.37,99.37,0,0,1,112.73-83.89,79.49,79.49,0,0,1,67.11,90.18,63.6,63.6,0,0,1-72.15,53.69A50.88,50.88,0,0,1,282,361.56';
+  renderProgressTool() {
+    const myId = this.toolId;
+    if ([PROGRESS_TYPE.LINE,
+         PROGRESS_TYPE.RECTANGLE,
+         PROGRESS_TYPE.CIRCLE].includes(this.config.progpath.show.path_type)) {
+      // this.elements.path.svg = 'M736.08,389.48C690.17,577.19,508.06,702.61,313,674,147.31,649.7,32.7,495.69,57,330,76.44,197.45,199.65,105.76,332.2,125.2c106,15.55,179.39,114.12,163.84,220.16A155.25,155.25,0,0,1,319.91,476.43a124.2,124.2,0,0,1-104.86-140.9,99.37,99.37,0,0,1,112.73-83.89,79.49,79.49,0,0,1,67.11,90.18,63.6,63.6,0,0,1-72.15,53.69A50.88,50.88,0,0,1,282,361.56';
 
+      // Why is motion-path differect toolId than rest of stuff. So NO match
+      // So why is toolId different? Ah. These styles are defined on CARD level,
+      // so redefine/overwrite per tool I think. So useless for multiple definitions.
+      // Should use classes again, instead of these CSS things...
       return svg`
+      <!-- renderProgressTool Start -->
       <svg width="${this.svg.width}" height="${this.svg.height}" overflow="visible"
         x="${this.svg.x}" y="${this.svg.y}" viewbox="0 0 ${this.svg.width} ${this.svg.height}"
         >
         <defs>
+          <!-- Generic DEFS section -->
           <style>
-          #motion-path {
-            fill: none;
-            stroke: var(--theme-sys-elevation-surface-neutral9);
-            stroke-width: 0em;
-            stroke-dasharray: 4 20;
-          }
-          #dashes-path {
-            fill: none;
-            stroke: var(--theme-sys-elevation-surface-neutral9);
-            stroke-width: 6em;
-            stroke-dasharray: 4 20;
-            stroke-dashoffset: 4;
-          }
-          #dashes-path2 {
-            fill: none;
-            stroke: var(--theme-sys-elevation-surface-neutral9);
-            stroke-width: 6em;
-            stroke-dasharray: 20 4;
-            stroke-dashoffset: 10;
-          }
-          
-          #markerr pathh {
-            fill: var(--primary-text-color);
-            stroke: var(--primary-background-color);
-            paint-order: stroke;
-            stroke-width: 0.6em;
-          }
+            #motion-path-${myId} {
+              fill: none;
+              stroke: var(--theme-sys-elevation-surface-neutral9);
+              stroke-width: 0em;
+              stroke-dasharray: 4 20;
+            }
+            #dashes-path {
+              fill: none;
+              stroke: var(--theme-sys-elevation-surface-neutral9);
+              stroke-width: 6em;
+              stroke-dasharray: 4 20;
+              stroke-dashoffset: 4;
+            }
+            #dashes-path2 {
+              fill: none;
+              stroke: var(--theme-sys-elevation-surface-neutral9);
+              stroke-width: 6em;
+              stroke-dasharray: 20 4;
+              stroke-dashoffset: 10;
+            }
+            
+            #markerr pathh {
+              fill: var(--primary-text-color);
+              stroke: var(--primary-background-color);
+              paint-order: stroke;
+              stroke-width: 0.6em;
+            }
           </style>
+
           <!-- Progress Mask Render -->
-          <defs>
-            <marker id="roundClip2" viewBox="-1 -1 2 2" markerWidth="1" orient="auto">
-              <circle r="1" fill="white" stroke-width="0"/>
-            </marker>
+          <marker id="roundClip2" viewBox="-1 -1 2 2" markerWidth="1" orient="auto">
+            <circle r="1" fill="white" stroke-width="0"/>
+          </marker>
           <marker id="roundClippp" viewBox="-00 -00 100 100" markerWidth="1"
             orient="auto" refX="50" refY="50">
             <path d="M0,50 a50,50 0 0,1 0,100" fill="white"/>
@@ -1074,29 +1099,35 @@ export default class ProgressPathTool extends BaseTool {
             markerHeight="2"
             orient="auto-start-reverse">
             <path d="M 0 0 L 10 5 L 0 5 z" fill="gray" />
-          </marker>           
-          </defs>
+          </marker>
+          <!-- #TODO, note @2023.09.01 -->
+          <!-- Must use same stuff with half circles to show round linecap at start -->
+          <!-- and beginning. stroke-linecap shows circles at both ends of course... -->
+          <!-- If no progress is used, don't use this mask. Use nothing... -->
+          <!-- -->
+          <!-- Other note: should generate this, as stroke-width should be same as path -->
+          <!-- Otherwise, half circles don't match with different stroke widths!! -->
           <mask id="progress-maskpath" maskUnits="userSpaceOnUse"
                 marker-start="url(#arrowClip)"
                 marker-end="url(#arrowClip)" >
-            <path id="88maskPath" d="${this.svg.path}" pathLength="100"
+            <path id="88maskPath" d="${this.elements.path.svg}" pathLength="100"
               stroke-dasharray="100 100"
               stroke-dashoffset="0"
               stroke-width="10em"
               stroke="white"
+              stroke-linecap="round"
               fill="black" <!-- "#666" -->
               paint-order="stroke"
             />
           </mask>
         </defs>
 
-        <path id="motion-path" d="${this.svg.path}" pathLength="100"/>
-        <path id="scale-path" d="${this.svg.scalePath}" fill="none"/>
+        <path id="motion-path-${myId}" d="${this.elements.path.svg}" pathLength="100" fill="none"/>
+        <path id="scale-path-${myId}" d="${this.elements.scale.svg}" fill="none"/>
         ${this.renderBackgroundPath()}
         ${this.renderScale()}
         ${this.renderTrack()}
-        ${this.renderProgressPath()}
-        <!--  <use id=target href="#pacman8"/> -->
+        ${this.renderActiveTrack()}
         ${this.renderMarkerSvg()}
         ${this.renderAnimateProgress()}
       </svg>
@@ -1104,7 +1135,7 @@ export default class ProgressPathTool extends BaseTool {
     }
   }
 
-  renderProgressPath() {
+  renderActiveTrack() {
     if (this.config.progpath.show.progress) {
       // Make sure that dasharray settings are what we need: overwrite them
       // Do NOT set the dashoffset, as it overwrites the animation setting!
@@ -1113,71 +1144,25 @@ export default class ProgressPathTool extends BaseTool {
 
       return svg`
         <!-- ProgressPath Render -->
-        <defs>
-          <marker id="round2" viewBox="-1 -1 2 2" markerWidth="1" orient="auto">
-              <circle r="1" fill="var(--theme-sys-color-primary)"/>
-          </marker>
-          <marker id="rounddd" viewBox="-00 -00 100 100" markerWidth="1" orient="0" refX="50" refY="50">
-          <path d="M0,50 a1,1 1 0,0 100,0"/>
-          </marker>
-          <!-- A marker to be used as an arrowhead -->
-          <marker
-            id="arrowww"
-            viewBox="0 0 10 10"
-            refX="5"
-            refY="5"
-            markerWidth="3"
-            markerHeight="2"
-            orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 5 z" />
-          </marker>          
-        </defs>
-        <path id="progress-path" d="${this.svg.path}" pathLength="100"
+        <path id="progress-path" d="${this.elements.path.svg}" pathLength="100"
           class="${classMap(this.classes.progress)}" style="${styleMap(this.styles.progress)}"
-          marker-start="url(#arrow)" marker-end="url(#arrow)"
+          marker-start="url(#myclip2)" marker-end="url(#myclip2)"
         />
       `;
     } else return svg``;
   }
 
-  // #TODO:
-  // Check for same parts for renderTrack...
-
-  renderScale() {
-    if (!this.haveElements) return;
-
-    if ((this.config.progpath.show.scale === 'colorstops') && (this.config.progpath.colorstops)) {
-      const gap = this.scale.gap;
-      let scale = { ...this.config.progpath.colorstops.scales.default };
-      scale.range = scale.max - scale.min;
-      let scaleParts = [...this.config.progpath.colorstops.colors];
-      let min = scaleParts.findIndex((part) => scale.min < part.value);
-      let max = scaleParts.findIndex((part) => part.value >= scale.max);
-
-      console.log('renderScale, gaps', gap, this.scale);
-      if (min !== -1) {
-        // Should remove entries below
-        let removedParts = scaleParts.splice(0, min - 1);
-        scaleParts[0].value = scale.min;
-      }
-      if (max === -1) {
-        // Add myself to end of list
-        scaleParts[scaleParts.length] = { value: scale.max };
-      } else {
-        let removedParts = scaleParts.splice(max, scaleParts.length - max);
-        scaleParts[scaleParts.length] = {
-          value: scale.max,
-          color: removedParts[0].color,
-        };
-      }
-      scaleParts.forEach((value, index, array) => value.range = index < array.length - 1 ? array[index + 1].value - value.value : 0);
-
-      let value = scaleParts[0];
-      let scaleWidth = Utils.calculateSvgDimension(this.config.progpath.scale.width);
-      let maskGap = (scaleWidth * 0.25 + gap / 2);
-      maskGap = scaleWidth / 1;
-      // Was gap * 2.75 or whatever
-      let maskBegin = svg`
+  getRoundStartOrEndMaskSvg(location, scalePart, scale, element, config) {
+    // console.log('getRoundStartOrEndMaskSvg', location, scalePart, scale, element, config);
+    // 'start', scaleParts[0], scale, this.elements.scale, this.config.progpath.scale
+    // location can be start or end
+    // value is colorstop stuff
+    // element is the element path and length
+    // config is about width...
+    let mySvg = '';
+    if (this.config.progpath.show.viz.linecap !== LINECAP_TYPE.ROUND_BEGIN_END) return mySvg;
+    if (location === 'start')
+      mySvg = svg`
           <defs>
           <clipPath id="cut-off-bottom">
             <rect x="0" y="0" width="100" height="50" />
@@ -1201,23 +1186,19 @@ export default class ProgressPathTool extends BaseTool {
             <path d="M 0 100 A 50 50 0 0 0 100 0" fill="white"/>
           </marker>
           <mask id="myclip" maskUnits="userSpaceOnUse">
-            <path id="99maskPath" d="${this.svg.scalePath}"
-            stroke-dasharray="${((value.range / scale.range * this.scaleLength))} ${this.scaleLength}"
-            stroke-dashoffset="-${(value.value - scale.min) / scale.range * this.scaleLength}"
+            <path id="99maskPath" d="${element.svg}"
+            stroke-dasharray="${((scalePart.range / scale.range * element.length))} ${element.length}"
+            stroke-dashoffset="-${(scalePart.value - scale.min) / scale.range * element.length}"
             fill="black" stroke="white"
-            stroke-width="${this.config.progpath.scale.width}em"
+            stroke-width="${config.width}em"
             stroke-linecap="none"
             marker-start="url(#round5)"
           />
           </mask>
           </defs>
           `;
-      value = scaleParts[scaleParts.length - 2];
-      scaleWidth = Utils.calculateSvgDimension(this.config.progpath.scale.width);
-      maskGap = (scaleWidth * 0.25 + gap / 2);
-      maskGap = scaleWidth / 1;
-      // Was gap * 2.75 or whatever
-      let maskEnd = svg`
+    if (location === 'end')
+      mySvg = svg`
           <defs>
           <clipPath id="cut-off-bottom">
             <rect x="0" y="0" width="100" height="50" />
@@ -1242,9 +1223,9 @@ export default class ProgressPathTool extends BaseTool {
           </marker>
           </mask>
           <mask id="mycliplast" maskUnits="userSpaceOnUse">
-            <path id="99maskPath" d="${this.svg.scalePath}"
-            stroke-dasharray="${((value.range / scale.range * this.scaleLength))} ${this.scaleLength}"
-            stroke-dashoffset="-${(value.value - scale.min) / scale.range * this.scaleLength + (gap / 2)}"
+            <path id="99maskPath" d="${this.elements.scale.svg}"
+            stroke-dasharray="${((scalePart.range / scale.range * this.elements.scale.length))} ${this.elements.scale.length}"
+            stroke-dashoffset="-${(scalePart.value - scale.min) / scale.range * this.elements.scale.length + (Number(scale.gap) / 2)}"
             fill="black" stroke="white"
             stroke-width="${this.config.progpath.scale.width}em"
             stroke-linecap="none"
@@ -1252,16 +1233,66 @@ export default class ProgressPathTool extends BaseTool {
           />
           </defs>
           `;
+
+    return mySvg;
+  }
+
+  // #TODO:
+  // Check for same parts for renderTrack...
+  renderScaleDashes() {
+    this.styles.dashes_scale['stroke-width'] = `${this.config.progpath.track.width}em`;
+    return svg`
+      <!-- Track Dashes Render -->
+      <path id="dashes-path" d="${this.elements.scale.svg}"
+      class="${classMap(this.classes.dashes_scale)}" style="${styleMap(this.styles.dashes_scale)}"
+      />
+    `;
+  }
+
+  renderScaleColorstops() {
+    if ((this.config.progpath.show.scale === SCALE_TYPE.COLORSTOPS) && (this.config.progpath.colorstops)) {
+      const gap = this.scale.gap;
+      let scale = { ...this.config.progpath.colorstops.scales.default };
+      scale.range = scale.max - scale.min;
+      scale.gap = gap;
+      let scaleParts = [...this.config.progpath.colorstops.colors];
+      let min = scaleParts.findIndex((part) => scale.min < part.value);
+      let max = scaleParts.findIndex((part) => part.value >= scale.max);
+
+      if (min !== -1) {
+        // Should remove entries below
+        let removedParts = scaleParts.splice(0, min - 1);
+        scaleParts[0].value = scale.min;
+      }
+      if (max === -1) {
+        // Add myself to end of list
+        scaleParts[scaleParts.length] = { value: scale.max };
+      } else {
+        let removedParts = scaleParts.splice(max, scaleParts.length - max);
+        scaleParts[scaleParts.length] = {
+          value: scale.max,
+          color: removedParts[0].color,
+        };
+      }
+      scaleParts.forEach((value, index, array) => value.range = index < array.length - 1 ? array[index + 1].value - value.value : 0);
+
+      let value = scaleParts[0];
+      const maskBegin = this.getRoundStartOrEndMaskSvg(
+          'start', scaleParts[0], scale, this.elements.scale, this.config.progpath.scale);
+
+      value = scaleParts[scaleParts.length - 2];
+      const maskEnd = this.getRoundStartOrEndMaskSvg(
+        'end', value, scale, this.elements.scale, this.config.progpath.scale);
+
       let paths = scaleParts.map((value, index, array) => {
         const fake = 1;
         const firstOrLast = ((index === 0) || (index === array.length - 1) || (array[Math.min(array.length - 1, index + 1)].range === 0));
-        console.log('scaleParts mapping', value, index);
         if (value.range === 0) return svg``;
         return svg`
           <!-- Scale Part Render -->
-          <path d="${this.svg.scalePath}"
-          stroke-dasharray="${value.range / scale.range * this.scaleLength - (index === 0 ? 0 : gap / 2)} ${this.scaleLength}"
-          stroke-dashoffset="-${(value.value - scale.min) / scale.range * this.scaleLength + ((index === 0 ? 0 : gap / 2))}"
+          <path d="${this.elements.scale.svg}"
+          stroke-dasharray="${value.range / scale.range * this.elements.scale.length - (index === 0 ? 0 : gap / 2)} ${this.elements.scale.length}"
+          stroke-dashoffset="-${(value.value - scale.min) / scale.range * this.elements.scale.length + ((index === 0 ? 0 : gap / 2))}"
           fill="none" stroke="${value.color}"
           stroke-width="${this.config.progpath.scale.width}em"
           stroke-linecap="${firstOrLast ? 'round' : 'none'}"
@@ -1270,35 +1301,8 @@ export default class ProgressPathTool extends BaseTool {
           />          
         `;
       });
-      // console.log('renderTrack', scale, trackParts, min, max, paths);
-      let width = Utils.calculateSvgDimension(this.config.progpath.scale.width);
-      let startHalfCircle = svg`
-        <g >
-          <path d="M${this.scale.x + 0.5 - width * 0.75},${this.scale.cy - width * 0.25} a1,1 1 0,0 ${width},0"
-          fill="darkgreen" style="transform-origin:center;transform-box:fill-box;rotate:90deg;"/>
-        </g>
-        `;
-        let endHalfCircle = svg`
-        <g >
-          <path d="M${this.scale.x + this.scale.width - 0.5 - width * 0.25},${this.scale.cy - width * 0.25} a1,1 1 0,0 ${width},0"
-          fill="red" style="transform-origin:center;transform-box:fill-box;rotate:-90deg;"/>
-        </g>
-        `;
-
-      let startHalfCirclee = svg`
-        <svg viewBox="-00 -00 100 100" height="${this.config.progpath.scale.width}em"
-          x="${this.scale.x}" y="${this.scale.cy}" rotate="-90deg">
-          <path d="M0,50 a1,1 1 0,0 100,0" fill="red"/>
-        </svg>
-        `;
 
       return svg`
-        <defs>
-        <marker id="roundddd" viewBox="-1 -1 2 2" markerWidth="1" orient="auto">
-          <circle r="1" fill="black" stroke-width="0"/>
-        </marker>
-
-        </defs>
       <!-- Scale Parts Group Render -->
       <g id="scale-group" fill="none">
           ${maskBegin}
@@ -1306,25 +1310,40 @@ export default class ProgressPathTool extends BaseTool {
           ${paths};
         </g>
         `;
-    } else if (this.config.progpath.show.track === 'dashes') {
-      // console.log('setting stroke', this.styles);
-      this.styles.dashes_scale['stroke-width'] = `${this.config.progpath.track.width}em`;
-      return svg`
-        <!-- Track Dashes Render -->
-        <path id="dashes-path" d="${this.svg.scalePath}"
-        class="${classMap(this.classes.dashes_scale)}" style="${styleMap(this.styles.dashes_scale)}"
-        />
-      `;
-    } else return svg``;
+    }
   }
 
-  renderTrack() {
+  renderScale() {
     if (!this.haveElements) return;
 
-    if ((this.config.progpath.show.track === 'colorstops') && (this.config.progpath.colorstops)) {
+    switch (this.config.progpath.show.scale) {
+      case SCALE_TYPE.COLORSTOPS:
+        return this.renderScaleColorstops();
+        break;
+      case SCALE_TYPE.DASHES:
+        return this.renderScaleDashes();
+      default:
+        return svg``;
+        break;
+    }
+  }
+
+  renderTrackDashes() {
+    this.styles.dashes_scale['stroke-width'] = `${this.config.progpath.track.width}em`;
+    return svg`
+      <!-- Track Dashes Render -->
+      <path id="dashes-path" d="${this.elements.path.svg}"
+      class="${classMap(this.classes.dashes_scale)}" style="${styleMap(this.styles.dashes_scale)}"
+      />
+    `;
+  }
+
+  renderTrackColorstops() {
+    if ((this.config.progpath.show.track === TRACK_TYPE.COLORSTOPS) && (this.config.progpath.colorstops)) {
       const gap = Utils.calculateSvgDimension(this.config.progpath.colorstops.gap || 0);
       let scale = { ...this.config.progpath.colorstops.scales.default };
       scale.range = scale.max - scale.min;
+      scale.gap = gap;
       let trackParts = [...this.config.progpath.colorstops.colors];
       let min = trackParts.findIndex((part) => scale.min < part.value);
       let max = trackParts.findIndex((part) => part.value >= scale.max);
@@ -1346,38 +1365,117 @@ export default class ProgressPathTool extends BaseTool {
       }
       trackParts.forEach((value, index, array) => value.range = index < array.length - 1 ? array[index + 1].value - value.value : 0);
 
-      let paths = trackParts.map((value, index) => {
+      let value = trackParts[0];
+      let trackWidth = Utils.calculateSvgDimension(this.config.progpath.track.width);
+      let maskGap = (trackWidth * 0.25 + gap / 2);
+      maskGap = trackWidth / 1;
+      let maskBegin;
+      let maskBeginn;
+      // Was gap * 2.75 or whatever
+      maskBegin = this.getRoundStartOrEndMaskSvg(
+        'start', trackParts[0], scale, this.elements.path, this.config.progpath.track);
+      maskBeginn = svg`
+          <defs>
+          <clipPath id="cut-off-bottom">
+            <rect x="0" y="0" width="100" height="50" />
+          </clipPath>
+          <clipPath id="half55">
+            <rect x="-0.1" y="-1" width="1.1" height="2" />
+          </clipPath>
+          <marker id="half-circle" viewbox="0 0 100 100" markerWidth="1"
+            orient="auto-start-reverse" refX="50"refY="50"
+            <circle cx="50" cy="50" r="50" fill="white" clip-path="url(#cut-off-bottom)" />
+          </marker>
+          <marker id="round55" viewBox="-1 -1 2 2" markerWidth="1" orient="auto-start-reverse">
+              <circle r="1" fill="white" clip-path="url(#half55)"/>
+          </marker>
+          <marker id="cccircle" viewbox="0 0 100 100" markerWidth="50"
+            orient="auto" refX="50"refY="50"
+            <circle cx="50" cy="50" r="100" fill="white"/>
+          </marker>
+          <marker id="roundMask" viewBox="-00 -00 100 100" markerWidth="1"
+            orient="auto-start-reverse" refX="50" refY="50">
+            <path d="M 0 100 A 50 50 0 0 0 100 0" fill="white"/>
+          </marker>
+          <mask id="myclip2" maskUnits="userSpaceOnUse">
+            <path id="999maskPath" d="${this.elements.path.svg}"
+            stroke-dasharray="${((value.range / scale.range * this.elements.path.length))} ${this.elements.path.length}"
+            stroke-dashoffset="-${(value.value - scale.min) / scale.range * this.elements.path.length}"
+            fill="black" stroke="white"
+            stroke-width="${this.config.progpath.track.width}em"
+            stroke-linecap="none"
+            marker-start="url(#round55)"
+          />
+          </mask>
+          </defs>
+          `;
+      value = trackParts[trackParts.length - 2];
+      trackWidth = Utils.calculateSvgDimension(this.config.progpath.track.width);
+      maskGap = (trackWidth * 0.25 + gap / 2);
+      maskGap = trackWidth / 1;
+      // Was gap * 2.75 or whatever
+      let maskEndd;
+      let maskEnd;
+      maskEnd = this.getRoundStartOrEndMaskSvg(
+        'end', value, scale, this.elements.path, this.config.progpath.track);
+
+      maskEndd = svg`
+          <defs>
+          <clipPath id="cut-off-bottom">
+            <rect x="0" y="0" width="100" height="50" />
+          </clipPath>
+          <clipPath id="half55">
+            <rect x="-0.1" y="-1" width="1.1" height="2" />
+          </clipPath>
+          <marker id="half-circle" viewbox="0 0 100 100" markerWidth="1"
+            orient="auto-start-reverse" refX="50"refY="50"
+            <circle cx="50" cy="50" r="50" fill="white" clip-path="url(#cut-off-bottom)" />
+          </marker>
+          <marker id="round55" viewBox="-1 -1 2 2" markerWidth="1" orient="auto-start-reverse">
+              <circle r="1" fill="white" clip-path="url(#half55)"/>
+          </marker>
+          <marker id="cccircle" viewbox="0 0 100 100" markerWidth="50"
+            orient="auto" refX="50"refY="50"
+            <circle cx="50" cy="50" r="100" fill="white"/>
+          </marker>
+          <marker id="roundMask" viewBox="-00 -00 100 100" markerWidth="1"
+            orient="auto-start-reverse" refX="50" refY="50">
+            <path d="M 0 100 A 50 50 0 0 0 100 0" fill="white"/>
+          </marker>
+          </mask>
+          <mask id="mycliplast2" maskUnits="userSpaceOnUse">
+            <path id="999maskPath" d="${this.elements.path.svg}"
+            stroke-dasharray="${((value.range / scale.range * this.elements.path.length))} ${this.elements.path.length}"
+            stroke-dashoffset="-${(value.value - scale.min) / scale.range * this.elements.path.length + (gap / 2)}"
+            fill="black" stroke="white"
+            stroke-width="${this.config.progpath.track.width}em"
+            stroke-linecap="none"
+            marker-end="url(#round55)"
+          />
+          </defs>
+          `;
+      let paths = trackParts.map((value, index, array) => {
         const fake = 1;
+        const firstOrLast = ((index === 0) || (index === array.length - 1) || (array[Math.min(array.length - 1, index + 1)].range === 0));
         if (value.range === 0) return svg``;
         return svg`
           <!-- Track Part Render -->
-          <path d="${this.svg.path}"
-          stroke-dasharray="${value.range / scale.range * this.length - (index === 0 ? 0 : gap / 2)} ${this.length}"
-          stroke-dashoffset="-${(value.value - scale.min) / scale.range * this.length + ((index === 0 ? 0 : gap / 2))}"
+          <path d="${this.elements.path.svg}"
+          stroke-dasharray="${value.range / scale.range * this.elements.path.length - (index === 0 ? 0 : gap / 2)} ${this.elements.path.length}"
+          stroke-dashoffset="-${(value.value - scale.min) / scale.range * this.elements.path.length + ((index === 0 ? 0 : gap / 2))}"
           fill="none" stroke="${value.color}"
           stroke-width="${this.config.progpath.track.width}em"
-          marker-start="${index === 0 ? 'url(#round)' : 'none'}"
+          stroke-linecap="${firstOrLast ? 'round' : 'none'}"
+          marker-start="${index === 0 ? 'url(#rrroundd)' : 'none'}"
+          mask="${index === 0 ? 'url(#myclip2)' : firstOrLast ? 'url(#mycliplast2)' : 'none'}"
           />          
         `;
       });
-      // console.log('renderTrack', scale, trackParts, min, max, paths);
-      let width = Utils.calculateSvgDimension(this.config.progpath.track.width);
-      let startHalfCircle = svg`
-        <g >
-          <path d="M${this.track.x + 0.5 - width * 0.75},${this.track.cy - width * 0.25} a1,1 1 0,0 ${width},0"
-          fill="darkgreen" style="transform-origin:center;transform-box:fill-box;rotate:90deg;"/>
-        </g>
-        `;
-        let endHalfCircle = svg`
-        <g >
-          <path d="M${this.scale.x + this.scale.width - 0.5 - width * 0.25},${this.scale.cy - width * 0.25} a1,1 1 0,0 ${width},0"
-          fill="red" style="transform-origin:center;transform-box:fill-box;rotate:-90deg;"/>
-        </g>
-        `;
+
       return svg`
         <defs>
         <clipPath id="progress-clippathh" clipUnits="userSpaceOnUse">
-          <path d="${this.svg.path}" pathLength="100"
+          <path d="${this.elements.path.svg}" pathLength="100"
           stroke-dasharry="50 100"
           stroke-width="8"
           />
@@ -1389,19 +1487,27 @@ export default class ProgressPathTool extends BaseTool {
         </defs>
       <!-- Scale Parts Group Render -->
       <g id="path-group" mask="url(#progress-maskpath)">
-        ${paths};
+      ${maskBegin}
+      ${maskEnd}      
+      ${paths};
     </g>
-        `;
-    } else if (this.config.progpath.show.track === 'dashes') {
-      // console.log('setting stroke', this.styles);
-      this.styles.dashes_scale['stroke-width'] = `${this.config.progpath.track.width}em`;
-      return svg`
-        <!-- Track Dashes Render -->
-        <path id="dashes-path" d="${this.svg.path}"
-        class="${classMap(this.classes.dashes_scale)}" style="${styleMap(this.styles.dashes_scale)}"
-        />
-      `;
-    } else return svg``;
+    `;
+    }
+  }
+
+  renderTrack() {
+    if (!this.haveElements) return;
+
+    switch (this.config.progpath.show.track) {
+      case TRACK_TYPE.COLORSTOPS:
+        return this.renderTrackColorstops();
+        break;
+      case TRACK_TYPE.DASHES:
+        return this.renderTrackDashes();
+      default:
+        return svg``;
+        break;
+    }
   }
 
   shouldUpdate(changedProperties) {
@@ -1422,7 +1528,6 @@ export default class ProgressPathTool extends BaseTool {
   */
 
   render() {
-    // console.log('render...');
     if (this._card.dev.real) {
       // For now, scale to 0..100 range!
       console.log('rendering with real values...', this._stateValue, this._stateValuePrev);
@@ -1440,8 +1545,9 @@ export default class ProgressPathTool extends BaseTool {
       <g "" id="ProgressPath-${this.toolId}"
         class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
-        ${this._renderProgressPath()}
-      </g>
+        ${this.renderProgressTool()}
+        ${this.renderSpiral()}
+        </g>
     `;
   }
   // ${this.renderSpiral()}
