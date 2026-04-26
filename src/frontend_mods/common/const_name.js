@@ -34,7 +34,7 @@ export const FIXED_DOMAIN_ICONS_NAME = {
   schedule: 'mdi:calendar-clock',
   script: 'mdi:script-text',
   select: 'mdi:format-list-bulleted',
-  sensor: 'mdi:Eye',
+  sensor: 'mdi:eye',
   simple_alarm: 'mdi:bell',
   siren: 'mdi:bullhorn',
   stt: 'mdi:microphone-message',

@@ -105,6 +105,16 @@ export default class EntityIconTool extends BaseTool {
   *
   */
   _buildIcon(entityState, entityConfig, toolIcon) {
+    // Temp
+    let myIcon;
+    myIcon = (
+    this.activeAnimation?.icon // Icon from animation
+    || toolIcon // Defined by tool
+    || entityConfig?.icon // Defined by configuration
+    || entityState?.attributes?.icon // Using entity icon
+    || stateIconName(entityState) // From modified HA files
+    );
+    console.log('buildIcon', myIcon); // , entityState, entityConfig, toolIcon);
     return (
       this.activeAnimation?.icon // Icon from animation
       || toolIcon // Defined by tool

@@ -74,6 +74,7 @@ export default class Utils {
     root = root && root.shadowRoot;
     root = root && root.querySelector('hui-root');
     if (root) {
+      console.log('getLoveLace, root', root, root.lovelace);
       const ll = root.lovelace;
       ll.current_view = root.___curView;
       return ll;

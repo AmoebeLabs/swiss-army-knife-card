@@ -26,6 +26,9 @@ import TextTool from './text-tool';
 import UserSvgTool from './user-svg-tool';
 import Colors from './colors';
 
+// Experimental, WIP
+import ProgressPathTool from './progress-path-tool';
+
 /** ***************************************************************************
   * Toolset class
   *
@@ -111,6 +114,7 @@ export default class Toolset {
       switch: SwitchTool,
       text: TextTool,
       usersvg: UserSvgTool,
+      progpath: ProgressPathTool,
     };
 
     this.config.tools.map((toolConfig) => {
@@ -266,6 +270,46 @@ export default class Toolset {
   }
 
   /** *****************************************************************************
+  * Toolset::willUpdate()
+  *
+  * Summary.
+  *
+  */
+  willUpdate(changedProperties) {
+    if (this.dev.debug) console.log('*****Event - willUpdate', this.toolsetId, new Date().getTime());
+
+    if (this.tools) {
+      this.tools.map((item) => {
+        if (typeof item.tool.willUpdate === 'function') {
+          item.tool.willUpdate(changedProperties);
+          return true;
+        }
+        return false;
+      });
+    }
+  }
+
+  /** *****************************************************************************
+  * Toolset::shouldUpdate()
+  *
+  * Summary.
+  *
+  */
+  shouldUpdate(changedProperties) {
+    if (this.dev.debug) console.log('*****Event - shouldUpdate', this.toolsetId, new Date().getTime());
+
+    if (this.tools) {
+      this.tools.map((item) => {
+        if (typeof item.tool.shouldUpdate === 'function') {
+          item.tool.shouldUpdate(changedProperties);
+          return true;
+        }
+        return false;
+      });
+    }
+  }
+
+  /** *****************************************************************************
   * Toolset::renderToolset()
   *
   * Summary.
@@ -302,8 +346,8 @@ export default class Toolset {
     // Note:
     // Rotating a card can produce different results on several browsers.
     // A 1:1 card / toolset gives the same results, but other aspect ratio's may give different results.
-
-    if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafari16)) {
+    // if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafariGte16)) {
+    if (((this._card.isSafari) || (this._card.iOS)) && (!(this._card.isSafari16 || this._card.isSafari17 || this._card.isSafari18))) {
       //
       // Render path for Safari if not Safari 16:
       //

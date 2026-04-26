@@ -299,6 +299,8 @@ export default class Colors {
   */
 
   static colorToRGBA(argColor) {
+    if (argColor == null) return ([0, 0, 0, 0]);
+
     // return color if found in colorCache...
     const retColor = Colors.colorCache[argColor];
     if (retColor) return retColor;
