@@ -114,7 +114,7 @@ export default class EntityIconTool extends BaseTool {
     || entityState?.attributes?.icon // Using entity icon
     || stateIconName(entityState) // From modified HA files
     );
-    console.log('buildIcon', myIcon); // , entityState, entityConfig, toolIcon);
+//    console.log('buildIcon', myIcon); // , entityState, entityConfig, toolIcon);
     return (
       this.activeAnimation?.icon // Icon from animation
       || toolIcon // Defined by tool
@@ -184,23 +184,32 @@ export default class EntityIconTool extends BaseTool {
       }
     }
 
-    if (!this.alternateColor) { this.alternateColor = 'rgba(0,0,0,0)'; }
+    if (!this.alternateColor) {
+      this.alternateColor = 'rgba(0,0,0,0)';
+    }
 
-    if (!EntityIconTool.sakIconCache[icon]) {
-      const theQuery = this._card.shadowRoot.getElementById('icon-'.concat(this.toolId))?.shadowRoot?.querySelectorAll('*');
-      if (theQuery) {
-        this.iconSvg = theQuery[0]?.path;
-      } else {
-        this.iconSvg = undefined;
-      }
+    // if (!EntityIconTool.sakIconCache[icon]) {
+    //   const theQuery = this._card.shadowRoot.getElementById('icon-'.concat(this.toolId))?.shadowRoot?.querySelectorAll('*');
+    //   if (theQuery) {
+    //     this.iconSvg = theQuery[0]?.path;
+    //   } else {
+    //     this.iconSvg = undefined;
+    //   }
 
-      if (this.iconSvg) {
-        EntityIconTool.sakIconCache[icon] = this.iconSvg;
-        // console.log('EntityIconTool, cache - Store: ', icon);
-      }
-    } else {
+    //   if (this.iconSvg) {
+    //     EntityIconTool.sakIconCache[icon] = this.iconSvg;
+    //     // console.log('EntityIconTool, cache - Store: ', icon);
+    //   }
+    // } else {
+    //   this.iconSvg = EntityIconTool.sakIconCache[icon];
+    //   // console.log('EntityIconTool, cache - Fetch: ', icon);
+    // }
+
+    if (EntityIconTool.sakIconCache[icon]) {
       this.iconSvg = EntityIconTool.sakIconCache[icon];
-      // console.log('EntityIconTool, cache - Fetch: ', icon);
+    } else {
+      this.iconSvg = undefined;
+      this._scheduleIconPathRead(icon);
     }
 
     let scale;
@@ -229,21 +238,33 @@ export default class EntityIconTool extends BaseTool {
         <g id="icon-${this.toolId}" class="${classMap(this.classes.icon)}" style="${styleMap(this.styles.icon)}" x="${this.svg.x1}px" y="${this.svg.y1}px" transform-origin="${this.svg.cx} ${this.svg.cy}">
           <rect x="${this.svg.x1}" y="${this.svg.y1}" height="${this.svg.iconPixels}px" width="${this.svg.iconPixels}px" stroke-width="0px" fill="rgba(0,0,0,0)"></rect>
           <path d="${this.iconSvg}" transform="translate(${this.svg.x1},${this.svg.y1}) scale(${scale})"></path>
-        <g>
+        </g>
       `;
     } else {
       // Note @2022.06.26
       // overflow="hidden" is ignored by latest and greatest Safari 15.5. Wow. Nice! Good work!
       // So use a fill/color of rgba(0,0,0,0)...
+      // return svg`
+      //   <foreignObject width="0px" height="0px" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="hidden">
+      //     <body>
+      //       <div class="div__icon, hover" xmlns="http://www.w3.org/1999/xhtml"
+      //           style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};fill:${this.alternateColor};color:${this.alternateColor};">
+      //           <ha-icon icon=${icon} id="icon-${this.toolId}"
+      //           @animationstart=${(e) => this._handleAnimationEvent(e, this)}
+      //           @animationiteration=${(e) => this._handleAnimationEvent(e, this)}
+      //           style="animation: flash 0.15s 20;"></ha-icon>
+      //       </div>
+      //     </body>
+      //   </foreignObject>
+      //   `;
+
       return svg`
         <foreignObject width="0px" height="0px" x="${this.svg.xpx}" y="${this.svg.ypx}" overflow="hidden">
           <body>
             <div class="div__icon, hover" xmlns="http://www.w3.org/1999/xhtml"
                 style="line-height:${this.svg.iconPixels}px;position:relative;border-style:solid;border-width:0px;border-color:${this.alternateColor};fill:${this.alternateColor};color:${this.alternateColor};">
                 <ha-icon icon=${icon} id="icon-${this.toolId}"
-                @animationstart=${(e) => this._handleAnimationEvent(e, this)}
-                @animationiteration=${(e) => this._handleAnimationEvent(e, this)}
-                style="animation: flash 0.15s 20;"></ha-icon>
+                ></ha-icon>
             </div>
           </body>
         </foreignObject>
@@ -261,7 +282,74 @@ export default class EntityIconTool extends BaseTool {
     }
   }
 
-  // eslint-disable-next-line no-unused-vars
+  _getRenderedHaIconPath() {
+    const iconElement = this._card.shadowRoot.getElementById('icon-'.concat(this.toolId));
+
+    return iconElement?.shadowRoot?.querySelector('*')?.path;
+  }
+
+  _scheduleIconPathRead(icon) {
+    if (!icon) return;
+
+    if (EntityIconTool.sakIconCache[icon]) {
+      this.iconSvg = EntityIconTool.sakIconCache[icon];
+      return;
+    }
+
+    if (this._pendingIconPath === icon) {
+      return;
+    }
+
+    this._pendingIconPath = icon;
+
+    let attempts = 0;
+    const maxAttempts = 40;
+    const delay = 50;
+
+    const readIconPath = () => {
+      if (this._pendingIconPath !== icon) {
+        return;
+      }
+
+      if (EntityIconTool.sakIconCache[icon]) {
+        this.iconSvg = EntityIconTool.sakIconCache[icon];
+        this._pendingIconPath = undefined;
+        this._card.requestUpdate();
+        return;
+      }
+
+      const iconSvg = this._getRenderedHaIconPath();
+
+      if (iconSvg) {
+        this.iconSvg = iconSvg;
+        EntityIconTool.sakIconCache[icon] = iconSvg;
+        this._pendingIconPath = undefined;
+        this._card.requestUpdate();
+        return;
+      }
+
+      attempts += 1;
+
+      if (attempts >= maxAttempts) {
+        this._pendingIconPath = undefined;
+        return;
+      }
+
+      this._iconPathTimer = window.setTimeout(readIconPath, delay);
+    };
+
+    const afterRender = this._card.updateComplete
+      && typeof this._card.updateComplete.then === 'function'
+      ? this._card.updateComplete
+      : new Promise((resolve) => {
+        window.requestAnimationFrame(resolve);
+      });
+
+    afterRender.then(() => {
+      this._iconPathTimer = window.setTimeout(readIconPath, 0);
+    });
+  }
+
   firstUpdated(changedProperties) {
 
   }
