@@ -314,7 +314,7 @@ export default class Colors {
 
     // Get color from canvas. This always returns an rgba() value...
     const canvas = window.document.createElement('canvas');
-    // eslint-disable-next-line no-multi-assign
+
     canvas.width = canvas.height = 1;
     const ctx = canvas.getContext('2d');
 
@@ -340,7 +340,6 @@ export default class Colors {
     if (s === 0) {
       r = g = b = l; // achromatic
     } else {
-      // eslint-disable-next-line no-inner-declarations
       function hue2rgb(p, q, t) {
         if (t < 0) t += 1;
         if (t > 1) t -= 1;

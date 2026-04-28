@@ -220,7 +220,9 @@ export default class HorseshoeTool extends BaseTool {
     const angleStepSize = (fullScale - startAngle) / tickSteps;
 
     // If steps exactly match the max. value/range, add extra step for that max value.
-    if ((Math.floor(((steps) * tickSize) + startTickValue)) <= (config.horseshoe_scale.max)) { steps += 1; }
+    if ((Math.floor(((steps) * tickSize) + startTickValue)) <= (config.horseshoe_scale.max)) {
+      steps += 1;
+    }
 
     const radius = this.svg.horseshoe_scale.width ? this.svg.horseshoe_scale.width / 2 : 6 / 2;
     let angle;

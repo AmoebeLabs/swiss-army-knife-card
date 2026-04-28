@@ -100,7 +100,8 @@ const interpolateStops = (stops) => {
     const m = (rightValue - leftValue) / (rightValuedIndex - leftValuedIndex);
     return {
       color: typeof stop === 'string' ? stop : stop.color,
-      value: m * stopIndex + leftValue,
+//      value: m * stopIndex + leftValue,
+      value: leftValue + (m * (stopIndex - leftValuedIndex)),
     };
   });
 };
@@ -358,7 +359,6 @@ export default class SparklineGraphTool extends BaseTool {
     this.styles.helper_line2 = {};
     this.styles.helper_line3 = {};
 
-    // eslint-disable-next-line dot-notation
     this.styles.tool = {};
     this.styles.bar = {};
     this.styles.line = {};
@@ -438,7 +438,7 @@ export default class SparklineGraphTool extends BaseTool {
       this.config.sparkline.colorstops_transition,
     );
 
-    this.radialBarcodeChartWidth = Utils.calculateSvgDimension(this.config?.radial_barcode?.size || 5);
+    this.radialBarcodeChartWidth = Utils.calculateSvgDimension(this.config?.sparkline?.radial_barcode?.size || 5);
     // Graph settings
     this.svg.graph = {};
     this.svg.graph.height = this.svg.height - this.svg.margin.y * 0;
@@ -584,7 +584,7 @@ export default class SparklineGraphTool extends BaseTool {
 
         // +++++ Check for 'bar' graph type
         if (config.sparkline.show.chart_type === 'bar') {
-          this.bar[i] = this.Graph[i].getBars(graphPos, numVisible, this.svg.colomn_spacing); // config.bar_spacing);
+          this.bar[i] = this.Graph[i].getBars(graphPos, numVisible, this.svg.column_spacing); // config.bar_spacing);
           graphPos += 1;
           // Add the next 4 lines as a hack
           if (config.sparkline.colorstops.colors.length > 0 && !this._card.config.entities[i].color)
@@ -1687,7 +1687,8 @@ renderSvgRadialBarcodeBackground(radius) {
 }
 
 renderSvgRadialBarcodeFace(radius) {
-  if (!this.config?.clock?.face) return svg``;
+//  if (!this.config?.clock?.face) return svg``;
+  if (!this.config?.radial_barcode?.face) return svg``;
   const renderDayNight = () => (
     this.config.radial_barcode.face?.show_day_night === true
       ? svg`
@@ -1901,7 +1902,7 @@ renderSvg() {
           ${this.renderSvgGradient(this.gradient)}
         </defs>
         <!-- Sparkline Tool Graph Area -->
-        <svg viewbox="0 0 ${this.svg.width} ${this.svg.height}"
+        <svg viewBox="0 0 ${this.svg.width} ${this.svg.height}"
          overflow="visible"
         >
         ${this.area.map((fill, i) => this.renderSvgAreaMask(fill, i))}

@@ -259,7 +259,7 @@ export default class RangeSliderTool extends BaseTool {
       // eslint-disable-next-line default-case-last
       default:
       case 'horizontal':
-        // eslint-disable-next-line no-empty
+
         if (this.config.position.label.placement === 'thumb') {
         }
 
@@ -379,7 +379,6 @@ export default class RangeSliderTool extends BaseTool {
     }
   }
 
-  // eslint-disable-next-line no-unused-vars
   firstUpdated(changedProperties) {
     // const thisValue = this;
     this.labelValue = this._stateValue;
@@ -638,8 +637,10 @@ export default class RangeSliderTool extends BaseTool {
         cy = (this.config.position.orientation === 'vertical'
           ? this.valueToSvg(this, Number(this.renderValue))
           : 0);
-        // eslint-disable-next-line no-unused-expressions
-        if (this.dragging) { (this.config.position.orientation === 'horizontal') ? cy -= 50 : cx -= 50; }
+
+        if (this.dragging) {
+          (this.config.position.orientation === 'horizontal') ? cy -= 50 : cx -= 50;
+        }
         break;
 
       default:

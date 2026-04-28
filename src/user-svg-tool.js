@@ -116,7 +116,7 @@ export default class UserSvgTool extends BaseTool {
    * @param {()} changedProperties
    * @returns
    */
-  // eslint-disable-next-line no-unused-vars
+
   updated(changedProperties) {
     var myThis = this;
 
@@ -135,7 +135,9 @@ export default class UserSvgTool extends BaseTool {
         //
         // If loading failed, the options.svginject is set to false, so image will be
         // rendered as external image, if possible!
-        setTimeout(() => { myThis._card.requestUpdate(); }, 0);
+        setTimeout(() => {
+          myThis._card.requestUpdate();
+        }, 0);
       },
       afterEach(err, svg) {
         if (err) {

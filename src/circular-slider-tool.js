@@ -5,8 +5,10 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 import Merge from './merge';
 import Utils from './utils';
 import BaseTool from './base-tool';
-// eslint-disable-next-line object-curly-newline
-import { angle360, range, round, clamp } from './const';
+
+import {
+ angle360, range, round, clamp,
+} from './const';
 
 /** ****************************************************************************
   * CircularSliderTool::constructor class
@@ -222,7 +224,6 @@ export default class CircularSliderTool extends BaseTool {
 
   // From roundSlider... https://github.com/soundar24/roundSlider/blob/master/src/roundslider.js
 
-  // eslint-disable-next-line no-unused-vars
   pointToAngle360(point, center, isDrag) {
     const radian = Math.atan2(point.y - center.y, center.x - point.x);
     let angle = (-radian / (Math.PI / 180));
@@ -347,7 +348,6 @@ export default class CircularSliderTool extends BaseTool {
     this.updateLabel(m);
   }
 
-  // eslint-disable-next-line no-unused-vars
   updateActiveTrack(m) {
     const min = this.config.scale.min || 0;
     const max = this.config.scale.max || 100;
@@ -422,7 +422,6 @@ export default class CircularSliderTool extends BaseTool {
     );
   }
 
-  // eslint-disable-next-line no-unused-vars
   firstUpdated(changedProperties) {
     this.labelValue = this._stateValue;
 
