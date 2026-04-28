@@ -212,7 +212,9 @@ export default class BaseTool {
       if (this.dev.debug) console.log('BaseTool, animation, match, value, config, operator', isMatch, this._stateValue, item.state, item.operator);
       if (!isMatch) return true;
 
-      if (!this.animationClass || !item.reuse) { this.animationClass = {}; }
+      if (!this.animationClass || !item.reuse) {
+        this.animationClass = {};
+      }
       if (item.classes) {
         this.animationClass = Merge.mergeDeep(this.animationClass, item.classes);
       }
@@ -342,11 +344,9 @@ export default class BaseTool {
     for (let index = 0; index < states.length; ++index) {
       // state = states[index];
 
-      // eslint-disable-next-line no-empty
       if (typeof (localStates[index]) !== 'undefined') if (this._stateValues[index]?.toLowerCase() === localStates[index].toLowerCase()) {} else {
         // State has changed, process...
 
-        // eslint-disable-next-line no-lonely-if
         if (this.config.derived_entities) {
           this.derivedEntities[index] = Templates.getJsTemplateOrValue(this, states[index], Merge.mergeDeep(this.config.derived_entities[index]));
 
@@ -362,7 +362,6 @@ export default class BaseTool {
 
       this.activeAnimation = null;
 
-      // eslint-disable-next-line no-loop-func, no-unused-vars
       if (this.config.animations) Object.keys(this.config.animations.map((aniKey, aniValue) => {
         const statesIndex = this.getIndexInEntityIndexes(this.getEntityIndexFromAnimation(aniKey));
         // Comment here...

@@ -106,7 +106,9 @@ export default class RectangleToolEx extends BaseTool {
       this.MergeColorFromState(this.styles.rectex);
     }
 
-    if (!this.counter) { this.counter = 0; }
+    if (!this.counter) {
+      this.counter = 0;
+    }
     this.counter += 1;
 
     const svgItems = svg`

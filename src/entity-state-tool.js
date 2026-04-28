@@ -214,7 +214,9 @@ export default class EntityStateTool extends BaseTool {
 
     const stateObj = this._card.entities[this.defaultEntityIndex()];
     if (stateObj === undefined) return svg``;
-    if ([undefined, 'undefined'].includes(inState)) { return svg``; }
+    if ([undefined, 'undefined'].includes(inState)) {
+ return svg``;
+}
     if (inState === undefined) return svg``;
 
     // Need entities, not states to get platform, translation_key, etc.!!!!!
@@ -321,11 +323,9 @@ export default class EntityStateTool extends BaseTool {
     }
   }
 
-  // eslint-disable-next-line no-unused-vars
   firstUpdated(changedProperties) {
   }
 
-  // eslint-disable-next-line no-unused-vars
   updated(changedProperties) {
   }
 

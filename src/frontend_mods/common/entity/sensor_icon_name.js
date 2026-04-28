@@ -9,7 +9,7 @@ export const sensorIconName = (stateObj) => {
   const dclass = stateObj?.attributes.device_class;
 
   // Temp
-  console.log('sensorIconName', stateObj);
+  // console.log('sensorIconName', stateObj);
 
   if (dclass && dclass in FIXED_DEVICE_CLASS_ICONS_NAME) {
     return FIXED_DEVICE_CLASS_ICONS_NAME[dclass];

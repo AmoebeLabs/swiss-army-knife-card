@@ -66,21 +66,19 @@ export default class Toolset {
     // Group scaling experiment. Calc translate values for SVG using the toolset scale value
     this.transform = {};
     this.transform.scale = {};
-    // eslint-disable-next-line no-multi-assign
+
     this.transform.scale.x = this.transform.scale.y = 1;
     this.transform.rotate = {};
-    // eslint-disable-next-line no-multi-assign
+
     this.transform.rotate.x = this.transform.rotate.y = 0;
     this.transform.skew = {};
-    // eslint-disable-next-line no-multi-assign
+
     this.transform.skew.x = this.transform.skew.y = 0;
 
     if (this.config.position.scale) {
-      // eslint-disable-next-line no-multi-assign
       this.transform.scale.x = this.transform.scale.y = this.config.position.scale;
     }
     if (this.config.position.rotate) {
-      // eslint-disable-next-line no-multi-assign
       this.transform.rotate.x = this.transform.rotate.y = this.config.position.rotate;
     }
 
@@ -346,8 +344,8 @@ export default class Toolset {
     // Note:
     // Rotating a card can produce different results on several browsers.
     // A 1:1 card / toolset gives the same results, but other aspect ratio's may give different results.
-    // if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafariGte16)) {
-    if (((this._card.isSafari) || (this._card.iOS)) && (!(this._card.isSafari16 || this._card.isSafari17 || this._card.isSafari18))) {
+    if (((this._card.isSafari) || (this._card.iOS)) && (!this._card.isSafariGte16)) {
+    // if (((this._card.isSafari) || (this._card.iOS)) && (!(this._card.isSafari16 || this._card.isSafari17 || this._card.isSafari18))) {
       //
       // Render path for Safari if not Safari 16:
       //

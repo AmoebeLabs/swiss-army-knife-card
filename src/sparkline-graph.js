@@ -86,15 +86,25 @@ export default class SparklineGraph {
     this.radialBarcodeSize = Utils.calculateSvgDimension(this.config.sparkline?.radial_barcode?.size || 5);
   }
 
-  get max() { return this._max; }
+  get max() {
+ return this._max;
+}
 
-  set max(max) { this._max = max; }
+  set max(max) {
+ this._max = max;
+}
 
-  get min() { return this._min; }
+  get min() {
+ return this._min;
+}
 
-  set min(min) { this._min = min; }
+  set min(min) {
+ this._min = min;
+}
 
-  set history(data) { this._history = data; }
+  set history(data) {
+ this._history = data;
+}
 
   update(history = undefined) {
     if (history) {
@@ -216,14 +226,16 @@ export default class SparklineGraph {
     const key = interval < 0 ? Math.floor(Math.abs(interval)) : 0;
     if (!res[0]) res[0] = [];
     if (!res[1]) res[1] = [];
-    if (!res[0][key]) { res[0][key] = {}; res[1][key] = {}; }
+    if (!res[0][key]) {
+ res[0][key] = {}; res[1][key] = {};
+}
     // Min value is always 0. So something goes wrong with Number I guess??
     // If item.state invalid, then returns 0 ???
     res[0][key].state = Math.min(res[0][key].state ? res[0][key].state : Number.POSITIVE_INFINITY, item.state);
     res[0][key].haState = Math.min(res[0][key].haState ? res[0][key].haState : Number.POSITIVE_INFINITY, item.haState);
     // Max seems to be OK!
-    res[1][key].state = Math.max(res[1][key].state ? res[0][key].state : Number.NEGATIVE_INFINITY, item.state);
-    res[1][key].haState = Math.max(res[1][key].haState ? res[0][key].haState : Number.NEGATIVE_INFINITY, item.haState);
+    res[1][key].state = Math.max(res[1][key].state ? res[1][key].state : Number.NEGATIVE_INFINITY, item.state);
+    res[1][key].haState = Math.max(res[1][key].haState ? res[1][key].haState : Number.NEGATIVE_INFINITY, item.haState);
     return res;
   }
 
@@ -838,7 +850,8 @@ export default class SparklineGraph {
       }
 
       for (let i = 0; i <= stepRange; i++) {
-        if (i <= matchStep) newCoord[V][i] = this.gradeRanks[i].length > matchBucket ? this.gradeRanks[i].rangeMin[matchBucket] : this.gradeRanks[i].rangeMin[0];
+//        if (i <= matchStep) newCoord[V][i] = this.gradeRanks[i].length > matchBucket ? this.gradeRanks[i].rangeMin[matchBucket] : this.gradeRanks[i].rangeMin[0];
+        if (i <= matchStep) newCoord[V][i] = this.gradeRanks[i].rangeMin.length > matchBucket ? this.gradeRanks[i].rangeMin[matchBucket] : this.gradeRanks[i].rangeMin[0];
         newCoord[Y][i] = this.drawArea.height + this.margin.t - i * (bucketHeight + rowSpacing);
       }
       return newCoord;
@@ -879,7 +892,8 @@ export default class SparklineGraph {
   }
 
   _median(items) {
-    const itemsDup = [...items].sort((a, b) => parseFloat(a) - parseFloat(b));
+//    const itemsDup = [...items].sort((a, b) => parseFloat(a) - parseFloat(b));
+    const itemsDup = [...items].sort((a, b) => parseFloat(a.state) - parseFloat(b.state));
     const mid = Math.floor((itemsDup.length - 1) / 2);
     if (itemsDup.length % 2 === 1)
       return parseFloat(itemsDup[mid].state);

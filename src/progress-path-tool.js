@@ -149,7 +149,8 @@ const interpolateStops = (stops) => {
     const m = (rightValue - leftValue) / (rightValuedIndex - leftValuedIndex);
     return {
       color: typeof stop === 'string' ? stop : stop.color,
-      value: m * stopIndex + leftValue,
+//      value: m * stopIndex + leftValue,
+      value: leftValue + (m * (stopIndex - leftValuedIndex)),
     };
   });
 };
@@ -188,6 +189,7 @@ export default class ProgressPathTool extends BaseTool {
         cy: 50,
         width: 80,
         height: 80,
+        radius: 0,
       },
       progpath: {
         show: {
@@ -1003,29 +1005,37 @@ export default class ProgressPathTool extends BaseTool {
 
     const sidesToDo = [];
     // sidesToDo.top = [];
-    // eslint-disable-next-line object-curly-newline
-    sidesToDo.top = { right: 'tr', bottom: 'trb', left: 'trbl', top: 'trblt' };
+
+    sidesToDo.top = {
+      right: 'tr', bottom: 'trb', left: 'trbl', top: 'trblt',
+    };
     // sidesToDo.top.right = 'tr';
     // sidesToDo.top.bottom = 'trb';
     // sidesToDo.top.left = 'trbl';
     // sidesToDo.top.top = 'trblt';
     // sidesToDo.right = [];
-    // eslint-disable-next-line object-curly-newline
-    sidesToDo.right = { bottom: 'rb', left: 'rbl', top: 'rblt', right: 'bltrb' };
+
+    sidesToDo.right = {
+      bottom: 'rb', left: 'rbl', top: 'rblt', right: 'bltrb',
+    };
     // sidesToDo.right.bottom = 'rb';
     // sidesToDo.right.left = 'rbl';
     // sidesToDo.right.top = 'rblt';
     // sidesToDo.right.right = 'rbltr';
     // sidesToDo.bottom = [];
-    // eslint-disable-next-line object-curly-newline
-    sidesToDo.bottom = { left: 'bl', top: 'blt', right: 'bltr', bottom: 'bltrb' };
+
+    sidesToDo.bottom = {
+      left: 'bl', top: 'blt', right: 'bltr', bottom: 'bltrb',
+    };
     // sidesToDo.bottom.left = 'bl';
     // sidesToDo.bottom.top = 'blt';
     // sidesToDo.bottom.right = 'bltr';
     // sidesToDo.bottom.bottom = 'bltrb';
     // sidesToDo.left = [];
-    // eslint-disable-next-line object-curly-newline
-    sidesToDo.left = { top: 'lt', right: 'ltr', bottom: 'ltrb', left: 'ltrbl' };
+
+    sidesToDo.left = {
+      top: 'lt', right: 'ltr', bottom: 'ltrb', left: 'ltrbl',
+    };
     // sidesToDo.left.top = 'lt';
     // sidesToDo.left.right = 'ltr';
     // sidesToDo.left.bottom = 'ltrb';
@@ -1597,8 +1607,7 @@ export default class ProgressPathTool extends BaseTool {
               stroke-width="10em"
               stroke="white"
               stroke-linecap="round"
-              fill="black" <!-- "#666" -->
-              paint-order="stroke"
+              fill="black"
             />
           </mask>
         </defs>
@@ -1648,7 +1657,7 @@ export default class ProgressPathTool extends BaseTool {
       this.myValue = Math.random() * 100;
     }
     return svg`
-      <g "" id="ProgressPath-${this.toolId}"
+      <g id="ProgressPath-${this.toolId}"
         class="${classMap(this.classes.tool)}" style="${styleMap(this.styles.tool)}"
         @click=${(e) => this.handleTapEvent(e, this.config)}>
         ${this.renderProgressTool()}

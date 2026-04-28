@@ -154,32 +154,110 @@ class SwissArmyKnifeCard extends LitElement {
     // After iOS 13 you should detect iOS devices like this, since iPad will not be detected as iOS devices
     // by old ways (due to new "desktop" options, enabled by default)
 
-    // eslint-disable-next-line no-useless-escape
-    this.isSafari = !!window.navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
-    this.iOS = (/iPad|iPhone|iPod/.test(window.navigator.userAgent)
-                || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1))
-                && !window.MSStream;
-    this.isSafari14 = this.isSafari && /Version\/14\.[0-9]/.test(window.navigator.userAgent);
-    this.isSafari15 = this.isSafari && /Version\/15\.[0-9]/.test(window.navigator.userAgent);
-    this.isSafari16 = this.isSafari && /Version\/16\.[0-9]/.test(window.navigator.userAgent);
-    this.isSafari17 = this.isSafari && /Version\/17\.[0-9]/.test(window.navigator.userAgent);
-    this.isSafari18 = this.isSafari && /Version\/18\.[0-9]/.test(window.navigator.userAgent);
+    // this.isSafari = !!window.navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
+    // this.iOS = (/iPad|iPhone|iPod/.test(window.navigator.userAgent)
+    //             || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1))
+    //             && !window.MSStream;
+    // this.isSafari14 = this.isSafari && /Version\/14\.[0-9]/.test(window.navigator.userAgent);
+    // this.isSafari15 = this.isSafari && /Version\/15\.[0-9]/.test(window.navigator.userAgent);
+    // this.isSafari16 = this.isSafari && /Version\/16\.[0-9]/.test(window.navigator.userAgent);
+    // this.isSafari17 = this.isSafari && /Version\/17\.[0-9]/.test(window.navigator.userAgent);
+    // this.isSafari18 = this.isSafari && /Version\/18\.[0-9]/.test(window.navigator.userAgent);
+    // this.isSafari26 = this.isSafari && /Version\/26\.[0-9]/.test(window.navigator.userAgent);
     // Use GTE 16 check. According to https://regex101.com/ this regex should work, but it doesn't!!
-    this.isSafariGte16 = this.isSafari && /Version\/(?:1[6-9]|2[0-9])\.[0-9]/.test(window.navigator.userAgent);
+    // this.isSafariGte16 = this.isSafari && /Version\/(?:1[6-9]|2[0-9])\.[0-9]/.test(window.navigator.userAgent);
     // this.isSafariGte16 = this.isSafari && /Version\/1[6-9]\.[0-9]/.test(window.navigator.userAgent);
-    console.log('isSafariGte16', this.isSafariGte16);
+    // console.log('isSafariGte16', this.isSafariGte16);
 
     // The iOS app does not use a standard agent string...
     // See: https://github.com/home-assistant/iOS/blob/master/Sources/Shared/API/HAAPI.swift
     // It contains strings like "like Safari" and "OS 14_2", and "iOS 14.2.0"
 
-    this.isSafari14 = this.isSafari14 || /os 14.*like safari/.test(window.navigator.userAgent.toLowerCase());
-    this.isSafari15 = this.isSafari15 || /os 15.*like safari/.test(window.navigator.userAgent.toLowerCase());
-    this.isSafari16 = this.isSafari16 || /os 16.*like safari/.test(window.navigator.userAgent.toLowerCase());
-    this.isSafari17 = this.isSafari17 || /os 17.*like safari/.test(window.navigator.userAgent.toLowerCase());
-    this.isSafari18 = this.isSafari18 || /os 18.*like safari/.test(window.navigator.userAgent.toLowerCase());
-    this.isSafariGte16 = this.isSafariGte16 || /os (?:1[6-9]|2[0-9]).*like safari/.test(window.navigator.userAgent);
+    // this.isSafari14 = this.isSafari14 || /os 14.*like safari/.test(window.navigator.userAgent.toLowerCase());
+    // this.isSafari15 = this.isSafari15 || /os 15.*like safari/.test(window.navigator.userAgent.toLowerCase());
+    // this.isSafari16 = this.isSafari16 || /os 16.*like safari/.test(window.navigator.userAgent.toLowerCase());
+    // this.isSafari17 = this.isSafari17 || /os 17.*like safari/.test(window.navigator.userAgent.toLowerCase());
+    // this.isSafari18 = this.isSafari18 || /os 18.*like safari/.test(window.navigator.userAgent.toLowerCase());
+    // this.isSafari26 = this.isSafari26 || /os 26.*like safari/.test(window.navigator.userAgent.toLowerCase());
+    // this.isSafariGte16 = this.isSafariGte16 || /os (?:1[6-9]|2[0-9]).*like safari/.test(window.navigator.userAgent);
     // this.isSafariGte16 = this.isSafariGte16 || /os 1[6-9].*like safari/.test(window.navigator.userAgent);
+
+    const ua = window.navigator.userAgent || '';
+    const uaLower = ua.toLowerCase();
+    const platform = window.navigator.platform || '';
+
+    const isIOS = (
+      /iPad|iPhone|iPod/.test(ua)
+      || (
+        platform === 'MacIntel'
+        && window.navigator.maxTouchPoints > 1
+      )
+    ) && !window.MSStream;
+
+    // Detect real Safari:
+    // Safari normally has "Version/17.4 ... Safari/605.1.15".
+    // Chrome uses this as strings "Safari/537.36", but doesn't have "Version/x ... Safari".
+    const safariVersionMatch = ua.match(/Version\/(\d+)(?:\.[\d.]+)?.*Safari/i);
+    const realSafariMajorVersion = safariVersionMatch
+      ? Number(safariVersionMatch[1])
+      : undefined;
+
+    // Home Assistant iOS companion app
+    // The iOS app does not use a standard agent string...
+    // See: https://github.com/home-assistant/iOS/blob/master/Sources/Shared/API/HAAPI.swift
+    // It contains strings like "like Safari" and "OS 14_2", and "iOS 14.2.0"
+    const haOsLikeSafariMatch = uaLower.match(/\bos\s+(\d+)(?:[._]\d+)*.*like safari/);
+    const haIosVersionMatch = uaLower.match(/\bios\s+(\d+)(?:[._]\d+)*/);
+
+    const haAppMajorVersion = haIosVersionMatch
+      ? Number(haIosVersionMatch[1])
+      : haOsLikeSafariMatch
+        ? Number(haOsLikeSafariMatch[1])
+        : undefined;
+
+    const isRealSafari = Number.isFinite(realSafariMajorVersion);
+    const isHomeAssistantLikeSafari = Number.isFinite(haAppMajorVersion)
+      && uaLower.includes('like safari');
+
+    const safariMajorVersion = isRealSafari
+      ? realSafariMajorVersion
+      : isHomeAssistantLikeSafari
+        ? haAppMajorVersion
+        : undefined;
+
+    this.iOS = isIOS;
+
+    // Now, tell me if this is Safari...
+    this.isSafari = Number.isFinite(safariMajorVersion);
+
+    this.safariMajorVersion = safariMajorVersion;
+    this.isHomeAssistantLikeSafari = isHomeAssistantLikeSafari;
+    this.isRealSafari = isRealSafari;
+
+    this.isSafari14 = this.isSafari && safariMajorVersion === 14;
+    this.isSafari15 = this.isSafari && safariMajorVersion === 15;
+    this.isSafari16 = this.isSafari && safariMajorVersion === 16;
+    this.isSafari17 = this.isSafari && safariMajorVersion === 17;
+    this.isSafari18 = this.isSafari && safariMajorVersion === 18;
+    this.isSafari26 = this.isSafari && safariMajorVersion === 26;
+    this.isSafari27 = this.isSafari && safariMajorVersion === 27;
+    this.isSafari28 = this.isSafari && safariMajorVersion === 28;
+    this.isSafari29 = this.isSafari && safariMajorVersion === 29;
+    this.isSafari30 = this.isSafari && safariMajorVersion === 30;
+
+    this.isSafariGte16 = this.isSafari && safariMajorVersion >= 16;
+
+    if (this.dev.debug) {
+      console.log('browser detection', {
+        ua,
+        isIOS: this.iOS,
+        isSafari: this.isSafari,
+        isRealSafari: this.isRealSafari,
+        isHomeAssistantLikeSafari: this.isHomeAssistantLikeSafari,
+        safariMajorVersion: this.safariMajorVersion,
+        isSafariGte16: this.isSafariGte16,
+     });
+    }
 
     this.lovelace = SwissArmyKnifeCard.lovelace;
 
@@ -569,9 +647,20 @@ class SwissArmyKnifeCard extends LitElement {
     this.counter += 1;
 
     // Check for theme mode and theme mode change...
-    this.theme.modeChanged = (hass.themes.darkMode !== this.theme.darkMode);
-    if (this.theme.modeChanged) {
-      this.theme.darkMode = hass.themes.darkMode;
+    // this.theme.modeChanged = (hass.themes.darkMode !== this.theme.darkMode);
+    // if (this.theme.modeChanged) {
+    //   this.theme.darkMode = hass.themes.darkMode;
+    //   Colors.colorCache = {};
+    // }
+    const themeName = hass.selectedTheme || hass.themes.theme || '';
+    const themeDarkMode = hass.themes.darkMode === true;
+
+    this.theme.nameChanged = this.theme.name !== themeName;
+    this.theme.modeChanged = this.theme.darkMode !== themeDarkMode;
+
+    if (this.theme.nameChanged || this.theme.modeChanged) {
+      this.theme.name = themeName;
+      this.theme.darkMode = themeDarkMode;
       Colors.colorCache = {};
     }
 
@@ -624,7 +713,7 @@ class SwissArmyKnifeCard extends LitElement {
     let attrSet = false;
     let newStateStr;
     let entityIsUndefined = false;
-    // eslint-disable-next-line no-restricted-syntax, no-unused-vars
+    // eslint-disable-next-line no-restricted-syntax
     for (value of this.config.entities) {
       this.entities[index] = hass.states[this.config.entities[index].entity];
 
@@ -917,13 +1006,13 @@ class SwissArmyKnifeCard extends LitElement {
         console.log('*** M3 - Found. Material 3 conversion starting...');
         // These variables are used of course, but eslint thinks they are NOT.
         // If I remove them, eslint complains about undefined variables...
-        // eslint-disable-next-line no-unused-vars
+
         let palette = '';
-        // eslint-disable-next-line no-unused-vars
+
         let colordefault = '';
-        // eslint-disable-next-line no-unused-vars
+
         let colorlight = '';
-        // eslint-disable-next-line no-unused-vars
+
         let colordark = '';
 
         let surfacelight = '';
@@ -1044,7 +1133,6 @@ class SwissArmyKnifeCard extends LitElement {
 
         // https://filosophy.org/code/online-tool-to-lighten-color-without-alpha-channel/
 
-        // eslint-disable-next-line no-inner-declarations
         function hex2rgb(hexColor) {
           const rgbCol = {};
 
@@ -1057,7 +1145,6 @@ class SwissArmyKnifeCard extends LitElement {
           return cssRgbColor;
         }
 
-        // eslint-disable-next-line no-inner-declarations
         function getSurfaces(surfaceColor, paletteColor, opacities, cssName, mode) {
           const bgCol = {};
           const fgCol = {};
@@ -1705,7 +1792,9 @@ _buildStateString(inState, entityConfig) {
         break;
     }
   }
-  if (typeof inState === 'undefined') { return undefined; }
+  if (typeof inState === 'undefined') {
+    return undefined;
+  }
   if (Number.isNaN(inState)) {
     return inState;
   }
