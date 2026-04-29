@@ -1,4 +1,4 @@
-import { svg } from 'lit-element';
+import { svg } from 'lit';
 import { SVG_VIEW_BOX } from './const';
 import Merge from './merge';
 import Utils from './utils';

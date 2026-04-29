@@ -1,5 +1,5 @@
-import { svg } from 'lit-element';
-import { styleMap } from 'lit-html/directives/style-map.js';
+import { svg } from 'lit';
+import { styleMap } from 'lit/directives/style-map.js';
 
 import { SVG_DEFAULT_DIMENSIONS, SVG_DEFAULT_DIMENSIONS_HALF } from './const';
 import Utils from './utils';
