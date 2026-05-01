@@ -1,3 +1,9 @@
+**Personal Note, april 2026**
+
+Card is again up-to-date with latest Home Assistant, Lit v3 and NPM modules, browser detection, and got some extra features like the new progressPath graph, which is not yet fully documented...
+
+***
+
 [![hacs][hacs-badge]][hacs-url]
 [![hacs][maintain_badge]][hacs-url]
 <br>[![release][release-badge]][release-url]
@@ -13,8 +19,6 @@ What you can make is only limited by the 17 provided tools and your own imaginat
 
 The 3rd Release Candidate will have support for layout templates, which makes using predefined cards much easier.
 The [30 functional card examples](https://swiss-army-knife-card-manual.amoebelabs.com/design/example-set-functional-cards/) will be made available as layout templates for easy use and integration.
-
-Remember that this custom card will is a public release candidate as of June/July 2022!
 
 Check https://swiss-army-knife-card-manual.amoebelabs.com/ for the documentation!
 
