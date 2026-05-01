@@ -1,3 +1,6 @@
+/* eslint-disable @stylistic/brace-style */
+/* eslint-disable no-undef */
+/* eslint-disable brace-style */
 import resolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
 import serve from 'rollup-plugin-serve';
