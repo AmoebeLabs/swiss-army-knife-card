@@ -1,10 +1,20 @@
+/* eslint-disable @stylistic/brace-style */
+/* eslint-disable no-undef */
+/* eslint-disable brace-style */
 import resolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
 import serve from 'rollup-plugin-serve';
 import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
+import alias from '@rollup/plugin-alias';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const dev = process.env.ROLLUP_WATCH || process.env.DEV;
+
+// Vervang __dirname door dit:
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const serveopts = {
   contentBase: ['dist'],
@@ -37,13 +47,21 @@ export default {
     exclude: 'node_modules/**',
   },
   plugins: [
+    alias({
+      entries: [
+        {
+          find: /^lit\/directives\/(class-map|style-map)\.js$/,
+          replacement: path.resolve(__dirname, 'src', 'lit-compat.js'),
+        },
+      ],
+    }),
+    resolve(),
+    json(),
     commonjs(),
     //   json({
     //   include: 'package.json',
     //   preferConst: true,
     // }),
-    json(),
-    resolve(),
     dev && serve(serveopts),
     !dev && terser({
       mangle: {

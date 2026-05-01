@@ -27,12 +27,17 @@
 // tools not working anymore!
 
 import {
-  LitElement, html, css, svg, unsafeCSS,
-} from 'lit-element';
+  LitElement, html, css, svg, unsafeCSS, ReactiveElement,
+}
+from 'lit';
 
-import { styleMap } from 'lit-html/directives/style-map.js';
-import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
-import { ifDefined } from 'lit-html/directives/if-defined.js';
+import { styleMap } from 'lit/directives/style-map.js';
+import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
+
+// import { PropertyValues } from 'lit';
+// import { ReactiveElement } from 'lit';
+
 import { version } from '../package.json';
 
 import {
@@ -592,7 +597,7 @@ class SwissArmyKnifeCard extends LitElement {
   *   So, we need to get lovelace here...
   */
   static get styles() {
-    // console.log('SAK - get styles');
+    console.log('SAK - get styles', SwissArmyKnifeCard.lovelace);
     if (!SwissArmyKnifeCard.lovelace) SwissArmyKnifeCard.lovelace = Utils.getLovelace();
 
     if (!SwissArmyKnifeCard.lovelace) {
@@ -2069,4 +2074,24 @@ _buildStateString(inState, entityConfig) {
  */
 
 // Define the custom Swiss Army Knife card, so Lovelace / Lit can find the custom element!
-customElements.define('swiss-army-knife-card', SwissArmyKnifeCard);
+// As of Lit v3 (migrating from lit-element v1 etc), wait for Lovelace to load, otherwise
+// the get styles() function crashes. Lit v3's timing is different...
+//
+const CARD_TAG = 'swiss-army-knife-card';
+
+const defineCardWhenLovelaceReady = () => {
+  if (customElements.get(CARD_TAG)) return;
+
+  const lovelace = Utils.getLovelace();
+
+  if (!lovelace?.config?.sak_sys_templates) {
+    requestAnimationFrame(defineCardWhenLovelaceReady);
+    return;
+  }
+
+  SwissArmyKnifeCard.lovelace = lovelace;
+
+  customElements.define(CARD_TAG, SwissArmyKnifeCard);
+};
+
+defineCardWhenLovelaceReady();

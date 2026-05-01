@@ -1,6 +1,6 @@
-import { svg } from 'lit-element';
-import { classMap } from 'lit-html/directives/class-map.js';
-import { styleMap } from 'lit-html/directives/style-map.js';
+import { svg } from 'lit';
+import { classMap } from 'lit/directives/class-map.js';
+import { styleMap } from 'lit/directives/style-map.js';
 
 import { selectUnit } from '@formatjs/intl-utils';
 import Merge from './merge';

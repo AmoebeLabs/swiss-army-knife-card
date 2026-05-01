@@ -1,6 +1,6 @@
 {
   "name": "swiss-army-knife",
-  "version": "5.3.1-dev.1",
+  "version": "5.3.1-dev.2",
   "description": "Swiss Army Knife for Lovelace",
   "main": "src/main.js",
   "type": "module",
@@ -14,6 +14,9 @@
     "serve": "rollup -c serve.config.js --watch"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "",
+    "@eslint/js": "",
+    "@rollup/plugin-alias": "",
     "@rollup/plugin-commonjs": "^29",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^16",
@@ -21,18 +24,15 @@
     "eslint": "^9",
     "eslint-config-airbnb-extended": "^3",
     "rollup": "^4.60",
-    "rollup-plugin-serve": "^3",
-    "@eslint/js": "",
-    "@eslint/eslintrc": ""
+    "rollup-plugin-serve": "^3"
   },
   "dependencies": {
     "@formatjs/intl-utils": "^3.8.4",
     "@mdi/js": "^7.2.96",
-    "@tanem/svg-injector": "^10.1.53",
+    "@tanem/svg-injector": "^11.3.2",
+    "globals": "^17.5.0",
     "home-assistant-js-websocket": "^9.6.0",
-    "lit-element": "^2.5.1",
-    "lit-html": "^1.4.1",
+    "lit": "^3.3.2",
     "memoize-one": "^6.0.0"
   }
 }
-
