@@ -37,7 +37,6 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 
 // import { PropertyValues } from 'lit';
 // import { ReactiveElement } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
 
 import { version } from '../package.json';
 
