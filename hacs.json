@@ -2,5 +2,5 @@
   "name": "Swiss Army Knife custom card",
   "render_readme": true,
   "content_in_root": false,
-  "filename": "dist/swiss-army-knife-card.js"  
+  "filename": "swiss-army-knife-card.js"  
 }
