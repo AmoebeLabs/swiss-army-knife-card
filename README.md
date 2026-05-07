@@ -4,7 +4,7 @@ Card is again up-to-date with latest Home Assistant (2026.4.4), Lit v3 (bundled)
 
 ***
 
-[![hacs][hacs-badge]][hacs-url]
+[![hacs][hacs-badge]][hacs-url] [![hacs][maintain_badge]][hacs-url]
 <br>
 
 Stable and Latest available versions where the latest can be a pre-release (DEV) version are as follows:
@@ -74,7 +74,7 @@ All these examples are available on Github and described in the [installation ma
 [hacs-badge]: https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge&logo=homeassistantcommunitystore
 [beta_badge]: https://img.shields.io/badge/State-Beta-orange?style=for-the-badge&logo=homeassistantcommunitystore
 [rc_badge]: https://img.shields.io/badge/State-Release%20Candidate-orange?style=for-the-badge&logo=homeassistantcommunitystore
-[maintain_badge]: https://img.shields.io/maintenance/yes/2026?style=for-the-badge&logo=homeassistantcommunitystore
+[maintain_badge]: https://img.shields.io/maintenance/yes/2100?style=for-the-badge&logo=homeassistantcommunitystore
 [release-badge]: https://img.shields.io/github/v/release/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&include_prereleases&logo=github
 [latest-badge]: https://img.shields.io/github/v/release/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&include_prereleases&logo=github&label=latest
 [stable-badge]: https://img.shields.io/github/v/release/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&logo=github&label=stables 
