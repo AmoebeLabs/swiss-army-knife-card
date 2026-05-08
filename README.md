@@ -34,7 +34,7 @@ And check https://material3-themes-manual.amoebelabs.com/ for Material 3 themes 
 
 <a href="https://www.buymeacoffee.com/amoebelabs" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-## ![](assets/images/swiss-army-knife24.png) Hybrid or Full manual Installation
+## ![](assets/images/swiss-army-knife24.png#gh-light-mode-only)![](assets/images/swiss-army-knife24-dark.png#gh-dark-mode-only) Hybrid or Full manual Installation
 This custom card should be in the default theme repository of HACS, if you have selected BETA releases.
 
 For installation check the [installation documentation][sak-installation]. As this custom card requires **extra steps on top of HACS** for its installation. The card itself can be installed with HACS, but:
@@ -43,11 +43,11 @@ For installation check the [installation documentation][sak-installation]. As th
 
 Note: It may take some time before this card is included into the default HACS repository! Use custom repository for the time being.
 
-## ![](assets/images/swiss-army-knife24.png) An overview of the [functional card examples](https://swiss-army-knife-card-manual.amoebelabs.com/design/example-set-functional-cards/) I created as demo and inspiration:
+## ![](assets/images/swiss-army-knife24.png#gh-light-mode-only)![](assets/images/swiss-army-knife24-dark.png#gh-dark-mode-only) An overview of the [functional card examples](https://swiss-army-knife-card-manual.amoebelabs.com/design/example-set-functional-cards/) I created as demo and inspiration:
 
 ![](https://swiss-army-knife-card-manual.amoebelabs.com/assets/screenshots/sak-functional-cards-all-screenshot.png)
 
-## ![](assets/images/swiss-army-knife24.png) An overview of all the [12 example views](https://swiss-army-knife-card-manual.amoebelabs.com/examples/introduction/) from my own installation:
+## ![](assets/images/swiss-army-knife24.png#gh-light-mode-only)![](assets/images/swiss-army-knife24-dark.png#gh-dark-mode-only) An overview of all the [12 example views](https://swiss-army-knife-card-manual.amoebelabs.com/examples/introduction/) from my own installation:
 All these examples are available on Github and described in the [installation manual][sak-installation]. Each example has its own page which describes how to adapt / use them in your own installation.
 
 | Examples...| Examples...|
