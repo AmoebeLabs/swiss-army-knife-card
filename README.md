@@ -10,10 +10,12 @@ Card is again up-to-date with latest Home Assistant (2026.4.4), Lit v3 (bundled)
 Stable and Latest available versions where the latest can be a pre-release (DEV) version are as follows:
 <br>[![stable][stable-badge]][release-url]
 [![latest][latest-badge]][release-url]
+[![latest-date][latest-date-badge]][release-url]
 
 <!-- [![hacs][maintain_badge]][hacs-url] -->
 <!-- <br>[![release][release-badge]][release-url] -->
 <!-- [![downloads][downloads-badge]][release-url] -->
+[![downloads][downloads-badge]][release-url]
 <!--- ![beta_badge](https://img.shields.io/badge/State-Beta-orange?style=for-the-badge) -->
 <!---[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration) -->
 
@@ -77,8 +79,10 @@ All these examples are available on Github and described in the [installation ma
 [maintain_badge]: https://img.shields.io/maintenance/yes/2100?style=for-the-badge&logo=homeassistantcommunitystore
 [release-badge]: https://img.shields.io/github/v/release/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&include_prereleases&logo=github
 [latest-badge]: https://img.shields.io/github/v/release/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&include_prereleases&logo=github&label=latest
-[stable-badge]: https://img.shields.io/github/v/release/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&logo=github&label=stables 
-[downloads-badge]: https://img.shields.io/github/downloads/AmoebeLabs/swiss-army-knife-card/total?style=for-the-badge&logo=github
+[latest-date-badge]: <https://img.shields.io/github/release-date-pre/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&logo=github&label=latest%20date>
+<!-- [stable-badge]: https://img.shields.io/github/v/release/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&logo=github&label=stables -->
+[stable-badge]: <https://img.shields.io/github/v/release/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&logo=github&label=stable&cacheSeconds=3600>
+[downloads-badge]: <https://img.shields.io/github/downloads/AmoebeLabs/swiss-army-knife-card/total?style=for-the-badge&logo=github&label=downloads%20since%20May%202026>
 [lgtm-grade-badge]: https://img.shields.io/lgtm/grade/javascript/github/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&logo=lgtm
 [lgtm-alerts-badge]: https://img.shields.io/lgtm/alerts/github/AmoebeLabs/swiss-army-knife-card?style=for-the-badge&logo=lgtm
 
