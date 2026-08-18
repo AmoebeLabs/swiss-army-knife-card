@@ -609,7 +609,7 @@ class SwissArmyKnifeCard extends LitElement {
       throw Error(version, ' - card::get styles - System Templates reference NOT defined!');
     }
     if (!SwissArmyKnifeCard.lovelace.config.sak_user_templates) {
-      console.warning(version, ' - SAK - User Templates reference NOT defined. Did you NOT include them?');
+      console.warn(version, ' - SAK - User Templates reference NOT defined. Did you NOT include them?');
     }
 
     // #TESTING
